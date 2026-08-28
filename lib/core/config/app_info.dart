@@ -7,11 +7,19 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.57';
+  static const String version = '0.1.1.58';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.58',
+      title: 'Correção da análise estática',
+      changes: [
+        'Remove o import redundante de dart:ui da Central de Diagnóstico apontado pelo Flutter 3.47.1.',
+        'Preserva o comportamento da Central de Diagnóstico, áudio, saves, Match Engine e workflow de CI.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.57',
       title: 'Correção do áudio e novo repositório',

@@ -12,10 +12,10 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.57
-Android versionCode: 59
-pubspec: 0.1.1+59
-Release atual: correção do erro de análise estática na importação sequencial de músicas e migração das referências documentais/metadados para o novo repositório oficial, preservando `CareerState` schema 11, IDs, saves e Match Engine.
+Release visível: 0.1.1.58
+Android versionCode: 60
+pubspec: 0.1.1+60
+Release atual: correção do import redundante de `dart:ui` na Central de Diagnóstico apontado pelo `flutter analyze`, preservando diagnóstico, áudio, `CareerState` schema 11, IDs, saves, Match Engine e workflow.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.58 com versionCode > 59.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.59 com versionCode > 60.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync
