@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.72
-Android versionCode: 74
-pubspec: 0.1.1+74
+Release visível: 0.1.1.73
+Android versionCode: 75
+pubspec: 0.1.1+75
 
-Novidade desta base: corrige os nove warnings do analyzer causados por chamadas diretas a `State.setState` dentro da extension de ações do editor, mantendo a modularização e o comportamento da 0.1.1.71. Preserva `CareerState` schema 11, SQLite v2, IDs/saves e Match Engine.
+Novidade desta base: corrige o único teste estrutural restante do GitHub Actions da 0.1.1.72, atualizando `editor_experience_test.dart` para validar o salvamento modularizado entre o arquivo principal, `club_editor_import_actions.dart` e `editor_feedback_dialog.dart`, sem alterar código funcional. Preserva `CareerState` schema 11, SQLite v2, IDs/saves e Match Engine.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.73 com versionCode > 74.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.74 com versionCode > 75.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

@@ -100,15 +100,24 @@ void main() {
   });
 
   test('editor usa navegação por competição e confirma salvamento em diálogo', () {
-    final source = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
-    expect(source, contains('CompetitionBreadcrumb'));
-    expect(source, contains('CompetitionCatalog.brazil'));
-    expect(source, contains('CompetitionBrowserLevel.country'));
-    expect(source, contains('CompetitionBrowserLevel.championship'));
-    expect(source, contains('CompetitionBrowserLevel.series'));
-    expect(source, contains('CompetitionBrowserLevel.clubs'));
-    expect(source, contains('_showSaveConfirmation'));
-    expect(source, contains("title: const Text('Alterações salvas')"));
+    final screenSource = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
+    final actionsSource =
+        File('lib/features/career/club_editor_import_actions.dart').readAsStringSync();
+    final feedbackSource =
+        File('lib/features/career/editor_feedback_dialog.dart').readAsStringSync();
+
+    expect(screenSource, contains('CompetitionBreadcrumb'));
+    expect(screenSource, contains('CompetitionCatalog.brazil'));
+    expect(screenSource, contains('CompetitionBrowserLevel.country'));
+    expect(screenSource, contains('CompetitionBrowserLevel.championship'));
+    expect(screenSource, contains('CompetitionBrowserLevel.series'));
+    expect(screenSource, contains('CompetitionBrowserLevel.clubs'));
+
+    expect(actionsSource, contains('Future<void> _save() async'));
+    expect(actionsSource, contains('showEditorNotice('));
+    expect(actionsSource, contains("title: 'Alterações salvas'"));
+    expect(feedbackSource, contains('showDialog<void>('));
+    expect(feedbackSource, contains('AlertDialog('));
   });
 
   test('seletor de escudo é apresentado em diálogo central', () {

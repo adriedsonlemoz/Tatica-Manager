@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.72",
+  "version": "0.1.1.73",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+74"
+    "pubspecVersion": "0.1.1+75"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.72",
-    "versionCode": 74
+    "versionName": "0.1.1.73",
+    "versionCode": 75
   },
   "release": {
-    "version": "0.1.1.72",
-    "revision": 72,
-    "androidVersionCode": 74
+    "version": "0.1.1.73",
+    "revision": 73,
+    "androidVersionCode": 75
   },
   "changelog": [
+    "Corrige o único teste estrutural restante revelado pelo GitHub Actions da 0.1.1.72: editor_experience_test.dart deixa de procurar o antigo _showSaveConfirmation no arquivo principal e passa a validar o fluxo atual modularizado entre club_editor_screen.dart, club_editor_import_actions.dart e editor_feedback_dialog.dart, incluindo navegação por competição, salvamento por showEditorNotice e AlertDialog central, sem alterar código funcional, UI, CareerState schema 11, SQLite v2, IDs, saves ou Match Engine.",
     "Corrige os nove warnings invalid_use_of_protected_member revelados pelo GitHub Actions na 0.1.1.71: as ações extraídas do editor deixam de chamar State.setState diretamente a partir de uma extension e passam a usar um método interno do próprio _ClubEditorScreenState, preservando a separação de arquivos, o comportamento do editor, CareerState schema 11, SQLite v2, IDs, saves e Match Engine.",
     "Aprimora a Central de Carreiras e a edição: saves passam a exibir escudo, colocação e próximo jogo com exclusão direta e confirmação personalizada; a marca ganha logo arredondada, texto Carregar jogo salvo e rodapé Beta 2.0 que abre a Central de Diagnóstico; técnicos sem aparência própria recebem faces determinísticas distintas; a Central de Edição vira Editar dados do jogo, abre clubes em tela própria, inclui tutorial, ações compactas, confirmações de restauração e feedback centralizado; a edição de técnicos compacta exportação/Padrão; a seleção da bola passa a ser visual e usa o mesmo renderer da partida; o diagnóstico registra contexto/stack e falhas operacionais de carreira/editor, preservando saves, CareerState schema 11 e Match Engine.",
     "Corrige os dois testes estruturais revelados pelo GitHub Actions após a reformulação da 0.1.1.69: o teste do editor de aparência passa a validar o agrupamento atual de traços do rosto e o teste da Central de Carreiras passa a acompanhar o link de Edição extraído para career_hub_info_links.dart, sem reintroduzir pesquisa/filtros, textos antigos ou alterar código funcional, saves, CareerState schema 11, IDs ou Match Engine.",
