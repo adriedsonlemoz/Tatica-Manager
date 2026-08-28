@@ -55,10 +55,12 @@ class AudioFileStore {
     try {
       final sink = temporary.openWrite();
       try {
-        await source.openRead().pipe(sink);
-      } catch (_) {
+        await for (final chunk in source.openRead()) {
+          sink.add(chunk);
+        }
+        await sink.flush();
+      } finally {
         await sink.close();
-        rethrow;
       }
       await temporary.rename(destination.path);
       return destination.path;

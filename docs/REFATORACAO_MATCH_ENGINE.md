@@ -1,6 +1,6 @@
 # Refatoração do Match Engine — build 0.1.0+4
 
-Repositório oficial: `https://github.com/adriedsonlemoz/TaticaManager2`
+Repositório oficial: `https://github.com/adriedsonlemoz/Tatica-Manager`
 
 Esta entrega refatora o maior motor de regras da partida sem alterar sua API pública. `MatchEngine.simulate(...)` continua sendo o ponto de entrada usado pelos controladores e continua independente de Flutter e Flame.
 

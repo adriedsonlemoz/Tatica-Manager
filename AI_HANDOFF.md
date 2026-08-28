@@ -6,13 +6,19 @@
 
 - **Nome:** Tática Manager 2
 - **Produto:** Tática Manager
-- **Repositório oficial:** https://github.com/adriedsonlemoz/TaticaManager2
+- **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.56`
-- **Android versionCode:** `58`
+- **Release deste handoff:** `0.1.1.57`
+- **Android versionCode:** `59`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.57
+
+- corrige o `argument_type_not_assignable` apontado pelo GitHub Actions em `AudioFileStore`, mantendo cópia sequencial em chunks e sem materializar músicas inteiras em memória;
+- atualiza o repositório oficial em README, handoff, prompt de continuação, documentação histórica e metadados para `https://github.com/adriedsonlemoz/Tatica-Manager`;
+- preserva `CareerState` schema 11, saves, IDs, Match Engine e workflow atual.
 
 ## Estado funcional da release 0.1.1.56
 
@@ -295,10 +301,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.53
-versionCode:         58
-pubspec:             0.1.1+58
+versionCode:         59
+pubspec:             0.1.1+59
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.57` e usar um `versionCode` maior que 58.
+A próxima alteração/entrega normalmente deve virar `0.1.1.58` e usar um `versionCode` maior que 59.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

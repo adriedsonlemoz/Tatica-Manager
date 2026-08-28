@@ -2,7 +2,7 @@
 
 Data analisada: 24/08/2026
 
-Repositório: `https://github.com/adriedsonlemoz/TaticaManager2`
+Repositório: `https://github.com/adriedsonlemoz/Tatica-Manager`
 
 ## Resultado
 

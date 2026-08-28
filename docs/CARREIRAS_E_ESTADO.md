@@ -1,6 +1,6 @@
 # Carreiras e estado — arquitetura após a refatoração
 
-Repositório oficial: `https://github.com/adriedsonlemoz/TaticaManager2`
+Repositório oficial: `https://github.com/adriedsonlemoz/Tatica-Manager`
 
 Esta refatoração separa o ciclo de vida dos saves das regras de jogo para impedir que `GameController` concentre responsabilidades demais.
 

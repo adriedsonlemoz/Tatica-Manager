@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.56';
+  static const String version = '0.1.1.57';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.57',
+      title: 'Correção do áudio e novo repositório',
+      changes: [
+        'Corrige a cópia sequencial das músicas para a tipagem do Flutter 3.47.1 sem carregar arquivos inteiros em memória.',
+        'Atualiza documentação e metadados para o novo repositório oficial Tatica-Manager.',
+        'Preserva saves, schema 11, Match Engine e workflow de CI.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.56',
       title: 'Técnicos, Finanças e experiência',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Remove o deslocamento da câmera que movia o gramado para os lados durante replays.',
         'Elimina a faixa preta que podia aparecer na lateral do campo.',
         'Preserva replay, animações dos jogadores, bola, timeline e Match Engine.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.54',
-      title: 'Áudio estável e diagnóstico interno',
-      changes: [
-        'Importa várias músicas em sequência por stream, reduzindo o pico de memória.',
-        'Corrige a persistência da tela de áudio sem acessar Riverpod durante dispose.',
-        'Adiciona Central de Diagnóstico com erros recentes, última saída Android e exportação TXT.',
       ],
     ),
   ];

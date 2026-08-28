@@ -1,6 +1,6 @@
 # Refatoração de controladores — build 0.1.0+3
 
-Repositório oficial: `https://github.com/adriedsonlemoz/TaticaManager2`
+Repositório oficial: `https://github.com/adriedsonlemoz/Tatica-Manager`
 
 Esta entrega reduz o acoplamento do estado principal do jogo antes de novas mecânicas serem adicionadas.
 

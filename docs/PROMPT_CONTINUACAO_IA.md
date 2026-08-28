@@ -6,16 +6,16 @@ Copie o bloco abaixo e envie à IA junto com o ZIP/repositório mais recente do 
 Você vai continuar o desenvolvimento do projeto Tática Manager 2.
 
 REPOSITÓRIO OFICIAL
-https://github.com/adriedsonlemoz/TaticaManager2
+https://github.com/adriedsonlemoz/Tatica-Manager
 
 STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.56
-Android versionCode: 58
-pubspec: 0.1.1+58
-Release atual: microrelease de testes que alinha a Caixa de Entrada às três propostas comerciais iniciais; idempotência e tombstone continuam validados por ID sem alterar código funcional, `CareerState` schema 10, IDs, saves ou Match Engine.
+Release visível: 0.1.1.57
+Android versionCode: 59
+pubspec: 0.1.1+59
+Release atual: correção do erro de análise estática na importação sequencial de músicas e migração das referências documentais/metadados para o novo repositório oficial, preservando `CareerState` schema 11, IDs, saves e Match Engine.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.57 com versionCode > 58.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.58 com versionCode > 59.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

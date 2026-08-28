@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.56",
+  "version": "0.1.1.57",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
-  "repository": "https://github.com/adriedsonlemoz/TaticaManager2",
+  "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+58"
+    "pubspecVersion": "0.1.1+59"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.56",
-    "versionCode": 58
+    "versionName": "0.1.1.57",
+    "versionCode": 59
   },
   "release": {
-    "version": "0.1.1.56",
-    "revision": 56,
-    "androidVersionCode": 58
+    "version": "0.1.1.57",
+    "revision": 57,
+    "androidVersionCode": 59
   },
   "changelog": [
+    "Corrige o erro de análise estática na cópia sequencial de músicas sem voltar a carregar arquivos completos em memória e atualiza toda a documentação/metadados para o repositório oficial https://github.com/adriedsonlemoz/Tatica-Manager, preservando saves, schema 11, Match Engine e workflow.",
     "Remove toda vibração de interface e mantém feedback tátil somente em gols; antecipa a preparação da música sem criar player duplicado; remodela Finanças; simplifica a criação de carreira e adiciona banco completo de técnicos integrado ao editor, com schema 11 retrocompatível.",
     "Mantém o campo da partida completamente estático durante replays: remove a transformação de câmera que deslocava e ampliava o gramado, eliminando a faixa preta lateral sem alterar a timeline, eventos, resultados, jogadores ou Match Engine.",
     "Alinha os dois testes restantes da Caixa de Entrada ao estado funcional da administração comercial: idempotência e tombstone passam a validar a mensagem-alvo por ID sem confundir as três propostas legítimas de patrocinadores com duplicação, sem alterar código funcional, Match Engine, schema ou saves.",

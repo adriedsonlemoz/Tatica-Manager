@@ -1,6 +1,6 @@
 # Etapa 1 — Fundação compilável
 
-Repositório oficial desta reconstrução: `https://github.com/adriedsonlemoz/TaticaManager2`
+Repositório oficial desta reconstrução: `https://github.com/adriedsonlemoz/Tatica-Manager`
 
 Objetivo: transformar a nova base do Tática Manager em um projeto Flutter verificável e capaz de gerar APK.
 

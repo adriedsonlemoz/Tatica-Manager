@@ -178,7 +178,10 @@ void main() {
   test('importação múltipla de músicas usa stream sequencial e arquivo temporário', () {
     final source = File('lib/core/audio/audio_file_store.dart').readAsStringSync();
     expect(source, contains('for (final file in files)'));
-    expect(source, contains('source.openRead().pipe(sink)'));
+    expect(source, contains('await for (final chunk in source.openRead())'));
+    expect(source, contains('sink.add(chunk)'));
+    expect(source, contains('await sink.flush()'));
+    expect(source, isNot(contains('.pipe(sink)')));
     expect(source, contains('.part'));
     expect(source, isNot(contains('readAsBytes')));
   });
