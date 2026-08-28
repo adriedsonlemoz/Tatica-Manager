@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.63';
+  static const String version = '0.1.1.64';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.64',
+      title: 'Correção do editor de escudos',
+      changes: [
+        'Corrige os imports usados pela edição individual e visualização de escudos personalizados.',
+        'ClubIconValidator e as funções Base64 ficam disponíveis corretamente para os arquivos part do editor.',
+        'Packs, saves, schema 11, Match Engine e workflow permanecem inalterados.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.63',
       title: 'Home, packs e áudio pós-jogo',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Adiciona importação de vários escudos em um único arquivo .tmlogos/JSON.',
         'Cada imagem é associada exclusivamente ao ID permanente do clube, com prévia antes de aplicar.',
         'Packs podem ser parciais e não alteram nomes, elencos, técnicos, estádio, uniformes ou Match Engine.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.61',
-      title: 'Testes alinhados à UI atual',
-      changes: [
-        'Atualiza três testes estruturais que ainda procuravam textos e arquivos anteriores à remodelação recente.',
-        'Criação do técnico valida País; Finanças valida Salários/Patrocínios; avatares da Home são verificados nos widgets modulares.',
-        'Não altera código funcional, saves, schema 11, Match Engine ou workflow de CI.',
       ],
     ),
   ];

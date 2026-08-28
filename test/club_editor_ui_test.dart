@@ -39,6 +39,9 @@ void main() {
     expect(source, contains('Ícone / escudo'));
     expect(source, contains('32–1024 px'));
     expect(source, contains('ClubIconValidator.validateBytes'));
+    final librarySource = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
+    expect(librarySource, contains("import 'dart:convert' show base64Decode, base64Encode;"));
+    expect(librarySource, contains("import '../../game/club/club_icon_validator.dart';"));
     expect(source, contains('Jogadores'));
     expect(source, contains('Jogadores livres'));
   });

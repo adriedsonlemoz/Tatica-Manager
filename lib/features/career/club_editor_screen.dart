@@ -1,3 +1,5 @@
+import 'dart:convert' show base64Decode, base64Encode;
+
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +14,7 @@ import '../../domain/club/club_identity.dart';
 import '../../domain/club/club_logo_pack.dart';
 import '../../domain/player/player.dart';
 import '../../game/club/club_identity_engine.dart';
+import '../../game/club/club_icon_validator.dart';
 import '../../game/club/club_logo_pack_engine.dart';
 import '../../game/club/club_logo_pack_importer.dart';
 import '../../game/club/club_pack_importer.dart';

@@ -12,9 +12,9 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.63
-Android versionCode: 65
-pubspec: 0.1.1+65
+Release visível: 0.1.1.64
+Android versionCode: 66
+pubspec: 0.1.1+66
 
 Novidade desta base: a Home usa resumo financeiro e módulo próprio de notícias, a preparação fica integrada ao próximo jogo, o pacote completo importa clubes/jogadores/técnicos/escudos por IDs permanentes e o áudio pós-partida encerra ambiente/efeitos explicitamente. `CareerState` permanece schema 11 e o Match Engine não é alterado.
 
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.64 com versionCode > 65.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.65 com versionCode > 66.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

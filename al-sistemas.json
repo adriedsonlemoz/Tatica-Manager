@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.63",
+  "version": "0.1.1.64",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+65"
+    "pubspecVersion": "0.1.1+66"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.63",
-    "versionCode": 65
+    "versionName": "0.1.1.64",
+    "versionCode": 66
   },
   "release": {
-    "version": "0.1.1.63",
-    "revision": 63,
-    "androidVersionCode": 65
+    "version": "0.1.1.64",
+    "revision": 64,
+    "androidVersionCode": 66
   },
   "changelog": [
+    "Corrige os três erros do flutter analyze na edição de escudos adicionando os imports explícitos de ClubIconValidator e das funções Base64 usadas pelos arquivos part do editor, sem alterar packs, saves, schema 11, Match Engine ou workflow.",
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine.",
     "Adiciona importação de packs separados de escudos no formato tatica-manager-logos v1, associando imagens exclusivamente aos IDs permanentes dos clubes, com validação, prévia e aplicação parcial sem alterar nomes, elencos, técnicos, saves, schema 11 ou Match Engine.",
     "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow.",
@@ -120,6 +121,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
+    "Corrige os três erros do flutter analyze na edição de escudos adicionando os imports explícitos de ClubIconValidator e das funções Base64 usadas pelos arquivos part do editor, sem alterar packs, saves, schema 11, Match Engine ou workflow."
   ]
 }
