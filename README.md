@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.59`
-**Android versionCode:** `61`
+**Release atual:** `0.1.1.60`
+**Android versionCode:** `62`
 
 ## Fonte oficial de versão
 
@@ -14,18 +14,18 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.59`);
+- `VERSION` — versão visível simples (`0.1.1.60`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+61`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.59` e `versionCode 61`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+62`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.60` e `versionCode 62`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.59` é representada internamente como `0.1.1+61`. A versão visível do aplicativo/Android continua sendo `0.1.1.59`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.60` é representada internamente como `0.1.1+62`. A versão visível do aplicativo/Android continua sendo `0.1.1.60`.
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.60`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.61`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -37,6 +37,8 @@ python3 tool/versioning.py verify
 O workflow usa a plataforma Android versionada, cache de Flutter/Pub/Gradle e executa `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --release`, além de conferir o `versionName`/`versionCode` do APK. Não recria `android/` e não executa `flutter clean` em runner novo. O `flutter pub get` resolve as dependências no workspace, mas o CI publica **somente o APK versionado** como Artifact. O `pubspec.lock` não é disponibilizado nos Artifacts.
 
 ## Etapa atual
+
+A `0.1.1.60` corrige os dois warnings `unused_element_parameter` apontados pelo GitHub Actions na Home 0.1.1.59. Os cards de Notícias e Rankings deixam de declarar um `padding` opcional que nunca recebia valor diferente do padrão; o layout visual permanece igual e não há alteração em saves, schema 11, Match Engine ou workflow.
 
 A `0.1.1.59` remodela a Home no padrão visual premium da referência, usando dados reais de clube, técnico, próximo jogo, classificação, notícias e artilheiros sem alterar saves ou Match Engine.
 

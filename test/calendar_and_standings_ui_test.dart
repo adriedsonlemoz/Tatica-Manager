@@ -40,6 +40,8 @@ void main() {
         .readAsStringSync();
     final rankings = File('lib/features/home/home_dashboard_rankings.dart')
         .readAsStringSync();
+    final news = File('lib/features/home/home_dashboard_news.dart')
+        .readAsStringSync();
     final dashboard = File('lib/features/home/home_dashboard_match.dart')
         .readAsStringSync();
 
@@ -50,6 +52,8 @@ void main() {
     expect(home, contains('HomeNewsHighlights'));
     expect(home, contains('HomeLeagueAndScorers'));
     expect(rankings, contains('HomeCompactStandings'));
+    expect(rankings, isNot(contains('this.padding = const EdgeInsets.all(12)')));
+    expect(news, isNot(contains('this.padding = const EdgeInsets.all(12)')));
     expect(overview, contains("_StandingCell('J'"));
     expect(overview, contains("_StandingCell('V'"));
     expect(overview, contains("_StandingCell('E'"));

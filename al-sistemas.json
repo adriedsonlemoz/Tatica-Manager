@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.59",
+  "version": "0.1.1.60",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+61"
+    "pubspecVersion": "0.1.1+62"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.59",
-    "versionCode": 61
+    "versionName": "0.1.1.60",
+    "versionCode": 62
   },
   "release": {
-    "version": "0.1.1.59",
-    "revision": 59,
-    "androidVersionCode": 61
+    "version": "0.1.1.60",
+    "revision": 60,
+    "androidVersionCode": 62
   },
   "changelog": [
+    "Corrige os dois warnings unused_element_parameter introduzidos na Home 0.1.1.59, removendo parâmetros opcionais de padding nunca utilizados em Notícias e Rankings sem alterar o layout, dados, saves, Match Engine ou workflow.",
     "Remodela a Home no padrão visual premium de gestão esportiva, com cabeçalho de clube/técnico, indicadores de posição, próximo jogo, competição e desempenho, card de confronto, confiança/forma recente, avanço diário destacado, notícias em cards, classificação e artilheiros, preservando os dados existentes, atalhos, saves e Match Engine.",
     "Remove o import redundante de dart:ui na Central de Diagnóstico apontado pelo flutter analyze no GitHub Actions, sem alterar o comportamento do diagnóstico, áudio, saves, Match Engine ou workflow.",
     "Corrige o erro de análise estática na cópia sequencial de músicas sem voltar a carregar arquivos completos em memória e atualiza toda a documentação/metadados para o repositório oficial https://github.com/adriedsonlemoz/Tatica-Manager, preservando saves, schema 11, Match Engine e workflow.",
@@ -116,6 +117,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Remove toda vibração de interface e mantém feedback tátil somente em gols; antecipa a preparação da música sem criar player duplicado; remodela Finanças; simplifica a criação de carreira e adiciona banco completo de técnicos integrado ao editor, com schema 11 retrocompatível."
+    "Corrige os dois warnings unused_element_parameter introduzidos na Home 0.1.1.59, removendo parâmetros opcionais de padding nunca utilizados em Notícias e Rankings sem alterar o layout, dados, saves, Match Engine ou workflow."
   ]
 }

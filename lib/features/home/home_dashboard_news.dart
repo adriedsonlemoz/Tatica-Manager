@@ -123,14 +123,13 @@ class HomeQuickAccessItem {
 
 
 class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child, this.padding = const EdgeInsets.all(12)});
+  const _DashboardCard({required this.child});
 
   final Widget child;
-  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: padding,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: const Color(0xFF091110),
           borderRadius: BorderRadius.circular(18),
