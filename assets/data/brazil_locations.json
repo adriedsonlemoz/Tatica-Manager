@@ -1,0 +1,519 @@
+{
+  "source": "Estrutura local inicial; pronta para expansão por fonte IBGE",
+  "countries": [
+    {
+      "code": "BR",
+      "name": "Brasil",
+      "states": [
+        {
+          "code": "AC",
+          "name": "Acre",
+          "cities": [
+            "Brasiléia",
+            "Cruzeiro do Sul",
+            "Epitaciolândia",
+            "Feijó",
+            "Rio Branco",
+            "Sena Madureira",
+            "Tarauacá",
+            "Xapuri"
+          ]
+        },
+        {
+          "code": "AL",
+          "name": "Alagoas",
+          "cities": [
+            "Arapiraca",
+            "Delmiro Gouveia",
+            "Maceió",
+            "Palmeira dos Índios",
+            "Penedo",
+            "Rio Largo",
+            "São Miguel dos Campos",
+            "União dos Palmares"
+          ]
+        },
+        {
+          "code": "AP",
+          "name": "Amapá",
+          "cities": [
+            "Laranjal do Jari",
+            "Macapá",
+            "Mazagão",
+            "Oiapoque",
+            "Porto Grande",
+            "Santana",
+            "Tartarugalzinho"
+          ]
+        },
+        {
+          "code": "AM",
+          "name": "Amazonas",
+          "cities": [
+            "Coari",
+            "Humaitá",
+            "Itacoatiara",
+            "Manacapuru",
+            "Manaus",
+            "Maués",
+            "Parintins",
+            "Tabatinga",
+            "Tefé"
+          ]
+        },
+        {
+          "code": "BA",
+          "name": "Bahia",
+          "cities": [
+            "Alagoinhas",
+            "Barreiras",
+            "Camaçari",
+            "Feira de Santana",
+            "Ilhéus",
+            "Itabuna",
+            "Jequié",
+            "Juazeiro",
+            "Lauro de Freitas",
+            "Paulo Afonso",
+            "Porto Seguro",
+            "Salvador",
+            "Santo Antônio de Jesus",
+            "Teixeira de Freitas",
+            "Vitória da Conquista"
+          ]
+        },
+        {
+          "code": "CE",
+          "name": "Ceará",
+          "cities": [
+            "Aquiraz",
+            "Caucaia",
+            "Crato",
+            "Fortaleza",
+            "Iguatu",
+            "Itapipoca",
+            "Juazeiro do Norte",
+            "Maracanaú",
+            "Maranguape",
+            "Pacatuba",
+            "Quixadá",
+            "Sobral"
+          ]
+        },
+        {
+          "code": "DF",
+          "name": "Distrito Federal",
+          "cities": [
+            "Brasília"
+          ]
+        },
+        {
+          "code": "ES",
+          "name": "Espírito Santo",
+          "cities": [
+            "Aracruz",
+            "Cachoeiro de Itapemirim",
+            "Cariacica",
+            "Colatina",
+            "Guarapari",
+            "Linhares",
+            "Serra",
+            "São Mateus",
+            "Vila Velha",
+            "Vitória"
+          ]
+        },
+        {
+          "code": "GO",
+          "name": "Goiás",
+          "cities": [
+            "Anápolis",
+            "Aparecida de Goiânia",
+            "Catalão",
+            "Formosa",
+            "Goiânia",
+            "Itumbiara",
+            "Jataí",
+            "Luziânia",
+            "Rio Verde",
+            "Senador Canedo",
+            "Trindade",
+            "Valparaíso de Goiás",
+            "Águas Lindas de Goiás"
+          ]
+        },
+        {
+          "code": "MA",
+          "name": "Maranhão",
+          "cities": [
+            "Açailândia",
+            "Bacabal",
+            "Balsas",
+            "Caxias",
+            "Codó",
+            "Imperatriz",
+            "Paço do Lumiar",
+            "Santa Inês",
+            "São José de Ribamar",
+            "São Luís",
+            "Timon"
+          ]
+        },
+        {
+          "code": "MT",
+          "name": "Mato Grosso",
+          "cities": [
+            "Barra do Garças",
+            "Cuiabá",
+            "Cáceres",
+            "Lucas do Rio Verde",
+            "Primavera do Leste",
+            "Rondonópolis",
+            "Sinop",
+            "Sorriso",
+            "Tangará da Serra",
+            "Várzea Grande"
+          ]
+        },
+        {
+          "code": "MS",
+          "name": "Mato Grosso do Sul",
+          "cities": [
+            "Aquidauana",
+            "Campo Grande",
+            "Corumbá",
+            "Dourados",
+            "Maracaju",
+            "Naviraí",
+            "Nova Andradina",
+            "Ponta Porã",
+            "Sidrolândia",
+            "Três Lagoas"
+          ]
+        },
+        {
+          "code": "MG",
+          "name": "Minas Gerais",
+          "cities": [
+            "Araguari",
+            "Barbacena",
+            "Belo Horizonte",
+            "Betim",
+            "Conselheiro Lafaiete",
+            "Contagem",
+            "Divinópolis",
+            "Governador Valadares",
+            "Ibirité",
+            "Ipatinga",
+            "Itabira",
+            "Juiz de Fora",
+            "Montes Claros",
+            "Passos",
+            "Patos de Minas",
+            "Pouso Alegre",
+            "Poços de Caldas",
+            "Ribeirão das Neves",
+            "Santa Luzia",
+            "Sete Lagoas",
+            "Teófilo Otoni",
+            "Uberaba",
+            "Uberlândia",
+            "Varginha"
+          ]
+        },
+        {
+          "code": "PA",
+          "name": "Pará",
+          "cities": [
+            "Abaetetuba",
+            "Altamira",
+            "Ananindeua",
+            "Barcarena",
+            "Belém",
+            "Bragança",
+            "Cametá",
+            "Castanhal",
+            "Itaituba",
+            "Marabá",
+            "Parauapebas",
+            "Santarém",
+            "Tucuruí"
+          ]
+        },
+        {
+          "code": "PB",
+          "name": "Paraíba",
+          "cities": [
+            "Bayeux",
+            "Cabedelo",
+            "Cajazeiras",
+            "Campina Grande",
+            "Guarabira",
+            "João Pessoa",
+            "Mamanguape",
+            "Patos",
+            "Santa Rita",
+            "Sousa"
+          ]
+        },
+        {
+          "code": "PR",
+          "name": "Paraná",
+          "cities": [
+            "Apucarana",
+            "Arapongas",
+            "Araucária",
+            "Campo Largo",
+            "Cascavel",
+            "Colombo",
+            "Curitiba",
+            "Foz do Iguaçu",
+            "Guarapuava",
+            "Londrina",
+            "Maringá",
+            "Paranaguá",
+            "Pinhais",
+            "Ponta Grossa",
+            "São José dos Pinhais",
+            "Toledo",
+            "Umuarama"
+          ]
+        },
+        {
+          "code": "PE",
+          "name": "Pernambuco",
+          "cities": [
+            "Cabo de Santo Agostinho",
+            "Camaragibe",
+            "Caruaru",
+            "Garanhuns",
+            "Goiana",
+            "Igarassu",
+            "Jaboatão dos Guararapes",
+            "Olinda",
+            "Paulista",
+            "Petrolina",
+            "Recife",
+            "Santa Cruz do Capibaribe",
+            "Serra Talhada",
+            "Vitória de Santo Antão"
+          ]
+        },
+        {
+          "code": "PI",
+          "name": "Piauí",
+          "cities": [
+            "Altos",
+            "Barras",
+            "Campo Maior",
+            "Floriano",
+            "José de Freitas",
+            "Parnaíba",
+            "Picos",
+            "Piripiri",
+            "Teresina",
+            "União"
+          ]
+        },
+        {
+          "code": "RJ",
+          "name": "Rio de Janeiro",
+          "cities": [
+            "Angra dos Reis",
+            "Barra Mansa",
+            "Belford Roxo",
+            "Cabo Frio",
+            "Campos dos Goytacazes",
+            "Duque de Caxias",
+            "Itaboraí",
+            "Macaé",
+            "Magé",
+            "Maricá",
+            "Niterói",
+            "Nova Friburgo",
+            "Nova Iguaçu",
+            "Petrópolis",
+            "Rio de Janeiro",
+            "São Gonçalo",
+            "São João de Meriti",
+            "Teresópolis",
+            "Volta Redonda"
+          ]
+        },
+        {
+          "code": "RN",
+          "name": "Rio Grande do Norte",
+          "cities": [
+            "Assu",
+            "Caicó",
+            "Ceará-Mirim",
+            "Currais Novos",
+            "Macaíba",
+            "Mossoró",
+            "Natal",
+            "Parnamirim",
+            "Pau dos Ferros",
+            "São Gonçalo do Amarante"
+          ]
+        },
+        {
+          "code": "RS",
+          "name": "Rio Grande do Sul",
+          "cities": [
+            "Alvorada",
+            "Bagé",
+            "Bento Gonçalves",
+            "Canoas",
+            "Caxias do Sul",
+            "Erechim",
+            "Gravataí",
+            "Guaíba",
+            "Lajeado",
+            "Novo Hamburgo",
+            "Passo Fundo",
+            "Pelotas",
+            "Porto Alegre",
+            "Rio Grande",
+            "Santa Cruz do Sul",
+            "Santa Maria",
+            "Sapucaia do Sul",
+            "São Leopoldo",
+            "Uruguaiana",
+            "Viamão"
+          ]
+        },
+        {
+          "code": "RO",
+          "name": "Rondônia",
+          "cities": [
+            "Ariquemes",
+            "Cacoal",
+            "Guajará-Mirim",
+            "Jaru",
+            "Ji-Paraná",
+            "Pimenta Bueno",
+            "Porto Velho",
+            "Rolim de Moura",
+            "Vilhena"
+          ]
+        },
+        {
+          "code": "RR",
+          "name": "Roraima",
+          "cities": [
+            "Alto Alegre",
+            "Boa Vista",
+            "Bonfim",
+            "Caracaraí",
+            "Mucajaí",
+            "Pacaraima",
+            "Rorainópolis"
+          ]
+        },
+        {
+          "code": "SC",
+          "name": "Santa Catarina",
+          "cities": [
+            "Balneário Camboriú",
+            "Blumenau",
+            "Brusque",
+            "Camboriú",
+            "Chapecó",
+            "Concórdia",
+            "Criciúma",
+            "Florianópolis",
+            "Itajaí",
+            "Jaraguá do Sul",
+            "Joinville",
+            "Lages",
+            "Navegantes",
+            "Palhoça",
+            "São José",
+            "Tubarão"
+          ]
+        },
+        {
+          "code": "SP",
+          "name": "São Paulo",
+          "cities": [
+            "Americana",
+            "Araraquara",
+            "Araçatuba",
+            "Atibaia",
+            "Barueri",
+            "Bauru",
+            "Bragança Paulista",
+            "Campinas",
+            "Carapicuíba",
+            "Cotia",
+            "Diadema",
+            "Embu das Artes",
+            "Franca",
+            "Guarujá",
+            "Guarulhos",
+            "Hortolândia",
+            "Indaiatuba",
+            "Itapetininga",
+            "Itaquaquecetuba",
+            "Itu",
+            "Jacareí",
+            "Jundiaí",
+            "Limeira",
+            "Marília",
+            "Mauá",
+            "Mogi das Cruzes",
+            "Osasco",
+            "Piracicaba",
+            "Praia Grande",
+            "Presidente Prudente",
+            "Ribeirão Preto",
+            "Rio Claro",
+            "Santa Bárbara d’Oeste",
+            "Santo André",
+            "Santos",
+            "Sorocaba",
+            "Sumaré",
+            "Suzano",
+            "São Bernardo do Campo",
+            "São Carlos",
+            "São José do Rio Preto",
+            "São José dos Campos",
+            "São Paulo",
+            "São Vicente",
+            "Taboão da Serra",
+            "Taubaté"
+          ]
+        },
+        {
+          "code": "SE",
+          "name": "Sergipe",
+          "cities": [
+            "Aracaju",
+            "Estância",
+            "Itabaiana",
+            "Lagarto",
+            "Nossa Senhora do Socorro",
+            "Propriá",
+            "Simão Dias",
+            "São Cristóvão",
+            "Tobias Barreto"
+          ]
+        },
+        {
+          "code": "TO",
+          "name": "Tocantins",
+          "cities": [
+            "Araguaína",
+            "Colinas do Tocantins",
+            "Guaraí",
+            "Gurupi",
+            "Palmas",
+            "Paraíso do Tocantins",
+            "Porto Nacional",
+            "Tocantinópolis"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1550 @@
+PROMPT MESTRE — NOVO TÁTICA MANAGER EM FLUTTER
+Versão inicial consolidada
+
+CONTEXTO
+
+Quero criar uma nova versão do Tática Manager do zero, usando Flutter + Dart.
+
+O projeto antigo está anexado e deve ser utilizado como referência funcional, principalmente para regras, fórmulas, estruturas de dados, simulador, IA, mercado, finanças, jogadores, calendário e testes.
+
+O projeto antigo NÃO deve ser simplesmente convertido de React para Flutter.
+
+Quero uma nova base limpa, moderna, mobile-first e realmente pensada como um jogo para Android e iOS.
+
+Também existe uma imagem conceito anexada da interface. Essa imagem deve ser tratada como REFERÊNCIA VISUAL PRINCIPAL E OBRIGATÓRIA da nova versão.
+
+============================================================
+1. TECNOLOGIAS PRINCIPAIS
+============================================================
+
+Usar:
+
+- Flutter
+- Dart
+- Flame para a visualização da partida 2D
+- banco de dados local apropriado ao Flutter
+- arquitetura modular
+- testes automatizados
+- GitHub Actions para gerar APK
+- suporte arquitetural para Android e iOS desde o início
+
+Não usar React, React Native, Capacitor, Vite, Material UI, Dexie ou IndexedDB na nova aplicação.
+
+============================================================
+2. OBJETIVO DO NOVO JOGO
+============================================================
+
+Quero construir um manager de futebol mobile com aparência de jogo premium, e não de dashboard web.
+
+A primeira versão deve ser pequena, sólida e profunda.
+
+Começar com:
+
+- 1 país
+- 1 liga
+- 20 clubes
+- turno e returno
+- 38 rodadas
+- uma carreira que possa continuar por muitas temporadas
+
+Não criar inicialmente:
+
+- segunda divisão
+- copas nacionais
+- estaduais
+- Libertadores
+- Sul-Americana
+- competições internacionais
+- seleções
+- múltiplas ligas
+- multiplayer
+- servidor obrigatório
+- login obrigatório
+- anúncios
+- compras
+- partida 3D
+
+A prioridade é consolidar uma liga excelente antes de aumentar o mundo do jogo.
+
+============================================================
+3. ANALISAR O TÁTICA MANAGER ANTIGO
+============================================================
+
+Antes de programar, analise completamente o projeto antigo anexado.
+
+Identifique principalmente sistemas relacionados a:
+
+- liga
+- calendário
+- classificação
+- jogadores
+- geração de jogadores
+- evolução
+- potencial
+- idade
+- posições
+- posições secundárias
+- formações
+- escalação
+- moral
+- fadiga
+- condição física
+- lesões
+- cartões
+- estatísticas
+- força das equipes
+- simulador de partidas
+- eventos da partida
+- mercado
+- transferências
+- contratos
+- finanças
+- IA dos clubes
+- virada de temporada
+- saves
+- testes
+
+Use o código JavaScript antigo como ESPECIFICAÇÃO FUNCIONAL.
+
+Não copie JavaScript cegamente.
+
+Converta para Dart apenas as regras e ideias que realmente fizerem sentido.
+
+Aproveite especialmente, quando forem úteis, conceitos equivalentes aos módulos antigos de:
+
+- leagueEngine
+- playerFactory
+- playerDevelopment
+- moraleEngine
+- lineupRules
+- matchSimulator
+- matchSimulationStrength
+- matchSimulationEvents
+- matchSimulationStats
+- CPU roster
+- CPU recruitment
+- CPU transfers
+- CPU contracts
+- CPU morale
+
+Também use os testes antigos como referência para criar testes equivalentes em Dart.
+
+============================================================
+4. O QUE NÃO COPIAR DO PROJETO ANTIGO
+============================================================
+
+Não reutilizar:
+
+- Material UI
+- HTML
+- CSS tradicional
+- JSX
+- componentes React
+- hooks React
+- DOM
+- window
+- document
+- Vite
+- Capacitor
+- Dexie
+- IndexedDB
+- aparência de painel administrativo
+- navegação web
+- compatibilidade obrigatória com saves antigos
+
+O novo jogo deve ser construído realmente em Flutter.
+
+============================================================
+5. FILOSOFIA DE DESENVOLVIMENTO
+============================================================
+
+Não tentar recriar todo o conteúdo do projeto antigo de uma vez.
+
+Quero crescer verticalmente antes de crescer horizontalmente.
+
+Melhor ter:
+
+- 20 clubes com IA viva
+- mercado convincente
+- jogadores que envelhecem e evoluem
+- contratos funcionando
+- finanças coerentes
+- partidas divertidas
+- classificação correta
+- temporadas estáveis
+
+do que ter centenas de clubes e várias competições ainda superficiais.
+
+A primeira grande meta é conseguir jogar várias temporadas consecutivas sem corromper o save ou quebrar as regras.
+
+============================================================
+6. ORIENTAÇÃO OBRIGATÓRIA — SOMENTE VERTICAL
+============================================================
+
+O jogo deve funcionar OBRIGATORIAMENTE em modo retrato/vertical.
+
+Orientação permitida:
+
+PORTRAIT ✅
+
+Não permitir:
+
+LANDSCAPE ❌
+LANDSCAPE LEFT ❌
+LANDSCAPE RIGHT ❌
+
+Bloquear a rotação de tela tanto no Android quanto no iOS.
+
+O aplicativo NÃO deve mudar para paisagem quando o usuário virar o celular.
+
+A partida também deve continuar em modo retrato.
+
+Toda a interface deve ser projetada especificamente para smartphones verticais.
+
+Não criar primeiro uma interface horizontal para depois tentar adaptá-la.
+
+============================================================
+7. FULLSCREEN / EDGE-TO-EDGE
+============================================================
+
+Quero experiência de jogo realmente fullscreen.
+
+No Android:
+
+- utilizar edge-to-edge corretamente
+- ocupar visualmente toda a área disponível
+- evitar aparência de site dentro de uma janela
+- controlar status bar e navigation bar de maneira coerente com a identidade visual
+- respeitar câmera frontal, notch e recortes
+- respeitar áreas seguras
+- garantir que conteúdo importante não fique atrás das barras do sistema
+
+No iOS:
+
+- respeitar SafeArea
+- respeitar notch e Dynamic Island
+- manter orientação somente portrait
+- utilizar o máximo possível da área de tela
+
+Telas como:
+
+- Home
+- Elenco
+- Escalação
+- Táticas
+- Mercado
+- Calendário
+- Classificação
+- Perfil do jogador
+- Finanças
+- Partida
+
+devem ser desenhadas desde o início para uso confortável em portrait.
+
+============================================================
+8. REFERÊNCIA VISUAL OBRIGATÓRIA
+============================================================
+
+Use a imagem conceito anexada como REFERÊNCIA VISUAL PRINCIPAL da interface.
+
+NÃO gere outra imagem conceitual.
+
+NÃO use gerador de imagens para recriar a interface.
+
+Implemente o design diretamente em código Flutter.
+
+A imagem serve como inspiração estrutural e estética, não deve ser simplesmente exibida como imagem de fundo ou screenshot.
+
+Todos os elementos devem ser componentes Flutter reais, responsivos e funcionais.
+
+Preservar principalmente:
+
+- tema escuro/grafite
+- verde vivo como cor principal de destaque
+- aparência esportiva premium
+- cards arredondados
+- boa hierarquia visual
+- tipografia forte e esportiva
+- navegação inferior
+- interface limpa e moderna
+- sensação de jogo de futebol
+- destaques em verde
+- gramado como elemento visual importante
+- escudos de clubes
+- estatísticas com leitura rápida
+- ícones coerentes
+- pequenos efeitos e animações
+- aparência mobile nativa
+
+Evitar:
+
+- aparência de dashboard empresarial
+- formulário web
+- tabela crua de sistema administrativo
+- cards genéricos demais
+- excesso de cinza sem identidade
+- interface que pareça site responsivo
+
+Adapte tamanhos e espaçamentos quando necessário para melhorar a usabilidade real no celular.
+
+A referência visual não precisa ser reproduzida pixel a pixel, mas a identidade deve permanecer claramente reconhecível.
+
+============================================================
+9. TELAS DA PRIMEIRA VERSÃO
+============================================================
+
+Implementar inicialmente:
+
+1. Splash
+2. Nova carreira
+3. Seleção de clube
+4. Home do clube
+5. Elenco
+6. Perfil do jogador
+7. Escalação
+8. Táticas
+9. Calendário
+10. Classificação
+11. Mercado
+12. Negociação
+13. Contratos
+14. Finanças
+15. Partida
+16. Resultado da partida
+17. Estatísticas
+18. Configurações
+
+Não criar dezenas de telas secundárias antes dessas estarem realmente funcionais.
+
+============================================================
+10. ARQUITETURA
+============================================================
+
+Separar completamente:
+
+- regras do jogo
+- domínio
+- persistência
+- banco
+- interface
+- estado
+- partida visual
+
+Estrutura sugerida:
+
+lib/
+├── app/
+│
+├── core/
+│   ├── database/
+│   ├── save/
+│   ├── constants/
+│   ├── theme/
+│   └── utils/
+│
+├── domain/
+│   ├── player/
+│   ├── club/
+│   ├── league/
+│   ├── season/
+│   ├── match/
+│   ├── tactic/
+│   ├── formation/
+│   ├── transfer/
+│   ├── contract/
+│   └── finance/
+│
+├── game/
+│   └── match/
+│       ├── engine/
+│       ├── events/
+│       ├── timeline/
+│       └── renderer/
+│
+├── features/
+│   ├── home/
+│   ├── squad/
+│   ├── player/
+│   ├── lineup/
+│   ├── tactics/
+│   ├── calendar/
+│   ├── standings/
+│   ├── market/
+│   ├── negotiation/
+│   ├── finances/
+│   ├── match/
+│   ├── statistics/
+│   └── settings/
+│
+└── main.dart
+
+Pode melhorar essa estrutura se houver justificativa técnica.
+
+============================================================
+11. REGRA FUNDAMENTAL DA ARQUITETURA
+============================================================
+
+As engines NÃO devem depender de Flutter.
+
+Exemplo:
+
+MatchEngine deve funcionar em teste Dart puro.
+
+O mesmo vale para:
+
+- LeagueEngine
+- TransferEngine
+- FinanceEngine
+- PlayerDevelopmentEngine
+- CpuManagerEngine
+- ContractEngine
+- SeasonEngine
+
+Flutter deve ser a camada de interface.
+
+Flame deve ser a camada de apresentação da partida.
+
+O resultado da partida não pode depender do Flame.
+
+============================================================
+12. CLUBES
+============================================================
+
+Criar 20 clubes inicialmente.
+
+Cada clube deve possuir pelo menos:
+
+- id
+- nome
+- nome curto
+- escudo
+- cores
+- reputação
+- orçamento
+- folha salarial
+- estádio
+- elenco
+- técnico
+- nível/reputação
+- estatísticas da temporada
+
+Preparar a arquitetura para no futuro adicionar novas ligas sem reescrever as engines.
+
+============================================================
+13. JOGADORES
+============================================================
+
+Criar uma entidade Player organizada.
+
+Suportar:
+
+- id
+- nome
+- sobrenome
+- nome de exibição
+- data de nascimento
+- idade
+- nacionalidade
+- posição principal
+- posições secundárias
+- pé dominante
+- altura
+- peso
+- overall
+- potencial
+- atributos técnicos
+- atributos físicos
+- atributos mentais
+- atributos específicos de goleiro
+- valor de mercado
+- salário
+- contrato
+- moral
+- condição física
+- fadiga
+- lesões
+- cartões
+- estatísticas
+- histórico
+- clube atual
+
+Preparar também dados visuais:
+
+- tom de pele
+- cabelo
+- cor do cabelo
+- tipo corporal
+- altura visual
+- chuteira
+
+Esses dados devem permitir futuramente criar personagens visualmente diferentes.
+
+============================================================
+14. JOGADOR 3D NO PERFIL / ESCALAÇÃO
+============================================================
+
+A partida NÃO será 3D.
+
+Porém quero deixar a arquitetura preparada para utilizar um personagem 3D completo em telas como:
+
+- Perfil do jogador
+- Escalação
+- Apresentação de contratação
+
+O jogador 3D deve ser opcional e independente do motor da partida.
+
+Objetivo visual futuro:
+
+- corpo completo
+- uniforme do clube
+- short
+- meião
+- chuteira
+- número
+- cabelo
+- tom de pele
+- altura/proporção
+- pose ou animação idle
+
+Não quero apenas uma camisa flutuante.
+
+Evitar renderizar 11 modelos 3D pesados simultaneamente na escalação.
+
+A preferência é:
+
+- campo da escalação com cards/avatares/minirrepresentações
+- jogador selecionado exibido em destaque em um painel próprio
+
+Se o 3D não fizer parte do MVP inicial, deixar a estrutura preparada sem comprometer a primeira versão jogável.
+
+============================================================
+15. ATRIBUTOS DOS JOGADORES
+============================================================
+
+Não basear tudo apenas no overall.
+
+Separar atributos.
+
+Técnicos:
+
+- finalização
+- passe
+- cruzamento
+- domínio
+- drible
+- desarme
+
+Físicos:
+
+- velocidade
+- aceleração
+- força
+- resistência
+- agilidade
+
+Mentais:
+
+- posicionamento
+- visão
+- decisão
+- concentração
+- liderança
+
+Goleiro:
+
+- reflexo
+- posicionamento
+- defesa
+- saída
+- jogo aéreo
+
+O overall deve ser calculado de maneira diferente conforme a posição.
+
+============================================================
+16. POSIÇÕES
+============================================================
+
+Suportar inicialmente:
+
+- GOL
+- LD
+- LE
+- ZAG
+- VOL
+- MC
+- MEI
+- PE
+- PD
+- SA
+- CA
+
+Criar compatibilidade entre posições.
+
+Exemplo conceitual:
+
+- CA pode quebrar galho em SA/PD/PE com penalidade
+- VOL pode jogar de MC/ZAG com penalidade
+- ZAG pode jogar de VOL/LD/LE dependendo do perfil
+
+A penalidade deve ser proporcional à incompatibilidade.
+
+============================================================
+17. FORMAÇÕES
+============================================================
+
+Começar pelo menos com:
+
+- 4-4-2
+- 4-3-3
+- 4-2-3-1
+- 4-1-4-1
+- 4-5-1
+- 3-5-2
+- 3-4-3
+- 5-3-2
+
+As coordenadas dos jogadores devem vir de configuração/dados.
+
+Não espalhar posições manualmente pela interface.
+
+============================================================
+18. ESCALAÇÃO
+============================================================
+
+Criar uma tela de escalação realmente pensada para portrait.
+
+Permitir:
+
+- titulares
+- banco
+- trocar jogadores
+- alterar formação
+- visualizar posição ideal
+- overall
+- condição física
+- moral
+- cartões
+- lesões
+- situação do jogador
+
+Pode utilizar drag-and-drop se ficar natural no celular.
+
+Se arrastar prejudicar a usabilidade, priorizar toque + seleção.
+
+A tela deve lembrar a referência visual anexada.
+
+============================================================
+19. TÁTICAS
+============================================================
+
+Primeira versão:
+
+Mentalidade:
+- defensiva
+- equilibrada
+- ofensiva
+
+Pressão:
+- baixa
+- média
+- alta
+
+Ritmo:
+- lento
+- normal
+- rápido
+
+Linha defensiva:
+- baixa
+- média
+- alta
+
+Construção:
+- curta
+- equilibrada
+- direta
+
+As escolhas precisam modificar realmente o Match Engine.
+
+Não criar opções decorativas.
+
+============================================================
+20. LIGA
+============================================================
+
+Primeira versão:
+
+- 20 clubes
+- 38 rodadas
+- todos contra todos
+- ida e volta
+- 3 pontos por vitória
+- 1 por empate
+- 0 por derrota
+
+Criar critérios de desempate claros e testados.
+
+Garantir:
+
+- todos enfrentam todos exatamente duas vezes
+- uma partida em casa
+- uma fora
+- nenhum clube joga duas vezes na mesma rodada
+- todos jogam o número correto de partidas
+
+============================================================
+21. CLASSIFICAÇÃO
+============================================================
+
+Exibir:
+
+- posição
+- clube
+- jogos
+- vitórias
+- empates
+- derrotas
+- gols pró
+- gols contra
+- saldo
+- pontos
+
+Atualizar imediatamente após as partidas.
+
+Criar testes para os critérios de desempate.
+
+============================================================
+22. CALENDÁRIO
+============================================================
+
+Gerar automaticamente as 38 rodadas.
+
+O calendário deve suportar:
+
+- rodada atual
+- partidas futuras
+- resultados
+- mandante
+- visitante
+- data
+- rodada
+
+Preparar a arquitetura para no futuro receber outras competições, mas não implementá-las agora.
+
+============================================================
+23. MATCH ENGINE
+============================================================
+
+Criar um Match Engine novo em Dart baseado nas melhores ideias do simulador antigo.
+
+O motor deve considerar:
+
+- atributos dos jogadores
+- overall
+- posição
+- posições improvisadas
+- formação
+- tática
+- moral
+- condição física
+- fadiga
+- mando de campo
+- força ofensiva
+- meio-campo
+- defesa
+- goleiro
+- cartões
+- lesões
+- substituições
+- momento do jogo
+- aleatoriedade controlada
+
+O resultado não pode ser simplesmente sorte.
+
+Também não deve ser previsível demais.
+
+Times melhores devem ter vantagem estatística, mas zebras devem ser possíveis.
+
+============================================================
+24. EVENTOS DA PARTIDA
+============================================================
+
+O Match Engine deve gerar uma timeline estruturada.
+
+Exemplo:
+
+03' Posse
+08' Ataque
+09' Finalização
+18' Falta
+18' Cartão amarelo
+27' Grande chance
+27' Defesa do goleiro
+34' Passe
+34' Finalização
+34' GOL
+
+Cada evento deve possuir dados, e não apenas texto.
+
+Exemplo conceitual:
+
+MatchEvent(
+  minute: 34,
+  type: MatchEventType.goal,
+  teamId: "...",
+  playerId: "...",
+  assistPlayerId: "...",
+)
+
+Os textos da interface devem ser gerados a partir dos eventos.
+
+============================================================
+25. PARTIDA VISUAL COM FLAME
+============================================================
+
+A partida será 2D.
+
+Usar Flame para representar:
+
+- campo
+- jogadores
+- bola
+- movimentação
+- passes
+- condução
+- chutes
+- gols
+- defesa
+- animações simples
+- movimentação de um lado para o outro
+
+Fluxo obrigatório:
+
+Match Engine
+↓
+Match Events / Timeline
+↓
+Match Renderer
+↓
+Flame
+↓
+Animação
+
+Flame nunca decide o resultado.
+
+Ele apenas representa aquilo que o Match Engine calculou.
+
+============================================================
+26. MOVIMENTAÇÃO DA BOLA
+============================================================
+
+A bola deve realmente se mover.
+
+Exemplo:
+
+Jogador A
+↓ passe
+Jogador B
+↓ conduz
+Jogador C
+↓ chute
+Gol
+
+Não mostrar texto de passe enquanto a bola permanece parada.
+
+Utilizar interpolação suave.
+
+A bola deve percorrer trajetórias coerentes com os eventos gerados.
+
+============================================================
+27. JOGADORES DURANTE A PARTIDA
+============================================================
+
+Na primeira versão podem ser:
+
+- sprites
+- avatares estilizados
+- pequenas representações vistas de cima
+
+Não usar 3D na partida.
+
+Os 22 jogadores devem reagir minimamente a:
+
+- formação
+- posse
+- ataque
+- defesa
+- pressão
+- posição da bola
+
+Não precisam possuir física complexa nem IA individual semelhante a FIFA/eFootball.
+
+O objetivo é representar visualmente a partida de um manager.
+
+============================================================
+28. HUD DA PARTIDA
+============================================================
+
+A tela da partida permanece vertical.
+
+Mostrar:
+
+- mandante
+- visitante
+- escudos
+- placar
+- minuto
+- posse
+- finalizações
+- finalizações no gol
+- cartões
+- eventos
+- substituições
+- velocidade
+
+Controles:
+
+- pausar
+- 1x
+- 2x
+- 4x
+- táticas
+- instruções
+- substituições
+
+A aparência deve seguir a referência visual anexada.
+
+============================================================
+29. VELOCIDADE DA PARTIDA
+============================================================
+
+Permitir:
+
+- 1x
+- 2x
+- 4x
+- pausa
+
+Animações, relógio e eventos devem acompanhar corretamente a velocidade.
+
+============================================================
+30. MERCADO
+============================================================
+
+Criar mercado funcional inicialmente.
+
+Permitir:
+
+- visualizar jogadores
+- pesquisar
+- filtrar
+- abrir perfil
+- apresentar proposta
+- receber resposta
+- negociar contrato
+- comprar
+- vender
+
+Não criar botões de mentira.
+
+Se a função aparecer na UI, ela deve funcionar.
+
+============================================================
+31. IA DOS OUTROS CLUBES
+============================================================
+
+Os outros 19 clubes devem possuir comportamento ativo.
+
+Devem:
+
+- escolher escalação
+- substituir jogadores indisponíveis
+- avaliar necessidades do elenco
+- comprar
+- vender
+- renovar contratos
+- deixar contratos expirarem quando fizer sentido
+- administrar orçamento
+- responder a propostas
+
+Não precisam ser gênios no MVP, mas não podem ser clubes estáticos.
+
+============================================================
+32. CONTRATOS
+============================================================
+
+Cada jogador deve possuir:
+
+- salário
+- duração
+- data final
+- situação do contrato
+
+Permitir:
+
+- renovar
+- negociar
+- pedir salário
+- aceitar
+- recusar
+- deixar contrato expirar
+
+Preparar mercado de jogadores sem contrato futuramente.
+
+============================================================
+33. FINANÇAS
+============================================================
+
+Criar finanças simples, explicáveis e funcionais.
+
+Entradas:
+
+- receita de jogos
+- patrocínio
+- venda de jogador
+
+Saídas:
+
+- salários
+- compra de jogador
+- custos operacionais
+
+Registrar histórico de movimentações.
+
+Não gerar números sem origem explicável.
+
+============================================================
+34. EVOLUÇÃO DE JOGADORES
+============================================================
+
+Jogadores envelhecem a cada temporada.
+
+Considerar:
+
+- idade
+- potencial
+- minutos
+- desempenho
+- lesões
+- condição
+- treinamento futuramente
+
+Jovens podem melhorar.
+
+Jogadores mais velhos podem cair de rendimento.
+
+Evitar evolução exagerada e uniforme.
+
+============================================================
+35. MORAL, FADIGA, LESÕES E DISCIPLINA
+============================================================
+
+Reaproveitar as melhores ideias do projeto antigo.
+
+Moral deve reagir a coisas como:
+
+- titularidade
+- resultados
+- desempenho
+- contrato
+- situação no clube
+
+Fadiga deve reagir a:
+
+- minutos
+- sequência de partidas
+- condição física
+
+Lesões devem possuir duração.
+
+Cartões devem ser registrados corretamente.
+
+============================================================
+36. ESTATÍSTICAS
+============================================================
+
+Jogadores:
+
+- jogos
+- titularidades
+- minutos
+- gols
+- assistências
+- cartões
+- nota média
+
+Clubes:
+
+- jogos
+- gols
+- vitórias
+- empates
+- derrotas
+- sequência
+- posição
+
+Manter histórico por temporada.
+
+============================================================
+37. SAVE LOCAL
+============================================================
+
+Criar sistema de save desde o início.
+
+Salvar:
+
+- temporada
+- rodada
+- clubes
+- jogadores
+- resultados
+- classificação
+- calendário
+- contratos
+- mercado
+- finanças
+- estatísticas
+- configurações
+- táticas
+- escalações
+
+O save deve suportar muitas temporadas.
+
+Criar teste de simulação longa.
+
+Meta mínima de robustez:
+
+simular/jogar até pelo menos o ano 2040 sem corrupção, inconsistência grave ou crescimento absurdo de dados.
+
+============================================================
+38. BANCO DE DADOS
+============================================================
+
+Escolha uma solução Flutter apropriada para banco local.
+
+Antes de escolher, compare opções considerando:
+
+- desempenho
+- manutenção
+- migrations
+- consultas
+- quantidade de jogadores
+- histórico de temporadas
+- Android
+- iOS
+
+A camada de domínio não deve depender da biblioteca física do banco.
+
+Usar repositories.
+
+Fluxo:
+
+Domain / Engine
+↓
+Repository
+↓
+Database
+
+============================================================
+39. ESTADO
+============================================================
+
+Escolher uma solução moderna e adequada ao Flutter.
+
+Separar:
+
+- estado persistente da carreira
+- estado global do jogo
+- estado temporário da interface
+- estado da partida
+
+Evitar rebuilds desnecessários.
+
+============================================================
+40. HOME DO CLUBE
+============================================================
+
+A Home deve lembrar a primeira tela da imagem conceito.
+
+Pode apresentar:
+
+- clube
+- escudo
+- próxima partida
+- classificação resumida
+- forma recente
+- situação financeira
+- ações rápidas
+- notificações importantes
+
+Evitar transformar a Home em painel administrativo cheio de números sem contexto.
+
+============================================================
+41. PERFIL DO JOGADOR
+============================================================
+
+Mostrar de maneira esportiva:
+
+- nome
+- idade
+- posição
+- overall
+- potencial quando aplicável
+- condição
+- moral
+- atributos
+- estatísticas
+- salário
+- contrato
+- valor
+- histórico
+
+Preparar espaço visual para o personagem 3D futuramente.
+
+============================================================
+42. DESIGN E EXPERIÊNCIA
+============================================================
+
+O jogo deve parecer profissional.
+
+Priorizar:
+
+- resposta rápida
+- transições suaves
+- feedback ao toque
+- cards bem espaçados
+- áreas de toque adequadas
+- visual consistente
+- animações discretas
+- carregamentos claros
+- empty states
+- mensagens de erro compreensíveis
+
+Não sacrificar usabilidade apenas para deixar bonito.
+
+============================================================
+43. TESTES
+============================================================
+
+Criar testes desde o início para:
+
+- calendário
+- classificação
+- pontuação
+- desempates
+- Match Engine
+- eventos
+- escalação
+- posições
+- transferências
+- contratos
+- evolução
+- finanças
+- virada de temporada
+- IA CPU
+- save
+- load
+
+Usar testes do projeto antigo como especificação quando fizer sentido.
+
+============================================================
+44. GITHUB ACTIONS
+============================================================
+
+Criar workflow no GitHub Actions.
+
+Fluxo desejado:
+
+checkout
+↓
+configurar Flutter
+↓
+flutter pub get
+↓
+flutter analyze
+↓
+flutter test
+↓
+flutter build apk
+↓
+upload artifact
+
+O APK deve realmente aparecer nos Artifacts do workflow.
+
+Não gerar apenas ZIP.
+
+Preparar posteriormente também:
+
+flutter build appbundle
+
+para Play Store.
+
+============================================================
+45. ANDROID E IOS
+============================================================
+
+Uma única base Flutter.
+
+Estrutura:
+
+Flutter
+├── Android
+└── iOS
+
+Evitar código exclusivamente Android sem necessidade.
+
+Quando houver comportamento específico de plataforma, isolar corretamente.
+
+A orientação portrait deve ser aplicada em ambas.
+
+============================================================
+46. VERSIONAMENTO
+============================================================
+
+Começar em:
+
+0.1.0
+
+Manter versionamento coerente.
+
+Atualizar versão nas entregas funcionais relevantes.
+
+Não alterar a versão por cada tentativa interna pequena.
+
+============================================================
+47. PRIMEIRA META REALMENTE JOGÁVEL
+============================================================
+
+A milestone fundamental é:
+
+Nova carreira
+↓
+escolher 1 dos 20 clubes
+↓
+receber elenco
+↓
+montar escalação
+↓
+definir tática
+↓
+jogar rodada
+↓
+assistir partida em Flame
+↓
+receber resultado
+↓
+atualizar classificação
+↓
+avançar calendário
+↓
+usar mercado
+↓
+administrar finanças
+↓
+chegar à rodada 38
+↓
+encerrar temporada
+↓
+envelhecer/evoluir jogadores
+↓
+renovar contratos
+↓
+iniciar temporada seguinte
+↓
+continuar a carreira
+
+Quando esse ciclo funcionar de ponta a ponta, teremos a fundação do jogo.
+
+============================================================
+48. ORDEM DE IMPLEMENTAÇÃO
+============================================================
+
+FASE 1
+Auditar o projeto Tática Manager antigo.
+
+FASE 2
+Documentar o que será reaproveitado conceitualmente.
+
+FASE 3
+Criar projeto Flutter, tema e arquitetura.
+
+FASE 4
+Configurar portrait obrigatório e fullscreen/edge-to-edge.
+
+FASE 5
+Criar entidades:
+
+- Player
+- Club
+- League
+- Season
+- Match
+- Formation
+- Tactic
+- Contract
+- Transfer
+
+FASE 6
+Criar 20 clubes.
+
+FASE 7
+Criar liga, classificação e calendário de 38 rodadas.
+
+FASE 8
+Criar jogadores e elencos.
+
+FASE 9
+Criar escalação e táticas.
+
+FASE 10
+Implementar Match Engine.
+
+FASE 11
+Implementar timeline/eventos.
+
+FASE 12
+Criar Match Renderer com Flame.
+
+FASE 13
+Implementar tela da partida.
+
+FASE 14
+Criar mercado e contratos.
+
+FASE 15
+Criar finanças.
+
+FASE 16
+Criar IA dos clubes.
+
+FASE 17
+Criar evolução, moral, fadiga, lesões e disciplina.
+
+FASE 18
+Criar virada de temporada.
+
+FASE 19
+Criar save/load e banco definitivo.
+
+FASE 20
+Polir interface seguindo a imagem de referência.
+
+FASE 21
+Criar testes de temporada longa.
+
+FASE 22
+Criar GitHub Actions e gerar APK.
+
+============================================================
+49. NÃO QUERO UM PROJETO DEMONSTRATIVO
+============================================================
+
+Não entregar apenas:
+
+- pseudocódigo
+- mockups estáticos
+- botões sem função
+- dados fixos fingindo simulação
+- telas sem integração
+- comentários dizendo "implementar depois"
+- projeto que não compila
+
+Faça implementação real.
+
+Se algo aparecer na interface, deve funcionar.
+
+============================================================
+50. NÃO GERAR NOVA IMAGEM DE DESIGN
+============================================================
+
+Existe uma imagem conceito anexada.
+
+Use-a como referência.
+
+NÃO gere outra imagem.
+
+NÃO substitua a referência por um novo conceito.
+
+NÃO responda com uma imagem quando a tarefa for implementar o projeto.
+
+Implemente a interface em Flutter.
+
+============================================================
+51. VALIDAÇÕES ANTES DE CONSIDERAR UMA ETAPA CONCLUÍDA
+============================================================
+
+Executar:
+
+flutter pub get
+flutter analyze
+flutter test
+
+Quando a etapa incluir Android:
+
+flutter build apk
+
+Não considerar uma fase concluída enquanto houver erros relevantes de análise, testes ou build.
+
+============================================================
+52. INSTRUÇÃO PARA COMEÇAR AGORA
+============================================================
+
+Comece imediatamente.
+
+1. Analise completamente o projeto antigo anexado.
+2. Liste a arquitetura e engines relevantes.
+3. Identifique o que será portado conceitualmente para Dart.
+4. Identifique o que será descartado.
+5. Crie a nova estrutura Flutter.
+6. Implemente o tema seguindo a imagem conceito.
+7. Configure portrait obrigatório.
+8. Configure experiência fullscreen/edge-to-edge.
+9. Crie os modelos fundamentais.
+10. Crie 20 clubes.
+11. Gere as 38 rodadas.
+12. Implemente classificação.
+13. Crie testes do calendário e tabela.
+14. Implemente jogadores e elencos.
+15. Continue seguindo a ordem de fases.
+16. Gere APK funcional pelo GitHub Actions.
+
+Não tente implementar todas as expansões futuras agora.
+
+O objetivo é construir uma base nova, simples, bonita, profundamente mobile e extremamente sólida.
+
+============================================================
+RESULTADO ESPERADO
+============================================================
+
+Quero terminar com um Tática Manager novo que seja:
+
+- Flutter nativo
+- Dart
+- Android + iOS
+- portrait obrigatório
+- fullscreen/edge-to-edge
+- visual esportivo premium
+- inspirado diretamente na imagem conceito anexada
+- uma liga inicialmente
+- 20 clubes
+- 38 rodadas
+- IA dos clubes
+- mercado
+- contratos
+- finanças
+- evolução
+- moral
+- fadiga
+- lesões
+- cartões
+- estatísticas
+- save para muitas temporadas
+- partida 2D animada com Flame
+- bola realmente se movimentando
+- táticas influenciando o motor
+- arquitetura preparada para crescer
+- APK compilado pelo GitHub Actions
+
+A primeira versão deve privilegiar QUALIDADE DA FUNDAÇÃO em vez de quantidade de conteúdo.
+
+Depois que essa liga estiver totalmente consolidada, novas divisões, copas, competições e sistemas serão adicionados como expansões, e não como remendos arquiteturais.

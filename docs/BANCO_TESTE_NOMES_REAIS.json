@@ -1,0 +1,708 @@
+{
+  "format": "tatica-manager-clubs",
+  "version": 2,
+  "name": "Banco de teste - nomes originais 0.1.1.12",
+  "author": "Uso local de desenvolvimento",
+  "clubs": [
+    {
+      "id": "br-club-001",
+      "name": "Flamengo",
+      "nickname": "Flamengo",
+      "shortName": "FLA",
+      "stadium": {
+        "name": "Maracanã",
+        "capacity": 78838,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4290056731,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4290056731,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4290056731,
+        "accentHex": 4290056731,
+        "shortsHex": 4279308561,
+        "socksHex": 4290056731,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4290056731,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-002",
+      "name": "Palmeiras",
+      "nickname": "Palmeiras",
+      "shortName": "PAL",
+      "stadium": {
+        "name": "Allianz Parque",
+        "capacity": 43713,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4278215735,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4278215735,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4278215735,
+        "accentHex": 4278215735,
+        "shortsHex": 4294967295,
+        "socksHex": 4278215735,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4278215735,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-003",
+      "name": "Cruzeiro",
+      "nickname": "Cruzeiro",
+      "shortName": "CRU",
+      "stadium": {
+        "name": "Mineirão",
+        "capacity": 61846,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279976865,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279976865,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279976865,
+        "accentHex": 4279976865,
+        "shortsHex": 4294967295,
+        "socksHex": 4279976865,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279976865,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-004",
+      "name": "Mirassol",
+      "nickname": "Mirassol",
+      "shortName": "MIR",
+      "stadium": {
+        "name": "Maião",
+        "capacity": 15000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4294300451,
+        "secondaryHex": 4280122174,
+        "accentHex": 4280122174,
+        "shortsHex": 4294300451,
+        "socksHex": 4280122174,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4280122174,
+        "secondaryHex": 4294300451,
+        "accentHex": 4294300451,
+        "shortsHex": 4280122174,
+        "socksHex": 4294300451,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4294300451,
+        "accentHex": 4280122174,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-005",
+      "name": "Fluminense",
+      "nickname": "Fluminense",
+      "shortName": "FLU",
+      "stadium": {
+        "name": "Maracanã",
+        "capacity": 78838,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4286190904,
+        "secondaryHex": 4278938447,
+        "accentHex": 4278938447,
+        "shortsHex": 4286190904,
+        "socksHex": 4278938447,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4278938447,
+        "secondaryHex": 4286190904,
+        "accentHex": 4286190904,
+        "shortsHex": 4278938447,
+        "socksHex": 4286190904,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4286190904,
+        "accentHex": 4278938447,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-006",
+      "name": "Bahia",
+      "nickname": "Bahia",
+      "shortName": "BAH",
+      "stadium": {
+        "name": "Arena Fonte Nova",
+        "capacity": 47907,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279521699,
+        "secondaryHex": 4293272874,
+        "accentHex": 4293272874,
+        "shortsHex": 4279521699,
+        "socksHex": 4293272874,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4293272874,
+        "secondaryHex": 4279521699,
+        "accentHex": 4279521699,
+        "shortsHex": 4293272874,
+        "socksHex": 4279521699,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279521699,
+        "accentHex": 4293272874,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-007",
+      "name": "Botafogo",
+      "nickname": "Botafogo",
+      "shortName": "BOT",
+      "stadium": {
+        "name": "Nilton Santos",
+        "capacity": 46831,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279308561,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4294967295,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279308561,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-008",
+      "name": "São Paulo",
+      "nickname": "São Paulo",
+      "shortName": "SAO",
+      "stadium": {
+        "name": "MorumBIS",
+        "capacity": 72000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4293008163,
+        "accentHex": 4293008163,
+        "shortsHex": 4294967295,
+        "socksHex": 4293008163,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4293008163,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4293008163,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4294967295,
+        "accentHex": 4293008163,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-009",
+      "name": "Red Bull Bragantino",
+      "nickname": "Red Bull Bragantino",
+      "shortName": "RBB",
+      "stadium": {
+        "name": "Nabi Abi Chedid",
+        "capacity": 17000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4292876589,
+        "accentHex": 4292876589,
+        "shortsHex": 4294967295,
+        "socksHex": 4292876589,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4292876589,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4292876589,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4294967295,
+        "accentHex": 4292876589,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-010",
+      "name": "Corinthians",
+      "nickname": "Corinthians",
+      "shortName": "COR",
+      "stadium": {
+        "name": "Neo Química Arena",
+        "capacity": 47605,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4294111986,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4294111986,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4294111986,
+        "accentHex": 4294111986,
+        "shortsHex": 4279308561,
+        "socksHex": 4294111986,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4294111986,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-011",
+      "name": "Grêmio",
+      "nickname": "Grêmio",
+      "shortName": "GRE",
+      "stadium": {
+        "name": "Arena do Grêmio",
+        "capacity": 55000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4280394975,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4280394975,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4280394975,
+        "accentHex": 4280394975,
+        "shortsHex": 4279308561,
+        "socksHex": 4280394975,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4280394975,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-012",
+      "name": "Vasco da Gama",
+      "nickname": "Vasco da Gama",
+      "shortName": "VAS",
+      "stadium": {
+        "name": "São Januário",
+        "capacity": 21880,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279308561,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4294967295,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279308561,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-013",
+      "name": "Atlético-MG",
+      "nickname": "Atlético-MG",
+      "shortName": "CAM",
+      "stadium": {
+        "name": "Arena MRV",
+        "capacity": 46000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279308561,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4294967295,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279308561,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-014",
+      "name": "Santos",
+      "nickname": "Santos",
+      "shortName": "SAN",
+      "stadium": {
+        "name": "Vila Belmiro",
+        "capacity": 16068,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4294967295,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279308561,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4294967295,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-015",
+      "name": "Vitória",
+      "nickname": "Vitória",
+      "shortName": "VIT",
+      "stadium": {
+        "name": "Barradão",
+        "capacity": 30000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4290843167,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4290843167,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4290843167,
+        "accentHex": 4290843167,
+        "shortsHex": 4279308561,
+        "socksHex": 4290843167,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4290843167,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-016",
+      "name": "Internacional",
+      "nickname": "Internacional",
+      "shortName": "INT",
+      "stadium": {
+        "name": "Beira-Rio",
+        "capacity": 50128,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4291301422,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4291301422,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4291301422,
+        "accentHex": 4291301422,
+        "shortsHex": 4294967295,
+        "socksHex": 4291301422,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4291301422,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-017",
+      "name": "Coritiba",
+      "nickname": "Coritiba",
+      "shortName": "CFC",
+      "stadium": {
+        "name": "Couto Pereira",
+        "capacity": 32000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279138876,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279138876,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279138876,
+        "accentHex": 4279138876,
+        "shortsHex": 4294967295,
+        "socksHex": 4279138876,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279138876,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-018",
+      "name": "Athletico-PR",
+      "nickname": "Athletico-PR",
+      "shortName": "CAP",
+      "stadium": {
+        "name": "Ligga Arena",
+        "capacity": 32000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4292286752,
+        "secondaryHex": 4279308561,
+        "accentHex": 4279308561,
+        "shortsHex": 4292286752,
+        "socksHex": 4279308561,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4279308561,
+        "secondaryHex": 4292286752,
+        "accentHex": 4292286752,
+        "shortsHex": 4279308561,
+        "socksHex": 4292286752,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4292286752,
+        "accentHex": 4279308561,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-019",
+      "name": "Chapecoense",
+      "nickname": "Chapecoense",
+      "shortName": "CHA",
+      "stadium": {
+        "name": "Arena Condá",
+        "capacity": 22600,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279797323,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279797323,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279797323,
+        "accentHex": 4279797323,
+        "shortsHex": 4294967295,
+        "socksHex": 4279797323,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279797323,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    },
+    {
+      "id": "br-club-020",
+      "name": "Remo",
+      "nickname": "Remo",
+      "shortName": "REM",
+      "stadium": {
+        "name": "Baenão",
+        "capacity": 17000,
+        "ticketPrice": 50
+      },
+      "homeKit": {
+        "primaryHex": 4279644018,
+        "secondaryHex": 4294967295,
+        "accentHex": 4294967295,
+        "shortsHex": 4279644018,
+        "socksHex": 4294967295,
+        "pattern": "solid"
+      },
+      "awayKit": {
+        "primaryHex": 4294967295,
+        "secondaryHex": 4279644018,
+        "accentHex": 4279644018,
+        "shortsHex": 4294967295,
+        "socksHex": 4279644018,
+        "pattern": "solid"
+      },
+      "thirdKit": {
+        "primaryHex": 4280295456,
+        "secondaryHex": 4279644018,
+        "accentHex": 4294967295,
+        "shortsHex": 4280295456,
+        "socksHex": 4280295456,
+        "pattern": "solid"
+      }
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "format": "tatica-manager-clubs",
+  "version": 2,
+  "name": "Exemplo mínimo de banco personalizado",
+  "author": "Tática Manager",
+  "clubs": [
+    {
+      "id": "br-club-001",
+      "name": "Capital Paulista FC",
+      "nickname": "Capital",
+      "shortName": "CPT"
+    },
+    {
+      "id": "br-club-002",
+      "name": "Rio Imperial EC",
+      "nickname": "Imperial",
+      "shortName": "IMP"
+    },
+    {
+      "id": "br-club-003",
+      "name": "Vale Bandeirante AC",
+      "nickname": "Bandeirante",
+      "shortName": "VBA"
+    },
+    {
+      "id": "br-club-004",
+      "name": "União Carioca FC",
+      "nickname": "União Carioca",
+      "shortName": "UCR"
+    },
+    {
+      "id": "br-club-005",
+      "name": "Mantiqueira Atlético",
+      "nickname": "Mantiqueira",
+      "shortName": "MNT"
+    },
+    {
+      "id": "br-club-006",
+      "name": "Porto Dourado EC",
+      "nickname": "Dourado",
+      "shortName": "PDO"
+    },
+    {
+      "id": "br-club-007",
+      "name": "Estrela Mineira FC",
+      "nickname": "Estrela Mineira",
+      "shortName": "EMI"
+    },
+    {
+      "id": "br-club-008",
+      "name": "Nacional do Cerrado",
+      "nickname": "Cerrado",
+      "shortName": "NCR"
+    },
+    {
+      "id": "br-club-009",
+      "name": "Guanabara Real FC",
+      "nickname": "Guanabara",
+      "shortName": "GNR"
+    },
+    {
+      "id": "br-club-010",
+      "name": "Aurora Paulista EC",
+      "nickname": "Aurora",
+      "shortName": "AUR"
+    },
+    {
+      "id": "br-club-011",
+      "name": "Esportivo Sulano",
+      "nickname": "Sulano",
+      "shortName": "ESU"
+    },
+    {
+      "id": "br-club-012",
+      "name": "Metropolitano Cearense FC",
+      "nickname": "Metrô Cearense",
+      "shortName": "MCE"
+    },
+    {
+      "id": "br-club-013",
+      "name": "Recife União FC",
+      "nickname": "União Recife",
+      "shortName": "RUF"
+    },
+    {
+      "id": "br-club-014",
+      "name": "Salvador Imperial FC",
+      "nickname": "Imperial Baiano",
+      "shortName": "SIF"
+    },
+    {
+      "id": "br-club-015",
+      "name": "Clube do Planalto",
+      "nickname": "Planalto",
+      "shortName": "PLA"
+    },
+    {
+      "id": "br-club-016",
+      "name": "Serra Gaúcha EC",
+      "nickname": "Serra Gaúcha",
+      "shortName": "SGA"
+    },
+    {
+      "id": "br-club-017",
+      "name": "Curitiba Central FC",
+      "nickname": "Central",
+      "shortName": "CTC"
+    },
+    {
+      "id": "br-club-018",
+      "name": "Litoral Santista AC",
+      "nickname": "Litoral",
+      "shortName": "LSA"
+    },
+    {
+      "id": "br-club-019",
+      "name": "Atlético Nordeste FC",
+      "nickname": "Nordeste",
+      "shortName": "ANE"
+    },
+    {
+      "id": "br-club-020",
+      "name": "União das Araucárias",
+      "nickname": "Araucárias",
+      "shortName": "UAR"
+    }
+  ]
+}

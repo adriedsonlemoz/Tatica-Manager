@@ -1,0 +1,464 @@
+# Tática Manager 2 — Handoff para outra IA ou desenvolvedor
+
+> Documento de entrada para continuar o projeto sem perder contexto, arquitetura ou regras de release.
+
+## Projeto
+
+- **Nome:** Tática Manager 2
+- **Produto:** Tática Manager
+- **Repositório oficial:** https://github.com/adriedsonlemoz/TaticaManager2
+- **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
+- **Release deste handoff:** `0.1.1.56`
+- **Android versionCode:** `58`
+- **Orientação:** somente retrato
+- **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
+
+
+## Estado funcional da release 0.1.1.56
+
+- remove feedback tátil de interface, navegação, cards e eventos normais; somente gol/contra pode vibrar, respeitando `GameSettings.haptics`;
+- antecipa a leitura das preferências de áudio durante o splash e serializa o carregamento da playlist no `AudioManager` singleton;
+- remodela Finanças com resumo, receitas/despesas, evolução do saldo e seções expansíveis usando os dados financeiros já persistidos;
+- criação de carreira passa a começar por `Escolha seu técnico`, sem exigir cidade/estado;
+- `ManagerProfile` ganha ID estável e campos profissionais, e `ClubIdentityPack` v3 passa a transportar técnicos no mesmo formato do editor;
+- Central de Edição recebe Técnicos com criar/editar/importar/exportar/restaurar, reutilizando aparência e foto existentes;
+- `CareerState` passa ao schema 11 e migra saves schema 10 gerando banco de técnicos sem trocar IDs de clube/jogador, sem alterar Match Engine.
+
+## Estado funcional da release 0.1.1.54
+
+- importação múltipla de músicas passa a copiar cada arquivo sequencialmente por stream, sem acumular bytes completos em memória;
+- tela de áudio preserva o `GameController` enquanto montada e não usa `ref` durante `dispose`;
+- adiciona Central de Diagnóstico persistente com erros Flutter/Dart, checkpoints, última saída Android, crash nativo e exportação TXT;
+- mantém schema 10, IDs persistidos, saves, Match Engine e workflow de CI.
+
+## Estado funcional da release 0.1.1.53
+
+- atualiza somente dois testes antigos da Caixa de Entrada que ignoravam as propostas comerciais iniciais;
+- idempotência e tombstone passam a localizar a mensagem testada por ID e preservam as três mensagens legítimas de patrocinadores;
+- não altera código funcional, Match Engine, schema 10 ou saves da 0.1.1.52.
+
+## Estado funcional da release 0.1.1.52
+
+- corrige os dois erros `undefined_method` do GitHub Actions restaurando o import do `MatchPhasePanel` já existente;
+- elimina o lint `prefer_if_null_operators` de `Stadium.copyWith` sem mudar resultado;
+- preserva integralmente a transmissão, Match Engine, schema 10 e saves da 0.1.1.51.
+
+## Estado funcional da release 0.1.1.51
+
+- câmera 2D suave acompanha bola/timeline com recentralização gradual, zoom contextual e a mesma perspectiva em replay;
+- campo e atores recebem profundidade leve, sombras, vinheta, pulso do protagonista e trajetórias discretas;
+- controles principais são Pausar, Simular, Tática, Trocar e Áudio; duração visual pode ser 4, 6 ou 8 minutos;
+- simulação apenas avança a timeline já calculada; outros jogos usam o Match Engine existente uma vez e acompanham o mesmo minuto;
+- narração inicia filtrada em lances importantes e oferece Todos, Importantes e Meu time;
+- áudio limpo, cooldown, ambiente baixo e ducking reduzem sobreposição; narração falada continua desligada por padrão;
+- `CareerState` permanece no schema 10 e os novos campos possuem fallback retrocompatível.
+
+## Estado funcional da release 0.1.1.50
+
+- seis orçamentos departamentais persistidos, limitados pelo caixa e reiniciados ao trocar de clube/temporada;
+- Estádio com nome/ingresso editáveis, demanda por preço, obras reais, negociação, arquibancadas e áreas desbloqueáveis;
+- propostas comerciais com valor, duração, bônus, objetivo, condições, expiração, aceite, recusa e contraproposta;
+- naming rights altera o nome visível sem perder o original; Caixa de Entrada abre Finanças;
+- `CareerState` schema 10 lê saves schema 9 sem alterar IDs, transferências ou Match Engine.
+
+## Estado funcional da release 0.1.1.49
+
+- aplica `Football.mp3` como música padrão em volume baixo e `somdenavegamenu.mp3` para toque/navegação;
+- novas preferências iniciam em 1x e com narração desligada; vibração reage na apresentação a eventos como trave, gol e cartões;
+- aviso de validação da carreira é central/temático; bola possui quatro estilos e movimento ocioso discreto;
+- editor do técnico mantém prévia fixa e aceita foto normalizada; Clubes usa País > Campeonato > Série > Clubes;
+- Contratos mostra foto e oferece atalhos -10%, pedido, +10% e +20%; zonas da classificação ficam no rodapé;
+- preserva schema 9, IDs, saves antigos, separação de controladores e Match Engine.
+
+## Estado funcional da release 0.1.1.48
+
+- atualiza `player_avatar_identity_test.dart` para validar a composição modular atual da Central de Mercado (`market_screen.dart` + `market_components.dart` + `PlayerAvatar`);
+- atualiza `transfer_ui_structure_test.dart` para validar `showIncomingTransferOfferDialog` na Home e em Propostas recebidas, em vez de textos literais removidos pela modularização;
+- não altera código funcional, UI, schema 9, saves, IDs, regras de transferência ou Match Engine.
+
+## Estado funcional da release 0.1.1.47
+
+- release corretiva do CI: escapa `R$` nas strings constantes dos filtros do Mercado;
+- adiciona import explícito de `ManagerCareerHistoryEntry` no `ManagerCareerEngine`;
+- normaliza a receita de hospitalidade do Estádio para `int`;
+- preserva integralmente o schema 9, saves, IDs e todas as funcionalidades da 0.1.1.46.
+
+## Estado funcional da release 0.1.1.46
+
+- Central de Mercado com cinco áreas (Buscar, Observação, Negociações, Propostas recebidas e Histórico), scouting progressivo e negociação persistente por dias;
+- parcelas de transferências negociadas comprometem o orçamento total, pagam entrada na assinatura e liquidam obrigações futuras pelo avanço da carreira;
+- Categoria de Base persistente com promoção preservando `Player.id`; Departamento Médico usa lesão/condição/fadiga reais do jogador;
+- Caixa de Entrada persistente deriva eventos da carreira sem duplicá-los e mantém referências acionáveis para jogador, clube, partida, proposta e negociação;
+- Home, classificação, perfil de clube, calendário e estatísticas compartilham navegação e exibem informações mais completas;
+- `CareerState` está no schema 9; campos novos possuem fallback vazio para saves schema 8, sem reescrever IDs persistidos;
+- escudos personalizados são renderizados com proporção preservada e fundo neutro/transparente, sem aplicar a cor do clube atrás da imagem.
+
+- preparação mostra os titulares antes dos indisponíveis e reutiliza `LineupEngine.autoSelect` para sugerir a melhor equipe;
+- a Home possui transição curta ao avançar o dia e abre `MatchDayPresentationScreen` ao alcançar uma partida;
+- `LeagueEngine` usa cadência configurável entre rodadas, com `competitionId` e horário persistidos no `MatchFixture`;
+- Escalação usa campo mais alto, banco agrupado por setor e área separada de inelegíveis;
+- substituição ao vivo mantém o relógio pausado até a escolha voltar da sheet e ser aplicada pelo `LiveMatchController`, que re-simula o restante pelo Match Engine;
+- `CareerState.currentSchemaVersion = 8` e `ManagerCareerState` persiste passagens, emprego/desemprego e propostas com fallback para saves antigos;
+- `ManagerCareerEngine` concentra reputação, vagas e mudanças de clube; `LeagueCatchUpEngine` resolve rodadas que ficaram no passado durante período sem clube.
+
+## Regra número 1: não recomeçar nem converter novamente
+
+Este projeto já foi refeito do zero em Flutter. Não voltar para React/Capacitor e não iniciar um novo projeto paralelo. Continue sobre a arquitetura existente.
+
+Antes de alterar qualquer arquivo:
+
+1. Leia este documento.
+2. Leia `README.md`.
+3. Leia `docs/PROMPT_CONTINUACAO_IA.md`.
+4. Leia as documentações específicas em `docs/` relacionadas à área que será modificada.
+5. Inspecione o código atual antes de propor refatoração.
+
+## Arquitetura atual
+
+A lógica do jogo é separada da interface. Flutter não deve conter regras de negócio importantes dentro das telas, e Flame não deve decidir o resultado da partida.
+
+```text
+lib/
+├── app/
+│   ├── state/
+│   │   ├── career_controller.dart
+│   │   ├── game_controller.dart
+│   │   ├── live_match_controller.dart
+│   │   ├── transfer_controller.dart
+│   │   └── providers.dart
+│   └── widgets/
+├── core/
+│   ├── database/
+│   ├── platform/
+│   ├── save/
+│   ├── theme/
+│   └── utils/
+├── data/
+├── domain/
+├── features/
+├── game/
+│   ├── career/
+│   ├── club/
+│   ├── contract/
+│   ├── cpu/
+│   ├── finance/
+│   ├── league/
+│   ├── lineup/
+│   ├── match/
+│   ├── morale/
+│   ├── player/
+│   ├── season/
+│   └── transfer/
+└── main.dart
+```
+
+### Controladores
+
+- `CareerController`: listar, criar, abrir e excluir carreiras/saves; carregar/salvar pacotes de identidade e coordenar migração de IDs legados ao acessar saves.
+- `GameController`: sessão da carreira ativa, escalação, tática, persistência consolidada e virada de temporada.
+- `LiveMatchController`: partida atual, alterações ao vivo, substituições, conclusão da rodada e consequências pós-jogo.
+- `TransferController`: compra, venda, renovação e coordenação com finanças/contratos.
+
+Evite transformar novamente `GameController` em um controlador gigante.
+
+### Match Engine
+
+O antigo motor monolítico já foi dividido. Preserve essa separação:
+
+```text
+lib/game/match/engine/
+├── match_engine.dart
+├── match_strength_calculator.dart
+├── match_probability_calculator.dart
+├── match_player_selector.dart
+├── match_event_generator.dart
+├── match_timeline_generator.dart
+├── match_statistics_calculator.dart
+└── match_trajectory_generator.dart
+```
+
+`match_engine.dart` deve permanecer principalmente como orquestrador.
+
+## Fluxo de carreira atual
+
+Fluxo desejado:
+
+```text
+Splash/Bootstrap
+→ Central de Carreiras (editar/importar banco completo opcional)
+→ Nova carreira
+→ Perfil/origem do técnico
+→ Competição e clube
+→ Formação
+→ Mentalidade, pressão e ritmo
+→ Assinatura visual do contrato
+→ Home da carreira
+```
+
+A Central de Carreiras suporta múltiplos saves. Não reintroduzir um único save global fixo. O banco padrão pode ser editado/importado antes de criar a carreira; cada save também possui edição isolada pelo menu **Editar banco da carreira**.
+
+A criação usa quatro etapas: perfil/origem, competição/clube, formação/mentalidade e pressão/ritmo. Uniformes, estádio, escudo e jogadores são dados editáveis do banco e não devem carregar lógica da partida.
+
+## Pontos já corrigidos recentemente
+
+- `0.1.1.44`: corrige a expulsão por segundo amarelo dentro do Match Engine, impede participação/substituição posterior, substitui os principais sons e navegação, deixa música desligada por padrão e evolui Classificação, Finanças, patrocinadores e Estádio com campos retrocompatíveis.
+- `0.1.1.43`: atualiza o teste de integração visual de avatares para a composição atual `SquadScreen → PlayerCard → PlayerAvatar`; a UI e a lógica permanecem inalteradas.
+- `0.1.1.42`: corrige o import de `PlayerPositionX` em `lineup_pitch.dart`, removendo o bloqueio de `flutter analyze` da tela de Escalação sem mudança funcional.
+
+Na linha `0.1.1.x` foram tratados:
+
+- sobreposição do botão **Começar carreira** sobre o texto inferior;
+- conteúdo coberto pela navegação inferior;
+- tela visual de assinatura do contrato antes de entrar na carreira;
+- reforço de fullscreen/immersive no Android;
+- fluxo de negociação com valor mínimo e contraproposta;
+- impacto financeiro de transferências e salário mensal;
+- manifesto previsível para o AL Sistemas;
+- versionamento sincronizado entre release, Android, ZIP e CI;
+- modularização do `GameController` e do `MatchEngine`;
+- calendário diário persistido no save e preparação pré-jogo;
+- indisponibilidade por lesão, suspensão e baixa condição;
+- primeiro tempo, intervalo, segundo tempo e resumo pós-jogo ampliado;
+- Sobre / Novidades, contato e apoio via Pix nas Configurações.
+- novo ícone oficial com Adaptive Icon Android e catálogo AppIcon iOS;
+- correção do build release com Java/Kotlin alinhados em JVM 17;
+- venda pelo Elenco refeita como proposta da CPU com confirmação e valores formatados;
+- compra e renovação em diálogos centralizados, sem feedback preso ao rodapé;
+- histórico de temporadas e revisão antes da virada de ano;
+- GitHub Actions publica somente o APK versionado; `pubspec.lock` não é disponibilizado como Artifact.
+- calendário mensal, notícias diárias, janelas de transferências, alertas de contratos e eventos de partida mais claros.
+- ciclo de vida de contratos centralizado, com vencimento idempotente, jogadores livres sem duplicação e reconciliação ao abrir saves.
+- clubes padrão fictícios com IDs neutros permanentes; editor completo de clube/estádio/uniformes/ícone/jogadores; importação comunitária v2.
+- migração automática dos IDs legados de clubes em saves antigos, preservando IDs de jogadores e referências da carreira.
+- banco comunitário v2 com estádio, três uniformes, ícone, elencos, jogadores livres e edição detalhada de atletas; `tatica-manager-players` v1 importa elencos isolados; estado transitório da carreira é preservado ao editar saves.
+- criação de carreira reorganizada em componentes menores, com seleção em duas colunas no caminho Países > Brasil > Liga > Série A > Clubes; cards exibem escudo, nome, overall calculado sobre os 18 melhores atletas, estrelas e orçamento.
+- perfil do técnico ampliado com apelido, idade inicial, nacionalidade e local de nascimento; `managerHistory` registra um retrato por temporada e a idade progride de forma derivada.
+- importação de escudos reforçada com PNG/JPG/WebP, até 256 KiB, dimensões de 32 a 1024 px e proporção máxima 2:1; validação existe na UI e no engine.
+- correção dos cinco lints que bloqueavam `flutter analyze` no CI da 0.1.1.14; parâmetros descartados usam wildcards e acesso nullable foi simplificado.
+- correção dos seis erros de análise estática da 0.1.1.17 em `editor_experience_test.dart`: strings com `R$` usam raw string e ASCII usa `ascii.encode` de `dart:convert`.
+- correção do lint restante da 0.1.1.18 em `editor_experience_test.dart`: removido import redundante de `dart:typed_data`, já coberto por `package:flutter/services.dart`.
+- correção do único teste restante da 0.1.1.19: o diálogo de escudo volta a exibir explicitamente `32–1024 px`, alinhado ao validador e ao teste de UI.
+- mercado CPU orientado por carências de posição, com agentes livres e transferências entre CPUs usando os mesmos TransferEngine/ContractEngine e sem movimentar automaticamente atletas do clube do usuário.
+- mercado CPU ampliado com notícias em CareerEvent, venda estratégica, concorrência por alvos e proteção de caixa/folha sem alterar GameController ou schema do save.
+- propostas recebidas da CPU pelo elenco do usuário são acionáveis no mesmo `CareerEvent`: aceitar, recusar e contrapropor; nenhuma venda do usuário ocorre sem aceite explícito.
+- o mercado usa a lista de clubes da carreira e IDs opacos, sem depender de prefixo `br-club-*`, Série A ou quantidade fixa de 20 clubes; regras específicas de competição devem entrar pela camada de competições quando forem implementadas.
+- correção dos três lints `unnecessary_non_null_assertion` apontados pelo GitHub Actions da 0.1.1.24 em `cpu_market_test.dart`, sem mudança na lógica do mercado.
+- correção dos oito testes revelados após o analyzer da 0.1.1.26 passar: fixtures de propostas agora usam comprador compatível com o atleta, preservando o teto salarial; notícias priorizam contratação de destaque quando há overall elevado.
+- identidade visual inicial dos jogadores com `PlayerAvatarIdentity` determinístico por `Player.id` e `PlayerAvatar` reutilizável; Elenco, Perfil, Mercado, negociações e notícias exibem rostos sem alterar saves, GameController, mercado ou Match Engine.
+- partida ao vivo modernizada com HUD/placar compacto fora da rolagem, narração contínua e notificações para todos os `MatchEventType`, substituições com avatares, cinco ajustes táticos acessíveis e `MatchPitchGame` enfileirando/representando trajetórias sem conhecer o Match Engine ou usar `Random`.
+- campo 2D horizontal em proporção 105:68 dentro do modo retrato; `MatchPitchGame` converte apenas a representação `x=1-y / y=x`, deixando coordenadas, timeline e regras do Match Engine intactas.
+- a partida 2D avançada agora inclui mergulho visual do goleiro, comemorações em grupo, pênalti com preparação específica, bola na trave como evento real do Match Engine, replay de trave/pênalti defendido, transições de intervalo/fim e estádio/torcida animados; Flame continua apenas encenando a timeline.
+- sistema de áudio modular em `app/audio` + `core/audio`, com cinco músicas originais de menu, efeitos de interface e partida, controles independentes, suporte a arquivos do aparelho e resolução de efeitos por `MatchEvent`; o Match Engine não conhece nem dispara áudio.
+- narração falada opcional por TTS do aparelho em `MatchNarrationService`, com volume próprio e frases derivadas apenas dos eventos relevantes; posse/passes não são falados e o Match Engine permanece sem dependência de áudio/TTS.
+- `GameSettings.sound` foi preservado como chave geral legada; as novas preferências ficam em `AudioSettings` com defaults compatíveis, sem exigir migração destrutiva do save.
+- preferência de validação em aparelho: acumular mudanças e testar APKs em blocos maiores, evitando solicitar instalação a cada microrelease; CI e validações locais continuam obrigatórios quando disponíveis.
+- Elenco e Escalação compartilham avaliação de posição/status: `starterIds` mantém a ordem dos slots, OVR efetivo vem do `LineupEngine`, cards exibem forma/condição/cartões e `PlayerAvatar` usa foto personalizada privada quando existir, com fallback procedural. Esses componentes são a base planejada para Categoria de Base, Centro Médico e Centro de Treino.
+
+O CI da `0.1.1.28` foi confirmado verde em 25/08/2026, incluindo `flutter analyze`, testes e build release. A `0.1.1.29` não foi baixada/validada separadamente em aparelho; suas mudanças foram absorvidas pela linha 0.1.1.30+ e continuam presentes na 0.1.1.37. O GitHub Actions da `0.1.1.33` chegou ao `flutter analyze` e revelou cinco bloqueios: dois lints `prefer_initializing_formals` em `PlayerAvatar`, referência a `Club.city` inexistente, extensão `FormationType.label` sem import no pré-jogo e um import não utilizado em Configurações. A `0.1.1.35` corrigiu esses cinco pontos. A `0.1.1.36` adicionou o áudio base. A `0.1.1.37` acrescenta narração falada opcional por TTS e precisa de validação no próximo CI/aparelho porque o ambiente local desta entrega não possui Flutter. O CI da `0.1.1.7` também havia sido confirmado verde em 24/08/2026: 21 testes passaram e o APK release foi gerado. O log ainda exibiu avisos não fatais sobre Built-in Kotlin futuro e `Already watching path`; a `0.1.1.8` mantém o modo Kotlin já validado e reduz o file watching do Gradle no runner.
+
+Esses pontos ainda devem ser validados no APK real em aparelho físico. Não assuma que uma correção visual está concluída sem testar o build.
+
+## Persistência e saves
+
+A persistência usa SQLite. O projeto já suporta múltiplas carreiras e possui migração da estrutura anterior.
+
+Ao alterar entidades persistidas:
+
+- preserve compatibilidade de saves sempre que possível;
+- crie migração explícita quando a estrutura mudar;
+- mantenha IDs de clubes estáveis;
+- não dependa de nomes visíveis como chave persistente;
+- adicione teste de serialização/save-load.
+
+## Versionamento obrigatório
+
+A fonte canônica da versão visível é `al-sistemas.json`.
+
+Padrão de release solicitado pelo projeto:
+
+```text
+0.1.1.19
+```
+
+Não usar o antigo padrão visível `0.1.0+3`.
+
+Arquivos relevantes:
+
+- `al-sistemas.json` — fonte canônica da release visível;
+- `VERSION` — cópia simples da versão;
+- `app.json` — metadados externos;
+- `pubspec.yaml` — versão SemVer compatível com Flutter;
+- Android — `versionName` igual à release visível e `versionCode` inteiro crescente;
+- iOS — o catálogo `AppIcon.appiconset` já está versionado; versão/build serão sincronizados quando a estrutura Xcode completa estiver presente;
+- workflow — valida o APK antes de publicar o Artifact.
+
+Para esta release:
+
+release/versionName: 0.1.1.53
+versionCode:         58
+pubspec:             0.1.1+58
+
+A próxima alteração/entrega normalmente deve virar `0.1.1.57` e usar um `versionCode` maior que 58.
+
+Nunca altere somente o nome do ZIP para simular uma versão nova.
+
+Antes de empacotar qualquer nova release, confirme também que `flutter analyze` não possui lints; avisos tratados como erro no CI bloqueiam testes e build mesmo quando não afetam a lógica do jogo.
+
+
+Use:
+
+```bash
+python3 tool/versioning.py sync
+python3 tool/versioning.py verify
+```
+
+## AL Sistemas
+
+O AL Sistemas é o gerenciador usado para analisar/publicar o projeto.
+
+O projeto contém na raiz:
+
+- `al-sistemas.json`
+- `VERSION`
+- `app.json`
+- `pubspec.yaml`
+
+O manifesto `al-sistemas.json` existe para que ferramentas externas encontrem nome, versão e tipo do projeto sem depender do nome do ZIP.
+
+Documentação relacionada:
+
+- `docs/AL_SISTEMAS_FLUTTER.md`
+- `docs/AL_SISTEMAS_PATCH_SUGERIDO.md`
+- `docs/AUDIO_SYSTEM.md`
+
+Não crie `package.json` falso apenas para o AL Sistemas reconhecer Flutter.
+
+## CI obrigatório antes de considerar uma entrega pronta
+
+O workflow deve executar:
+
+```text
+version verify
+→ validação/configuração da plataforma Android versionada
+→ restauração de caches Flutter/Pub/Gradle
+→ flutter pub get (gera pubspec.lock quando ainda ausente)
+→ flutter analyze
+→ flutter test
+→ flutter build apk --release
+→ validação do versionName/versionCode do APK
+→ upload somente do APK versionado como Artifact
+```
+
+Uma alteração não deve ser chamada de concluída se `analyze`, `test` ou `build apk` estiverem falhando.
+
+
+### Lockfile
+
+`flutter pub get` pode gerar/atualizar `pubspec.lock` dentro do workspace de build. Esse arquivo faz parte da resolução de dependências do projeto, mas **não deve ser publicado como Artifact**. O GitHub Actions publica somente o APK versionado para evitar que gerenciadores externos confundam lockfile/ZIP com o aplicativo.
+
+## Testes existentes
+
+Atualmente existem testes para:
+
+- configuração da nova carreira;
+- refatoração dos controladores;
+- calendário diário, descanso mínimo e 38 rodadas;
+- disponibilidade de jogadores;
+- Match Engine modular;
+- serialização/save-load;
+- transferências, venda por proposta da CPU, renovação e finanças;
+- histórico e virada de temporada;
+- metadados de versionamento;
+- recursos de ícone Android/iOS e integridade das artes-fonte.
+- avanço diário/notícias e limite de crescimento do feed;
+- janelas de transferências e bloqueio no controlador;
+- calendário/classificação e navegação pré-jogo;
+- apresentação de eventos com nomes completos;
+- política de Artifact somente APK;
+- desgaste pós-jogo baseado nos participantes reais.
+
+Arquivos:
+
+```text
+test/career_setup_test.dart
+test/career_creation_ui_test.dart
+test/club_identity_test.dart
+test/club_editor_ui_test.dart
+test/controller_refactor_test.dart
+test/league_schedule_test.dart
+test/season_calendar_test.dart
+test/multi_season_calendar_test.dart
+test/player_availability_test.dart
+test/match_engine_refactor_test.dart
+test/serialization_smoke_test.dart
+test/transfer_finance_test.dart
+test/season_history_test.dart
+test/transfer_ui_structure_test.dart
+test/versioning_metadata_test.dart
+test/android_ci_infrastructure_test.dart
+test/app_icon_assets_test.dart
+test/daily_career_events_test.dart
+test/transfer_window_test.dart
+test/calendar_and_standings_ui_test.dart
+test/pre_match_navigation_test.dart
+test/match_event_presentation_test.dart
+test/match_participation_fatigue_test.dart
+test/contracts_ui_test.dart
+test/contract_lifecycle_test.dart
+test/artifact_policy_test.dart
+test/audio_system_test.dart
+test/player_avatar_identity_test.dart
+test/live_match_visual_experience_test.dart
+```
+
+Sempre adicione ou ajuste testes quando mudar regra de negócio.
+
+## Próximas prioridades recomendadas
+
+1. Validar a `0.1.1.48` no GitHub Actions: analyzer já passou na 0.1.1.47; repetir testes e build release após o alinhamento dos dois testes estruturais.
+2. Se o CI revelar erro, corrigir a causa real sem desfazer calendário, carreira do técnico, disciplina ou arquitetura do Match Engine.
+3. No próximo bloco de teste em aparelho, validar transição diária, apresentação de dia de jogo, pré-jogo, campo da Escalação e pausa real da substituição.
+4. Exercitar a carreira do técnico deixando um clube, avançando alguns dias, recebendo/recusando proposta e assumindo outro clube; repetir save/load depois da mudança.
+5. Manter futuras ligas/copas parametrizadas por competição e calendário, sem voltar a codificar todos os jogos em domingos.
+6. Resolver posteriormente a keystore release persistente; até lá, preservar o fallback já documentado e o `applicationId`.
+
+## Regras de manutenção
+
+- Preferir arquivos pequenos e responsabilidade única.
+- Não colocar regras de negócio em widgets.
+- Não duplicar cálculos entre tela e engine.
+- Não alterar IDs persistentes sem migração.
+- Não atualizar dependências para beta/dev sem motivo.
+- Usar versões estáveis compatíveis das dependências.
+- Não criar imagens/ícones/splash sem solicitação explícita.
+- Não apagar funcionalidades existentes para simplificar uma correção.
+- Não declarar algo corrigido apenas porque o código parece correto; validar no CI e, para UI, no aparelho.
+
+## Documentação histórica útil
+
+- `docs/PROMPT_MESTRE.txt`
+- `docs/ETAPA_1.md`
+- `docs/CARREIRAS_E_ESTADO.md`
+- `docs/REFATORACAO_CONTROLLERS.md`
+- `docs/REFATORACAO_MATCH_ENGINE.md`
+- `docs/AL_SISTEMAS_FLUTTER.md`
+- `docs/CLUB_IDENTITIES.md`
+- `docs/RELEASE_0.1.1.24.md`
+- `docs/RELEASE_0.1.1.23.md`
+- `docs/RELEASE_0.1.1.22.md`
+- `docs/CPU_MARKET.md`
+- `docs/RELEASE_0.1.1.21.md`
+- `docs/RELEASE_0.1.1.18.md`
+- `docs/RELEASE_0.1.1.17.md`
+- `docs/RELEASE_0.1.1.16.md`
+- `docs/RELEASE_0.1.1.15.md`
+- `docs/RELEASE_0.1.1.14.md`
+- `docs/RELEASE_0.1.1.13.md`
+- `docs/RELEASE_0.1.1.8.md`
+- `docs/RELEASE_0.1.1.7.md`
+- `docs/RELEASE_0.1.1.6.md`
+- `docs/RELEASE_0.1.1.5.md`
+- `docs/RELEASE_0.1.1.4.md`
+- `docs/RELEASE_0.1.1.3.md`
+
+Use o histórico para entender decisões, não para restaurar arquitetura antiga que já foi substituída.
