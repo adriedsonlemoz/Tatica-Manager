@@ -38,7 +38,7 @@ void main() {
     expect(source, contains('Nome do técnico'));
     expect(source, contains('Apelido'));
     expect(source, contains('Idade'));
-    expect(source, contains("labelText: 'Nacionalidade'"));
+    expect(source, contains("labelText: 'País'"));
     expect(source, contains('CountryCatalog.all'));
     expect(source, contains('Editar aparência'));
     expect(source, isNot(contains("labelText: 'Estado'")));

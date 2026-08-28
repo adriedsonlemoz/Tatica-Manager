@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.60",
+  "version": "0.1.1.61",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+62"
+    "pubspecVersion": "0.1.1+63"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.60",
-    "versionCode": 62
+    "versionName": "0.1.1.61",
+    "versionCode": 63
   },
   "release": {
-    "version": "0.1.1.60",
-    "revision": 60,
-    "androidVersionCode": 62
+    "version": "0.1.1.61",
+    "revision": 61,
+    "androidVersionCode": 63
   },
   "changelog": [
+    "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow.",
     "Corrige os dois warnings unused_element_parameter introduzidos na Home 0.1.1.59, removendo parâmetros opcionais de padding nunca utilizados em Notícias e Rankings sem alterar o layout, dados, saves, Match Engine ou workflow.",
     "Remodela a Home no padrão visual premium de gestão esportiva, com cabeçalho de clube/técnico, indicadores de posição, próximo jogo, competição e desempenho, card de confronto, confiança/forma recente, avanço diário destacado, notícias em cards, classificação e artilheiros, preservando os dados existentes, atalhos, saves e Match Engine.",
     "Remove o import redundante de dart:ui na Central de Diagnóstico apontado pelo flutter analyze no GitHub Actions, sem alterar o comportamento do diagnóstico, áudio, saves, Match Engine ou workflow.",
@@ -117,6 +118,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Corrige os dois warnings unused_element_parameter introduzidos na Home 0.1.1.59, removendo parâmetros opcionais de padding nunca utilizados em Notícias e Rankings sem alterar o layout, dados, saves, Match Engine ou workflow."
+    "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow."
   ]
 }

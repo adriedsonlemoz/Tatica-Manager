@@ -26,9 +26,9 @@ void main() {
     final stadiumEngine =
         File('lib/game/stadium/stadium_engine.dart').readAsStringSync();
 
-    expect(finances, contains('MAIORES SALÁRIOS'));
+    expect(finances, contains("title: 'Salários'"));
     expect(finances, contains('PlayerProfileScreen('));
-    expect(finances, contains('PATROCINADORES'));
+    expect(finances, contains("title: 'Patrocínios'"));
     expect(stadium, contains('CustomPaint('));
     expect(financeManagement, contains('ORÇAMENTOS DEPARTAMENTAIS'));
     expect(financeManagement, contains('PROPOSTAS RECEBIDAS'));

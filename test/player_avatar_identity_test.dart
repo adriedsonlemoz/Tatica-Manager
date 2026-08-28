@@ -133,6 +133,10 @@ void main() {
       'lib/features/market/incoming_transfer_offer_dialog.dart',
     ).readAsStringSync();
     final home = File('lib/features/home/home_screen.dart').readAsStringSync();
+    final homeNews = File('lib/features/home/home_dashboard_news.dart')
+        .readAsStringSync();
+    final homeRankings = File('lib/features/home/home_dashboard_rankings.dart')
+        .readAsStringSync();
 
     expect(squad, contains('PlayerCard('));
     expect(playerCard, contains('PlayerAvatar('));
@@ -143,8 +147,10 @@ void main() {
     expect(marketComponents, contains('PlayerAvatar('));
     expect(negotiation, contains('PlayerAvatar('));
     expect(incoming, contains('PlayerAvatar('));
-    expect(home, contains('final eventPlayer = _playerForEvent'));
-    expect(home, contains('PlayerAvatar('));
+    expect(home, contains('playerForEvent: (playerId) => _playerForEvent'));
+    expect(home, contains('static Player? _playerForEvent'));
+    expect(homeNews, contains('PlayerAvatar('));
+    expect(homeRankings, contains('PlayerAvatar('));
     expect('$market$marketComponents', isNot(contains('TransferEngine.buy')));
   });
 }
