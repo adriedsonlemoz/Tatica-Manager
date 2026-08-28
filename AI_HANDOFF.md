@@ -8,11 +8,21 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.68`
-- **Android versionCode:** `70`
+- **Release deste handoff:** `0.1.1.69`
+- **Android versionCode:** `71`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.69
+
+- troca a base quase preta do aplicativo por azul-grafite em camadas e mantém o verde como acento, incluindo a Home para evitar áreas ainda excessivamente escuras;
+- compacta os cards de formação e clubes, amplia a presença dos escudos e remove pesquisa/filtros da seleção de técnicos;
+- reorganiza aparência do técnico em grupos reutilizáveis, remodela a assinatura do contrato e adiciona apresentação editorial da chegada com dados reais da carreira;
+- adiciona aceite inicial de Termos de Uso, Política de Privacidade interna e links de Sobre/Como funciona/Termos/Privacidade/Edição/Configurações na Central de Carreiras;
+- reduz a duração visual para 1, 2 ou 3 minutos por tempo, com escolha durante a criação e migração de leitura dos presets antigos 4/6/8 para 1/2/3;
+- usa `app_meta` já existente para preferências globais, aceite legal e flag da apresentação, sem alterar o banco SQLite v2 nem o `CareerState` schema 11;
+- preserva IDs persistentes, saves existentes, controllers e Match Engine; Flame continua apenas representando a partida.
 
 ## Estado funcional da release 0.1.1.68
 
@@ -374,11 +384,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.68
-versionCode:         70
-pubspec:             0.1.1+70
+release/versionName: 0.1.1.69
+versionCode:         71
+pubspec:             0.1.1+71
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.69` e usar um `versionCode` maior que 70.
+A próxima alteração/entrega normalmente deve virar `0.1.1.70` e usar um `versionCode` maior que 71.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

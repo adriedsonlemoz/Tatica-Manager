@@ -14,7 +14,7 @@ void main() {
     expect(source, contains('CompetitionBrowserLevel.clubs'));
     expect(source, contains('Icons.sports_soccer_rounded'));
     expect(source, contains('crossAxisCount: 2'));
-    expect(source, contains('mainAxisExtent: 108'));
+    expect(source, contains('mainAxisExtent: 94'));
     expect(source, isNot(contains('mainAxisExtent: 164')));
     expect(source, contains('ClubBadge(club: club'));
     expect(source, contains("'OVR \$overall'"));
@@ -56,10 +56,14 @@ void main() {
     expect(setup, contains('FormationMiniPitch'));
     expect(setup, contains('crossAxisCount: 3'));
     expect(setup, contains('FormationType.values'));
+    expect(setup, contains('mainAxisExtent: 108'));
     expect(setup, isNot(contains('Pressing.values')));
     expect(style, contains("title: 'MENTALIDADE'"));
     expect(style, contains("title: 'PRESSÃO'"));
     expect(style, contains("title: 'RITMO'"));
+    expect(style, contains("'DURAÇÃO DA PARTIDA'"));
+    expect(style, contains('MatchDurationPreset.values'));
+    expect(style, contains("'min/tempo'"));
     expect(flow, contains("subtitle: 'Etapa \${_step + 1} de 5'"));
     expect(flow, contains('ManagerChoiceStep('));
     expect(flow, contains('ExistingManagerSelectionStep('));
@@ -73,8 +77,10 @@ void main() {
     expect(managerSelection, contains('Escolha seu técnico'));
     expect(managerSelection, contains('Usar técnico existente'));
     expect(managerSelection, contains('Criar meu técnico'));
-    expect(managerSelection, contains("labelText: 'Nacionalidade'"));
-    expect(managerSelection, contains("labelText: 'Clube'"));
-    expect(managerSelection, contains("labelText: 'Reputação'"));
+    expect(managerSelection, isNot(contains('Pesquisar técnico')));
+    expect(managerSelection, isNot(contains("labelText: 'Nacionalidade'")));
+    expect(managerSelection, isNot(contains("labelText: 'Clube'")));
+    expect(managerSelection, isNot(contains("labelText: 'Reputação'")));
+    expect(managerSelection, isNot(contains('DropdownButtonFormField')));
   });
 }

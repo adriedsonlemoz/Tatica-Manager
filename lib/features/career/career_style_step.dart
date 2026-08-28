@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/tactic/tactic.dart';
+import '../../domain/settings/match_presentation_settings.dart';
 
 class CareerStyleStep extends StatelessWidget {
   const CareerStyleStep({
@@ -13,6 +14,8 @@ class CareerStyleStep extends StatelessWidget {
     required this.onMentality,
     required this.onPressing,
     required this.onTempo,
+    required this.matchDuration,
+    required this.onMatchDuration,
   });
 
   final Mentality mentality;
@@ -21,6 +24,8 @@ class CareerStyleStep extends StatelessWidget {
   final ValueChanged<Mentality> onMentality;
   final ValueChanged<Pressing> onPressing;
   final ValueChanged<MatchTempo> onTempo;
+  final MatchDurationPreset matchDuration;
+  final ValueChanged<MatchDurationPreset> onMatchDuration;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -97,6 +102,49 @@ class CareerStyleStep extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           SectionCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.timer_outlined, color: AppColors.green, size: 19),
+                    SizedBox(width: 8),
+                    Text(
+                      'DURAÇÃO DA PARTIDA',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Escolha quantos minutos reais cada tempo será apresentado. O Match Engine continua simulando os mesmos 90 minutos.',
+                  style: TextStyle(color: AppColors.muted, fontSize: 11, height: 1.35),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    for (var index = 0;
+                        index < MatchDurationPreset.values.length;
+                        index++) ...[
+                      if (index > 0) const SizedBox(width: 7),
+                      Expanded(
+                        child: _DurationChoiceCard(
+                          preset: MatchDurationPreset.values[index],
+                          selected:
+                              MatchDurationPreset.values[index] == matchDuration,
+                          onTap: () => onMatchDuration(
+                            MatchDurationPreset.values[index],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          SectionCard(
             child: Row(
               children: [
                 const Icon(Icons.info_outline_rounded, color: AppColors.green),
@@ -111,6 +159,54 @@ class CareerStyleStep extends StatelessWidget {
             ),
           ),
         ],
+      );
+}
+
+class _DurationChoiceCard extends StatelessWidget {
+  const _DurationChoiceCard({
+    required this.preset,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final MatchDurationPreset preset;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.green.withValues(alpha: .13)
+                : AppColors.surfaceRaised,
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(
+              color: selected ? AppColors.green : AppColors.border,
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                '${preset.minutes}',
+                style: TextStyle(
+                  color: selected ? AppColors.green : AppColors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 1),
+              const Text(
+                'min/tempo',
+                style: TextStyle(color: AppColors.muted, fontSize: 9),
+              ),
+            ],
+          ),
+        ),
       );
 }
 

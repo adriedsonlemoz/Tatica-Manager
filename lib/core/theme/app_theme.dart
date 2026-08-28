@@ -51,7 +51,7 @@ abstract final class AppTheme {
         ),
       ),
       navigationBarTheme: const NavigationBarThemeData(
-        backgroundColor: Color(0xFF07100D),
+        backgroundColor: AppColors.navigation,
         indicatorColor: AppColors.greenSoft,
         height: 72,
         labelTextStyle: WidgetStatePropertyAll(TextStyle(fontWeight: FontWeight.w700, fontSize: 11)),

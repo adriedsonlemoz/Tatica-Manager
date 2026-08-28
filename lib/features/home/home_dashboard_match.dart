@@ -150,9 +150,9 @@ class HomeNextMatchCard extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF0F1D1A),
+                    AppColors.surfaceRaised,
                     Color(club.colors.primaryHex).withValues(alpha: .20),
-                    const Color(0xFF07100E),
+                    AppColors.background,
                   ],
                 ),
                 border: const Border.symmetric(horizontal: BorderSide(color: AppColors.border)),
@@ -192,7 +192,7 @@ class HomeNextMatchCard extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     AppColors.green.withValues(alpha: .17),
-                    const Color(0xFF0B1812),
+                    AppColors.surfaceRaised,
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
@@ -266,7 +266,7 @@ class HomeBoardConfidenceCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF13201E),
+                  color: AppColors.surfaceRaised,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .22)),
                 ),
@@ -442,11 +442,11 @@ class _DashboardCard extends StatelessWidget {
             : LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [accentColor.withValues(alpha: .08), const Color(0xFF091110)],
+                colors: [accentColor.withValues(alpha: .08), AppColors.surface],
               ),
-        color: accentColor == null ? const Color(0xFF091110) : null,
+        color: accentColor == null ? AppColors.surface : null,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: accentColor?.withValues(alpha: .20) ?? const Color(0xFF25302F)),
+        border: Border.all(color: accentColor?.withValues(alpha: .20) ?? AppColors.border),
         boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
       ),
       child: child,

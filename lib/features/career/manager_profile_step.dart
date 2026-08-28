@@ -48,7 +48,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
       userCreated: true,
     );
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
       children: [
         Text(
           'Criar meu técnico',
@@ -62,11 +62,12 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
           'Preencha só o essencial. Aparência e perfil profissional podem ser ajustados depois.',
           style: TextStyle(color: AppColors.muted, height: 1.4),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 12),
         SectionCard(
+          padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              ManagerAvatar(manager: previewManager, size: 86),
+              ManagerAvatar(manager: previewManager, size: 72),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -78,7 +79,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -86,11 +87,15 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
                       '${CountryCatalog.flagOf(previewManager.nationality)} ${previewManager.nationality}',
                       style: const TextStyle(color: AppColors.muted),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 7),
                     OutlinedButton.icon(
                       onPressed: () => _editAppearance(previewManager),
-                      icon: const Icon(Icons.face_retouching_natural_rounded),
+                      icon: const Icon(Icons.face_retouching_natural_rounded, size: 18),
                       label: const Text('Editar aparência'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(40, 40),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                      ),
                     ),
                   ],
                 ),
@@ -100,6 +105,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
         ),
         const SizedBox(height: 12),
         SectionCard(
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: [
               TextField(
@@ -171,6 +177,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
         ),
         const SizedBox(height: 12),
         SectionCard(
+          padding: const EdgeInsets.all(12),
           child: TextField(
             controller: widget.careerNameController,
             maxLength: 50,

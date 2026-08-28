@@ -94,7 +94,7 @@ class HomeQuickAccess extends StatelessWidget {
                 width: 88,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0C1312),
+                  color: AppColors.surfaceRaised,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.border),
                 ),
@@ -131,9 +131,9 @@ class _DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF091110),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF25302F)),
+          border: Border.all(color: AppColors.border),
           boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
         ),
         child: child,
@@ -191,7 +191,7 @@ class _NewsTile extends StatelessWidget {
         child: Container(
           width: 132,
           decoration: BoxDecoration(
-            color: const Color(0xFF101817),
+            color: AppColors.surfaceRaised,
             borderRadius: BorderRadius.circular(13),
             border: Border.all(color: AppColors.border),
           ),
@@ -206,7 +206,7 @@ class _NewsTile extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [playerAccent.withValues(alpha: .38), const Color(0xFF09100F)],
+                    colors: [playerAccent.withValues(alpha: .38), AppColors.surface],
                   ),
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 ),

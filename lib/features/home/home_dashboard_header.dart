@@ -36,7 +36,7 @@ class HomeClubHeader extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF050A0D), Color(0xFF08120F), Color(0xFF030607)],
+            colors: [AppColors.surfaceRaised, AppColors.surface, AppColors.background],
           ),
         ),
         child: Stack(
@@ -99,7 +99,7 @@ class HomeClubHeader extends StatelessWidget {
                     width: 58,
                     padding: const EdgeInsets.fromLTRB(5, 5, 5, 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF08100E),
+                      color: AppColors.surfaceRaised,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.green.withValues(alpha: .65)),
                     ),
@@ -251,7 +251,7 @@ class _FinanceStatusCard extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [accent.withValues(alpha: .13), const Color(0xFF0A1211)],
+              colors: [accent.withValues(alpha: .13), AppColors.surface],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: accent.withValues(alpha: .24)),

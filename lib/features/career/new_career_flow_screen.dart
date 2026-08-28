@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/career_controller.dart';
+import '../../app/state/providers.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/game_notice_dialog.dart';
+import '../../core/config/app_preferences.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/career/manager_appearance.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/career/new_career_config.dart';
 import '../../domain/club/club_identity.dart';
 import '../../domain/formation/formation.dart';
+import '../../domain/settings/match_presentation_settings.dart';
 import '../../domain/tactic/tactic.dart';
 import 'career_setup_step.dart';
 import 'career_style_step.dart';
@@ -42,6 +45,7 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
   Mentality _mentality = Mentality.balanced;
   Pressing _pressing = Pressing.medium;
   MatchTempo _tempo = MatchTempo.normal;
+  MatchDurationPreset _matchDuration = MatchDurationPreset.normal;
   ClubIdentityPack? _clubIdentityPack;
   String? _clubIdentityError;
   ManagerAppearance _managerAppearance = const ManagerAppearance();
@@ -51,7 +55,9 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
     super.initState();
     final count = ref.read(careerControllerProvider).saves.length;
     _careerNameController = TextEditingController(text: 'Carreira ${count + 1}');
-    Future.microtask(_loadClubIdentityPack);
+    Future.microtask(() async {
+      await Future.wait([_loadClubIdentityPack(), _loadDefaultSettings()]);
+    });
   }
 
   @override
@@ -167,8 +173,24 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
           onMentality: (value) => setState(() => _mentality = value),
           onPressing: (value) => setState(() => _pressing = value),
           onTempo: (value) => setState(() => _tempo = value),
+          matchDuration: _matchDuration,
+          onMatchDuration: (value) => setState(() => _matchDuration = value),
         ),
     };
+  }
+
+  Future<void> _loadDefaultSettings() async {
+    final repository = ref.read(careerRepositoryProvider);
+    final stored = await repository.loadAppValue(
+      AppPreferences.defaultGameSettingsKey,
+    );
+    if (!mounted) return;
+    final defaults = AppPreferences.decodeGameSettings(stored);
+    setState(() {
+      _matchDuration = MatchDurationPreset.fromMinutes(
+        defaults.matchDurationMinutes,
+      );
+    });
   }
 
   Future<void> _loadClubIdentityPack() async {
@@ -260,6 +282,7 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
         pressing: _pressing,
         tempo: _tempo,
       ),
+      matchDuration: _matchDuration,
     );
     final created =
         await ref.read(careerControllerProvider.notifier).createCareer(config);

@@ -140,7 +140,7 @@ class _DashboardCard extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [
               (accent ?? AppColors.green).withValues(alpha: .07),
-              const Color(0xFF091110),
+              AppColors.surface,
             ],
           ),
           borderRadius: BorderRadius.circular(18),

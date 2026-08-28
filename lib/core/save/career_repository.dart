@@ -11,4 +11,6 @@ abstract interface class CareerRepository {
   Future<void> saveLastActiveCareerId(String? careerId);
   Future<ClubIdentityPack?> loadDefaultClubIdentityPack();
   Future<void> saveDefaultClubIdentityPack(ClubIdentityPack? pack);
+  Future<String?> loadAppValue(String key);
+  Future<void> saveAppValue(String key, String? value);
 }

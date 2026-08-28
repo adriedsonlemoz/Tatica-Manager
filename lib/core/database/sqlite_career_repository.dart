@@ -196,6 +196,34 @@ class SqliteCareerRepository implements CareerRepository {
   }
 
   @override
+  Future<String?> loadAppValue(String key) async {
+    final rows = await (await _db()).query(
+      'app_meta',
+      columns: ['value'],
+      where: 'key = ?',
+      whereArgs: [key],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    final value = rows.first['value'] as String?;
+    return value?.trim().isNotEmpty == true ? value : null;
+  }
+
+  @override
+  Future<void> saveAppValue(String key, String? value) async {
+    final db = await _db();
+    if (value == null || value.trim().isEmpty) {
+      await db.delete('app_meta', where: 'key = ?', whereArgs: [key]);
+      return;
+    }
+    await db.insert(
+      'app_meta',
+      {'key': key, 'value': value},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
   Future<void> saveDefaultClubIdentityPack(ClubIdentityPack? pack) async {
     final db = await _db();
     const key = 'default_club_identity_pack';

@@ -10,6 +10,7 @@ import 'audio/audio_providers.dart';
 import 'state/game_controller.dart';
 import 'state/providers.dart';
 import 'widgets/audio_interaction_layer.dart';
+import '../core/config/app_preferences.dart';
 import '../core/platform/system_ui.dart';
 import '../core/theme/app_theme.dart';
 
@@ -44,7 +45,14 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
       final repository = ref.read(careerRepositoryProvider);
       final lastId = await repository.loadLastActiveCareerId();
       final saved = lastId == null ? null : await repository.load(lastId);
-      await _audioManager.applySettings(saved?.settings ?? const GameSettings());
+      if (saved != null) {
+        await _audioManager.applySettings(saved.settings);
+      } else {
+        final defaults = AppPreferences.decodeGameSettings(
+          await repository.loadAppValue(AppPreferences.defaultGameSettingsKey),
+        );
+        await _audioManager.applySettings(defaults);
+      }
     } catch (_) {
       await _audioManager.applySettings(const GameSettings());
     }

@@ -29,7 +29,7 @@ class MatchDayHeader extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF07100E), Color(0xFF0B1714), AppColors.background],
+                colors: [AppColors.surfaceRaised, AppColors.surface, AppColors.background],
               ),
             ),
           ),

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.68';
+  static const String version = '0.1.1.69';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.69',
+      title: 'Criação de carreira e identidade azul-grafite',
+      changes: [
+        'Adota azul-grafite como base do jogo, mantendo o verde como destaque e clareando também a Home.',
+        'Compacta formação, clubes e técnicos, remodela aparência e contrato e adiciona a apresentação única da chegada do treinador.',
+        'Inclui Termos/Privacidade na primeira abertura e reduz a transmissão para 1, 2 ou 3 minutos por tempo sem alterar o Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.68',
       title: 'Correção final do analyze e Novidades',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige o encadeamento duplicado que quebrava a compilação do limite de cinco substituições.',
         'Dia de Jogo passa a importar explicitamente as extensões de rótulo de pressão e formação.',
         'Remove dois avisos de código não utilizado em Finanças sem alterar comportamento ou layout.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.66',
-      title: 'Consistência visual e navegação entre módulos',
-      changes: [
-        'Cards que aparentam ação agora abrem módulos existentes em Dia de Jogo, Contratos, Base e Finanças, sem criar funções novas.',
-        'Acentos muito escuros recebem contraste seguro, fundos aninhados de Patrocínios são simplificados e o Estádio alinha o estado dos botões ao caixa e orçamento disponíveis.',
-        'Finanças passa a conectar Estádio, Contratos e Mercado, enquanto telas abertas como módulos secundários preservam um retorno visível.',
       ],
     ),
   ];

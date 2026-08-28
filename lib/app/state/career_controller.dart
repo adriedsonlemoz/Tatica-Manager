@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/career/career_save_summary.dart';
 import '../../domain/career/new_career_config.dart';
 import '../../domain/club/club_identity.dart';
+import '../../core/config/app_preferences.dart';
 import '../../game/career/career_factory.dart';
 import '../../game/club/club_identity_engine.dart';
 import '../../game/contract/contract_lifecycle_engine.dart';
@@ -158,6 +159,10 @@ class CareerController extends Notifier<CareerHubState> {
       final now = DateTime.now();
       final careerId = 'career-${now.microsecondsSinceEpoch}';
       final defaultClubPack = await loadClubIdentityPack();
+      final repository = ref.read(careerRepositoryProvider);
+      final defaultSettings = AppPreferences.decodeGameSettings(
+        await repository.loadAppValue(AppPreferences.defaultGameSettingsKey),
+      );
       final career = CareerFactory.create(
         careerId: careerId,
         careerName: config.careerName.trim(),
@@ -167,9 +172,15 @@ class CareerController extends Notifier<CareerHubState> {
         tactic: config.tactic,
         seed: now.microsecondsSinceEpoch & 0x7fffffff,
         clubIdentityPack: defaultClubPack,
+        settings: defaultSettings.copyWith(
+          matchDurationMinutes: config.matchDuration.minutes,
+        ),
       );
-      final repository = ref.read(careerRepositoryProvider);
       await repository.save(career);
+      await repository.saveAppValue(
+        AppPreferences.careerIntroPendingKey(careerId),
+        'true',
+      );
       await repository.saveLastActiveCareerId(careerId);
       ref.read(liveMatchControllerProvider.notifier).reset();
       ref.read(gameControllerProvider.notifier).attachCareer(career);
@@ -197,7 +208,12 @@ class CareerController extends Notifier<CareerHubState> {
     state = state.copyWith(loading: true, clearMessage: true);
     try {
       final currentId = ref.read(gameControllerProvider).career?.careerId;
-      await ref.read(careerRepositoryProvider).delete(careerId);
+      final repository = ref.read(careerRepositoryProvider);
+      await repository.delete(careerId);
+      await repository.saveAppValue(
+        AppPreferences.careerIntroPendingKey(careerId),
+        null,
+      );
       if (currentId == careerId) {
         ref.read(liveMatchControllerProvider.notifier).reset();
         ref.read(gameControllerProvider.notifier).detachCareer();

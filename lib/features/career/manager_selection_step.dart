@@ -103,7 +103,7 @@ class _ChoiceCard extends StatelessWidget {
       );
 }
 
-class ExistingManagerSelectionStep extends StatefulWidget {
+class ExistingManagerSelectionStep extends StatelessWidget {
   const ExistingManagerSelectionStep({
     super.key,
     required this.pack,
@@ -116,182 +116,140 @@ class ExistingManagerSelectionStep extends StatefulWidget {
   final ValueChanged<ManagerProfile> onSelected;
 
   @override
-  State<ExistingManagerSelectionStep> createState() =>
-      _ExistingManagerSelectionStepState();
-}
-
-class _ExistingManagerSelectionStepState
-    extends State<ExistingManagerSelectionStep> {
-  final _search = TextEditingController();
-  String _status = 'Todos';
-  String _nationality = 'Todas';
-  String _club = 'Todos';
-  int _minimumReputation = 0;
-
-  @override
-  void dispose() {
-    _search.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final clubs = {for (final club in widget.pack.clubs) club.clubId: club.name};
-    final managers = [...?widget.pack.managers]
+    final clubs = {for (final club in pack.clubs) club.clubId: club.name};
+    final managers = [...?pack.managers]
       ..sort((a, b) => b.reputation.compareTo(a.reputation));
-    final nationalities = managers.map((m) => m.nationality).toSet().toList()
-      ..sort();
-    final query = _search.text.trim().toLowerCase();
-    final filtered = managers.where((manager) {
-      if (query.isNotEmpty &&
-          !manager.displayName.toLowerCase().contains(query) &&
-          !manager.nickname.toLowerCase().contains(query)) {
-        return false;
-      }
-      if (_status == 'Livres' && manager.currentClubId != null) return false;
-      if (_status == 'Em clube' && manager.currentClubId == null) return false;
-      if (_nationality != 'Todas' && manager.nationality != _nationality) {
-        return false;
-      }
-      if (_club != 'Todos' && manager.currentClubId != _club) return false;
-      if (manager.reputation < _minimumReputation) return false;
-      return true;
-    }).toList(growable: false);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
       children: [
-        Text('Selecionar técnico',
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w900)),
-        const SizedBox(height: 10),
-        TextField(
-          controller: _search,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.search_rounded),
-            hintText: 'Pesquisar técnico',
-          ),
-          onChanged: (_) => setState(() {}),
-        ),
-        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: DropdownButtonFormField<String>(
-                value: _status,
-                decoration: const InputDecoration(labelText: 'Status'),
-                items: const ['Todos', 'Em clube', 'Livres']
-                    .map((value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value),
-                        ))
-                    .toList(growable: false),
-                onChanged: (value) => setState(() => _status = value ?? 'Todos'),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                value: _nationality,
-                decoration: const InputDecoration(labelText: 'Nacionalidade'),
-                items: ['Todas', ...nationalities]
-                    .map((value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value),
-                        ))
-                    .toList(growable: false),
-                onChanged: (value) =>
-                    setState(() => _nationality = value ?? 'Todas'),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                value: _club,
-                decoration: const InputDecoration(labelText: 'Clube'),
-                items: [
-                  const DropdownMenuItem(value: 'Todos', child: Text('Todos')),
-                  ...widget.pack.clubs.map(
-                    (club) => DropdownMenuItem(
-                      value: club.clubId,
-                      child: Text(club.shortName),
-                    ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Selecionar técnico',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 3),
+                  const Text(
+                    'Escolha diretamente no banco de técnicos disponível para esta carreira.',
+                    style: TextStyle(color: AppColors.muted, height: 1.35),
                   ),
                 ],
-                onChanged: (value) => setState(() => _club = value ?? 'Todos'),
               ),
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: DropdownButtonFormField<int>(
-                value: _minimumReputation,
-                decoration: const InputDecoration(labelText: 'Reputação'),
-                items: const [
-                  DropdownMenuItem(value: 0, child: Text('Todas')),
-                  DropdownMenuItem(value: 60, child: Text('60+')),
-                  DropdownMenuItem(value: 70, child: Text('70+')),
-                  DropdownMenuItem(value: 80, child: Text('80+')),
-                ],
-                onChanged: (value) =>
-                    setState(() => _minimumReputation = value ?? 0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceRaised,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Text(
+                '${managers.length}',
+                style: const TextStyle(
+                  color: AppColors.green,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        if (filtered.isEmpty)
+        if (managers.isEmpty)
           const EmptyState(
             icon: Icons.sports_rounded,
-            title: 'Nenhum técnico encontrado',
-            text: 'Ajuste os filtros ou importe uma base com técnicos na Central de Edição.',
+            title: 'Nenhum técnico disponível',
+            text: 'Importe uma base com técnicos na Central de Edição.',
           )
         else
-          ...filtered.map((manager) {
-            final selected = widget.selected?.id.isNotEmpty == true
-                ? widget.selected!.id == manager.id
-                : identical(widget.selected, manager);
+          ...managers.map((manager) {
+            final isSelected = selected?.id.isNotEmpty == true
+                ? selected!.id == manager.id
+                : identical(selected, manager);
             return Padding(
-              padding: const EdgeInsets.only(bottom: 9),
+              padding: const EdgeInsets.only(bottom: 8),
               child: InkWell(
-                borderRadius: BorderRadius.circular(18),
-                onTap: () => widget.onSelected(manager),
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => onSelected(manager),
                 child: SectionCard(
-                  borderColor: selected ? AppColors.green : null,
+                  padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+                  borderColor: isSelected ? AppColors.green : null,
                   child: Row(
                     children: [
-                      ManagerAvatar(manager: manager, size: 64),
-                      const SizedBox(width: 12),
+                      ManagerAvatar(manager: manager, size: 56),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(manager.preferredName,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w900, fontSize: 16)),
-                            const SizedBox(height: 3),
-                            Text(
-                              '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
-                              style: const TextStyle(color: AppColors.muted),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    manager.preferredName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 7,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.green.withValues(alpha: .10),
+                                    borderRadius: BorderRadius.circular(9),
+                                  ),
+                                  child: Text(
+                                    'REP ${manager.reputation}',
+                                    style: const TextStyle(
+                                      color: AppColors.green,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              '${clubs[manager.currentClubId] ?? 'Livre'} • ${manager.style} • Rep. ${manager.reputation}',
+                              '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
+                              style: const TextStyle(
+                                color: AppColors.muted,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${clubs[manager.currentClubId] ?? 'Livre'} • ${manager.style}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 11.5),
                             ),
                           ],
                         ),
                       ),
-                      if (selected)
-                        const Icon(Icons.check_circle_rounded,
-                            color: AppColors.green),
+                      const SizedBox(width: 6),
+                      Icon(
+                        isSelected
+                            ? Icons.check_circle_rounded
+                            : Icons.chevron_right_rounded,
+                        color: isSelected ? AppColors.green : AppColors.muted,
+                        size: 20,
+                      ),
                     ],
                   ),
                 ),

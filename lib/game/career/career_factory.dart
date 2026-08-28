@@ -27,6 +27,7 @@ abstract final class CareerFactory {
     int season = 2026,
     int seed = 20260824,
     ClubIdentityPack? clubIdentityPack,
+    GameSettings settings = const GameSettings(),
   }) {
     final careerManager = manager.copyWith(
       careerStartSeason: season,
@@ -164,7 +165,7 @@ abstract final class CareerFactory {
       ],
       news: const [],
       matchHistory: const [],
-      settings: const GameSettings(),
+      settings: settings,
     ));
     return ClubAdministrationEngine.ensureInitialized(career);
   }

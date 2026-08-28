@@ -404,6 +404,7 @@ class _MemoryCareerRepository implements CareerRepository {
   final Map<String, CareerState> saved = {};
   String? lastActiveCareerId;
   ClubIdentityPack? defaultClubIdentityPack;
+  final Map<String, String> appValues = {};
 
   @override
   Future<void> delete(String careerId) async {
@@ -436,5 +437,17 @@ class _MemoryCareerRepository implements CareerRepository {
   @override
   Future<void> saveDefaultClubIdentityPack(ClubIdentityPack? pack) async {
     defaultClubIdentityPack = pack;
+  }
+
+  @override
+  Future<String?> loadAppValue(String key) async => appValues[key];
+
+  @override
+  Future<void> saveAppValue(String key, String? value) async {
+    if (value == null || value.trim().isEmpty) {
+      appValues.remove(key);
+    } else {
+      appValues[key] = value;
+    }
   }
 }

@@ -193,7 +193,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const Text('DURAÇÃO PADRÃO DA PARTIDA', style: TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
                 const Text(
-                  'Controla a cadência visual sem alterar o resultado ou as estatísticas do motor.',
+                  'Cada opção indica minutos reais por tempo e não altera o resultado ou as estatísticas do motor.',
                   style: TextStyle(color: AppColors.muted, fontSize: 11),
                 ),
                 const SizedBox(height: 10),

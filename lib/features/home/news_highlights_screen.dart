@@ -114,7 +114,7 @@ class _NewsEventCard extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [accent.withValues(alpha: .12), const Color(0xFF0A1211)],
+              colors: [accent.withValues(alpha: .12), AppColors.surface],
             ),
             borderRadius: BorderRadius.circular(17),
             border: Border.all(color: accent.withValues(alpha: .22)),

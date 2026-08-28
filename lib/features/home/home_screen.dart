@@ -98,7 +98,7 @@ class HomeScreen extends ConsumerWidget {
 
     return PremiumScaffold(
       body: Container(
-        color: const Color(0xFF030708),
+        color: AppColors.background,
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(

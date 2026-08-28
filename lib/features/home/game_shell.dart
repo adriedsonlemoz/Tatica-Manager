@@ -79,7 +79,7 @@ class _GameShellState extends ConsumerState<GameShell> {
         minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF07100D),
+            color: AppColors.navigation,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: AppColors.border),
             boxShadow: const [

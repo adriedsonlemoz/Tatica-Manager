@@ -106,18 +106,25 @@ void main() {
     final legacy = GameSettings.fromJson(const {});
     expect(legacy.matchSpeed, 1);
     expect(legacy.matchBallStyle, 0);
-    expect(legacy.matchDurationMinutes, 6);
+    expect(legacy.matchDurationMinutes, 2);
 
     final restored = GameSettings.fromJson(
       const GameSettings(
         matchSpeed: 4,
         matchBallStyle: 3,
-        matchDurationMinutes: 8,
+        matchDurationMinutes: 3,
       ).toJson(),
     );
     expect(restored.matchSpeed, 4);
     expect(restored.matchBallStyle, 3);
-    expect(restored.matchDurationMinutes, 8);
+    expect(restored.matchDurationMinutes, 3);
+
+    final legacyQuick = GameSettings.fromJson({'matchDurationMinutes': 4});
+    final legacyNormal = GameSettings.fromJson({'matchDurationMinutes': 6});
+    final legacyComplete = GameSettings.fromJson({'matchDurationMinutes': 8});
+    expect(legacyQuick.matchDurationMinutes, 1);
+    expect(legacyNormal.matchDurationMinutes, 2);
+    expect(legacyComplete.matchDurationMinutes, 3);
   });
   test('dependências e assets de áudio permanecem declarados no pubspec', () {
     final pubspec = File('pubspec.yaml').readAsStringSync();

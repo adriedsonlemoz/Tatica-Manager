@@ -9,6 +9,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/media/player_photo_store.dart';
 import '../../domain/career/manager_appearance.dart';
 import '../../domain/career/manager_profile.dart';
+import 'manager_appearance_components.dart';
 
 Future<ManagerAppearance?> showManagerAppearanceEditor(
   BuildContext context, {
@@ -51,11 +52,11 @@ class _ManagerAppearanceSheetState extends State<_ManagerAppearanceSheet> {
   Widget build(BuildContext context) {
     final preview = widget.previewManager.copyWith(appearance: local);
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * .86,
+      height: MediaQuery.sizeOf(context).height * .90,
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 8, 18, 10),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
             child: Row(
               children: [
                 Expanded(
@@ -85,11 +86,12 @@ class _ManagerAppearanceSheetState extends State<_ManagerAppearanceSheet> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
             child: SectionCard(
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  ManagerAvatar(manager: preview, size: 76),
+                  ManagerAvatar(manager: preview, size: 68),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -135,97 +137,155 @@ class _ManagerAppearanceSheetState extends State<_ManagerAppearanceSheet> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
               children: [
-                _ChoiceSection(
-                  title: 'ROSTO',
-                  subtitle: 'Formato base do rosto do treinador.',
-                  options: const ['Oval', 'Redondo', 'Longo', 'Quadrado'],
-                  selected: local.faceShape,
-                  onSelected: (value) => _update((a) => a.copyWith(faceShape: value)),
+                AppearanceGroupCard(
+                  title: 'ROSTO E PELE',
+                  subtitle: 'Base do rosto e tom de pele do treinador.',
+                  children: [
+                    AppearanceChoiceRow(
+                      label: 'Formato do rosto',
+                      options: const ['Oval', 'Redondo', 'Longo', 'Quadrado'],
+                      selected: local.faceShape,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(faceShape: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Tom de pele',
+                      options: const ['1', '2', '3', '4', '5', '6'],
+                      selected: local.skinTone,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(skinTone: value)),
+                    ),
+                  ],
                 ),
-                _ChoiceSection(
-                  title: 'TOM DE PELE',
-                  subtitle: 'Paleta usada no avatar.',
-                  options: const ['1', '2', '3', '4', '5', '6'],
-                  selected: local.skinTone,
-                  onSelected: (value) => _update((a) => a.copyWith(skinTone: value)),
-                ),
-                _ChoiceSection(
+                AppearanceGroupCard(
                   title: 'CABELO',
-                  subtitle: 'Escolha o estilo de cabelo.',
-                  options: const ['Curto', 'Lateral', 'Ondulado', 'Cacheado', 'Faixa', 'Picos', 'Careca', 'Longo'],
-                  selected: local.hairStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(hairStyle: value)),
+                  subtitle: 'Estilo e cor usados no avatar.',
+                  children: [
+                    AppearanceChoiceRow(
+                      label: 'Estilo',
+                      compactLabels: true,
+                      options: const [
+                        'Curto',
+                        'Lateral',
+                        'Ondulado',
+                        'Cacheado',
+                        'Faixa',
+                        'Picos',
+                        'Careca',
+                        'Longo',
+                      ],
+                      selected: local.hairStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(hairStyle: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Cor do cabelo e barba',
+                      options: const [
+                        'Preto',
+                        'Castanho',
+                        'Marrom',
+                        'Loiro',
+                        'Grisalho',
+                      ],
+                      selected: local.hairColor,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(hairColor: value)),
+                    ),
+                  ],
                 ),
-                _ChoiceSection(
-                  title: 'COR DO CABELO E BARBA',
-                  subtitle: 'O avatar atual compartilha o mesmo tom entre cabelo, barba e bigode.',
-                  options: const ['Preto', 'Castanho', 'Marrom', 'Loiro', 'Grisalho'],
-                  selected: local.hairColor,
-                  onSelected: (value) => _update((a) => a.copyWith(hairColor: value)),
+                AppearanceGroupCard(
+                  title: 'TRAÇOS DO ROSTO',
+                  subtitle: 'Olhos, sobrancelhas, nariz e boca.',
+                  children: [
+                    AppearanceChoiceRow(
+                      label: 'Olhos',
+                      options: const ['1', '2', '3', '4'],
+                      selected: local.eyeStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(eyeStyle: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Cor dos olhos',
+                      options: const ['1', '2', '3', '4', '5'],
+                      selected: local.eyeColor,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(eyeColor: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Sobrancelhas',
+                      options: const ['1', '2', '3', '4'],
+                      selected: local.eyebrowStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(eyebrowStyle: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Nariz',
+                      options: const ['1', '2', '3', '4'],
+                      selected: local.noseStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(noseStyle: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Boca',
+                      options: const ['1', '2', '3', '4'],
+                      selected: local.mouthStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(mouthStyle: value)),
+                    ),
+                  ],
                 ),
-                _ChoiceSection(
-                  title: 'OLHOS',
-                  subtitle: 'Formato dos olhos.',
-                  options: const ['1', '2', '3', '4'],
-                  selected: local.eyeStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(eyeStyle: value)),
+                AppearanceGroupCard(
+                  title: 'BARBA E BIGODE',
+                  subtitle: 'Pelos faciais usam a mesma cor do cabelo.',
+                  children: [
+                    AppearanceChoiceRow(
+                      label: 'Barba',
+                      options: const [
+                        'Nenhuma',
+                        'Leve',
+                        'Cavanhaque',
+                        'Marcada',
+                        'Cheia',
+                      ],
+                      selected: local.beardStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(beardStyle: value)),
+                    ),
+                    AppearanceChoiceRow(
+                      label: 'Bigode',
+                      options: const ['Nenhum', 'Fino', 'Marcado', 'Cheio'],
+                      selected: local.moustacheStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(moustacheStyle: value)),
+                    ),
+                  ],
                 ),
-                _ChoiceSection(
-                  title: 'COR DOS OLHOS',
-                  subtitle: 'Cor usada no avatar.',
-                  options: const ['1', '2', '3', '4', '5'],
-                  selected: local.eyeColor,
-                  onSelected: (value) => _update((a) => a.copyWith(eyeColor: value)),
-                ),
-                _ChoiceSection(
-                  title: 'SOBRANCELHAS',
-                  subtitle: 'Formato das sobrancelhas.',
-                  options: const ['1', '2', '3', '4'],
-                  selected: local.eyebrowStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(eyebrowStyle: value)),
-                ),
-                _ChoiceSection(
-                  title: 'NARIZ',
-                  subtitle: 'Formato do nariz.',
-                  options: const ['1', '2', '3', '4'],
-                  selected: local.noseStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(noseStyle: value)),
-                ),
-                _ChoiceSection(
-                  title: 'BOCA',
-                  subtitle: 'Formato da boca.',
-                  options: const ['1', '2', '3', '4'],
-                  selected: local.mouthStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(mouthStyle: value)),
-                ),
-                _ChoiceSection(
-                  title: 'BARBA',
-                  subtitle: 'Defina o estilo de barba.',
-                  options: const ['Nenhuma', 'Leve', 'Cavanhaque', 'Marcada', 'Cheia'],
-                  selected: local.beardStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(beardStyle: value)),
-                ),
-                _ChoiceSection(
-                  title: 'BIGODE',
-                  subtitle: 'Ajuste o bigode separadamente.',
-                  options: const ['Nenhum', 'Fino', 'Marcado', 'Cheio'],
-                  selected: local.moustacheStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(moustacheStyle: value)),
-                ),
-                _ChoiceSection(
-                  title: 'OUTROS DETALHES VISUAIS',
-                  subtitle: 'Olhos, expressão e detalhes finais.',
-                  options: const ['Suave', 'Firme', 'Focado', 'Expressivo', 'Detalhado'],
-                  selected: local.detailStyle,
-                  onSelected: (value) => _update((a) => a.copyWith(detailStyle: value)),
+                AppearanceGroupCard(
+                  title: 'EXPRESSÃO',
+                  subtitle: 'Detalhe visual final do avatar.',
+                  children: [
+                    AppearanceChoiceRow(
+                      label: 'Estilo',
+                      options: const [
+                        'Suave',
+                        'Firme',
+                        'Focado',
+                        'Expressivo',
+                        'Detalhado',
+                      ],
+                      selected: local.detailStyle,
+                      onSelected: (value) =>
+                          _update((a) => a.copyWith(detailStyle: value)),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -414,58 +474,5 @@ class _CropSlider extends StatelessWidget {
             ),
           ),
         ],
-      );
-}
-
-class _ChoiceSection extends StatelessWidget {
-  const _ChoiceSection({
-    required this.title,
-    required this.subtitle,
-    required this.options,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<String> options;
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: SectionCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .4,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(color: AppColors.muted, fontSize: 12),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (var index = 0; index < options.length; index++)
-                    ChoiceChip(
-                      label: Text(options[index]),
-                      selected: selected == index,
-                      onSelected: (_) => onSelected(index),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
       );
 }

@@ -5,8 +5,11 @@ import '../../app/state/career_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/career/career_save_summary.dart';
+import 'career_hub_info_links.dart';
 import 'club_editor_screen.dart';
 import 'new_career_flow_screen.dart';
+import '../legal/game_information_screen.dart';
+import '../settings/pre_career_settings_screen.dart';
 
 class CareerHubScreen extends ConsumerWidget {
   const CareerHubScreen({super.key});
@@ -47,49 +50,6 @@ class CareerHubScreen extends ConsumerWidget {
               _MessageBanner(message: state.message!),
               const SizedBox(height: 12),
             ],
-            SectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.edit_note_rounded, color: AppColors.green, size: 30),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Editor do banco',
-                              style: TextStyle(fontWeight: FontWeight.w900),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              'Edite clubes, estádios, uniformes, ícones e jogadores ou importe um banco da comunidade.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: AppColors.muted),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: state.loading ? null : () => _openClubEditor(context),
-                      icon: const Icon(Icons.shield_outlined),
-                      label: const Text('Abrir editor'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
             if (state.loading && state.saves.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 60),
@@ -150,6 +110,40 @@ class CareerHubScreen extends ConsumerWidget {
                 label: const Text('Nova carreira'),
               ),
             ],
+            const SizedBox(height: 22),
+            Text(
+              'INFORMAÇÕES E OPÇÕES',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppColors.muted,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+            ),
+            const SizedBox(height: 9),
+            CareerHubInfoLinks(
+              onAbout: () => _openInfo(
+                context,
+                GameInformationPage.about,
+              ),
+              onHowItWorks: () => _openInfo(
+                context,
+                GameInformationPage.howItWorks,
+              ),
+              onTerms: () => _openInfo(
+                context,
+                GameInformationPage.terms,
+              ),
+              onPrivacy: () => _openInfo(
+                context,
+                GameInformationPage.privacy,
+              ),
+              onEditor: state.loading ? null : () => _openClubEditor(context),
+              onSettings: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PreCareerSettingsScreen(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -159,6 +153,16 @@ class CareerHubScreen extends ConsumerWidget {
   static Future<void> _openNewCareer(BuildContext context) async {
     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NewCareerFlowScreen()));
   }
+
+  static Future<void> _openInfo(
+    BuildContext context,
+    GameInformationPage page,
+  ) =>
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => GameInformationScreen(page: page),
+        ),
+      );
 
   static Future<void> _openClubEditor(
     BuildContext context, {
@@ -200,6 +204,8 @@ class CareerHubScreen extends ConsumerWidget {
     }
   }
 }
+
+
 
 class _ContinueCard extends StatelessWidget {
   const _ContinueCard({required this.save, required this.loading, required this.onTap});

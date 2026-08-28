@@ -161,7 +161,7 @@ class PreMatchScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 5),
                 const Text(
-                  'Altera somente o ritmo visual. O Match Engine continua simulando os mesmos 90 minutos.',
+                  'Cada opção indica minutos reais por tempo. O Match Engine continua simulando os mesmos 90 minutos.',
                   style: TextStyle(
                     color: AppColors.muted,
                     fontSize: 10.5,
@@ -174,8 +174,8 @@ class PreMatchScreen extends ConsumerWidget {
                     for (final preset in MatchDurationPreset.values)
                       ButtonSegment(
                         value: preset.minutes,
-                        label: Text(preset.label),
-                        tooltip: preset.shortLabel,
+                        label: Text(preset.shortLabel),
+                        tooltip: preset.label,
                       ),
                   ],
                   selected: {career.settings.matchDurationMinutes},

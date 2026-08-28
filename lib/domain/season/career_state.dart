@@ -60,7 +60,7 @@ class GameSettings {
     this.sound = true,
     this.matchSpeed = 1,
     this.matchBallStyle = 0,
-    this.matchDurationMinutes = 6,
+    this.matchDurationMinutes = 2,
     this.audio = const AudioSettings(),
   });
 

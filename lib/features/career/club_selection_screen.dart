@@ -59,7 +59,7 @@ class _ClubSelectionStepState extends State<ClubSelectionStep> {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(14, 6, 14, 0),
+          padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
           sliver: SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +144,7 @@ class _ClubSelectionStepState extends State<ClubSelectionStep> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 9,
                 mainAxisSpacing: 9,
-                mainAxisExtent: 108,
+                mainAxisExtent: 94,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -187,14 +187,14 @@ class _ClubSelectionCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: SectionCard(
-        padding: const EdgeInsets.fromLTRB(7, 7, 7, 6),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 7),
         borderColor: selected ? AppColors.green : null,
         child: Column(
           children: [
             Row(
               children: [
-                ClubBadge(club: club, size: 32),
-                const SizedBox(width: 6),
+                ClubBadge(club: club, size: 42),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     club.name,
@@ -202,8 +202,8 @@ class _ClubSelectionCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 11,
-                      height: 1.05,
+                      fontSize: 11.5,
+                      height: 1.08,
                     ),
                   ),
                 ),
@@ -224,7 +224,7 @@ class _ClubSelectionCard extends StatelessWidget {
                   style: const TextStyle(
                     color: AppColors.green,
                     fontWeight: FontWeight.w900,
-                    fontSize: 10,
+                    fontSize: 10.5,
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -282,7 +282,7 @@ class _RatingStars extends StatelessWidget {
                 : stars >= position - .5
                     ? Icons.star_half_rounded
                     : Icons.star_border_rounded;
-            return Icon(icon, size: 11, color: AppColors.warning);
+            return Icon(icon, size: 10.5, color: AppColors.warning);
           }),
         ),
       );
