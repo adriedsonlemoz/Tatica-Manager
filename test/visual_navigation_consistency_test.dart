@@ -26,6 +26,8 @@ void main() {
       'lib/features/finances/finances_dashboard_components.dart',
     ).readAsStringSync();
 
+    expect(matchDay, contains('import \'../../domain/formation/formation.dart\';'));
+    expect(matchDay, contains('import \'../../domain/tactic/tactic.dart\';'));
     expect(matchDay, contains('StandingsScreen()'));
     expect(matchDay, contains('CalendarScreen(initialFixtureId: fixture.id)'));
     expect(matchDay, contains('SquadScreen(showBackButton: true)'));

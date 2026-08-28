@@ -44,7 +44,6 @@ class FinancesScreen extends ConsumerWidget {
     final salaryLeaders = [...club.squad]..sort((a, b) => b.salary.compareTo(a.salary));
     final payroll = club.payroll;
     final sponsors = SponsorshipEngine.contractsFor(club, season: career.season);
-    final budget = career.clubAdministration.budgetPlan;
     final historyPoints = _balanceHistory(career.finances, club.money);
 
     int monthCategory(FinanceCategory category, {required bool income}) => monthTransactions

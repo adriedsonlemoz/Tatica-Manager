@@ -178,12 +178,6 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
         )
         .toList(growable: false);
     final substitutionsUsed = previousSubstitutions.length;
-        .where(
-          (event) =>
-              event.type == MatchEventType.substitution &&
-              event.teamId == career.userClubId,
-        )
-        .length;
     if (substitutionsUsed >= maxSubstitutions) {
       _game.showMessage(
         'Limite de $maxSubstitutions substituições atingido nesta partida.',

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.66';
+  static const String version = '0.1.1.67';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.67',
+      title: 'Correção do analyze após a auditoria visual',
+      changes: [
+        'Corrige o encadeamento duplicado que quebrava a compilação do limite de cinco substituições.',
+        'Dia de Jogo passa a importar explicitamente as extensões de rótulo de pressão e formação.',
+        'Remove dois avisos de código não utilizado em Finanças sem alterar comportamento ou layout.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.66',
       title: 'Consistência visual e navegação entre módulos',

@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.66
-Android versionCode: 68
-pubspec: 0.1.1+68
+Release visível: 0.1.1.67
+Android versionCode: 69
+pubspec: 0.1.1+69
 
-Novidade desta base: a auditoria visual conecta cards que já sugeriam ação aos módulos existentes em Dia de Jogo, Contratos, Base e Finanças; melhora contraste de acentos escuros e fundos; o Mercado pode mostrar retorno quando aberto de Finanças; e o Estádio alinha a habilitação de obras ao orçamento e ao caixa. A reformulação da 0.1.1.65 e o limite de cinco substituições continuam preservados. `CareerState` permanece schema 11 e saves/IDs não mudam.
+Novidade desta base: corrige os erros de análise estática revelados no CI após a auditoria visual, preservando integralmente o visual da 0.1.1.66. O limite de cinco substituições volta a compilar sem o encadeamento duplicado, e Dia de Jogo importa explicitamente as extensões de pressão/formação. `CareerState` permanece schema 11 e saves/IDs não mudam.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.67 com versionCode > 68.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.68 com versionCode > 69.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

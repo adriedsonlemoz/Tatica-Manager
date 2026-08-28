@@ -11,6 +11,11 @@ void main() {
 
     expect(controller, contains('static const int maxSubstitutions = 5;'));
     expect(controller, contains('substitutionsUsed >= maxSubstitutions'));
+    expect(controller, contains('final substitutionsUsed = previousSubstitutions.length;'));
+    expect(
+      controller,
+      isNot(contains('final substitutionsUsed = previousSubstitutions.length;\n        .where(')),
+    );
     expect(controller, contains('Limite de \$maxSubstitutions substituições'));
     expect(controller, contains('alreadySubstitutedOut.contains(incomingId)'));
     expect(controller, contains('Jogador substituído não pode retornar à partida.'));

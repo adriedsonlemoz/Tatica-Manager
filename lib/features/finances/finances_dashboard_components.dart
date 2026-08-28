@@ -6,7 +6,6 @@ import '../../app/widgets/common.dart';
 import '../../app/widgets/management_dashboard_widgets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
-import '../../domain/finance/finance.dart';
 
 class FinanceHeroDashboard extends StatelessWidget {
   const FinanceHeroDashboard({

@@ -5,6 +5,8 @@ import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/management_dashboard_widgets.dart';
 import '../../data/competition_catalog.dart';
+import '../../domain/formation/formation.dart';
+import '../../domain/tactic/tactic.dart';
 import '../../domain/player/player.dart';
 import '../../game/morale/morale_engine.dart';
 import '../calendar/calendar_screen.dart';
