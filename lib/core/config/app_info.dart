@@ -7,36 +7,36 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.81';
+  static const String version = '0.1.1.82';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
     ReleaseNote(
-      version: '0.1.1.81',
-      title: 'Correção da Home 0.1.1.80',
+      version: '0.1.1.82',
+      title: 'Correção do teste da Home',
       changes: [
-        'Corrige o fechamento da classe de fundo da Home que interrompia o flutter analyze.',
-        'Mantém intacto o novo layout visual, os dois fundos de estádio e todos os dados reais exibidos na Home.',
-        'Adiciona regressão estrutural para impedir que componentes da Home voltem a ficar aninhados por erro de fechamento.',
+        'Corrige a única falha restante do GitHub Actions após 266 testes já aprovados.',
+        'A regressão passa a comparar literalmente o escape de quebra de linha usado no rótulo Departamento Médico.',
+        'Não altera layout, assets, saves, dados ou lógica do jogo.',
+      ],
+    ),
+    ReleaseNote(
+      version: '0.1.1.81',
+      title: 'Correção de sintaxe da Home',
+      changes: [
+        'Corrige o fechamento da classe de backdrop que causava erros em cascata no analyzer.',
+        'Preserva integralmente o layout visual e os assets da Home 0.1.1.80.',
+        'Adiciona regressão estrutural para proteger a composição da Home.',
       ],
     ),
     ReleaseNote(
       version: '0.1.1.80',
       title: 'Home integrada e mais compacta',
       changes: [
-        'Integra melhor o bloco inferior da Home com um painel único, backdrop mais vivo e atalhos coloridos sem perder a identidade do jogo.',
-        'Transforma Notícias & Destaques em lista compacta e reduz o volume visual para aproximar mais conteúdo do primeiro enquadramento.',
-        'Aproxima Confiança da Diretoria e Panorama da Temporada, além de reforçar navegação para tabela e ranking.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.79',
-      title: 'Home visual premium',
-      changes: [
-        'Reformula a Home com hierarquia mais compacta, fundos de estádio e componentes alinhados à referência visual aprovada.',
-        'Integra os dados reais de clube, finanças, partida, estádio e confiança sem criar campos novos no save.',
-        'Conecta o Panorama da Temporada à classificação e separa componentes visuais para facilitar manutenção.',
+        'Integra melhor o bloco inferior da Home com painel único e backdrop mais vivo.',
+        'Transforma Notícias & Destaques em lista compacta e reforça atalhos, tabela e artilharia.',
+        'Mantém todos os dados ligados ao save e preserva a arquitetura do jogo.',
       ],
     ),
   ];

@@ -81,7 +81,7 @@ void main() {
     expect(dashboard, contains('HomeVisualAssets.matchStadium'));
     expect(controls, contains('PANORAMA DA TEMPORADA'));
     expect(controls, contains('_SeasonTrendPainter'));
-    expect(home, contains("label: 'Departamento\nMédico'"));
+    expect(home, contains(r"label: 'Departamento\nMédico'"));
     expect(home, contains('onSeasonTap'));
     expect(visuals, contains('class HomeClubCrest'));
     expect(pubspec, contains('assets/images/home/'));
