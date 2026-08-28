@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.69`
-**Android versionCode:** `71`
+**Release atual:** `0.1.1.70`
+**Android versionCode:** `72`
 
 ## Fonte oficial de versão
 
@@ -14,18 +14,18 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.69`);
+- `VERSION` — versão visível simples (`0.1.1.70`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+71`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.69` e `versionCode 71`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+72`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.70` e `versionCode 72`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.69` é representada internamente como `0.1.1+71`. A versão visível do aplicativo/Android continua sendo `0.1.1.69`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.70` é representada internamente como `0.1.1+72`. A versão visível do aplicativo/Android continua sendo `0.1.1.70`.
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.70`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.71`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -37,6 +37,8 @@ python3 tool/versioning.py verify
 O workflow usa a plataforma Android versionada, cache de Flutter/Pub/Gradle e executa `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --release`, além de conferir o `versionName`/`versionCode` do APK. Não recria `android/` e não executa `flutter clean` em runner novo. O `flutter pub get` resolve as dependências no workspace, mas o CI publica **somente o APK versionado** como Artifact. O `pubspec.lock` não é disponibilizado nos Artifacts.
 
 ## Etapa atual
+
+A `0.1.1.70` corrige os dois testes que interromperam o GitHub Actions depois que os 238 testes anteriores passaram. A falha não estava no código funcional: o editor de aparência foi reorganizado em `TRAÇOS DO ROSTO`, mas o teste ainda procurava os antigos cards separados `OLHOS`/`SOBRANCELHAS`; e o atalho padrão da Central de Edição foi movido para `career_hub_info_links.dart`, enquanto o teste continuava lendo apenas `career_hub_screen.dart`. Os testes agora acompanham a composição atual e continuam protegendo olhos, sobrancelhas, recorte de foto, editor padrão e editor por save. UI, gameplay, `CareerState` schema 11, saves, IDs e Match Engine não mudam.
 
 A `0.1.1.69` reformula o fluxo de criação da carreira e clareia a identidade do Tática Manager com base azul-grafite, cards em camadas e verde reservado aos destaques. Formação e clubes ficam mais compactos, a seleção de técnicos perde pesquisa/filtros, a aparência é agrupada em componentes menores, a assinatura deixa o papel branco provisório e uma apresentação de chegada usa técnico, clube, escudo, competição, temporada e data reais somente na primeira entrada da nova carreira. A primeira abertura do aplicativo passa a exigir aceite de Termos de Uso com Política de Privacidade interna, e a Central de Carreiras ganha links discretos para Sobre, Como funciona, Termos, Privacidade, Edição e Configurações. A duração visual passa a 1, 2 ou 3 minutos por tempo e pode ser escolhida já na criação da carreira; saves antigos 4/6/8 são convertidos para os presets equivalentes sem subir o `CareerState` schema 11 e sem alterar o Match Engine.
 

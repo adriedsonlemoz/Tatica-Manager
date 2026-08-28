@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.69';
+  static const String version = '0.1.1.70';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.70',
+      title: 'Correção dos testes da criação e edição',
+      changes: [
+        'Alinha o teste da aparência ao agrupamento atual de Traços do rosto, preservando olhos, sobrancelhas e recorte de foto.',
+        'Alinha o teste da Central de Carreiras ao link Edição extraído para o componente de informações e ao editor padrão/por save.',
+        'Não altera UI, gameplay, CareerState schema 11, saves, IDs ou Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.69',
       title: 'Criação de carreira e identidade azul-grafite',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige o lint null-aware no cabeçalho reutilizável dos painéis sem alterar o layout.',
         'Sobre / Novidades volta a manter exatamente as três releases previstas pelo teste de regressão.',
         'Preserva gameplay, CareerState schema 11, saves, IDs e Match Engine.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.67',
-      title: 'Correção do analyze após a auditoria visual',
-      changes: [
-        'Corrige o encadeamento duplicado que quebrava a compilação do limite de cinco substituições.',
-        'Dia de Jogo passa a importar explicitamente as extensões de rótulo de pressão e formação.',
-        'Remove dois avisos de código não utilizado em Finanças sem alterar comportamento ou layout.',
       ],
     ),
   ];

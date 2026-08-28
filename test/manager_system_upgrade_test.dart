@@ -92,8 +92,9 @@ void main() {
         .readAsStringSync();
     final photoStore = File('lib/core/media/player_photo_store.dart')
         .readAsStringSync();
-    expect(appearance, contains("title: 'OLHOS'"));
-    expect(appearance, contains("title: 'SOBRANCELHAS'"));
+    expect(appearance, contains("title: 'TRAÇOS DO ROSTO'"));
+    expect(appearance, contains("label: 'Olhos'"));
+    expect(appearance, contains("label: 'Sobrancelhas'"));
     expect(appearance, contains("label: 'Horizontal'"));
     expect(appearance, contains('cropZoom'));
     expect(photoStore, contains('cropAlignmentX'));

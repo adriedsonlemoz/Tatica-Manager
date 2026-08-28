@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.69
-Android versionCode: 71
-pubspec: 0.1.1+71
+Release visível: 0.1.1.70
+Android versionCode: 72
+pubspec: 0.1.1+72
 
-Novidade desta base: reformula o fluxo visual de criação da carreira com a nova paleta azul-grafite + verde, compacta formação/clubes/técnicos, remodela aparência e assinatura, adiciona apresentação única do novo treinador, Termos/Privacidade na primeira abertura e links informativos na Central de Carreiras. A duração visual agora é 1, 2 ou 3 minutos por tempo, inclusive na criação da carreira, com leitura retrocompatível dos antigos presets 4/6/8. `CareerState` permanece no schema 11, IDs/saves são preservados e o Match Engine não foi alterado.
+Novidade desta base: corrige os dois testes estruturais que falharam no GitHub Actions após a reformulação da criação de carreira. Os testes passam a acompanhar o agrupamento atual do editor de aparência e o link Edição extraído para `career_hub_info_links.dart`, sem alterar código funcional, UI, `CareerState` schema 11, IDs/saves ou Match Engine.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.70 com versionCode > 71.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.71 com versionCode > 72.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

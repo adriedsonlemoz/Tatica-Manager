@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.69",
+  "version": "0.1.1.70",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+71"
+    "pubspecVersion": "0.1.1+72"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.69",
-    "versionCode": 71
+    "versionName": "0.1.1.70",
+    "versionCode": 72
   },
   "release": {
-    "version": "0.1.1.69",
-    "revision": 69,
-    "androidVersionCode": 71
+    "version": "0.1.1.70",
+    "revision": 70,
+    "androidVersionCode": 72
   },
   "changelog": [
+    "Corrige os dois testes estruturais revelados pelo GitHub Actions após a reformulação da 0.1.1.69: o teste do editor de aparência passa a validar o agrupamento atual de traços do rosto e o teste da Central de Carreiras passa a acompanhar o link de Edição extraído para career_hub_info_links.dart, sem reintroduzir pesquisa/filtros, textos antigos ou alterar código funcional, saves, CareerState schema 11, IDs ou Match Engine.",
     "Reformula o fluxo de criação de carreira e a identidade visual com base azul-grafite e verde de destaque; compacta formação, clubes, técnicos e aparência, remodela assinatura e primeira apresentação do treinador, adiciona aceite inicial de Termos/Privacidade e links de informações/configurações na Central de Carreiras, e reduz a duração visual para 1, 2 ou 3 minutos por tempo com conversão retrocompatível dos antigos presets 4/6/8, preservando CareerState schema 11, IDs, saves e Match Engine.",
     "Corrige o lint use_null_aware_elements revelado pelo GitHub Actions em management_dashboard_widgets.dart usando elemento null-aware no trailing do cabeçalho; também restaura Sobre / Novidades ao limite documentado de três releases para evitar a falha seguinte de app_info_test, sem alterar visual, gameplay, saves, schema 11 ou Match Engine.",
     "Corrige os bloqueios reais do flutter analyze encontrados no GitHub Actions da 0.1.1.66: remove um encadeamento .where duplicado e inválido no limite de substituições, importa explicitamente as extensões de FormationType e Pressing usadas no Dia de Jogo e elimina dois avisos de código não utilizado em Finanças, preservando o layout da 0.1.1.66, CareerState schema 11, saves, IDs e Match Engine.",
@@ -126,6 +127,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Reformula o fluxo de criação de carreira e a identidade visual com base azul-grafite e verde de destaque; compacta formação, clubes, técnicos e aparência, remodela assinatura e primeira apresentação do treinador, adiciona aceite inicial de Termos/Privacidade e links de informações/configurações na Central de Carreiras, e reduz a duração visual para 1, 2 ou 3 minutos por tempo com conversão retrocompatível dos antigos presets 4/6/8, preservando CareerState schema 11, IDs, saves e Match Engine."
+    "Corrige os dois testes estruturais revelados pelo GitHub Actions após a reformulação da 0.1.1.69: o teste do editor de aparência passa a validar o agrupamento atual de traços do rosto e o teste da Central de Carreiras passa a acompanhar o link de Edição extraído para career_hub_info_links.dart, sem reintroduzir pesquisa/filtros, textos antigos ou alterar código funcional, saves, CareerState schema 11, IDs ou Match Engine."
   ]
 }

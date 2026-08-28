@@ -5,10 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Central de Carreiras expõe editor completo padrão e por save', () {
-    final source = File('lib/features/career/career_hub_screen.dart').readAsStringSync();
+    final source = [
+      'lib/features/career/career_hub_screen.dart',
+      'lib/features/career/career_hub_info_links.dart',
+      'lib/features/career/club_editor_screen.dart',
+    ].map((path) => File(path).readAsStringSync()).join('\n');
 
+    expect(source, contains("label: 'Edição'"));
+    expect(source, contains('onEditor:'));
     expect(source, contains('Editor do banco'));
-    expect(source, contains('Abrir editor'));
     expect(source, contains("value: 'edit-clubs'"));
     expect(source, contains('Editar banco da carreira'));
     expect(source, contains('ClubEditorScreen('));
