@@ -8,12 +8,21 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.77`
-- **Android versionCode:** `79`
+- **Release deste handoff:** `0.1.1.78`
+- **Android versionCode:** `80`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.78
+
+- corrige o bloqueio de virada de temporada visto no GitHub Actions da 0.1.1.77: `CareerState.seasonComplete` passa a verificar os fixtures efetivamente disputados de cada competição carregada, evitando depender de um flag `completed` persistido que pode estar desatualizado em fluxos legados;
+- mantém `CompetitionSeasonState.completed` como fallback apenas para competições carregadas sem fixtures persistidos;
+- atualiza `match_participation_fatigue_test.dart` para validar a arquitetura atual: `LiveMatchController` monta participantes e delega a aplicação física/estatística ao `MatchCareerImpactEngine`;
+- preserva `CareerState` schema 13, IDs, saves, calendário multi-competição, CPU, classificação e Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.78.md`.
 
 ## Estado funcional da release 0.1.1.77
 
@@ -461,10 +470,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         79
-pubspec:             0.1.1+79
+versionCode:         80
+pubspec:             0.1.1+80
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.78` e usar um `versionCode` maior que 79.
+A próxima alteração/entrega normalmente deve virar `0.1.1.79` e usar um `versionCode` maior que 80.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

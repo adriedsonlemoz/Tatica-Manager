@@ -203,6 +203,29 @@ void main() {
     expect(rebuilt.stages, isEmpty);
   });
 
+
+  test('fim da temporada deriva dos fixtures mesmo com flag persistido antigo', () {
+    final career = _career();
+    final completedFixtures = career.fixtures
+        .map(
+          (fixture) => fixture.copyWith(
+            played: true,
+            score: const MatchScore(0, 0),
+          ),
+        )
+        .toList(growable: false);
+
+    final staleStates = career.competitionStates
+        .map((state) => state.copyWith(completed: false))
+        .toList(growable: false);
+    final completed = career.copyWith(
+      fixtures: completedFixtures,
+      competitionStates: staleStates,
+    );
+
+    expect(completed.seasonComplete, isTrue);
+  });
+
   test('estatísticas e suspensões permanecem isoladas por competição', () {
     final career = _career();
     final playerId = career.starterIds.first;

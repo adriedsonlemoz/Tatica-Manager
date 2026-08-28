@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.77';
+  static const String version = '0.1.1.78';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.78',
+      title: 'Virada de temporada multi-competição',
+      changes: [
+        'Corrige a conclusão da temporada quando fixtures já estão encerrados, mas o flag persistido da competição ainda está desatualizado.',
+        'Mantém a conclusão baseada nos jogos reais de cada competição carregada, com fallback seguro para estados sem fixtures.',
+        'Atualiza a regressão de fadiga para acompanhar o MatchCareerImpactEngine sem devolver regra ao controller.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.77',
       title: 'Correção da fundação multi-competição',
@@ -30,15 +39,7 @@ abstract final class AppInfo {
         'Saves antigos são migrados para o schema 13 preservando IDs; o erro de analyzer da seleção de ligas também foi corrigido.',
       ],
     ),
-    ReleaseNote(
-      version: '0.1.1.75',
-      title: 'Seleção de ligas e saves mais leves',
-      changes: [
-        'A criação de carreira ganha presets de ligas e modo personalizado, mantendo obrigatoriamente completa a competição do clube escolhido.',
-        'Ligas completas continuam no Match Engine; competições em segundo plano ficam preparadas para resolução estatística CPU mais barata, sem Flame.',
-        'O save passa ao schema 12 e o SQLite v3 lista carreiras por resumo leve, sem desserializar o payload completo de cada save.',
-      ],
-    ),
   ];
+
 
 }

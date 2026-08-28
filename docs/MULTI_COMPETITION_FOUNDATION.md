@@ -60,3 +60,7 @@ Migrações de identidade também percorrem participantes e tabelas persistidas 
 A fundação permite cadastrar uma Série B real depois do design sem refazer o save. Para ativar estaduais/copas, ainda será necessário cadastrar seus participantes e implementar os regulamentos/calendários específicos. Promoção/rebaixamento, classificação continental e critérios próprios de desempate devem ser engines/regras da competição, não condicionais espalhados pelo `GameController`.
 
 Alterar uma competição de `unloaded` para carregada no meio da temporada continua bloqueado, porque exigiria reconstruir retrospectivamente calendário e resultados. A seleção permanece definida no início da carreira.
+## Correção de conclusão da temporada — 0.1.1.78
+
+A conclusão da temporada é derivada dos fixtures das competições carregadas, e não exclusivamente do campo persistido `CompetitionSeasonState.completed`. Isso preserva compatibilidade com fluxos/saves legados que podem atualizar os jogos antes de reconstruir o estado competitivo. Quando uma competição carregada não possui fixtures persistidos, o flag continua sendo usado como fallback explícito.
+

@@ -324,13 +324,31 @@ class CareerState {
   }
 
   bool get seasonComplete {
-    final loadedStates = competitionStates
-        .where((state) => leagueSetup.isLoaded(state.competitionId))
-        .toList(growable: false);
-    if (loadedStates.isNotEmpty) {
-      return loadedStates.every((state) => state.completed);
+    final loadedCompetitionIds = leagueSetup.loadedCompetitionIds.toSet();
+    if (loadedCompetitionIds.isEmpty) {
+      return fixtures.isNotEmpty && fixtures.every((fixture) => fixture.played);
     }
-    return fixtures.isNotEmpty && fixtures.every((fixture) => fixture.played);
+
+    var foundLoadedCompetition = false;
+    for (final competitionId in loadedCompetitionIds) {
+      final competitionFixtures = fixtures
+          .where((fixture) => fixture.competitionId == competitionId)
+          .toList(growable: false);
+      if (competitionFixtures.isNotEmpty) {
+        foundLoadedCompetition = true;
+        if (competitionFixtures.any((fixture) => !fixture.played)) {
+          return false;
+        }
+        continue;
+      }
+
+      final storedState = competitionStateOrNull(competitionId);
+      if (storedState == null || !storedState.completed) {
+        return false;
+      }
+      foundLoadedCompetition = true;
+    }
+    return foundLoadedCompetition;
   }
 
   int get currentRound =>
