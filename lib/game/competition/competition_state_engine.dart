@@ -1,5 +1,6 @@
 import '../../data/competition_catalog.dart';
 import '../../domain/club/club.dart';
+import '../../domain/league/standing.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/season/competition_state.dart';
 import '../league/league_engine.dart';
@@ -49,9 +50,9 @@ abstract final class CompetitionStateEngine {
 
     final completed = competitionFixtures.isNotEmpty &&
         competitionFixtures.every((fixture) => fixture.played);
-    final standings = hasLeagueTable
+    final List<Standing> standings = hasLeagueTable
         ? LeagueEngine.rebuildStandings(competitionClubs, competitionFixtures)
-        : const [];
+        : const <Standing>[];
 
     final participantClubIds = participants.toList(growable: false);
     var stages = state.stages;

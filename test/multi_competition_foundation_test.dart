@@ -176,6 +176,33 @@ void main() {
     expect(b.roundIndex, 1);
   });
 
+  test('competição sem tabela mantém standings tipados e vazios', () {
+    final clubs = clubSeeds.take(2).map((seed) => seed.toClub()).toList();
+    final ids = clubs.map((club) => club.id).toList(growable: false);
+    final state = CompetitionSeasonState(
+      competitionId: 'competition-knockout',
+      participantClubIds: ids,
+    );
+    final fixture = MatchFixture(
+      id: 'knockout-1',
+      round: 1,
+      homeClubId: ids[0],
+      awayClubId: ids[1],
+      date: DateTime(2026, 5, 3),
+      competitionId: state.competitionId,
+      stageId: 'quarterfinal',
+    );
+
+    final rebuilt = CompetitionStateEngine.rebuild(
+      state: state,
+      clubs: clubs,
+      fixtures: [fixture],
+    );
+
+    expect(rebuilt.standings, isEmpty);
+    expect(rebuilt.stages, isEmpty);
+  });
+
   test('estatísticas e suspensões permanecem isoladas por competição', () {
     final career = _career();
     final playerId = career.starterIds.first;

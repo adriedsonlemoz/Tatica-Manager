@@ -8,12 +8,20 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.76`
-- **Android versionCode:** `78`
+- **Release deste handoff:** `0.1.1.77`
+- **Android versionCode:** `79`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.77
+
+- corrige os dois erros `map_value_type_not_assignable` / `argument_type_not_assignable` revelados pelo GitHub Actions da 0.1.1.76;
+- `CompetitionStateEngine` passa a declarar explicitamente `List<Standing>` no caminho de competição sem tabela, eliminando a inferência `List<dynamic>`;
+- adiciona regressão para competição sem classificação, sem mudar `CareerState` schema 13, IDs, saves, calendário multi-competição ou Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.77.md`.
 
 ## Estado funcional da release 0.1.1.76
 
@@ -453,10 +461,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         78
-pubspec:             0.1.1+78
+versionCode:         79
+pubspec:             0.1.1+79
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.77` e usar um `versionCode` maior que 78.
+A próxima alteração/entrega normalmente deve virar `0.1.1.78` e usar um `versionCode` maior que 79.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

@@ -1586,3 +1586,9 @@ Preservar a fundação multi-competição existente:
 - preservar saves, IDs persistentes e migrações.
 
 A expansão planejada pode começar pela Série B e depois estaduais. Não adicionar ligas fictícias apenas para demonstrar a arquitetura.
+
+
+ATUALIZAÇÃO DE CI — 0.1.1.77
+- O GitHub Actions da 0.1.1.76 parou no flutter analyze por dois erros de tipagem no CompetitionStateEngine.
+- Em competição sem tabela, o ramo vazio deve permanecer explicitamente tipado como List<Standing>, nunca List<dynamic>.
+- A correção não altera CareerState schema 13, calendário multi-competição, IDs, saves ou Match Engine.
