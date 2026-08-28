@@ -103,6 +103,8 @@ class ClubBadge extends StatelessWidget {
 
     final icon = club.iconBase64;
     final hasCustomIcon = icon?.isNotEmpty == true;
+    final primary = AppColors.readableAccent(Color(club.colors.primaryHex));
+    final secondary = AppColors.readableAccent(Color(club.colors.secondaryHex));
     Widget child = fallback();
     if (hasCustomIcon) {
       try {
@@ -131,10 +133,7 @@ class ClubBadge extends StatelessWidget {
         gradient: hasCustomIcon
             ? null
             : LinearGradient(
-                colors: [
-                  Color(club.colors.primaryHex),
-                  Color(club.colors.secondaryHex),
-                ],
+                colors: [primary, secondary],
               ),
         borderRadius: BorderRadius.circular(size * .28),
         border: Border.all(

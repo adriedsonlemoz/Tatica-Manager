@@ -13,6 +13,12 @@ class MatchDayQuickInfoGrid extends StatelessWidget {
     required this.condition,
     required this.pressure,
     required this.formation,
+    required this.onPosition,
+    required this.onForm,
+    required this.onMorale,
+    required this.onCondition,
+    required this.onPressure,
+    required this.onFormation,
   });
 
   final int position;
@@ -21,6 +27,12 @@ class MatchDayQuickInfoGrid extends StatelessWidget {
   final int condition;
   final String pressure;
   final String formation;
+  final VoidCallback onPosition;
+  final VoidCallback onForm;
+  final VoidCallback onMorale;
+  final VoidCallback onCondition;
+  final VoidCallback onPressure;
+  final VoidCallback onFormation;
 
   @override
   Widget build(BuildContext context) => GridView.count(
@@ -35,37 +47,43 @@ class MatchDayQuickInfoGrid extends StatelessWidget {
             icon: Icons.leaderboard_outlined,
             label: 'Posição na liga',
             value: position <= 0 ? '—' : '$positionº',
-            caption: 'Classificação atual',
+            caption: 'Abrir classificação',
+            onTap: onPosition,
           ),
           _QuickInfo(
             icon: Icons.timeline_rounded,
             label: 'Últimos jogos',
             valueWidget: _FormDots(form: form),
-            caption: form.isEmpty ? 'Sem jogos' : 'Forma recente',
+            caption: form.isEmpty ? 'Abrir calendário' : 'Ver calendário',
+            onTap: onForm,
           ),
           _QuickInfo(
             icon: Icons.sentiment_satisfied_alt_rounded,
             label: 'Moral do elenco',
             value: '$morale%',
-            caption: morale >= 70 ? 'Alta' : morale >= 50 ? 'Estável' : 'Baixa',
+            caption: morale >= 70 ? 'Elenco em alta' : morale >= 50 ? 'Elenco estável' : 'Exige atenção',
+            onTap: onMorale,
           ),
           _QuickInfo(
             icon: Icons.favorite_outline_rounded,
             label: 'Condição média',
             value: '$condition%',
-            caption: condition >= 90 ? 'Muito boa' : 'Atenção à carga',
+            caption: 'Abrir departamento médico',
+            onTap: onCondition,
           ),
           _QuickInfo(
             icon: Icons.track_changes_rounded,
             label: 'Pressão',
             value: pressure,
-            caption: 'Plano atual',
+            caption: 'Ajustar tática',
+            onTap: onPressure,
           ),
           _QuickInfo(
             icon: Icons.grid_view_rounded,
             label: 'Formação',
             value: formation,
-            caption: 'Escalação base',
+            caption: 'Abrir escalação',
+            onTap: onFormation,
           ),
         ],
       );
@@ -135,6 +153,7 @@ class _QuickInfo extends StatelessWidget {
     this.value,
     this.valueWidget,
     required this.caption,
+    required this.onTap,
   });
 
   final IconData icon;
@@ -142,42 +161,61 @@ class _QuickInfo extends StatelessWidget {
   final String? value;
   final Widget? valueWidget;
   final String caption;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(9),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(17),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: AppColors.green, size: 22),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w800),
+          child: Ink(
+            padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceRaised,
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(color: AppColors.green.withValues(alpha: .22)),
             ),
-            const SizedBox(height: 5),
-            valueWidget ??
-                Text(
-                  value ?? '—',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.green, fontSize: 12, fontWeight: FontWeight.w900),
+            child: Stack(
+              children: [
+                const Positioned(
+                  right: -2,
+                  top: -2,
+                  child: Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 16),
                 ),
-            const SizedBox(height: 3),
-            Text(
-              caption,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 7.5),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(icon, color: AppColors.green, size: 22),
+                      const SizedBox(height: 6),
+                      Text(
+                        label,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 5),
+                      valueWidget ??
+                          Text(
+                            value ?? '—',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: AppColors.green, fontSize: 12, fontWeight: FontWeight.w900),
+                          ),
+                      const SizedBox(height: 3),
+                      Text(
+                        caption,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: AppColors.muted, fontSize: 7.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
 }
@@ -252,4 +290,3 @@ class _FormDots extends StatelessWidget {
     );
   }
 }
-

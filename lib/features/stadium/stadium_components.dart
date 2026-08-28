@@ -132,13 +132,13 @@ class StadiumFacilityGrid extends StatelessWidget {
     super.key,
     required this.club,
     required this.projection,
-    required this.stadiumBudget,
+    required this.availableFunds,
     required this.onUpgrade,
   });
 
   final Club club;
   final StadiumMatchdayRevenue projection;
-  final int stadiumBudget;
+  final int availableFunds;
   final void Function(StadiumFacility facility, bool negotiated) onUpgrade;
 
   @override
@@ -178,7 +178,7 @@ class StadiumFacilityGrid extends StatelessWidget {
                   icon: icons[facility]!,
                   level: StadiumEngine.facilityLevel(club.stadium, facility),
                   projectedValue: values[facility]!,
-                  stadiumBudget: stadiumBudget,
+                  availableFunds: availableFunds,
                   locked: StadiumEngine.isLocked(club.stadium, facility),
                   cost: StadiumEngine.upgradeCost(club.stadium, facility),
                   negotiatedCost: StadiumEngine.negotiatedUpgradeCost(club: club, facility: facility),
@@ -199,7 +199,7 @@ class StadiumFacilityTile extends StatelessWidget {
     required this.icon,
     required this.level,
     required this.projectedValue,
-    required this.stadiumBudget,
+    required this.availableFunds,
     required this.locked,
     required this.cost,
     required this.negotiatedCost,
@@ -210,7 +210,7 @@ class StadiumFacilityTile extends StatelessWidget {
   final IconData icon;
   final int level;
   final int projectedValue;
-  final int stadiumBudget;
+  final int availableFunds;
   final bool locked;
   final int cost;
   final int negotiatedCost;
@@ -219,6 +219,8 @@ class StadiumFacilityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maxed = level >= StadiumEngine.maxFacilityLevel;
+    final canUpgrade = cost > 0 && cost <= availableFunds;
+    final canNegotiate = negotiatedCost > 0 && negotiatedCost <= availableFunds;
     return Container(
       padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
@@ -269,7 +271,7 @@ class StadiumFacilityTile extends StatelessWidget {
               width: double.infinity,
               height: 34,
               child: FilledButton(
-                onPressed: cost > 0 && cost <= stadiumBudget ? () => onUpgrade(false) : null,
+                onPressed: canUpgrade ? () => onUpgrade(false) : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   minimumSize: const Size(30, 34),
@@ -282,7 +284,7 @@ class StadiumFacilityTile extends StatelessWidget {
               width: double.infinity,
               height: 32,
               child: OutlinedButton(
-                onPressed: negotiatedCost > 0 && negotiatedCost <= stadiumBudget ? () => onUpgrade(true) : null,
+                onPressed: canNegotiate ? () => onUpgrade(true) : null,
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   minimumSize: const Size(30, 32),
@@ -290,6 +292,15 @@ class StadiumFacilityTile extends StatelessWidget {
                 child: const Text('Negociar obra', style: TextStyle(fontSize: 8.8)),
               ),
             ),
+            if (!canUpgrade && !canNegotiate) ...[
+              const SizedBox(height: 5),
+              const Text(
+                'Saldo/orçamento insuficiente',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: AppColors.warning, fontSize: 8.2, fontWeight: FontWeight.w800),
+              ),
+            ],
           ] else
             const Padding(
               padding: EdgeInsets.only(top: 7),

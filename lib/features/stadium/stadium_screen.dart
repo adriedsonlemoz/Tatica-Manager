@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,6 +32,7 @@ class StadiumScreen extends ConsumerWidget {
         ? 0
         : (projection.attendance * 100 / stadium.capacity).round();
     final stadiumBudget = career.clubAdministration.budgetPlan.forDepartment(ClubDepartment.stadium);
+    final availableForWorks = math.max(0, math.min(stadiumBudget, club.money));
     final namingContracts = club.sponsorships
         .where(
           (contract) => contract.type == SponsorshipType.stadium && contract.isActiveIn(career.season),
@@ -61,7 +64,6 @@ class StadiumScreen extends ConsumerWidget {
             club: club,
             occupancy: occupancy,
             namingSponsor: namingRights?.sponsorName,
-            onEdit: () => showEditStadiumDialog(context, ref),
           ),
           const SizedBox(height: 10),
           StadiumSummaryGrid(
@@ -79,7 +81,7 @@ class StadiumScreen extends ConsumerWidget {
               children: [
                 const DashboardSectionHeader(
                   title: 'Administração',
-                  subtitle: 'Orçamento reservado para obras',
+                  subtitle: 'Orçamento reservado; obras também respeitam o caixa atual',
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -123,7 +125,7 @@ class StadiumScreen extends ConsumerWidget {
           StadiumFacilityGrid(
             club: club,
             projection: projection,
-            stadiumBudget: stadiumBudget,
+            availableFunds: availableForWorks,
             onUpgrade: (facility, negotiated) => showStadiumUpgradeDialog(
               context,
               ref,

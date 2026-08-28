@@ -374,7 +374,7 @@ class HomeScreen extends ConsumerWidget {
     }
     if (event.negotiationId != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const MarketScreen(initialTab: 2)),
+        MaterialPageRoute(builder: (_) => const MarketScreen(initialTab: 2, showBackButton: true)),
       );
       return;
     }
@@ -408,7 +408,7 @@ class HomeScreen extends ConsumerWidget {
         );
       } else {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MarketScreen()),
+          MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
         );
       }
       return;

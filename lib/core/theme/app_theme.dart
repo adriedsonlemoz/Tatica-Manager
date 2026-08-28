@@ -34,6 +34,13 @@ abstract final class AppTheme {
         bodyMedium: TextStyle(fontWeight: FontWeight.w500),
         labelLarge: TextStyle(fontWeight: FontWeight.w800),
       ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       cardTheme: const CardThemeData(
         color: AppColors.surface,
         elevation: 0,

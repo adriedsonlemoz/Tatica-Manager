@@ -4,13 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/management_dashboard_widgets.dart';
-import '../../core/theme/app_colors.dart';
 import '../../data/competition_catalog.dart';
-import '../../domain/formation/formation.dart';
-import '../../domain/tactic/tactic.dart';
 import '../../domain/player/player.dart';
 import '../../game/morale/morale_engine.dart';
+import '../calendar/calendar_screen.dart';
+import '../clubs/club_profile_screen.dart';
+import '../lineup/lineup_screen.dart';
 import '../match/pre_match_screen.dart';
+import '../medical/medical_department_screen.dart';
+import '../squad/squad_screen.dart';
+import '../stadium/stadium_screen.dart';
+import '../standings/standings_screen.dart';
+import '../tactics/tactics_screen.dart';
 import 'match_day_header_components.dart';
 import 'match_day_presentation_components.dart';
 
@@ -41,6 +46,10 @@ class MatchDayPresentationScreen extends ConsumerWidget {
         ? 0
         : (userClub.squad.fold<int>(0, (sum, player) => sum + player.condition) / userClub.squad.length).round();
 
+    void open(Widget page) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+    }
+
     return PopScope(
       canPop: true,
       child: PremiumScaffold(
@@ -52,17 +61,23 @@ class MatchDayPresentationScreen extends ConsumerWidget {
               competition: competition,
               round: fixture.round,
               onBack: () => Navigator.of(context).pop(),
+              onAgenda: () => open(CalendarScreen(initialFixtureId: fixture.id)),
             ),
             MatchDayVersusCard(
               home: home,
               away: away,
               fixture: fixture,
               userClubId: career.userClubId,
+              onStadiumTap: () => open(
+                home.id == career.userClubId
+                    ? const StadiumScreen()
+                    : ClubProfileScreen(clubId: home.id),
+              ),
             ),
             const SizedBox(height: 14),
             const DashboardSectionHeader(
               title: 'Informações rápidas',
-              subtitle: 'Panorama da equipe antes da partida',
+              subtitle: 'Os cards com seta abrem os módulos já existentes',
             ),
             const SizedBox(height: 8),
             MatchDayQuickInfoGrid(
@@ -72,6 +87,12 @@ class MatchDayPresentationScreen extends ConsumerWidget {
               condition: condition,
               pressure: career.tactic.pressing.label,
               formation: career.formation.label,
+              onPosition: () => open(const StandingsScreen()),
+              onForm: () => open(CalendarScreen(initialFixtureId: fixture.id)),
+              onMorale: () => open(const SquadScreen(showBackButton: true)),
+              onCondition: () => open(const MedicalDepartmentScreen()),
+              onPressure: () => open(const TacticsScreen()),
+              onFormation: () => open(const LineupScreen(showBackButton: true)),
             ),
             const SizedBox(height: 10),
             MatchDayPreparationCard(
@@ -79,22 +100,6 @@ class MatchDayPresentationScreen extends ConsumerWidget {
               startersReady: availableStarters,
               onContinue: () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const PreMatchScreen()),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SectionCard(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  const Icon(Icons.stadium_outlined, color: AppColors.green),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Palco da partida: ${home.stadium.name}. ${home.id == career.userClubId ? 'Seu clube joga em casa.' : 'Seu clube atua como visitante.'}',
-                      style: const TextStyle(color: AppColors.muted, fontSize: 10.5),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

@@ -2,7 +2,7 @@ name: tatica_manager
 description: Tática Manager refeito do zero em Flutter, com carreira de gestão de futebol e partida 2D em Flame.
 publish_to: none
 repository: https://github.com/adriedsonlemoz/Tatica-Manager
-version: 0.1.1+67
+version: 0.1.1+68
 
 environment:
   sdk: '>=3.12.0 <4.0.0'

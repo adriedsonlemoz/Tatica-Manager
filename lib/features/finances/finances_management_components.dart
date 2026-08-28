@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/finance/club_administration.dart';
@@ -125,15 +124,17 @@ class SponsorshipManagementSection extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (open.isEmpty)
-          const SectionCard(
-            child: Text(
-              'Nenhuma proposta comercial aguarda decisão.',
-              style: TextStyle(color: AppColors.muted),
+          const _FinanceInsetPanel(
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                'Nenhuma proposta comercial aguarda decisão.',
+                style: TextStyle(color: AppColors.muted),
+              ),
             ),
           )
         else
-          SectionCard(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+          _FinanceInsetPanel(
             child: Column(
               children: open
                   .map(
@@ -164,15 +165,17 @@ class SponsorshipManagementSection extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (contracts.isEmpty)
-          const SectionCard(
-            child: Text(
-              'Sem contratos ativos. Analise as propostas antes que expirem.',
-              style: TextStyle(color: AppColors.muted),
+          const _FinanceInsetPanel(
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                'Sem contratos ativos. Analise as propostas antes que expirem.',
+                style: TextStyle(color: AppColors.muted),
+              ),
             ),
           )
         else
-          SectionCard(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+          _FinanceInsetPanel(
             child: Column(
               children: contracts
                   .map(
@@ -208,6 +211,23 @@ class SponsorshipManagementSection extends StatelessWidget {
       ],
     );
   }
+}
+
+class _FinanceInsetPanel extends StatelessWidget {
+  const _FinanceInsetPanel({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: AppColors.surfaceRaised,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: AppColors.border),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: child,
+      );
 }
 
 enum SponsorshipDecisionType { accept, reject, counter }

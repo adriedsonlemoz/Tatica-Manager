@@ -228,77 +228,104 @@ class YouthPlayerCard extends StatelessWidget {
     final high = YouthAcademyEngine.estimatedPotentialHigh(player);
     final progress = ((high - player.overall) / 35).clamp(0.12, 1.0).toDouble();
     return SectionCard(
-      padding: const EdgeInsets.fromLTRB(11, 10, 10, 10),
+      padding: EdgeInsets.zero,
       margin: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          PlayerAvatar(player: player, size: 48, accentColor: accentColor),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+      child: InkWell(
+        onTap: onOpen,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(11, 10, 8, 10),
+          child: Row(
+            children: [
+              PlayerAvatar(
+                player: player,
+                size: 48,
+                accentColor: accentColor,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        player.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w900),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            player.displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        Text(
+                          '${player.overall}',
+                          style: const TextStyle(
+                            color: AppColors.green,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${player.age} anos • ${player.primaryPosition.label} • potencial est. $low–$high',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 9.8,
                       ),
                     ),
+                    const SizedBox(height: 7),
+                    DashboardProgress(value: progress, color: accentColor),
+                    const SizedBox(height: 5),
                     Text(
-                      '${player.overall}',
-                      style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.w900),
+                      _report(player, low, high),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 9.5,
+                        height: 1.25,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${player.age} anos • ${player.primaryPosition.label} • potencial est. $low–$high',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 9.8),
-                ),
-                const SizedBox(height: 7),
-                DashboardProgress(value: progress, color: accentColor),
-                const SizedBox(height: 5),
-                Text(
-                  _report(player, low, high),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 9.5, height: 1.25),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 7),
-          Column(
-            children: [
-              IconButton(
-                tooltip: 'Ver relatório',
-                visualDensity: VisualDensity.compact,
-                onPressed: onOpen,
-                icon: const Icon(Icons.person_search_rounded, color: AppColors.muted),
               ),
-              IconButton(
-                tooltip: 'Promover ao profissional',
-                visualDensity: VisualDensity.compact,
-                onPressed: onPromote,
-                icon: const Icon(Icons.arrow_upward_rounded, color: AppColors.green),
+              const SizedBox(width: 7),
+              Column(
+                children: [
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.muted,
+                    size: 20,
+                  ),
+                  IconButton(
+                    tooltip: 'Promover ao profissional',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: onPromote,
+                    icon: const Icon(
+                      Icons.arrow_upward_rounded,
+                      color: AppColors.green,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   static String _report(Player player, int low, int high) {
     final gap = high - player.overall;
-    if (gap >= 20) return 'Teto técnico muito interessante; vale acompanhar a evolução.';
-    if (gap >= 12) return 'Bom espaço para evolução e desenvolvimento gradual.';
+    if (gap >= 20) {
+      return 'Teto técnico muito interessante; vale acompanhar a evolução.';
+    }
+    if (gap >= 12) {
+      return 'Bom espaço para evolução e desenvolvimento gradual.';
+    }
     return 'Potencial próximo do nível atual; pode compor o profissional.';
   }
 }

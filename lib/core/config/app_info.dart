@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.65';
+  static const String version = '0.1.1.66';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.66',
+      title: 'Consistência visual e navegação entre módulos',
+      changes: [
+        'Cards que aparentam ação agora abrem módulos existentes em Dia de Jogo, Contratos, Base e Finanças, sem criar funções novas.',
+        'Acentos muito escuros recebem contraste seguro, fundos aninhados de Patrocínios são simplificados e o Estádio alinha o estado dos botões ao caixa e orçamento disponíveis.',
+        'Finanças passa a conectar Estádio, Contratos e Mercado, enquanto telas abertas como módulos secundários preservam um retorno visível.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.65',
       title: 'Módulos mais vivos e substituições corrigidas',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige os imports usados pela edição individual e visualização de escudos personalizados.',
         'ClubIconValidator e as funções Base64 ficam disponíveis corretamente para os arquivos part do editor.',
         'Packs, saves, schema 11, Match Engine e workflow permanecem inalterados.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.63',
-      title: 'Home, packs e áudio pós-jogo',
-      changes: [
-        'Home ganha resumo financeiro, estádio, preparação integrada ao próximo jogo, ranking compacto e Notícias & Destaques próprio.',
-        'Pacote completo passa a deixar explícita a importação conjunta de clubes, jogadores, técnicos e escudos por IDs permanentes.',
-        'Fim da partida encerra ambiente, efeitos e narração para evitar áudio residual antes de retomar a música de menu.',
       ],
     ),
   ];

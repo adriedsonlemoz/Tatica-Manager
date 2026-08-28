@@ -300,7 +300,7 @@ void _performPrimaryAction(
       return;
     case InboxActionType.transferNegotiation:
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const MarketScreen(initialTab: 2)),
+        MaterialPageRoute(builder: (_) => const MarketScreen(initialTab: 2, showBackButton: true)),
       );
       return;
     case InboxActionType.player:
@@ -312,7 +312,7 @@ void _performPrimaryAction(
                 career.youthAcademy.any((item) => item.id == message.playerId));
         if (message.clubId == null && !playerIsLocal) {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const MarketScreen()),
+            MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
           );
           return;
         }

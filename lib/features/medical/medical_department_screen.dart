@@ -31,7 +31,7 @@ class MedicalDepartmentScreen extends ConsumerWidget {
         : injured
             .map((player) => MedicalEngine.assess(player).estimatedDays)
             .reduce((a, b) => a < b ? a : b);
-    final accent = Color(career.userClub.colors.primaryHex);
+    final accent = AppColors.readableAccent(Color(career.userClub.colors.primaryHex));
 
     return PremiumScaffold(
       safeBottom: true,

@@ -10,13 +10,11 @@ class StadiumSceneCard extends StatefulWidget {
     super.key,
     required this.club,
     required this.occupancy,
-    required this.onEdit,
     this.namingSponsor,
   });
 
   final Club club;
   final int occupancy;
-  final VoidCallback onEdit;
   final String? namingSponsor;
 
   @override
@@ -45,8 +43,8 @@ class _StadiumSceneCardState extends State<StadiumSceneCard>
   @override
   Widget build(BuildContext context) {
     final club = widget.club;
-    final primary = Color(club.colors.primaryHex);
-    final secondary = Color(club.colors.secondaryHex);
+    final primary = AppColors.readableAccent(Color(club.colors.primaryHex));
+    final secondary = AppColors.readableAccent(Color(club.colors.secondaryHex));
     return SectionCard(
       padding: EdgeInsets.zero,
       borderColor: primary.withValues(alpha: .50),
@@ -91,24 +89,28 @@ class _StadiumSceneCardState extends State<StadiumSceneCard>
                                     ),
                                   ),
                                   const SizedBox(height: 3),
-                                  Text(
-                                    widget.namingSponsor == null
-                                        ? 'Casa de ${club.name}'
-                                        : 'Naming rights • ${widget.namingSponsor}',
-                                    style: TextStyle(
-                                      color: primary.computeLuminance() > .62 ? Colors.black : AppColors.white,
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w800,
-                                      shadows: const [Shadow(color: Colors.black87, blurRadius: 6)],
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: primary.withValues(alpha: .88),
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(color: Colors.white.withValues(alpha: .12)),
+                                    ),
+                                    child: Text(
+                                      widget.namingSponsor == null
+                                          ? 'Casa de ${club.name}'
+                                          : 'Naming rights • ${widget.namingSponsor}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: AppColors.foregroundOn(primary),
+                                        fontSize: 10.2,
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            IconButton.filledTonal(
-                              tooltip: 'Editar estádio e ingresso',
-                              onPressed: widget.onEdit,
-                              icon: const Icon(Icons.edit_rounded, size: 19),
                             ),
                           ],
                         ),

@@ -45,6 +45,7 @@ class ContractsOverviewCard extends StatelessWidget {
     required this.safe,
     required this.payroll,
     required this.squadValue,
+    required this.onStatusSelected,
   });
 
   final int total;
@@ -53,6 +54,7 @@ class ContractsOverviewCard extends StatelessWidget {
   final int safe;
   final int payroll;
   final int squadValue;
+  final ValueChanged<ContractListFilter> onStatusSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +105,30 @@ class ContractsOverviewCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _OverviewCount(value: safe, label: 'Seguros', color: AppColors.green)),
-              Expanded(child: _OverviewCount(value: attention, label: 'Atenção', color: AppColors.warning)),
-              Expanded(child: _OverviewCount(value: risk, label: 'Vencendo', color: AppColors.danger)),
+              Expanded(
+                child: _OverviewCount(
+                  value: safe,
+                  label: 'Seguros',
+                  color: AppColors.green,
+                  onTap: () => onStatusSelected(ContractListFilter.safe),
+                ),
+              ),
+              Expanded(
+                child: _OverviewCount(
+                  value: attention,
+                  label: 'Atenção',
+                  color: AppColors.warning,
+                  onTap: () => onStatusSelected(ContractListFilter.attention),
+                ),
+              ),
+              Expanded(
+                child: _OverviewCount(
+                  value: risk,
+                  label: 'Vencendo',
+                  color: AppColors.danger,
+                  onTap: () => onStatusSelected(ContractListFilter.risk),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -304,28 +327,55 @@ class ContractPlayerCard extends StatelessWidget {
 }
 
 class _OverviewCount extends StatelessWidget {
-  const _OverviewCount({required this.value, required this.label, required this.color});
+  const _OverviewCount({
+    required this.value,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
 
   final int value;
   final String label;
   final Color color;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Column(
-        children: [
-          Text(
-            '$value',
-            style: TextStyle(
-              color: color,
-              fontSize: 19,
-              fontWeight: FontWeight.w900,
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+            child: Column(
+              children: [
+                Text(
+                  '$value',
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 13),
+                  ],
+                ),
+              ],
             ),
           ),
-          Text(
-            label,
-            style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
-          ),
-        ],
+        ),
       );
 }
 

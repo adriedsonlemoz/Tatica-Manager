@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../app/widgets/common.dart';
-import '../../app/widgets/management_dashboard_widgets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/club/club.dart';
@@ -13,11 +12,13 @@ class MatchDayHeader extends StatelessWidget {
     required this.competition,
     required this.round,
     required this.onBack,
+    required this.onAgenda,
   });
 
   final String competition;
   final int round;
   final VoidCallback onBack;
+  final VoidCallback onAgenda;
 
   @override
   Widget build(BuildContext context) => Stack(
@@ -44,10 +45,16 @@ class MatchDayHeader extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_rounded),
                     ),
                     const Spacer(),
-                    DashboardStatusPill(
-                      label: 'Rodada $round',
-                      color: AppColors.green,
-                      icon: Icons.emoji_events_outlined,
+                    OutlinedButton.icon(
+                      onPressed: onAgenda,
+                      icon: const Icon(Icons.calendar_month_rounded, size: 17),
+                      label: Text('Agenda • Rod. $round'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.green,
+                        side: BorderSide(color: AppColors.green.withValues(alpha: .42)),
+                        minimumSize: const Size(48, 38),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                      ),
                     ),
                   ],
                 ),
@@ -92,12 +99,14 @@ class MatchDayVersusCard extends StatelessWidget {
     required this.away,
     required this.fixture,
     required this.userClubId,
+    required this.onStadiumTap,
   });
 
   final Club home;
   final Club away;
   final MatchFixture fixture;
   final String userClubId;
+  final VoidCallback onStadiumTap;
 
   @override
   Widget build(BuildContext context) => SectionCard(
@@ -162,6 +171,7 @@ class MatchDayVersusCard extends StatelessWidget {
                   child: _FooterInfo(
                     icon: Icons.stadium_rounded,
                     text: home.stadium.name,
+                    onTap: onStadiumTap,
                   ),
                 ),
               ],
@@ -200,12 +210,21 @@ class _ClubSide extends StatelessWidget {
 }
 
 class _FooterInfo extends StatelessWidget {
-  const _FooterInfo({required this.icon, required this.text});
+  const _FooterInfo({
+    required this.icon,
+    required this.text,
+    this.onTap,
+  });
+
   final IconData icon;
   final String text;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) {
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: AppColors.green, size: 15),
@@ -215,11 +234,31 @@ class _FooterInfo extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w700),
+              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
             ),
           ),
+          if (onTap != null) ...[
+            const SizedBox(width: 2),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.muted,
+              size: 15,
+            ),
+          ],
         ],
-      );
+      ),
+    );
+    if (onTap == null) return content;
+    return Material(
+      color: AppColors.surfaceRaised.withValues(alpha: .54),
+      borderRadius: BorderRadius.circular(11),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(11),
+        child: content,
+      ),
+    );
+  }
 }
 
 class _MatchDayLights extends StatelessWidget {

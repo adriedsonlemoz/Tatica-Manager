@@ -9,7 +9,9 @@ import '../../domain/player/player.dart';
 import '../player/player_profile_screen.dart';
 
 class SquadScreen extends ConsumerStatefulWidget {
-  const SquadScreen({super.key});
+  const SquadScreen({super.key, this.showBackButton = false});
+
+  final bool showBackButton;
 
   @override
   ConsumerState<SquadScreen> createState() => _SquadScreenState();
@@ -50,17 +52,36 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'ELENCO',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${club.squad.length} jogadores • OVR médio ${club.averageOverall.toStringAsFixed(1)} • ${career.starterIds.length}/11 titulares',
-                    style: const TextStyle(color: AppColors.muted),
+                  Row(
+                    children: [
+                      if (widget.showBackButton) ...[
+                        IconButton.filledTonal(
+                          tooltip: 'Voltar',
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ELENCO',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${club.squad.length} jogadores • OVR médio ${club.averageOverall.toStringAsFixed(1)} • ${career.starterIds.length}/11 titulares',
+                              style: const TextStyle(color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 14),
                   TextField(

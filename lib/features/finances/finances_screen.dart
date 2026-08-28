@@ -9,6 +9,8 @@ import '../../domain/finance/finance.dart';
 import '../../domain/player/player.dart';
 import '../../game/finance/club_administration_engine.dart';
 import '../../game/finance/sponsorship_engine.dart';
+import '../contracts/contracts_screen.dart';
+import '../market/market_screen.dart';
 import '../player/player_profile_screen.dart';
 import '../stadium/stadium_screen.dart';
 import 'finances_dashboard_components.dart';
@@ -56,6 +58,9 @@ class FinancesScreen extends ConsumerWidget {
         icon: Icons.stadium_outlined,
         label: 'Estádio',
         amount: monthCategory(FinanceCategory.stadium, income: true),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const StadiumScreen()),
+        ),
       ),
       FinanceCategoryAmount(
         icon: Icons.handshake_outlined,
@@ -71,6 +76,9 @@ class FinancesScreen extends ConsumerWidget {
         icon: Icons.sell_outlined,
         label: 'Transferências',
         amount: monthCategory(FinanceCategory.transfers, income: true),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
+        ),
       ),
     ];
     final expenseCategories = [
@@ -78,11 +86,17 @@ class FinancesScreen extends ConsumerWidget {
         icon: Icons.groups_2_outlined,
         label: 'Folha salarial',
         amount: monthCategory(FinanceCategory.payroll, income: false),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ContractsScreen()),
+        ),
       ),
       FinanceCategoryAmount(
         icon: Icons.shopping_cart_outlined,
         label: 'Transferências',
         amount: monthCategory(FinanceCategory.transfers, income: false),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
+        ),
       ),
       FinanceCategoryAmount(
         icon: Icons.settings_suggest_outlined,
@@ -93,6 +107,9 @@ class FinancesScreen extends ConsumerWidget {
         icon: Icons.stadium_rounded,
         label: 'Estádio / obras',
         amount: monthCategory(FinanceCategory.stadium, income: false),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const StadiumScreen()),
+        ),
       ),
     ];
 

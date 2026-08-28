@@ -8,11 +8,20 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.65`
-- **Android versionCode:** `67`
+- **Release deste handoff:** `0.1.1.66`
+- **Android versionCode:** `68`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.66
+
+- audita a reformulação visual da 0.1.1.65 e diferencia melhor conteúdo informativo de conteúdo acionável;
+- Dia de Jogo liga posição, forma, moral, condição, pressão e formação aos módulos já existentes; o estádio do confronto também abre a tela correspondente;
+- Contratos permite filtrar tocando no resumo e os cards da Base abrem o perfil do jogador por toda a área útil;
+- Finanças conecta Estádio, folha salarial/Contratos e Transferências/Mercado, remove o efeito de card dentro de card em Patrocínios e dá retorno visível ao Mercado quando aberto como módulo secundário;
+- tema/AppBar e acentos de clubes muito escuros recebem tratamento de contraste; o Estádio corrige o texto sobre a cena e alinha a disponibilidade das obras ao menor valor entre orçamento reservado e caixa atual;
+- preserva `CareerState` schema 11, IDs persistentes, saves, controllers e Match Engine; nenhuma regra foi movida para Flame.
 
 ## Estado funcional da release 0.1.1.65
 
@@ -352,11 +361,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.65
-versionCode:         67
-pubspec:             0.1.1+67
+release/versionName: 0.1.1.66
+versionCode:         68
+pubspec:             0.1.1+68
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.66` e usar um `versionCode` maior que 67.
+A próxima alteração/entrega normalmente deve virar `0.1.1.67` e usar um `versionCode` maior que 68.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

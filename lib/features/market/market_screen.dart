@@ -23,9 +23,14 @@ part 'market_components.dart';
 part 'market_dialogs.dart';
 
 class MarketScreen extends ConsumerStatefulWidget {
-  const MarketScreen({super.key, this.initialTab = 0});
+  const MarketScreen({
+    super.key,
+    this.initialTab = 0,
+    this.showBackButton = false,
+  });
 
   final int initialTab;
+  final bool showBackButton;
 
   @override
   ConsumerState<MarketScreen> createState() => _MarketScreenState();
@@ -90,6 +95,14 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                 children: [
                   Row(
                     children: [
+                      if (widget.showBackButton) ...[
+                        IconButton.filledTonal(
+                          tooltip: 'Voltar',
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

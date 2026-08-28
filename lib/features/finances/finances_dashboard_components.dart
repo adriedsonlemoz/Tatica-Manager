@@ -192,49 +192,14 @@ class FinanceCategoryOverview extends StatelessWidget {
             title: title,
             subtitle: total == 0 ? 'Sem movimentação no mês' : compactMoney(total),
           ),
-          const SizedBox(height: 11),
+          const SizedBox(height: 8),
           ...entries.map(
             (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 9),
-              child: Row(
-                children: [
-                  Container(
-                    width: 31,
-                    height: 31,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: .10),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(item.icon, color: accent, size: 16),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 96,
-                    child: Text(
-                      item.label,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
-                    ),
-                  ),
-                  Expanded(
-                    child: DashboardProgress(
-                      value: item.amount / maxValue,
-                      color: accent,
-                      height: 5,
-                    ),
-                  ),
-                  const SizedBox(width: 7),
-                  SizedBox(
-                    width: 68,
-                    child: Text(
-                      compactMoney(item.amount),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(color: accent, fontSize: 9.5, fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.only(bottom: 4),
+              child: _FinanceCategoryRow(
+                item: item,
+                maxValue: maxValue,
+                accent: accent,
               ),
             ),
           ),
@@ -249,11 +214,87 @@ class FinanceCategoryAmount {
     required this.icon,
     required this.label,
     required this.amount,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final int amount;
+  final VoidCallback? onTap;
+}
+
+class _FinanceCategoryRow extends StatelessWidget {
+  const _FinanceCategoryRow({
+    required this.item,
+    required this.maxValue,
+    required this.accent,
+  });
+
+  final FinanceCategoryAmount item;
+  final int maxValue;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+      child: Row(
+        children: [
+          Container(
+            width: 31,
+            height: 31,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: .10),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(item.icon, color: accent, size: 16),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 92,
+            child: Text(
+              item.label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+            ),
+          ),
+          Expanded(
+            child: DashboardProgress(
+              value: item.amount / maxValue,
+              color: accent,
+              height: 5,
+            ),
+          ),
+          const SizedBox(width: 7),
+          SizedBox(
+            width: 66,
+            child: Text(
+              compactMoney(item.amount),
+              textAlign: TextAlign.right,
+              style: TextStyle(color: accent, fontSize: 9.5, fontWeight: FontWeight.w900),
+            ),
+          ),
+          if (item.onTap != null) ...[
+            const SizedBox(width: 2),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 16),
+          ],
+        ],
+      ),
+    );
+
+    if (item.onTap == null) return content;
+    return Material(
+      color: AppColors.surfaceRaised.withValues(alpha: .62),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: item.onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: content,
+      ),
+    );
+  }
 }
 
 class FinanceHealthStrip extends StatelessWidget {

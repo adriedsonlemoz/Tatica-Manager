@@ -20,7 +20,7 @@ class YouthAcademyScreen extends ConsumerWidget {
         final potential = b.potential.compareTo(a.potential);
         return potential != 0 ? potential : b.overall.compareTo(a.overall);
       });
-    final accent = Color(career.userClub.colors.primaryHex);
+    final accent = AppColors.readableAccent(Color(career.userClub.colors.primaryHex));
 
     return PremiumScaffold(
       safeBottom: true,

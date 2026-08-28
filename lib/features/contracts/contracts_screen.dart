@@ -60,6 +60,7 @@ class _ContractsScreenState extends ConsumerState<ContractsScreen> {
             safe: safe,
             payroll: career.userClub.payroll,
             squadValue: squadValue,
+            onStatusSelected: (value) => setState(() => filter = value),
           ),
           const SizedBox(height: 10),
           ContractFilterBar(

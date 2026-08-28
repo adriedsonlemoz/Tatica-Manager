@@ -17,4 +17,20 @@ abstract final class AppColors {
   static const info = Color(0xFF49A7FF);
   static const pitch = Color(0xFF1F5E21);
   static const pitchDark = Color(0xFF174D1A);
+
+  /// Mantém a identidade do clube sem deixar acentos muito escuros
+  /// desaparecerem sobre as superfícies escuras do jogo.
+  static Color readableAccent(Color color) {
+    final luminance = color.computeLuminance();
+    if (luminance < 0.07) {
+      return Color.lerp(color, green, 0.68)!;
+    }
+    if (luminance < 0.14) {
+      return Color.lerp(color, white, 0.26)!;
+    }
+    return color;
+  }
+
+  static Color foregroundOn(Color background) =>
+      background.computeLuminance() > 0.55 ? Colors.black : white;
 }
