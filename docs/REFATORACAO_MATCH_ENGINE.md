@@ -152,3 +152,9 @@ A duração Rápida/Normal/Completa altera somente o intervalo entre os minutos 
 Os jogos de CPU da rodada são preparados por `LiveRoundSimulator`, que chama o `MatchEngine.simulate(...)` existente uma única vez para cada fixture. Esses resultados são revelados progressivamente no placar da rodada e reutilizados por `LiveMatchController.finishMatch()`, evitando divergência entre o alerta ao vivo e o resultado persistido.
 
 O renderer Flame recebe somente timeline, IDs dos titulares e cores. `MatchCameraDirector` acompanha as coordenadas já calculadas, e replay/transmissão usam a mesma câmera 2D. Nenhuma regra de probabilidade, resultado, cartão, substituição ou estatística foi movida para Flame.
+
+## Limite de substituições ao vivo — 0.1.1.65
+
+O limite funcional de substituições do clube controlado pelo usuário é aplicado no `LiveMatchController`: são permitidas no máximo **cinco substituições por partida**. O controller também impede que um atleta que já saiu por substituição retorne ao jogo. `MatchScreen` e `LiveSubstitutionSheet` apenas antecipam o bloqueio e exibem a contagem para o usuário.
+
+A regra continua fora do Flame. A reapresentação visual recebe a escalação já atualizada e os eventos de substituição; não decide se uma troca é válida nem altera o limite.

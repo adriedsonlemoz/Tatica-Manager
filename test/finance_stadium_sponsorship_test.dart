@@ -21,8 +21,11 @@ void main() {
     final financeManagement = File(
       'lib/features/finances/finances_management_components.dart',
     ).readAsStringSync();
-    final stadium =
-        File('lib/features/stadium/stadium_screen.dart').readAsStringSync();
+    final stadium = [
+      File('lib/features/stadium/stadium_screen.dart').readAsStringSync(),
+      File('lib/features/stadium/stadium_components.dart').readAsStringSync(),
+      File('lib/features/stadium/stadium_scene.dart').readAsStringSync(),
+    ].join('\n');
     final stadiumEngine =
         File('lib/game/stadium/stadium_engine.dart').readAsStringSync();
 

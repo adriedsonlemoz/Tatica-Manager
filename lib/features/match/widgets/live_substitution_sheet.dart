@@ -24,6 +24,8 @@ class LiveSubstitutionSheet extends StatefulWidget {
     required this.accentColor,
     this.excludedIncomingIds = const {},
     this.dismissedPlayerIds = const {},
+    this.substitutionsUsed = 0,
+    this.substitutionLimit = 5,
   });
 
   final List<Player> squad;
@@ -32,6 +34,8 @@ class LiveSubstitutionSheet extends StatefulWidget {
   final Color accentColor;
   final Set<String> excludedIncomingIds;
   final Set<String> dismissedPlayerIds;
+  final int substitutionsUsed;
+  final int substitutionLimit;
 
   @override
   State<LiveSubstitutionSheet> createState() => _LiveSubstitutionSheetState();
@@ -128,9 +132,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          widget.excludedIncomingIds.isEmpty
-                              ? 'Escolha quem sai e quem entra.'
-                              : '${widget.excludedIncomingIds.length} troca(s) já realizada(s).',
+                          'Substituições: ${widget.substitutionsUsed}/${widget.substitutionLimit} • escolha quem sai e quem entra.',
                           style: const TextStyle(
                             color: AppColors.muted,
                             fontSize: 11,

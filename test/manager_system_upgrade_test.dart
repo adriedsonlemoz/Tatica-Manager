@@ -102,8 +102,10 @@ void main() {
   });
 
   test('Finanças usa resumo, gráficos e seções expansíveis', () {
-    final source = File('lib/features/finances/finances_screen.dart')
-        .readAsStringSync();
+    final source = [
+      File('lib/features/finances/finances_screen.dart').readAsStringSync(),
+      File('lib/features/finances/finances_dashboard_components.dart').readAsStringSync(),
+    ].join('\n');
     expect(source, contains('_FinanceHero('));
     expect(source, contains('Receitas x despesas'));
     expect(source, contains('EVOLUÇÃO DO SALDO'));

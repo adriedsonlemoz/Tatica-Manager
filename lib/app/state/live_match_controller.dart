@@ -69,6 +69,8 @@ class LiveMatchSession {
 }
 
 class LiveMatchController extends Notifier<LiveMatchSession?> {
+  static const int maxSubstitutions = 5;
+
   @override
   LiveMatchSession? build() => null;
 
@@ -165,7 +167,37 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final career = _career;
     final live = state;
     if (career == null || live == null) return;
-    if (live.userStarterIds.contains(incomingId)) return;
+    if (!live.userStarterIds.contains(outgoingId)) return;
+    if (outgoingId == incomingId || live.userStarterIds.contains(incomingId)) return;
+
+    final previousSubstitutions = live.result.events
+        .where(
+          (event) =>
+              event.type == MatchEventType.substitution &&
+              event.teamId == career.userClubId,
+        )
+        .toList(growable: false);
+    final substitutionsUsed = previousSubstitutions.length;
+        .where(
+          (event) =>
+              event.type == MatchEventType.substitution &&
+              event.teamId == career.userClubId,
+        )
+        .length;
+    if (substitutionsUsed >= maxSubstitutions) {
+      _game.showMessage(
+        'Limite de $maxSubstitutions substituições atingido nesta partida.',
+      );
+      return;
+    }
+    final alreadySubstitutedOut = previousSubstitutions
+        .map((event) => event.secondaryPlayerId)
+        .whereType<String>()
+        .toSet();
+    if (alreadySubstitutedOut.contains(incomingId)) {
+      _game.showMessage('Jogador substituído não pode retornar à partida.');
+      return;
+    }
 
     final dismissedPlayerIds = live.result.events
         .where(

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.64';
+  static const String version = '0.1.1.65';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.65',
+      title: 'Módulos mais vivos e substituições corrigidas',
+      changes: [
+        'Contratos, Base, Departamento Médico, Estádio, Dia de Jogo e Finanças recebem uma composição visual mais viva usando os dados e ações já existentes.',
+        'O Estádio ganha uma apresentação noturna animada em CustomPaint e os novos painéis são divididos em componentes menores, sem criar sistemas paralelos.',
+        'A partida ao vivo limita o clube do usuário a cinco substituições e impede que um jogador substituído retorne ao jogo.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.64',
       title: 'Correção do editor de escudos',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Home ganha resumo financeiro, estádio, preparação integrada ao próximo jogo, ranking compacto e Notícias & Destaques próprio.',
         'Pacote completo passa a deixar explícita a importação conjunta de clubes, jogadores, técnicos e escudos por IDs permanentes.',
         'Fim da partida encerra ambiente, efeitos e narração para evitar áudio residual antes de retomar a música de menu.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.62',
-      title: 'Packs de escudos por ID',
-      changes: [
-        'Adiciona importação de vários escudos em um único arquivo .tmlogos/JSON.',
-        'Cada imagem é associada exclusivamente ao ID permanente do clube, com prévia antes de aplicar.',
-        'Packs podem ser parciais e não alteram nomes, elencos, técnicos, estádio, uniformes ou Match Engine.',
       ],
     ),
   ];

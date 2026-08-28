@@ -19,5 +19,8 @@ void main() {
     expect(sheet, contains('Navigator.of(context).pop('));
     expect(sheet, contains('LiveSubstitutionSelection('));
     expect(sheet, isNot(contains('onConfirm')));
+    expect(screen, contains('LiveMatchController.maxSubstitutions'));
+    expect(sheet, contains('substitutionsUsed'));
+    expect(sheet, contains('substitutionLimit'));
   });
 }

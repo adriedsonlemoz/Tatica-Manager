@@ -412,6 +412,19 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         .map((event) => event.secondaryPlayerId)
         .whereType<String>()
         .toSet();
+    final substitutionsUsed = currentLive.result.events
+        .where(
+          (event) =>
+              event.type == MatchEventType.substitution &&
+              event.teamId == userClubId,
+        )
+        .length;
+    if (substitutionsUsed >= LiveMatchController.maxSubstitutions) {
+      ref.read(gameControllerProvider.notifier).showMessage(
+            'Limite de ${LiveMatchController.maxSubstitutions} substituições atingido nesta partida.',
+          );
+      return;
+    }
     final dismissedPlayerIds = currentLive.result.events
         .where(
           (event) =>
@@ -438,6 +451,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         accentColor: accentColor,
         excludedIncomingIds: alreadySubstitutedOut,
         dismissedPlayerIds: dismissedPlayerIds,
+        substitutionsUsed: substitutionsUsed,
+        substitutionLimit: LiveMatchController.maxSubstitutions,
       ),
     );
     if (!mounted) return;

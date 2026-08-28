@@ -8,11 +8,19 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.64`
-- **Android versionCode:** `66`
+- **Release deste handoff:** `0.1.1.65`
+- **Android versionCode:** `67`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.65
+
+- reformula visualmente Contratos, Categoria de Base, Departamento Médico, Estádio, Dia de Jogo e Finanças usando somente dados e ações já implementados;
+- separa os novos painéis em componentes reutilizáveis, evitando concentrar centenas de linhas adicionais nas telas principais;
+- deixa o Estádio mais vivo com cena noturna animada em `CustomPaint`, iluminação, arquibancadas, gramado e densidade visual vinculada aos níveis reais da infraestrutura, sem mover regras para a UI;
+- corrige substituições ilimitadas: `LiveMatchController` impõe cinco trocas por partida e bloqueia o retorno de jogador já substituído; `MatchScreen` e o sheet exibem/antecipam o limite;
+- preserva `CareerState` schema 11, IDs persistentes, saves, engines existentes e Flame apenas como representação da partida.
 
 ## Estado funcional da release 0.1.1.64
 
@@ -344,11 +352,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.64
-versionCode:         66
-pubspec:             0.1.1+66
+release/versionName: 0.1.1.65
+versionCode:         67
+pubspec:             0.1.1+67
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.65` e usar um `versionCode` maior que 66.
+A próxima alteração/entrega normalmente deve virar `0.1.1.66` e usar um `versionCode` maior que 67.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
