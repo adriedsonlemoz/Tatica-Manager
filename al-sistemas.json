@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.67",
+  "version": "0.1.1.68",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+69"
+    "pubspecVersion": "0.1.1+70"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.67",
-    "versionCode": 69
+    "versionName": "0.1.1.68",
+    "versionCode": 70
   },
   "release": {
-    "version": "0.1.1.67",
-    "revision": 67,
-    "androidVersionCode": 69
+    "version": "0.1.1.68",
+    "revision": 68,
+    "androidVersionCode": 70
   },
   "changelog": [
+    "Corrige o lint use_null_aware_elements revelado pelo GitHub Actions em management_dashboard_widgets.dart usando elemento null-aware no trailing do cabeçalho; também restaura Sobre / Novidades ao limite documentado de três releases para evitar a falha seguinte de app_info_test, sem alterar visual, gameplay, saves, schema 11 ou Match Engine.",
     "Corrige os bloqueios reais do flutter analyze encontrados no GitHub Actions da 0.1.1.66: remove um encadeamento .where duplicado e inválido no limite de substituições, importa explicitamente as extensões de FormationType e Pressing usadas no Dia de Jogo e elimina dois avisos de código não utilizado em Finanças, preservando o layout da 0.1.1.66, CareerState schema 11, saves, IDs e Match Engine.",
     "Audita a reformulação visual recente e corrige inconsistências de interação e contraste: cards que aparentam ação agora abrem módulos existentes, Finanças conecta Estádio, Contratos e Mercado, Categoria de Base abre o jogador pelo card, Contratos filtra pelo resumo, cores muito escuras recebem acento legível, o Estádio alinha disponibilidade de obras ao menor valor entre orçamento e caixa e a composição de fundos de Patrocínios é simplificada, preservando CareerState schema 11, saves, IDs e Match Engine.",
     "Reformula visualmente Contratos, Categoria de Base, Departamento Médico, Estádio, Dia de Jogo e Finanças usando apenas dados e ações já existentes, modulariza os novos componentes para evitar telas monolíticas e corrige a partida ao vivo para limitar o usuário a cinco substituições e impedir o retorno de jogador já substituído, preservando CareerState schema 11, saves, IDs e o Match Engine como fonte da lógica da partida.",
@@ -124,6 +125,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Corrige os bloqueios reais do flutter analyze encontrados no GitHub Actions da 0.1.1.66: remove um encadeamento .where duplicado e inválido no limite de substituições, importa explicitamente as extensões de FormationType e Pressing usadas no Dia de Jogo e elimina dois avisos de código não utilizado em Finanças, preservando o layout da 0.1.1.66, CareerState schema 11, saves, IDs e Match Engine."
+    "Corrige o lint use_null_aware_elements revelado pelo GitHub Actions em management_dashboard_widgets.dart usando elemento null-aware no trailing do cabeçalho; também restaura Sobre / Novidades ao limite documentado de três releases para evitar a falha seguinte de app_info_test, sem alterar visual, gameplay, saves, schema 11 ou Match Engine."
   ]
 }
