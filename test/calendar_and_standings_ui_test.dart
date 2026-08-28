@@ -76,7 +76,7 @@ void main() {
     expect(overview, contains("_StandingCell('D'"));
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
-    expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
+    expect(dashboard, contains('PREPARAÇÃO •'));
     expect(dashboard, contains('height: 92'));
     expect(board, contains('ESTÁDIO'));
     expect(board, isNot(contains('HomeVisualAssets.stadiumAerial')));
