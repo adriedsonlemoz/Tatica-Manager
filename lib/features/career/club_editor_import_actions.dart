@@ -30,7 +30,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
       if (!mounted) return;
       final confirmed = await _confirmFullPackImport(normalized);
       if (confirmed != true || !mounted) return;
-      setState(() {
+      _updateEditorState(() {
         _pack = normalized;
         _dirty = true;
         _error = null;
@@ -50,7 +50,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
         'Falha ao importar um pacote completo na Central de Edição.',
       );
       if (!mounted) return;
-      setState(() => _error = _ClubEditorScreenState._friendlyError(error));
+      _updateEditorState(() => _error = _ClubEditorScreenState._friendlyError(error));
     }
   }
 
@@ -130,7 +130,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
       if (!mounted) return;
       final confirmed = await _confirmLogoPackImport(pack: normalized, current: current, proposed: proposed);
       if (confirmed != true || !mounted) return;
-      setState(() {
+      _updateEditorState(() {
         _pack = proposed;
         _dirty = true;
         _error = null;
@@ -148,7 +148,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
         'Falha ao importar um pacote de escudos na Central de Edição.',
       );
       if (!mounted) return;
-      setState(() => _error = _ClubEditorScreenState._friendlyError(error));
+      _updateEditorState(() => _error = _ClubEditorScreenState._friendlyError(error));
     }
   }
 
@@ -251,7 +251,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
           );
         }
       }
-      setState(() {
+      _updateEditorState(() {
         _pack = defaults;
         _dirty = true;
         _error = null;
@@ -271,14 +271,14 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
         'Falha ao preparar o banco padrão do editor.',
       );
       if (!mounted) return;
-      setState(() => _error = _ClubEditorScreenState._friendlyError(error));
+      _updateEditorState(() => _error = _ClubEditorScreenState._friendlyError(error));
     }
   }
 
   Future<void> _save() async {
     final pack = _pack;
     if (pack == null || _saving) return;
-    setState(() {
+    _updateEditorState(() {
       _saving = true;
       _error = null;
     });
@@ -288,7 +288,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
             pack: pack,
           );
       if (!mounted) return;
-      setState(() {
+      _updateEditorState(() {
         _saving = false;
         _dirty = false;
       });
@@ -307,7 +307,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
         'Falha ao salvar as alterações do editor de dados.',
       );
       if (!mounted) return;
-      setState(() {
+      _updateEditorState(() {
         _saving = false;
         _error = _ClubEditorScreenState._friendlyError(error);
       });

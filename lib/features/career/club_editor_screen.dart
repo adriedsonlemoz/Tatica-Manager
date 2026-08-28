@@ -74,6 +74,8 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
     Future.microtask(_load);
   }
 
+  void _updateEditorState(VoidCallback update) => setState(update);
+
   Future<void> _load() async {
     try {
       final pack = await ref

@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.71`
-**Android versionCode:** `73`
+**Release atual:** `0.1.1.72`
+**Android versionCode:** `74`
 
 ## Fonte oficial de versão
 
@@ -14,18 +14,18 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.71`);
+- `VERSION` — versão visível simples (`0.1.1.72`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+73`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.71` e `versionCode 73`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+74`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.72` e `versionCode 74`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.71` é representada internamente como `0.1.1+73`. A versão visível do aplicativo/Android continua sendo `0.1.1.71`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.72` é representada internamente como `0.1.1+74`. A versão visível do aplicativo/Android continua sendo `0.1.1.72`.
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.72`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.73`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -37,6 +37,8 @@ python3 tool/versioning.py verify
 O workflow usa a plataforma Android versionada, cache de Flutter/Pub/Gradle e executa `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --release`, além de conferir o `versionName`/`versionCode` do APK. Não recria `android/` e não executa `flutter clean` em runner novo. O `flutter pub get` resolve as dependências no workspace, mas o CI publica **somente o APK versionado** como Artifact. O `pubspec.lock` não é disponibilizado nos Artifacts.
 
 ## Etapa atual
+
+A `0.1.1.72` corrige os nove warnings `invalid_use_of_protected_member` encontrados pelo GitHub Actions na 0.1.1.71. A causa era a refatoração das ações do editor para uma `extension`, que passou a chamar o método protegido `State.setState` fora de um membro da própria subclasse de `State`. As ações continuam modularizadas em `club_editor_import_actions.dart`, mas agora solicitam a atualização por `_updateEditorState`, definido dentro de `_ClubEditorScreenState`. Não há mudança visual nem de comportamento do editor, `CareerState` permanece no schema 11, SQLite v2, IDs/saves e Match Engine não mudam.
 
 A `0.1.1.71` aprimora a Central de Carreiras e a edição sem alterar o Match Engine: os saves ficam em cards acionáveis com escudo, colocação, próximo jogo e lixeira direta; a tela inicial passa a usar logo arredondada, “Carregar jogo salvo” e um rodapé Beta 2.0 que abre a Central de Diagnóstico. Técnicos sem aparência personalizada passam a receber faces estáveis e distintas por perfil. A Central de Edição é apresentada como “Editar dados do jogo”, mantém clubes em tela própria, ganha tutorial interno, ações de importação/restauração compactas, confirmações personalizadas e mensagens centrais. A edição de técnicos coloca Exportar dados e Padrão lado a lado, e a bola da partida passa a ser escolhida visualmente usando o mesmo catálogo gráfico aplicado pelo renderer. O diagnóstico passa a exibir contexto/stack e registrar também falhas operacionais de carreira/editor. `CareerState` permanece no schema 11, SQLite v2, IDs e saves existentes são preservados.
 

@@ -58,6 +58,15 @@ void main() {
     expect(source, contains('_ClubDetailEditorScreen('));
   });
 
+  test('ações extraídas do editor atualizam estado pelo State principal', () {
+    final screen = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
+    final actions = File('lib/features/career/club_editor_import_actions.dart').readAsStringSync();
+
+    expect(screen, contains('void _updateEditorState(VoidCallback update) => setState(update);'));
+    expect(actions, contains('_updateEditorState('));
+    expect(actions, isNot(contains('setState(')));
+  });
+
   test('editor de jogadores expõe dados-base e atributos avançados', () {
     final source = File('lib/features/career/player_database_editor_screen.dart').readAsStringSync();
 
