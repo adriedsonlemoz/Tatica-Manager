@@ -64,6 +64,8 @@ void main() {
     expect(home, contains('HomeMainOverview'));
     expect(home, isNot(contains('HomeAdvanceStrip')));
     expect(dashboard, contains('_CompactAdvanceButton'));
+    expect(dashboard, isNot(contains("caption: 'Horário'")));
+    expect(dashboard, contains('child: Center(\n                          child: _CompactAdvanceButton'));
     expect(dashboard, contains('required this.onAdvance'));
     expect(home, contains('HomeNewsHighlights'));
     expect(home, contains('HomeLeagueAndScorers'));
@@ -94,6 +96,8 @@ void main() {
     expect(rankings, contains('compactColumns: dense && canSplit'));
     expect(rankings, contains('compactSingleRow'));
     expect(overview, contains('ultraCompact'));
+    expect(overview, contains('if (!ultraCompact) ...['));
+    expect(rankings, contains('IntrinsicHeight'));
     expect(home, contains('final sameRow = constraints.maxWidth >= 315'));
     expect(home, contains('NewsHighlightsScreen'));
     expect(home, isNot(contains('onNotificationsTap')));

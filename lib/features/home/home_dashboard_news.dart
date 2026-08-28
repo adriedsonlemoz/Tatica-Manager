@@ -49,7 +49,7 @@ class HomeNewsHighlights extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppColors.muted,
-                      fontSize: compact ? 6.7 : 10.5,
+                      fontSize: compact ? 7.5 : 10.5,
                       height: 1.25,
                     ),
                   ),
@@ -101,20 +101,20 @@ class HomeQuickAccess extends StatelessWidget {
           final useRow = items.length <= 5 && constraints.maxWidth >= 285;
           if (!useRow) {
             return SizedBox(
-              height: 54,
+              height: 60,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 5),
                 itemBuilder: (context, index) => SizedBox(
-                  width: 76,
+                  width: 80,
                   child: _QuickAccessTile(item: items[index]),
                 ),
               ),
             );
           }
           return SizedBox(
-            height: 54,
+            height: 60,
             child: Row(
               children: [
                 for (var index = 0; index < items.length; index++) ...[
@@ -175,8 +175,8 @@ class _QuickAccessTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 26,
-                  height: 26,
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -188,7 +188,7 @@ class _QuickAccessTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  child: Icon(item.icon, color: AppColors.white, size: 14),
+                  child: Icon(item.icon, color: AppColors.white, size: 16),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -196,7 +196,7 @@ class _QuickAccessTile extends StatelessWidget {
                   maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 6.3, fontWeight: FontWeight.w800, height: 1.05),
+                  style: const TextStyle(fontSize: 7.4, fontWeight: FontWeight.w800, height: 1.05),
                 ),
               ],
             ),
@@ -247,7 +247,7 @@ class _DashboardSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: AppColors.green, size: compact ? 11 : 17),
+            Icon(icon, color: AppColors.green, size: compact ? 13 : 17),
             SizedBox(width: compact ? 3 : 5),
           ],
           Expanded(
@@ -255,7 +255,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: compact ? 6.7 : 9.3, fontWeight: FontWeight.w900),
+              style: TextStyle(fontSize: compact ? 7.8 : 9.3, fontWeight: FontWeight.w900),
             ),
           ),
           if (action != null)
@@ -270,12 +270,12 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 5.3 : 7.4,
+                        fontSize: compact ? 6.1 : 7.4,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(width: 1),
-                    Icon(Icons.arrow_forward_rounded, size: compact ? 9 : 12, color: AppColors.green),
+                    Icon(Icons.arrow_forward_rounded, size: compact ? 10 : 12, color: AppColors.green),
                   ],
                 ),
               ),
@@ -304,7 +304,7 @@ class _NewsListTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: compact ? 4 : 8, horizontal: 1),
+          padding: EdgeInsets.symmetric(vertical: compact ? 5 : 8, horizontal: 1),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -347,7 +347,7 @@ class _NewsListTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: compact ? 6.2 : 9.2,
+                              fontSize: compact ? 7.1 : 9.2,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -357,7 +357,7 @@ class _NewsListTile extends StatelessWidget {
                           shortDate(event.date),
                           style: TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: compact ? 4.9 : 7.5,
+                            fontSize: compact ? 5.7 : 7.5,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -369,7 +369,7 @@ class _NewsListTile extends StatelessWidget {
                       maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: compact ? 5.4 : 8.3,
+                        fontSize: compact ? 6.2 : 8.3,
                         color: AppColors.muted,
                         height: 1.15,
                       ),

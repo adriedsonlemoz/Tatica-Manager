@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.87",
+  "version": "0.1.1.88",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+89"
+    "pubspecVersion": "0.1.1+90"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.87",
-    "versionCode": 89
+    "versionName": "0.1.1.88",
+    "versionCode": 90
   },
   "release": {
-    "version": "0.1.1.87",
-    "revision": 87,
-    "androidVersionCode": 89
+    "version": "0.1.1.88",
+    "revision": 88,
+    "androidVersionCode": 90
   },
   "changelog": [
+    "Refina a Home compacta aumentando a legibilidade sem voltar ao layout esticado: o botão Avançar/Jogar ocupa a coluna central de informações da Próxima Partida no lugar do horário duplicado, a tipografia do topo, atalhos, notícias, classificação e artilheiros cresce, a tabela compacta deixa de mostrar escudos e os três cards inferiores passam a compartilhar melhor a altura e a largura; preserva dados reais, CareerState schema 13, saves, IDs, fundação multi-competição e Match Engine.",
     "Corrige a única falha do GitHub Actions da 0.1.1.86: o teste estrutural da Home ainda procurava o texto antigo “PREPARAÇÃO EM ANDAMENTO”, embora o layout compacto use “PREPARAÇÃO • ...”; atualiza somente a expectativa do teste, sem alterar UI, partida, saves, IDs, multi-competição ou Match Engine.",
     "Corrige o único erro de análise estática do GitHub Actions da 0.1.1.85: o teste estrutural de substituições em lote interpolava plannedChanges dentro da própria expectativa, gerando undefined_identifier; a comparação passa a usar string raw e preserva integralmente o fluxo de substituições, a Home compacta, saves, IDs, fundação multi-competição e Match Engine.",
     "Reduz a altura e reorganiza a Home para aproximá-la da referência: cabeçalho e finanças ficam mais compactos, o Avançar passa ao canto superior direito da Próxima Partida, preparação é reduzida, Confiança da Diretoria mostra primeiro a porcentagem e depois o estádio sem foto, atalhos encolhem e Notícias, classificação e artilheiros passam a compartilhar a mesma linha em larguras de telefone compatíveis; o escudo do clube usa melhor as cores reais da identidade. Preserva CareerState schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine.",
@@ -49,6 +50,6 @@
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
   ],
   "changes": [
-    "Corrige a única falha do GitHub Actions da 0.1.1.86: o teste estrutural da Home ainda procurava o texto antigo “PREPARAÇÃO EM ANDAMENTO”, embora o layout compacto use “PREPARAÇÃO • ...”; atualiza somente a expectativa do teste, sem alterar UI, partida, saves, IDs, multi-competição ou Match Engine."
+    "Refina a Home compacta aumentando a legibilidade sem voltar ao layout esticado: o botão Avançar/Jogar ocupa a coluna central de informações da Próxima Partida no lugar do horário duplicado, a tipografia do topo, atalhos, notícias, classificação e artilheiros cresce, a tabela compacta deixa de mostrar escudos e os três cards inferiores passam a compartilhar melhor a altura e a largura; preserva dados reais, CareerState schema 13, saves, IDs, fundação multi-competição e Match Engine."
   ]
 }

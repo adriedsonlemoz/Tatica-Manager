@@ -332,13 +332,15 @@ class HomeScreen extends ConsumerWidget {
                           ],
                         );
                       }
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(flex: 13, child: newsCard),
-                          const SizedBox(width: 5),
-                          Expanded(flex: 17, child: rankings),
-                        ],
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(flex: 13, child: newsCard),
+                            const SizedBox(width: 5),
+                            Expanded(flex: 17, child: rankings),
+                          ],
+                        ),
                       );
                     },
                   ),

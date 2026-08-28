@@ -94,7 +94,7 @@ class HomeLeagueAndScorers extends StatelessWidget {
                       'Sem gols.',
                       style: TextStyle(
                         color: AppColors.muted,
-                        fontSize: forceCompact ? 6 : 9,
+                        fontSize: forceCompact ? 7.0 : 9,
                       ),
                     ),
                   )
@@ -123,13 +123,15 @@ class HomeLeagueAndScorers extends StatelessWidget {
           if (!canSplit) {
             return Column(children: [tableCard, const SizedBox(height: 8), scorersCard]);
           }
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: forceCompact ? 16 : 18, child: tableCard),
-              SizedBox(width: forceCompact ? 5 : 7),
-              Expanded(flex: 10, child: scorersCard),
-            ],
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(flex: forceCompact ? 14 : 18, child: tableCard),
+                SizedBox(width: forceCompact ? 5 : 7),
+                Expanded(flex: 10, child: scorersCard),
+              ],
+            ),
           );
         },
       );
@@ -200,7 +202,7 @@ class _DashboardSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: AppColors.green, size: compact ? 10 : 17),
+            Icon(icon, color: AppColors.green, size: compact ? 12 : 17),
             SizedBox(width: compact ? 3 : 5),
           ],
           Expanded(
@@ -209,7 +211,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: compact ? 6.3 : 9,
+                fontSize: compact ? 7.3 : 9,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -226,14 +228,14 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 5.1 : 7,
+                        fontSize: compact ? 6.0 : 7,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(width: 1),
                     Icon(
                       Icons.arrow_forward_rounded,
-                      size: compact ? 8 : 12,
+                      size: compact ? 10 : 12,
                       color: AppColors.green,
                     ),
                   ],
@@ -264,15 +266,15 @@ class _ScorerRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: ultraCompact ? 2.5 : compact ? 5 : 7),
+          padding: EdgeInsets.symmetric(vertical: ultraCompact ? 3.5 : compact ? 5 : 7),
           child: Row(
             children: [
               SizedBox(
-                width: ultraCompact ? 9 : compact ? 12 : 16,
+                width: ultraCompact ? 11 : compact ? 12 : 16,
                 child: Text(
                   '$position',
                   style: TextStyle(
-                    fontSize: ultraCompact ? 5.8 : 8,
+                    fontSize: ultraCompact ? 6.8 : 8,
                     color: AppColors.muted,
                     fontWeight: FontWeight.w900,
                   ),
@@ -280,7 +282,7 @@ class _ScorerRow extends StatelessWidget {
               ),
               PlayerAvatar(
                 player: entry.player,
-                size: ultraCompact ? 20 : compact ? 27 : 34,
+                size: ultraCompact ? 24 : compact ? 27 : 34,
                 accentColor: Color(entry.club.colors.primaryHex),
               ),
               SizedBox(width: ultraCompact ? 3 : compact ? 4 : 7),
@@ -290,7 +292,7 @@ class _ScorerRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: ultraCompact ? 5.8 : compact ? 8 : 9,
+                    fontSize: ultraCompact ? 6.8 : compact ? 8 : 9,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -299,7 +301,7 @@ class _ScorerRow extends StatelessWidget {
               Text(
                 '${entry.stats.goals}',
                 style: TextStyle(
-                  fontSize: ultraCompact ? 7 : compact ? 11 : 13,
+                  fontSize: ultraCompact ? 8 : compact ? 11 : 13,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -333,7 +335,7 @@ class _FooterLink extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: AppColors.green,
-                  fontSize: compact ? 5.2 : 7.5,
+                  fontSize: compact ? 6.1 : 7.5,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -341,7 +343,7 @@ class _FooterLink extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_rounded,
                 color: AppColors.green,
-                size: compact ? 8 : 14,
+                size: compact ? 10 : 14,
               ),
             ],
           ),

@@ -87,7 +87,7 @@ class HomeClubHeader extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: AppColors.muted,
-                      fontSize: 8.3,
+                      fontSize: 8.8,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -103,7 +103,7 @@ class HomeClubHeader extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.green,
-                            fontSize: 7.8,
+                            fontSize: 9.0,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .10,
                           ),

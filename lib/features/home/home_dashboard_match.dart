@@ -182,7 +182,7 @@ class HomeNextMatchCard extends StatelessWidget {
                           'PRÓXIMA PARTIDA',
                           style: TextStyle(
                             color: AppColors.white,
-                            fontSize: 9.6,
+                            fontSize: 10.4,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .15,
                           ),
@@ -194,14 +194,9 @@ class HomeNextMatchCard extends StatelessWidget {
                         '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 7.2,
+                          fontSize: 8.0,
                           fontWeight: FontWeight.w800,
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      _CompactAdvanceButton(
-                        isMatchDay: isMatchDay,
-                        onTap: isMatchDay ? onMatchDay : onAdvance,
                       ),
                     ],
                   ),
@@ -254,10 +249,11 @@ class HomeNextMatchCard extends StatelessWidget {
                       ),
                       const _MiniDivider(),
                       Expanded(
-                        child: _MatchInfo(
-                          icon: Icons.schedule_rounded,
-                          value: nextFixture.kickoffLabel,
-                          caption: 'Horário',
+                        child: Center(
+                          child: _CompactAdvanceButton(
+                            isMatchDay: isMatchDay,
+                            onTap: isMatchDay ? onMatchDay : onAdvance,
+                          ),
                         ),
                       ),
                       const _MiniDivider(),
@@ -340,8 +336,8 @@ class _CompactAdvanceButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(9),
           child: Ink(
-            height: 22,
-            padding: const EdgeInsets.symmetric(horizontal: 7),
+            height: 27,
+            padding: const EdgeInsets.symmetric(horizontal: 9),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xFFB8FB21), Color(0xFF7BD20F)],
@@ -354,7 +350,7 @@ class _CompactAdvanceButton extends StatelessWidget {
               children: [
                 Icon(
                   isMatchDay ? Icons.sports_soccer_rounded : Icons.play_arrow_rounded,
-                  size: 12,
+                  size: 13,
                   color: Colors.black,
                 ),
                 const SizedBox(width: 2),
@@ -362,7 +358,7 @@ class _CompactAdvanceButton extends StatelessWidget {
                   isMatchDay ? 'JOGAR' : 'AVANÇAR',
                   style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 6.5,
+                    fontSize: 8.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),

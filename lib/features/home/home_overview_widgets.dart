@@ -188,13 +188,13 @@ class _CompactStandingsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final positionWidth = ultraCompact ? 12.0 : 20.0;
-    final badgeWidth = ultraCompact ? 18.0 : 26.0;
-    final gap = ultraCompact ? 3.0 : 5.0;
+    final badgeWidth = ultraCompact ? 0.0 : 26.0;
+    final gap = ultraCompact ? 0.0 : 5.0;
     final cellWidth = ultraCompact ? 14.0 : 20.0;
     final pointsWidth = ultraCompact ? 20.0 : 30.0;
     final headerStyle = TextStyle(
       color: AppColors.muted,
-      fontSize: ultraCompact ? 5.8 : 8,
+      fontSize: ultraCompact ? 6.5 : 8,
       fontWeight: FontWeight.w900,
     );
     return Row(
@@ -238,8 +238,8 @@ class _CompactStandingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final positionWidth = ultraCompact ? 12.0 : 20.0;
-    final badgeSize = ultraCompact ? 18.0 : 26.0;
-    final gap = ultraCompact ? 3.0 : 5.0;
+    final badgeSize = ultraCompact ? 0.0 : 26.0;
+    final gap = ultraCompact ? 0.0 : 5.0;
     final cellWidth = ultraCompact ? 14.0 : 20.0;
     final pointsWidth = ultraCompact ? 20.0 : 30.0;
     return InkWell(
@@ -262,20 +262,22 @@ class _CompactStandingRow extends StatelessWidget {
                 '$position',
                 style: TextStyle(
                   color: position == 1 ? AppColors.green : AppColors.muted,
-                  fontSize: ultraCompact ? 6.2 : 10,
+                  fontSize: ultraCompact ? 7.0 : 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ),
-            ClubBadge(club: club, size: badgeSize),
-            SizedBox(width: gap),
+            if (!ultraCompact) ...[
+              ClubBadge(club: club, size: badgeSize),
+              SizedBox(width: gap),
+            ],
             Expanded(
               child: Text(
                 club.shortName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: ultraCompact ? 6.5 : 10,
+                  fontSize: ultraCompact ? 7.4 : 10,
                   fontWeight: highlighted ? FontWeight.w900 : FontWeight.w700,
                 ),
               ),
@@ -327,7 +329,7 @@ class _StandingCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: header ? AppColors.muted : null,
-            fontSize: compact ? (header ? 5.8 : 6.3) : (header ? 8 : 10),
+            fontSize: compact ? (header ? 6.4 : 7.0) : (header ? 8 : 10),
             fontWeight:
                 header || strong ? FontWeight.w900 : FontWeight.w700,
           ),
