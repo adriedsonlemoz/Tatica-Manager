@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../domain/career/career_save_summary.dart';
 import '../../domain/career/manager_profile.dart';
+import '../../domain/club/club.dart';
 import '../../domain/club/club_identity.dart';
 import '../../domain/season/career_state.dart';
 import '../../game/league/league_engine.dart';
@@ -17,10 +18,14 @@ class SqliteCareerRepository implements CareerRepository {
     final root = await getDatabasesPath();
     _database = await openDatabase(
       '$root/tatica_manager.db',
-      version: 2,
+      version: 3,
       onCreate: (db, version) async => _createSchema(db),
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) await _migrateV1ToV2(db);
+        if (oldVersion < 2) {
+          await _migrateV1ToV2(db);
+        } else if (oldVersion < 3) {
+          await _migrateV2ToV3(db);
+        }
       },
     );
     return _database!;
@@ -38,12 +43,61 @@ class SqliteCareerRepository implements CareerRepository {
         round_index INTEGER NOT NULL,
         schema_version INTEGER NOT NULL,
         payload TEXT NOT NULL,
+        user_club_short_name TEXT,
+        user_club_nickname TEXT,
+        user_club_primary_color INTEGER,
+        user_club_secondary_color INTEGER,
+        user_club_icon TEXT,
+        league_position INTEGER,
+        next_opponent_name TEXT,
+        next_match_date INTEGER,
+        next_match_at_home INTEGER,
+        total_rounds INTEGER NOT NULL DEFAULT 38,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
       )
     ''');
     await db.execute('CREATE INDEX idx_career_saves_updated_at ON career_saves(updated_at DESC)');
     await db.execute('CREATE TABLE app_meta(key TEXT PRIMARY KEY, value TEXT)');
+  }
+
+  static Future<void> _migrateV2ToV3(Database db) async {
+    const columns = <String>[
+      'user_club_short_name TEXT',
+      'user_club_nickname TEXT',
+      'user_club_primary_color INTEGER',
+      'user_club_secondary_color INTEGER',
+      'user_club_icon TEXT',
+      'league_position INTEGER',
+      'next_opponent_name TEXT',
+      'next_match_date INTEGER',
+      'next_match_at_home INTEGER',
+      'total_rounds INTEGER NOT NULL DEFAULT 38',
+    ];
+    for (final definition in columns) {
+      await db.execute('ALTER TABLE career_saves ADD COLUMN $definition');
+    }
+
+    final rows = await db.query('career_saves', columns: ['id', 'payload']);
+    for (final row in rows) {
+      final payload = row['payload'] as String?;
+      final id = row['id'] as String?;
+      if (id == null || payload == null || payload.isEmpty) continue;
+      try {
+        final career = CareerState.fromJson(
+          jsonDecode(payload) as Map<String, dynamic>,
+        );
+        await db.update(
+          'career_saves',
+          _summaryValues(career),
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      } catch (_) {
+        // Um resumo antigo inválido não deve bloquear a migração. A abertura
+        // do save continua validando o payload original normalmente.
+      }
+    }
   }
 
   static Future<void> _migrateV1ToV2(Database db) async {
@@ -101,6 +155,7 @@ class SqliteCareerRepository implements CareerRepository {
         'round_index': state.roundIndex,
         'schema_version': state.schemaVersion,
         'payload': jsonEncode(state.toJson()),
+        ..._summaryValues(state),
         'created_at': state.createdAt.millisecondsSinceEpoch,
         'updated_at': now,
       },
@@ -110,43 +165,47 @@ class SqliteCareerRepository implements CareerRepository {
 
   @override
   Future<List<CareerSaveSummary>> listSaves() async {
-    final rows = await (await _db()).query('career_saves', orderBy: 'updated_at DESC');
+    final rows = await (await _db()).query(
+      'career_saves',
+      columns: const [
+        'id',
+        'career_name',
+        'manager_name',
+        'user_club_id',
+        'user_club_name',
+        'season',
+        'round_index',
+        'user_club_short_name',
+        'user_club_nickname',
+        'user_club_primary_color',
+        'user_club_secondary_color',
+        'user_club_icon',
+        'league_position',
+        'next_opponent_name',
+        'next_match_date',
+        'next_match_at_home',
+        'total_rounds',
+        'created_at',
+        'updated_at',
+      ],
+      orderBy: 'updated_at DESC',
+    );
     return rows.map(_summaryFromRow).toList(growable: false);
   }
 
-  static CareerSaveSummary _summaryFromRow(Map<String, Object?> row) {
-    CareerState? career;
-    try {
-      final payload = row['payload'] as String?;
-      if (payload?.isNotEmpty == true) {
-        career = CareerState.fromJson(
-          jsonDecode(payload!) as Map<String, dynamic>,
-        );
-      }
-    } catch (_) {
-      // A Central de Carreiras continua exibindo os metadados SQL mesmo se o
-      // payload estiver incompleto. O erro real será tratado ao abrir o save.
-    }
-
-    final userClub = (() {
-      final value = career;
-      if (value == null) return null;
-      try {
-        return value.userClub;
-      } catch (_) {
-        return null;
-      }
-    })();
-    var standingIndex = -1;
-    if (career != null) {
-      final userClubId = career.userClubId;
-      standingIndex = LeagueEngine.rebuildStandings(career.clubs, career.fixtures)
-          .indexWhere((standing) => standing.clubId == userClubId);
-    }
-    final fixture = career?.nextUserFixture;
+  static Map<String, Object?> _summaryValues(CareerState career) {
+    final userClub = career.userClub;
+    final standings = LeagueEngine.rebuildStandings(
+      career.clubsForPrimaryCompetition(),
+      career.primaryCompetitionFixtures,
+    );
+    final standingIndex = standings.indexWhere(
+      (standing) => standing.clubId == career.userClubId,
+    );
+    final fixture = career.nextUserFixture;
     String? opponentName;
     bool? atHome;
-    if (career != null && fixture != null) {
+    if (fixture != null) {
       atHome = fixture.homeClubId == career.userClubId;
       final opponentId = atHome ? fixture.awayClubId : fixture.homeClubId;
       for (final club in career.clubs) {
@@ -156,6 +215,46 @@ class SqliteCareerRepository implements CareerRepository {
         }
       }
     }
+    return {
+      'user_club_short_name': userClub.shortName,
+      'user_club_nickname': userClub.nickname,
+      'user_club_primary_color': userClub.colors.primaryHex,
+      'user_club_secondary_color': userClub.colors.secondaryHex,
+      'user_club_icon': userClub.iconBase64,
+      'league_position': standingIndex >= 0 ? standingIndex + 1 : null,
+      'next_opponent_name': opponentName,
+      'next_match_date': fixture?.date.millisecondsSinceEpoch,
+      'next_match_at_home': atHome == null ? null : (atHome ? 1 : 0),
+      'total_rounds': career.totalUserRounds,
+    };
+  }
+
+  static CareerSaveSummary _summaryFromRow(Map<String, Object?> row) {
+    final shortName = row['user_club_short_name'] as String?;
+    final primaryColor = row['user_club_primary_color'] as int?;
+    final secondaryColor = row['user_club_secondary_color'] as int?;
+    final visualClub = shortName == null || primaryColor == null || secondaryColor == null
+        ? null
+        : Club(
+            id: row['user_club_id'] as String? ?? '',
+            name: row['user_club_name'] as String? ?? 'Clube',
+            shortName: shortName,
+            nickname: row['user_club_nickname'] as String? ?? shortName,
+            colors: ClubColors(
+              primaryHex: primaryColor,
+              secondaryHex: secondaryColor,
+            ),
+            iconBase64: row['user_club_icon'] as String?,
+            reputation: 0,
+            money: 0,
+            transferBudget: 0,
+            stadium: const Stadium(name: '', capacity: 0, ticketPrice: 0),
+            managerName: '',
+            fanBase: 0,
+            squad: const [],
+          );
+    final nextMatchTimestamp = row['next_match_date'] as int?;
+    final atHomeValue = row['next_match_at_home'] as int?;
 
     return CareerSaveSummary(
       careerId: row['id'] as String,
@@ -167,11 +266,14 @@ class SqliteCareerRepository implements CareerRepository {
       roundIndex: row['round_index'] as int? ?? 0,
       createdAt: DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int? ?? 0),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int? ?? 0),
-      userClub: userClub,
-      leaguePosition: standingIndex >= 0 ? standingIndex + 1 : null,
-      nextOpponentName: opponentName,
-      nextMatchDate: fixture?.date,
-      nextMatchAtHome: atHome,
+      userClub: visualClub,
+      leaguePosition: row['league_position'] as int?,
+      nextOpponentName: row['next_opponent_name'] as String?,
+      nextMatchDate: nextMatchTimestamp == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(nextMatchTimestamp),
+      nextMatchAtHome: atHomeValue == null ? null : atHomeValue == 1,
+      totalRounds: row['total_rounds'] as int? ?? 38,
     );
   }
 

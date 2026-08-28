@@ -171,7 +171,8 @@ class CareerController extends Notifier<CareerHubState> {
     try {
       final now = DateTime.now();
       final careerId = 'career-${now.microsecondsSinceEpoch}';
-      final defaultClubPack = await loadClubIdentityPack();
+      final defaultClubPack =
+          config.clubIdentityPack ?? await loadClubIdentityPack();
       final repository = ref.read(careerRepositoryProvider);
       final defaultSettings = AppPreferences.decodeGameSettings(
         await repository.loadAppValue(AppPreferences.defaultGameSettingsKey),
@@ -185,6 +186,8 @@ class CareerController extends Notifier<CareerHubState> {
         tactic: config.tactic,
         seed: now.microsecondsSinceEpoch & 0x7fffffff,
         clubIdentityPack: defaultClubPack,
+        clubIdentityPackIsValidated: true,
+        leagueSetup: config.leagueSetup,
         settings: defaultSettings.copyWith(
           matchDurationMinutes: config.matchDuration.minutes,
         ),

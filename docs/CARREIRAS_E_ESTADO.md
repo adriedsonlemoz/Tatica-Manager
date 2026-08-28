@@ -54,7 +54,7 @@ A divisão adicional já foi aplicada no build `0.1.0+3`: partida ao vivo fica e
 
 ## Banco local
 
-O banco passa para a versão 2.
+O banco atual está na versão 3. O modelo de múltiplos saves criado na v2 continua o mesmo; a v3 acrescenta somente metadados leves de listagem.
 
 `career_saves` deixa de ter um único registro fixo e passa a aceitar vários IDs de carreira. Cada linha guarda metadados leves para a Central de Carreiras e o payload completo em JSON.
 
@@ -70,7 +70,7 @@ Metadados:
 - data de criação;
 - última atualização.
 
-A tabela `app_meta` guarda o ID da última carreira aberta.
+A tabela `app_meta` guarda o ID da última carreira aberta. Na v3, `career_saves` também persiste um resumo derivado (identidade visual mínima, colocação, próximo jogo e total de rodadas), permitindo listar carreiras sem selecionar o payload JSON completo.
 
 ## Compatibilidade
 
@@ -78,12 +78,14 @@ O `onUpgrade` migra o banco antigo de save único para o modelo de múltiplos sa
 
 ## Nova carreira
 
-A criação foi dividida em quatro etapas:
+A criação atual possui seis etapas:
 
-1. perfil do técnico, nome do save e origem estruturada;
-2. país, campeonato, série e clube;
-3. formação (com mini campo) e mentalidade;
-4. pressão e ritmo em uma etapa visual dedicada.
+1. escolher usar um técnico existente ou criar um novo;
+2. selecionar/preencher o perfil do técnico;
+3. país, campeonato, série e clube;
+4. selecionar a profundidade das ligas do save;
+5. formação;
+6. mentalidade, pressão, ritmo e duração da partida.
 
 Os uniformes não bloqueiam a criação. A primeira carreira usa automaticamente a identidade visual do clube. Personalização de uniforme deve ser um recurso opcional futuro e não uma dependência do motor da carreira.
 
@@ -200,3 +202,18 @@ Contratos aceitos permanecem em `Club.sponsorships`. Propostas pendentes, contra
 `ManagerProfile` mantém todos os campos antigos e acrescenta, com fallback, `id`, `birthDate`, `currentClubId`, `contractUntilSeason`, `reputation`, `style`, `preferredFormation`, `preferredMentality`, `experienceYears`, `overall` e `userCreated`. O técnico do usuário continua em `CareerState.manager`; a lista `managers` é o banco completo e mantém a mesma instância lógica por ID, evitando duplicação durante a criação da carreira.
 
 Saves schema 10 ou anteriores sem `managers` são normalizados em memória: o técnico do usuário é preservado e recebe ID estável quando necessário; os demais clubes recebem referências derivadas de seus IDs e do `managerName` já persistido. Nenhum `Club.id`, `Player.id`, fixture, resultado, negociação ou regra do Match Engine é recalculado pela migração. Na próxima persistência normal do save, o banco já é gravado no schema 11.
+
+
+## Seleção de ligas — schema 12 e SQLite v3 (0.1.1.75)
+
+`CareerState.leagueSetup` passa a persistir a profundidade das competições do save com `LeagueLoadLevel.full`, `background` e `unloaded`. A configuração pertence à carreira; não remove nem altera dados do catálogo instalado. Saves schema 11 ou anteriores sem o campo são normalizados para schema 12, mantendo completas as competições que já existiam em seus fixtures e preservando IDs.
+
+`CareerLeaguePlanner` usa somente `CompetitionCatalog` para os presets Rápido, Equilibrado, Mundo amplo e Personalizado. A série que contém `userClubId` é sempre forçada como completa. `CareerFactory` materializa em `CareerState.clubs` somente clubes de competições carregadas, de forma que os loops existentes de recuperação diária, contratos e CPU não percorrem ligas `unloaded` quando o catálogo crescer.
+
+O Match Engine não foi duplicado. `CpuFixtureResolver` roteia competições completas ao `MatchEngine.simulate` existente; apenas partidas CPU de uma competição explicitamente `background` podem usar `BackgroundFixtureResolver`, que retorna placar e estatísticas agregadas sem timeline. Flame permanece exclusivamente visual. Como o catálogo da 0.1.1.75 ainda contém apenas a Série A, todos os jogos reais atuais continuam no caminho completo.
+
+A competição principal passa a derivar seus clubes, fixtures e quantidade total de rodadas. `seasonComplete`, `currentRound`, a temporada seguinte e o rateio de patrocínio deixam de assumir funcionalmente 38 rodadas, embora a Série A atual continue gerando 38.
+
+SQLite v3 mantém `payload` como fonte integral do save, mas adiciona colunas de resumo para a Central de Carreiras. A migração v2 -> v3 lê cada save existente uma única vez para preencher o resumo; depois disso, `listSaves()` não seleciona o payload completo. Isso reduz leitura, alocação e desserialização ao abrir a Central de Carreiras sem transformar o estado da carreira em tabelas paralelas.
+
+A seleção fica imutável depois da criação nesta etapa. Ativar/desativar ligas no meio de uma carreira continua considerado inseguro enquanto não houver política explícita para calendário, classificação, resultados, estatísticas e histórico já disputados. A análise completa está em `docs/LEAGUE_LOADING.md`.

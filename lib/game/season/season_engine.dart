@@ -112,8 +112,15 @@ abstract final class SeasonEngine {
 
     final userClub = clubs.firstWhere((club) => club.id == state.userClubId);
     final starters = LineupEngine.autoSelect(userClub.squad, state.formation);
-    final fixtures =
-        LeagueEngine.generateDoubleRoundRobin(clubs, season: nextSeason);
+    final primaryClubIds = state.primaryCompetitionClubIds;
+    final primaryClubs = clubs
+        .where((club) => primaryClubIds.contains(club.id))
+        .toList(growable: false);
+    final fixtures = LeagueEngine.generateDoubleRoundRobin(
+      primaryClubs,
+      season: nextSeason,
+      competitionId: state.primaryCompetitionId,
+    );
     final initialDate = CareerCalendarEngine.initialDateFor(
       fixtures: fixtures,
       userClubId: state.userClubId,
@@ -159,7 +166,7 @@ abstract final class SeasonEngine {
       clubs: clubs,
       freeAgents: freeAgents,
       fixtures: fixtures,
-      standings: LeagueEngine.initialStandings(clubs),
+      standings: LeagueEngine.initialStandings(primaryClubs),
       starterIds: starters,
       seasonHistory: [...state.seasonHistory, summary],
       managerHistory: managerHistory,

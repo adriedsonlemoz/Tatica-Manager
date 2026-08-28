@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.74
-Android versionCode: 76
-pubspec: 0.1.1+76
+Release visível: 0.1.1.75
+Android versionCode: 77
+pubspec: 0.1.1+77
 
-Novidade desta base: corrige o único teste estrutural restante do GitHub Actions da 0.1.1.72, atualizando `editor_experience_test.dart` para validar o salvamento modularizado entre o arquivo principal, `club_editor_import_actions.dart` e `editor_feedback_dialog.dart`, sem alterar código funcional. Preserva `CareerState` schema 11, SQLite v2, IDs/saves e Match Engine.
+Novidade desta base: adiciona seleção de ligas por save com presets e modo personalizado, persiste `CareerLeagueSetup` no `CareerState` schema 12, mantém a liga do jogador completa, prepara resolução estatística somente para jogos CPU de futuras ligas em segundo plano e migra o SQLite para v3 com resumo leve da Central de Carreiras. IDs e saves existentes são preservados e o Match Engine continua único.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -50,7 +50,7 @@ MATCH ENGINE
 O Match Engine já foi modularizado. Preserve os módulos de força, probabilidade, seleção de jogadores, eventos, timeline, estatísticas e trajetória. match_engine.dart deve continuar principalmente como orquestrador.
 
 FLUXO DE NOVA CARREIRA
-Bootstrap → Central de Carreiras → Nova carreira → Escolha do técnico (existente ou criado) → Competição/clube → Formação → Mentalidade/pressão/ritmo → Assinatura visual do contrato → Home.
+Bootstrap → Central de Carreiras → Nova carreira → Escolha do técnico (existente ou criado) → Competição/clube → Seleção de ligas do save → Formação → Mentalidade/pressão/ritmo → Assinatura visual do contrato → Home.
 
 A carreira suporta múltiplos saves. Não reintroduza save único global.
 
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.75 com versionCode > 76.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.76 com versionCode > 77.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync
@@ -135,11 +135,23 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 Esses itens ainda precisam de validação no APK/aparelho quando aplicável. Se um problema continuar no dispositivo, corrija a causa sem desfazer a arquitetura.
 
 PRÓXIMAS PRIORIDADES
-1. Validar a 0.1.1.48 no GitHub Actions; o analyzer da 0.1.1.47 já passou e os dois testes estruturais de UI foram alinhados à modularização atual.
-2. Em aparelho, testar em bloco: avanço diário, HOJE É DIA DE JOGO, pré-jogo, calendário em dias variados, Escalação e pausa de substituição.
-3. Testar save/load depois de deixar o clube, receber proposta e assumir outro, inclusive após avançar dias desempregado.
-4. Preservar o calendário configurável por `competitionId` quando novas ligas/copas forem adicionadas.
-5. Resolver a assinatura persistente do APK quando conveniente, mantendo o fallback atual até os Secrets serem configurados.
-6. Categorias de base, centro médico e treino podem evoluir depois sem criar controllers vazios ou arquitetura paralela.
+1. Validar a 0.1.1.75 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
+2. Em aparelho, validar a nova etapa de seleção de ligas e confirmar que a Série A do clube permanece completa em todos os presets.
+3. Testar abertura da Central de Carreiras com múltiplos saves antigos e novos após a migração SQLite v2 -> v3.
+4. Exercitar avanço diário, jogos CPU, mercado e contratos para confirmar que a configuração persistida não altera a Série A atual.
+5. Quando uma segunda competição real for adicionada ao catálogo, evoluir calendário/classificação por competição antes de declarar suporte completo a múltiplas ligas simultâneas.
+6. Manter alteração de ligas após o início da carreira bloqueada até existir reconstrução segura de calendário, tabela, resultados e estatísticas.
 
 ```
+
+
+## Seleção de ligas por carreira — 0.1.1.75
+
+A criação possui uma etapa de configuração do mundo do save baseada em `CompetitionCatalog`. Não criar ligas fictícias: apenas competições reais cadastradas podem aparecer. A liga do clube do usuário deve permanecer `full`.
+
+`CareerState` schema 12 persiste `CareerLeagueSetup`. Ligas `unloaded` não entram no estado de novas carreiras; `background` permanece preparada para mercado/contratos e resolução estatística CPU; `full` continua no Match Engine. Não criar segundo Match Engine e não mover lógica para Flame.
+
+SQLite v3 mantém o payload integral, mas a Central de Carreiras usa colunas de resumo e não seleciona `payload` em `listSaves()`. Preservar essa otimização e a migração v2 -> v3.
+
+A troca de ligas após o início do save continua desabilitada até haver regras explícitas para reconstrução de calendário, classificação, resultados e estatísticas. Consulte `docs/LEAGUE_LOADING.md`.
+

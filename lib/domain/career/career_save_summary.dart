@@ -16,6 +16,7 @@ class CareerSaveSummary {
     this.nextOpponentName,
     this.nextMatchDate,
     this.nextMatchAtHome,
+    this.totalRounds = 38,
   });
 
   final String careerId;
@@ -28,14 +29,15 @@ class CareerSaveSummary {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// Metadados visuais derivados do payload do save. Permanecem opcionais para
-  /// que um payload antigo ou parcialmente corrompido ainda possa ser listado.
+  /// Metadados leves persistidos junto do save para a Central de Carreiras não
+  /// precisar desserializar o payload completo durante a listagem.
   final Club? userClub;
   final int? leaguePosition;
   final String? nextOpponentName;
   final DateTime? nextMatchDate;
   final bool? nextMatchAtHome;
+  final int totalRounds;
 
-  int get currentRound => (roundIndex + 1).clamp(1, 38).toInt();
-  bool get seasonComplete => roundIndex >= 38;
+  int get currentRound => (roundIndex + 1).clamp(1, totalRounds).toInt();
+  bool get seasonComplete => roundIndex >= totalRounds;
 }

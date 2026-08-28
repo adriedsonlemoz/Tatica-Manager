@@ -8,20 +8,31 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.74`
-- **Android versionCode:** `76`
+- **Release deste handoff:** `0.1.1.75`
+- **Android versionCode:** `77`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
-## Estado funcional da release 0.1.1.74
+## Estado funcional da release 0.1.1.75
+
+### Seleção de ligas e carregamento por save
+
+- `CareerLeagueSetup` (schema 12) persiste `full`, `background` e `unloaded` por `competitionId`; a competição do clube do usuário é sempre `full`.
+- A criação usa `CareerLeaguePlanner` e `LeagueSelectionStep`; presets trabalham somente com `CompetitionCatalog`, sem dados fictícios.
+- `CareerFactory` materializa apenas clubes de competições carregadas. A Série A atual continua completa e com 38 rodadas derivadas do calendário.
+- `CpuFixtureResolver` mantém `MatchEngine.simulate` para ligas completas e usa `BackgroundFixtureResolver` apenas em competição explicitamente `background`; Flame continua visual.
+- SQLite v3 adiciona resumo de save e `listSaves()` não seleciona `payload`; migração v2 -> v3 preserva o JSON original e preenche metadados derivados.
+- Alterar ligas depois de iniciar a carreira continua desabilitado até existir política segura de reconstrução de calendário/tabela/estatísticas.
+- Detalhes técnicos: `docs/LEAGUE_LOADING.md`.
+
 
 - remove integralmente a música padrão anterior (`football.mp3` e `menu_01.m4a` a `menu_05.m4a`) e passa a usar somente as 11 faixas OGG fornecidas para o projeto;
 - mantém `AudioManager` como único player e adiciona estado de faixa atual, seleção manual e comando de próxima música, preservando shuffle/loop e playlist personalizada;
 - extrai a interface navegável da playlist para `menu_music_player_card.dart`, evitando ampliar ainda mais `audio_settings_screen.dart`;
 - reorganiza `career_arrival_screen.dart` para integrar melhor a matéria ao azul-grafite e eliminar o grande vazio entre conteúdo e botão, preservando dados reais da carreira e a flag de primeira entrada;
 - atualiza testes de áudio/onboarding e impede `tool/generate_audio_assets.py` de recriar a playlist M4A antiga;
-- preserva `CareerState` schema 11, SQLite v2, IDs, saves, controllers e Match Engine; Flame continua apenas como apresentação.
+- a evolução de áudio herdada da 0.1.1.74 continua preservada; a 0.1.1.75 eleva o estado atual para `CareerState` schema 12 e SQLite v3, mantendo IDs, saves, controllers e o Match Engine único.
 
 ## Estado funcional da release 0.1.1.73
 
@@ -427,10 +438,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         76
-pubspec:             0.1.1+76
+versionCode:         77
+pubspec:             0.1.1+77
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.75` e usar um `versionCode` maior que 76.
+A próxima alteração/entrega normalmente deve virar `0.1.1.76` e usar um `versionCode` maior que 77.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
@@ -547,11 +558,11 @@ Sempre adicione ou ajuste testes quando mudar regra de negócio.
 
 ## Próximas prioridades recomendadas
 
-1. Validar a `0.1.1.48` no GitHub Actions: analyzer já passou na 0.1.1.47; repetir testes e build release após o alinhamento dos dois testes estruturais.
-2. Se o CI revelar erro, corrigir a causa real sem desfazer calendário, carreira do técnico, disciplina ou arquitetura do Match Engine.
-3. No próximo bloco de teste em aparelho, validar transição diária, apresentação de dia de jogo, pré-jogo, campo da Escalação e pausa real da substituição.
-4. Exercitar a carreira do técnico deixando um clube, avançando alguns dias, recebendo/recusando proposta e assumindo outro clube; repetir save/load depois da mudança.
-5. Manter futuras ligas/copas parametrizadas por competição e calendário, sem voltar a codificar todos os jogos em domingos.
+1. Validar a `0.1.1.75` no GitHub Actions com analyzer, testes e build release.
+2. Em aparelho, validar a nova etapa de ligas, criação de carreira e carregamento de saves antigos após a migração SQLite v2 -> v3.
+3. Exercitar avanço diário, partida do usuário, jogos CPU, mercado e contratos para confirmar que a Série A atual continua no caminho completo do Match Engine.
+4. Quando entrar uma segunda competição real, implementar estado competitivo por competição (calendário/classificação/rodada/estatísticas) antes de ativá-la como liga completa simultânea.
+5. Manter a seleção de ligas imutável após o início do save até existir reconstrução segura de calendário, tabela, resultados e estatísticas.
 6. Resolver posteriormente a keystore release persistente; até lá, preservar o fallback já documentado e o `applicationId`.
 
 ## Regras de manutenção

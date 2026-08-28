@@ -64,11 +64,12 @@ void main() {
     expect(style, contains("'DURAÇÃO DA PARTIDA'"));
     expect(style, contains('MatchDurationPreset.values'));
     expect(style, contains("'min/tempo'"));
-    expect(flow, contains("subtitle: 'Etapa \${_step + 1} de 5'"));
+    expect(flow, contains("subtitle: 'Etapa \${_step + 1} de 6'"));
     expect(flow, contains('ManagerChoiceStep('));
     expect(flow, contains('ExistingManagerSelectionStep('));
     expect(flow, contains('ManagerProfileStep('));
     expect(flow, contains('ClubSelectionStep('));
+    expect(flow, contains('LeagueSelectionStep('));
     expect(flow, contains('CareerSetupStep('));
     expect(flow, contains('CareerStyleStep('));
     expect(flow, isNot(contains('_birthStateController')));

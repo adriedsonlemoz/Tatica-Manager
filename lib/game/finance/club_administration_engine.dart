@@ -410,7 +410,7 @@ abstract final class ClubAdministrationEngine {
       performanceBonus: (base * .18).round(),
       objective: objective,
       conditions:
-          'Receita dividida pelas 38 rodadas; bônus depende do objetivo esportivo/comercial.',
+          'Receita dividida pelas ${state.totalUserRounds} rodadas; bônus depende do objetivo esportivo/comercial.',
       offeredAt: state.currentDate,
       expiresAt: state.currentDate.add(const Duration(days: 21)),
     );

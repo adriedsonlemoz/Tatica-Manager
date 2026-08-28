@@ -83,11 +83,18 @@ void main() {
     final round = File(
       'lib/game/league/live_round_simulator.dart',
     ).readAsStringSync();
+    final resolver = File(
+      'lib/game/league/cpu_fixture_resolver.dart',
+    ).readAsStringSync();
 
     expect(screen, isNot(contains('MatchEngine.simulate')));
     expect(renderer, isNot(contains('MatchEngine')));
-    expect(round, contains('MatchEngine.simulate'));
+    expect(round, contains('CpuFixtureResolver.resolve'));
+    expect(round, contains('fixture.competitionId == competitionId'));
     expect(round, contains('PreparedRoundMatch'));
+    expect(resolver, contains('MatchEngine.simulate'));
+    expect(resolver, contains('BackgroundFixtureResolver.resolve'));
+    expect(resolver, isNot(contains('class MatchEngine')));
   });
 }
 

@@ -12,12 +12,15 @@ import '../../domain/career/manager_profile.dart';
 import '../../domain/career/new_career_config.dart';
 import '../../domain/club/club_identity.dart';
 import '../../domain/formation/formation.dart';
+import '../../domain/season/league_loading.dart';
 import '../../domain/settings/match_presentation_settings.dart';
 import '../../domain/tactic/tactic.dart';
+import '../../game/career/career_league_planner.dart';
 import 'career_setup_step.dart';
 import 'career_style_step.dart';
 import 'career_signing_screen.dart';
 import 'club_selection_screen.dart';
+import 'league_selection_step.dart';
 import 'manager_profile_step.dart';
 import 'manager_selection_step.dart';
 
@@ -42,6 +45,8 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
   String? _clubId;
   ManagerProfile? _managerProfile;
   FormationType _formation = FormationType.f433;
+  CareerLeagueSetup _leagueSetup = const CareerLeagueSetup();
+  String? _leagueSetupClubId;
   Mentality _mentality = Mentality.balanced;
   Pressing _pressing = Pressing.medium;
   MatchTempo _tempo = MatchTempo.normal;
@@ -76,7 +81,7 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
     return PremiumScaffold(
       appBar: GameTopBar(
         title: 'Nova carreira',
-        subtitle: 'Etapa ${_step + 1} de 5',
+        subtitle: 'Etapa ${_step + 1} de 6',
       ),
       bottomNavigationBar: _step == 0
           ? null
@@ -98,11 +103,11 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
               child: FilledButton.icon(
                 onPressed: hub.loading ? null : _next,
                 icon: Icon(
-                  _step == 4
+                  _step == 5
                       ? Icons.sports_soccer_rounded
                       : Icons.arrow_forward_rounded,
                 ),
-                label: Text(_step == 4 ? 'Começar carreira' : 'Continuar'),
+                label: Text(_step == 5 ? 'Começar carreira' : 'Continuar'),
               ),
             ),
           ],
@@ -162,7 +167,12 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
           identityPack: _clubIdentityPack,
           onSelected: (value) => setState(() => _clubId = value),
         ),
-      3 => CareerSetupStep(
+      3 => LeagueSelectionStep(
+          userClubId: _clubId!,
+          setup: _leagueSetup,
+          onChanged: (value) => setState(() => _leagueSetup = value),
+        ),
+      4 => CareerSetupStep(
           formation: _formation,
           onFormation: (value) => setState(() => _formation = value),
         ),
@@ -256,12 +266,33 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
         _show('Escolha um clube para continuar.');
         return;
       }
-      setState(() => _step = 3);
+      final clubId = _clubId!;
+      final clubChanged = _leagueSetupClubId != clubId;
+      final nextSetup = _leagueSetup.competitions.isEmpty ||
+              (clubChanged && _leagueSetup.preset != CareerWorldPreset.custom)
+          ? CareerLeaguePlanner.forPreset(
+              userClubId: clubId,
+              preset: _leagueSetup.preset,
+            )
+          : CareerLeaguePlanner.normalize(
+              setup: _leagueSetup,
+              userClubId: clubId,
+            );
+      setState(() {
+        _leagueSetup = nextSetup;
+        _leagueSetupClubId = clubId;
+        _step = 3;
+      });
       return;
     }
 
     if (_step == 3) {
       setState(() => _step = 4);
+      return;
+    }
+
+    if (_step == 4) {
+      setState(() => _step = 5);
       return;
     }
 
@@ -283,6 +314,11 @@ class _NewCareerFlowScreenState extends ConsumerState<NewCareerFlowScreen> {
         tempo: _tempo,
       ),
       matchDuration: _matchDuration,
+      leagueSetup: CareerLeaguePlanner.normalize(
+        setup: _leagueSetup,
+        userClubId: _clubId!,
+      ),
+      clubIdentityPack: _clubIdentityPack,
     );
     final created =
         await ref.read(careerControllerProvider.notifier).createCareer(config);
@@ -318,12 +354,12 @@ class _Progress extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
         child: Row(
-          children: List.generate(5, (index) {
+          children: List.generate(6, (index) {
             final active = index <= step;
             return Expanded(
               child: Container(
                 height: 4,
-                margin: EdgeInsets.only(right: index == 4 ? 0 : 6),
+                margin: EdgeInsets.only(right: index == 5 ? 0 : 6),
                 decoration: BoxDecoration(
                   color: active ? AppColors.green : AppColors.border,
                   borderRadius: BorderRadius.circular(4),

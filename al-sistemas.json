@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.74",
+  "version": "0.1.1.75",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+76"
+    "pubspecVersion": "0.1.1+77"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.74",
-    "versionCode": 76
+    "versionName": "0.1.1.75",
+    "versionCode": 77
   },
   "release": {
-    "version": "0.1.1.74",
-    "revision": 74,
-    "androidVersionCode": 76
+    "version": "0.1.1.75",
+    "revision": 75,
+    "androidVersionCode": 77
   },
   "changelog": [
+    "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes.",
     "Substitui integralmente a música padrão anterior por 11 faixas OGG otimizadas, remove football.mp3 e menu_01–05.m4a, mantém um único AudioManager e adiciona faixa atual, seleção manual e avanço de música na tela de Áudio; reorganiza a apresentação da primeira entrada da carreira para eliminar o grande vazio vertical e integrar melhor a matéria ao visual azul-grafite, preservando playlist personalizada, saves, CareerState schema 11, SQLite v2, IDs e Match Engine.",
     "Corrige o único teste estrutural restante revelado pelo GitHub Actions da 0.1.1.72: editor_experience_test.dart deixa de procurar o antigo _showSaveConfirmation no arquivo principal e passa a validar o fluxo atual modularizado entre club_editor_screen.dart, club_editor_import_actions.dart e editor_feedback_dialog.dart, incluindo navegação por competição, salvamento por showEditorNotice e AlertDialog central, sem alterar código funcional, UI, CareerState schema 11, SQLite v2, IDs, saves ou Match Engine.",
     "Corrige os nove warnings invalid_use_of_protected_member revelados pelo GitHub Actions na 0.1.1.71: as ações extraídas do editor deixam de chamar State.setState diretamente a partir de uma extension e passam a usar um método interno do próprio _ClubEditorScreenState, preservando a separação de arquivos, o comportamento do editor, CareerState schema 11, SQLite v2, IDs, saves e Match Engine.",

@@ -4,7 +4,7 @@ import '../../domain/match/match_models.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
 import '../lineup/lineup_engine.dart';
-import '../match/engine/match_engine.dart';
+import 'cpu_fixture_resolver.dart';
 
 class PreparedRoundMatch {
   const PreparedRoundMatch({
@@ -20,18 +20,21 @@ class PreparedRoundMatch {
   final List<String> awayStarterIds;
 }
 
-/// Prepara os outros jogos com o Match Engine existente. O resultado é criado
-/// uma única vez, exibido de forma progressiva na transmissão e reutilizado ao
-/// concluir a rodada.
+/// Prepara os outros jogos pelo resolvedor CPU central. Competições completas
+/// continuam no Match Engine; apenas ligas explicitamente em segundo plano
+/// podem usar a resolução estatística leve. O resultado é criado uma única vez
+/// e reutilizado ao concluir a rodada.
 abstract final class LiveRoundSimulator {
   static List<PreparedRoundMatch> prepareOtherMatches({
     required CareerState career,
     required int round,
+    required String competitionId,
     required String userFixtureId,
   }) {
     return career.fixtures
         .where(
           (fixture) =>
+              fixture.competitionId == competitionId &&
               fixture.round == round &&
               !fixture.played &&
               fixture.id != userFixtureId,
@@ -50,7 +53,8 @@ abstract final class LiveRoundSimulator {
     final awayFormation = formationFor(away);
     final homeStarters = LineupEngine.autoSelect(home.squad, homeFormation);
     final awayStarters = LineupEngine.autoSelect(away.squad, awayFormation);
-    final result = MatchEngine.simulate(
+    final result = CpuFixtureResolver.resolve(
+      level: career.leagueSetup.levelFor(fixture.competitionId),
       fixture: fixture,
       home: home,
       away: away,

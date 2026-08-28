@@ -145,6 +145,7 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       otherMatches: LiveRoundSimulator.prepareOtherMatches(
         career: career,
         round: fixture.round,
+        competitionId: fixture.competitionId,
         userFixtureId: fixture.id,
       ),
     );
@@ -409,7 +410,14 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       );
     }
 
-    var standings = LeagueEngine.rebuildStandings(clubs, fixtures);
+    var standings = LeagueEngine.rebuildStandings(
+      career.clubsForPrimaryCompetition(clubs),
+      fixtures
+          .where(
+            (fixture) => fixture.competitionId == career.primaryCompetitionId,
+          )
+          .toList(growable: false),
+    );
     final userHome = live.fixture.homeClubId == career.userClubId;
     final tablePosition =
         standings.indexWhere((standing) => standing.clubId == career.userClubId) +
@@ -422,6 +430,7 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       round: round,
       home: userHome,
       tablePosition: max(1, tablePosition),
+      roundsPerSeason: career.totalUserRounds,
     );
     clubs = clubs
         .map((club) => club.id == userClub.id ? finance.club : club)
@@ -437,7 +446,14 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       careerId: career.careerId,
     );
     clubs = cpu.clubs;
-    standings = LeagueEngine.rebuildStandings(clubs, fixtures);
+    standings = LeagueEngine.rebuildStandings(
+      career.clubsForPrimaryCompetition(clubs),
+      fixtures
+          .where(
+            (fixture) => fixture.competitionId == career.primaryCompetitionId,
+          )
+          .toList(growable: false),
+    );
 
     final marketEvents = CpuMarketNewsEngine.build(
       result: cpu,

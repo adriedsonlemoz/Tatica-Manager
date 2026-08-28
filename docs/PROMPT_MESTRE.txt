@@ -1548,3 +1548,21 @@ Quero terminar com um Tática Manager novo que seja:
 A primeira versão deve privilegiar QUALIDADE DA FUNDAÇÃO em vez de quantidade de conteúdo.
 
 Depois que essa liga estiver totalmente consolidada, novas divisões, copas, competições e sistemas serão adicionados como expansões, e não como remendos arquiteturais.
+
+======================================================================
+ATUALIZAÇÃO ARQUITETURAL — 0.1.1.75 — CARREGAMENTO DE LIGAS POR SAVE
+======================================================================
+
+A base continua com uma única liga real cadastrada, mas a criação de carreira agora persiste `CareerLeagueSetup` no schema 12 para preparar a expansão sem obrigar todo o catálogo futuro a entrar em todo save.
+
+Regras atuais:
+- usar somente competições reais de `CompetitionCatalog`; não criar ligas fictícias para demonstrar o sistema;
+- a competição do clube do usuário é sempre completa;
+- ligas `unloaded` permanecem no banco/catálogo instalado, mas seus clubes não são materializados na nova carreira;
+- ligas `background` ficam preparadas para mercado/contratos e resolução estatística de jogos CPU;
+- ligas `full` continuam usando o Match Engine existente;
+- Flame continua somente como representação visual;
+- não habilitar alteração de ligas após o início da carreira sem política explícita de reconstrução de calendário, classificação, resultados e estatísticas;
+- SQLite v3 preserva o payload integral e usa resumo leve para listar saves sem desserializá-los por completo.
+
+Consultar `docs/LEAGUE_LOADING.md` antes de expandir países/divisões ou alterar este fluxo.

@@ -13,6 +13,7 @@ import '../tactic/tactic.dart';
 import '../transfer/market_career.dart';
 import 'career_event.dart';
 import 'inbox_message.dart';
+import 'league_loading.dart';
 
 class SeasonSummary {
   const SeasonSummary({
@@ -154,10 +155,11 @@ class CareerState {
     this.inbox = const [],
     this.youthAcademy = const [],
     this.clubAdministration = const ClubAdministrationState(),
+    this.leagueSetup = const CareerLeagueSetup(),
     this.lastMatch,
   });
 
-  static const int currentSchemaVersion = 11;
+  static const int currentSchemaVersion = 12;
   static const int maxStoredNews = 80;
 
   final int schemaVersion;
@@ -190,13 +192,57 @@ class CareerState {
   final List<InboxMessage> inbox;
   final List<Player> youthAcademy;
   final ClubAdministrationState clubAdministration;
+  final CareerLeagueSetup leagueSetup;
   final MatchResult? lastMatch;
 
   Club get userClub => clubs.firstWhere((club) => club.id == userClubId);
   bool get managerEmployed => managerCareer.isEmployed;
   bool get managerUnemployed => managerCareer.isUnemployed;
-  bool get seasonComplete => roundIndex >= 38;
-  int get currentRound => (roundIndex + 1).clamp(1, 38).toInt();
+
+  String get primaryCompetitionId {
+    for (final fixture in fixtures) {
+      if (fixture.homeClubId == userClubId || fixture.awayClubId == userClubId) {
+        return fixture.competitionId;
+      }
+    }
+    final full = leagueSetup.fullCompetitionIds;
+    return full.isNotEmpty ? full.first : 'br-series-a';
+  }
+
+  List<MatchFixture> get primaryCompetitionFixtures => fixtures
+      .where((fixture) => fixture.competitionId == primaryCompetitionId)
+      .toList(growable: false);
+
+  Set<String> get primaryCompetitionClubIds {
+    final ids = <String>{};
+    for (final fixture in fixtures) {
+      if (fixture.competitionId != primaryCompetitionId) continue;
+      ids.add(fixture.homeClubId);
+      ids.add(fixture.awayClubId);
+    }
+    if (ids.isEmpty) ids.addAll(clubs.map((club) => club.id));
+    return ids;
+  }
+
+  List<Club> clubsForPrimaryCompetition([List<Club>? source]) {
+    final values = source ?? clubs;
+    final allowed = primaryCompetitionClubIds;
+    return values.where((club) => allowed.contains(club.id)).toList(growable: false);
+  }
+
+  int get totalUserRounds {
+    var total = 0;
+    for (final fixture in fixtures) {
+      if (fixture.competitionId == primaryCompetitionId && fixture.round > total) {
+        total = fixture.round;
+      }
+    }
+    return total > 0 ? total : 38;
+  }
+
+  bool get seasonComplete => roundIndex >= totalUserRounds;
+  int get currentRound =>
+      (roundIndex + 1).clamp(1, totalUserRounds).toInt();
 
   MatchFixture? get nextUserFixture {
     if (seasonComplete || managerUnemployed) return null;
@@ -259,6 +305,7 @@ class CareerState {
     List<InboxMessage>? inbox,
     List<Player>? youthAcademy,
     ClubAdministrationState? clubAdministration,
+    CareerLeagueSetup? leagueSetup,
     MatchResult? lastMatch,
     bool clearLastMatch = false,
   }) =>
@@ -293,6 +340,7 @@ class CareerState {
         inbox: inbox ?? this.inbox,
         youthAcademy: youthAcademy ?? this.youthAcademy,
         clubAdministration: clubAdministration ?? this.clubAdministration,
+        leagueSetup: leagueSetup ?? this.leagueSetup,
         lastMatch: clearLastMatch ? null : (lastMatch ?? this.lastMatch),
       );
 
@@ -327,6 +375,7 @@ class CareerState {
         'inbox': inbox.map((e) => e.toJson()).toList(),
         'youthAcademy': youthAcademy.map((e) => e.toJson()).toList(),
         'clubAdministration': clubAdministration.toJson(),
+        'leagueSetup': leagueSetup.toJson(),
         'lastMatch': lastMatch?.toJson(),
       };
 
@@ -339,6 +388,23 @@ class CareerState {
     final fixtures = ((json['fixtures'] as List?) ?? const [])
         .map((e) => MatchFixture.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
+    final userCompetitionId = fixtures
+        .where(
+          (fixture) =>
+              fixture.homeClubId == userClubId ||
+              fixture.awayClubId == userClubId,
+        )
+        .map((fixture) => fixture.competitionId)
+        .firstOrNull ??
+        (fixtures.isNotEmpty ? fixtures.first.competitionId : 'br-series-a');
+    final leagueSetup = json['leagueSetup'] is Map
+        ? CareerLeagueSetup.fromJson(
+            Map<String, dynamic>.from(json['leagueSetup'] as Map),
+          ).ensureFull(userCompetitionId)
+        : CareerLeagueSetup.legacy(
+            competitionIds: fixtures.map((fixture) => fixture.competitionId),
+            userCompetitionId: userCompetitionId,
+          );
     final legacyManagerName = clubs
         .where((club) => club.id == userClubId)
         .map((club) => club.managerName)
@@ -497,6 +563,7 @@ class CareerState {
           json['clubAdministration'] as Map? ?? const {},
         ),
       ),
+      leagueSetup: leagueSetup,
       lastMatch: lastMatch,
     );
   }

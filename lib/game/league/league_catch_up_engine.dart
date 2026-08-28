@@ -1,5 +1,5 @@
 import '../../domain/season/career_state.dart';
-import '../match/engine/match_engine.dart';
+import 'cpu_fixture_resolver.dart';
 import 'league_engine.dart';
 
 /// Keeps the competition calendar moving while the user is temporarily
@@ -26,7 +26,8 @@ abstract final class LeagueCatchUpEngine {
     for (final fixture in pendingPast) {
       final home = state.clubs.firstWhere((club) => club.id == fixture.homeClubId);
       final away = state.clubs.firstWhere((club) => club.id == fixture.awayClubId);
-      final result = MatchEngine.simulate(
+      final result = CpuFixtureResolver.resolve(
+        level: state.leagueSetup.levelFor(fixture.competitionId),
         fixture: fixture,
         home: home,
         away: away,
@@ -41,9 +42,19 @@ abstract final class LeagueCatchUpEngine {
     }
 
     var completedRounds = state.roundIndex;
-    final rounds = fixtures.map((fixture) => fixture.round).toSet().toList()..sort();
+    final primaryCompetitionId = state.primaryCompetitionId;
+    final rounds = fixtures
+        .where((fixture) => fixture.competitionId == primaryCompetitionId)
+        .map((fixture) => fixture.round)
+        .toSet()
+        .toList()
+      ..sort();
     for (final round in rounds) {
-      final roundFixtures = fixtures.where((fixture) => fixture.round == round);
+      final roundFixtures = fixtures.where(
+        (fixture) =>
+            fixture.competitionId == primaryCompetitionId &&
+            fixture.round == round,
+      );
       if (roundFixtures.isNotEmpty && roundFixtures.every((fixture) => fixture.played)) {
         if (round > completedRounds) completedRounds = round;
       }
@@ -52,7 +63,14 @@ abstract final class LeagueCatchUpEngine {
     return state.copyWith(
       roundIndex: completedRounds,
       fixtures: fixtures,
-      standings: LeagueEngine.rebuildStandings(state.clubs, fixtures),
+      standings: LeagueEngine.rebuildStandings(
+        state.clubsForPrimaryCompetition(),
+        fixtures
+            .where(
+              (fixture) => fixture.competitionId == primaryCompetitionId,
+            )
+            .toList(growable: false),
+      ),
     );
   }
 }

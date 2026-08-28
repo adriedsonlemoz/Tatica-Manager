@@ -21,6 +21,7 @@ abstract final class FinanceEngine {
     required int round,
     required bool home,
     required int tablePosition,
+    int roundsPerSeason = 38,
   }) {
     final transactions = <FinanceTransaction>[];
     var balance = club.money;
@@ -55,6 +56,7 @@ abstract final class FinanceEngine {
       club: club,
       season: season,
       tablePosition: tablePosition,
+      roundsPerSeason: roundsPerSeason,
     );
     for (final revenue in sponsorships) {
       add(
