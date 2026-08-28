@@ -28,9 +28,14 @@ class ManagerRankingEngine {
   static List<ManagerRankingEntry> rank(
     CareerState state, {
     Set<String>? clubIds,
+    String? competitionId,
   }) {
-    final allowed = clubIds ?? state.clubs.map((club) => club.id).toSet();
-    final standings = state.standings.where((item) => allowed.contains(item.clubId)).toList()
+    final selectedCompetitionId = competitionId ?? state.primaryCompetitionId;
+    final allowed = clubIds ?? state.clubIdsForCompetition(selectedCompetitionId);
+    final standings = state
+        .standingsFor(selectedCompetitionId)
+        .where((item) => allowed.contains(item.clubId))
+        .toList()
       ..sort((a, b) {
         final points = b.points.compareTo(a.points);
         if (points != 0) return points;
@@ -47,6 +52,7 @@ class ManagerRankingEngine {
       final recent = state.fixtures
           .where((fixture) =>
               fixture.played &&
+              fixture.competitionId == selectedCompetitionId &&
               fixture.score != null &&
               (fixture.homeClubId == club.id || fixture.awayClubId == club.id))
           .toList()

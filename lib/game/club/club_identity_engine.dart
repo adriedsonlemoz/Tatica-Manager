@@ -431,6 +431,37 @@ abstract final class ClubIdentityEngine {
             ),
           )
           .toList(growable: false),
+      competitionStates: state.competitionStates
+          .map(
+            (competition) => competition.copyWith(
+              standings: competition.standings
+                  .map(
+                    (standing) => _renameStanding(
+                      standing,
+                      namesById: namesById,
+                    ),
+                  )
+                  .toList(growable: false),
+              stages: competition.stages
+                  .map(
+                    (stage) => stage.copyWith(
+                      standingsByGroup: {
+                        for (final entry in stage.standingsByGroup.entries)
+                          entry.key: entry.value
+                              .map(
+                                (standing) => _renameStanding(
+                                  standing,
+                                  namesById: namesById,
+                                ),
+                              )
+                              .toList(growable: false),
+                      },
+                    ),
+                  )
+                  .toList(growable: false),
+            ),
+          )
+          .toList(growable: false),
       finances: state.finances
           .map(
             (transaction) => ClubIdentityMigrationEngine.renameFinanceTransaction(
@@ -499,6 +530,22 @@ abstract final class ClubIdentityEngine {
 
   static String? _normalizeIcon(String? value) =>
       ClubIconValidator.normalizeBase64(value);
+
+  static Standing _renameStanding(
+    Standing standing, {
+    required Map<String, String> namesById,
+  }) =>
+      Standing(
+        clubId: standing.clubId,
+        clubName: namesById[standing.clubId] ?? standing.clubName,
+        played: standing.played,
+        wins: standing.wins,
+        draws: standing.draws,
+        losses: standing.losses,
+        goalsFor: standing.goalsFor,
+        goalsAgainst: standing.goalsAgainst,
+        points: standing.points,
+      );
 
   static Player _normalizePlayer(
     Player player, {

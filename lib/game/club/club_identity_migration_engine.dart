@@ -125,6 +125,10 @@ abstract final class ClubIdentityMigrationEngine {
                 awayClubId: mapId(fixture.awayClubId),
                 date: fixture.date,
                 competitionId: fixture.competitionId,
+                stageId: fixture.stageId,
+                groupId: fixture.groupId,
+                tieId: fixture.tieId,
+                leg: fixture.leg,
                 kickoffHour: fixture.kickoffHour,
                 kickoffMinute: fixture.kickoffMinute,
                 played: fixture.played,
@@ -148,6 +152,45 @@ abstract final class ClubIdentityMigrationEngine {
                   points: standing.points,
                 );
               },
+            )
+            .toList(growable: false),
+        competitionStates: state.competitionStates
+            .map(
+              (competition) => competition.copyWith(
+                participantClubIds: competition.participantClubIds
+                    .map(mapId)
+                    .toList(growable: false),
+                standings: competition.standings
+                    .map(
+                      (standing) => _mapStanding(
+                        standing,
+                        mapId: mapId,
+                        namesById: namesById,
+                      ),
+                    )
+                    .toList(growable: false),
+                stages: competition.stages
+                    .map(
+                      (stage) => stage.copyWith(
+                        participantClubIds: stage.participantClubIds
+                            .map(mapId)
+                            .toList(growable: false),
+                        standingsByGroup: {
+                          for (final entry in stage.standingsByGroup.entries)
+                            entry.key: entry.value
+                                .map(
+                                  (standing) => _mapStanding(
+                                    standing,
+                                    mapId: mapId,
+                                    namesById: namesById,
+                                  ),
+                                )
+                                .toList(growable: false),
+                        },
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
             )
             .toList(growable: false),
         seasonHistory: state.seasonHistory
@@ -266,6 +309,25 @@ abstract final class ClubIdentityMigrationEngine {
     return newClubId == null
         ? migratedHistory.copyWith(clearClubId: true)
         : migratedHistory.copyWith(clubId: newClubId);
+  }
+
+  static Standing _mapStanding(
+    Standing standing, {
+    required String Function(String) mapId,
+    required Map<String, String> namesById,
+  }) {
+    final clubId = mapId(standing.clubId);
+    return Standing(
+      clubId: clubId,
+      clubName: namesById[clubId] ?? standing.clubName,
+      played: standing.played,
+      wins: standing.wins,
+      draws: standing.draws,
+      losses: standing.losses,
+      goalsFor: standing.goalsFor,
+      goalsAgainst: standing.goalsAgainst,
+      points: standing.points,
+    );
   }
 
   static FinanceTransaction renameFinanceTransaction(

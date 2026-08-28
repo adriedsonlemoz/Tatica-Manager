@@ -1,12 +1,18 @@
 import 'dart:math';
 
+import '../../data/competition_catalog.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
+import '../../domain/league/standing.dart';
+import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
+import '../../domain/season/competition_state.dart';
 import '../contract/contract_engine.dart';
 import '../contract/contract_lifecycle_engine.dart';
+import '../competition/competition_calendar_engine.dart';
+import '../competition/competition_schedule_engine.dart';
 import '../finance/club_administration_engine.dart';
 import '../league/league_engine.dart';
 import '../lineup/lineup_engine.dart';
@@ -112,14 +118,62 @@ abstract final class SeasonEngine {
 
     final userClub = clubs.firstWhere((club) => club.id == state.userClubId);
     final starters = LineupEngine.autoSelect(userClub.squad, state.formation);
-    final primaryClubIds = state.primaryCompetitionClubIds;
-    final primaryClubs = clubs
-        .where((club) => primaryClubIds.contains(club.id))
-        .toList(growable: false);
-    final fixtures = LeagueEngine.generateDoubleRoundRobin(
-      primaryClubs,
-      season: nextSeason,
-      competitionId: state.primaryCompetitionId,
+    final generatedFixtures = <MatchFixture>[];
+    final competitionStates = <CompetitionSeasonState>[];
+    for (final previous in state.competitionStates) {
+      if (!state.leagueSetup.isLoaded(previous.competitionId)) continue;
+      final definition = CompetitionCatalog.competitionByIdOrNull(
+        previous.competitionId,
+      );
+      if (definition == null) continue;
+      final participantIds = previous.participantClubIds.toSet();
+      final competitionClubs = clubs
+          .where((club) => participantIds.contains(club.id))
+          .toList(growable: false);
+      if (competitionClubs.length < 2) continue;
+      final competitionFixtures = CompetitionScheduleEngine.generate(
+        competition: definition,
+        clubs: competitionClubs,
+        season: nextSeason,
+      );
+      generatedFixtures.addAll(competitionFixtures);
+      final participantClubIds =
+          competitionClubs.map((club) => club.id).toList(growable: false);
+      final initialStandings = definition.format.hasLeagueTable
+          ? LeagueEngine.initialStandings(competitionClubs)
+          : const <Standing>[];
+      competitionStates.add(
+        CompetitionSeasonState(
+          competitionId: definition.id,
+          participantClubIds: participantClubIds,
+          standings: initialStandings,
+          stages: definition.format.hasLeagueTable
+              ? [
+                  CompetitionStageState(
+                    id: 'main',
+                    kind: CompetitionStageKind.league,
+                    participantClubIds: participantClubIds,
+                    standingsByGroup: {'main': initialStandings},
+                  ),
+                ]
+              : const [],
+        ),
+      );
+    }
+    final fixtures = CompetitionCalendarEngine.resolveClubConflicts(
+      generatedFixtures,
+    );
+    final primaryState = competitionStates.firstWhere(
+      (item) => item.competitionId == state.primaryCompetitionId,
+      orElse: () => CompetitionSeasonState(
+        competitionId: state.primaryCompetitionId,
+        participantClubIds: state.primaryCompetitionClubIds.toList(),
+        standings: LeagueEngine.initialStandings(
+          clubs
+              .where((club) => state.primaryCompetitionClubIds.contains(club.id))
+              .toList(growable: false),
+        ),
+      ),
     );
     final initialDate = CareerCalendarEngine.initialDateFor(
       fixtures: fixtures,
@@ -161,12 +215,13 @@ abstract final class SeasonEngine {
 
     final next = lifecycle.state.copyWith(
       season: nextSeason,
-      roundIndex: 0,
+      roundIndex: primaryState.roundIndex,
       currentDate: initialDate,
       clubs: clubs,
       freeAgents: freeAgents,
       fixtures: fixtures,
-      standings: LeagueEngine.initialStandings(primaryClubs),
+      standings: primaryState.standings,
+      competitionStates: competitionStates,
       starterIds: starters,
       seasonHistory: [...state.seasonHistory, summary],
       managerHistory: managerHistory,

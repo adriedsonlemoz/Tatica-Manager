@@ -128,12 +128,17 @@ abstract final class LineupEngine {
     PlayerPosition role, {
     Set<String> excludedIds = const {},
     bool availableOnly = true,
+    Set<String>? competitionSuspendedPlayerIds,
   }) {
     final candidates = squad
         .where(
           (player) =>
               !excludedIds.contains(player.id) &&
-              (!availableOnly || player.isAvailable),
+              (!availableOnly ||
+                  _isAvailableForCompetition(
+                    player,
+                    competitionSuspendedPlayerIds,
+                  )),
         )
         .map(
           (player) => LineupCandidate(
@@ -163,8 +168,9 @@ abstract final class LineupEngine {
 
   static List<String> autoSelect(
     List<Player> squad,
-    FormationType formation,
-  ) {
+    FormationType formation, {
+    Set<String>? competitionSuspendedPlayerIds,
+  }) {
     final slots = _slots(formation);
     final used = <String>{};
     final ids = <String>[];
@@ -173,6 +179,7 @@ abstract final class LineupEngine {
         squad,
         slot.role,
         excludedIds: used,
+        competitionSuspendedPlayerIds: competitionSuspendedPlayerIds,
       );
       if (candidates.isEmpty) break;
       final selected = candidates.first.player;
@@ -226,8 +233,9 @@ abstract final class LineupEngine {
   static LineupValidation validate(
     List<Player> squad,
     List<String> starterIds,
-    FormationType formation,
-  ) {
+    FormationType formation, {
+    Set<String>? competitionSuspendedPlayerIds,
+  }) {
     final unique = starterIds.toSet();
     final assignments = assign(squad, starterIds, formation);
     final complete =
@@ -236,8 +244,12 @@ abstract final class LineupEngine {
       (assignment) =>
           assignment.slot.role == PlayerPosition.gol && assignment.fit >= .8,
     );
-    final availableOnly =
-        assignments.every((assignment) => assignment.player.isAvailable);
+    final availableOnly = assignments.every(
+      (assignment) => _isAvailableForCompetition(
+        assignment.player,
+        competitionSuspendedPlayerIds,
+      ),
+    );
     final avg = assignments.isEmpty
         ? 0
         : (assignments.fold<int>(
@@ -253,6 +265,15 @@ abstract final class LineupEngine {
       averageStrength: avg,
       assignments: assignments,
     );
+  }
+
+  static bool _isAvailableForCompetition(
+    Player player,
+    Set<String>? competitionSuspendedPlayerIds,
+  ) {
+    if (competitionSuspendedPlayerIds == null) return player.isAvailable;
+    if (player.injury != null || player.condition < 35) return false;
+    return !competitionSuspendedPlayerIds.contains(player.id);
   }
 
   static List<String> replaceStarter(

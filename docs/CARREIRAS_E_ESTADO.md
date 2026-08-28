@@ -217,3 +217,19 @@ A competição principal passa a derivar seus clubes, fixtures e quantidade tota
 SQLite v3 mantém `payload` como fonte integral do save, mas adiciona colunas de resumo para a Central de Carreiras. A migração v2 -> v3 lê cada save existente uma única vez para preencher o resumo; depois disso, `listSaves()` não seleciona o payload completo. Isso reduz leitura, alocação e desserialização ao abrir a Central de Carreiras sem transformar o estado da carreira em tabelas paralelas.
 
 A seleção fica imutável depois da criação nesta etapa. Ativar/desativar ligas no meio de uma carreira continua considerado inseguro enquanto não houver política explícita para calendário, classificação, resultados, estatísticas e histórico já disputados. A análise completa está em `docs/LEAGUE_LOADING.md`.
+
+## Fundação multi-competição — schema 13 (0.1.1.76)
+
+`CareerState` passa a persistir `primaryCompetitionId` e um `CompetitionSeasonState` independente por `competitionId`. Cada estado competitivo mantém participantes, progresso/rodada, classificação, estatísticas de jogadores, disciplina e fases da competição. Os campos legados `standings` e `roundIndex` continuam como espelho da competição principal para preservar telas e saves existentes durante a transição.
+
+`fixtures` permanece como calendário global da carreira. Essa decisão permite que um mesmo clube dispute mais de um torneio na mesma temporada sem criar calendários paralelos que desconhecem conflitos de data. `CompetitionCalendarEngine` reconcilia os fixtures das competições carregadas e pode deslocar partidas de menor precedência quando o mesmo clube teria jogos incompatíveis na mesma janela.
+
+`MatchFixture` passa a suportar, de forma opcional e retrocompatível, `stageId`, `groupId`, `tieId` e `leg`. A Série A conserva os IDs históricos de fixture; novas competições usam `competitionId` no prefixo para evitar colisões entre rodadas equivalentes de torneios diferentes.
+
+Estatísticas e disciplina competitivas são armazenadas por torneio. Lesão, condição, fadiga, moral e os totais globais da temporada continuam pertencendo ao `Player`, enquanto gols/cartões/suspensões de uma competição são atualizados no respectivo `CompetitionSeasonState`. O espelho disciplinar antigo do jogador é mantido para a competição principal.
+
+O Match Engine existente não foi substituído nem reescrito: ele continua recebendo os dados da partida e devolvendo `MatchResult`. `MatchCareerImpactEngine` aplica esse resultado ao estado correto da carreira, e `CompetitionSimulationEngine` coordena partidas exclusivamente CPU por data. Competições `full` continuam usando o Match Engine; somente competições explicitamente `background` podem usar a resolução estatística leve já existente. Flame continua exclusivamente visual.
+
+O catálogo distingue escopo (`nationalLeague`, `regionalLeague`, `domesticCup`, `continental`, `world`) e formato (`leagueDoubleRoundRobin`, `leagueSingleRoundRobin`, `knockout`, `groupAndKnockout`, `singleMatch`). Nenhuma competição fictícia é cadastrada nesta fundação. Regulamentos de mata-mata/grupos que ainda não existem no jogo permanecem explicitamente sem gerador, evitando criar calendários incorretos por suposição.
+
+Saves schema 12 são normalizados para schema 13 preservando IDs de clubes e fixtures, transformando a competição principal existente no primeiro estado competitivo. A migração de identidade também percorre participantes, classificações e tabelas internas de fases/grupos para impedir referências antigas quando um pack renomeia/remapeia clubes.

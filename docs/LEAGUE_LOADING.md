@@ -20,9 +20,9 @@ Antes da 0.1.1.75, a criação assumia implicitamente um único campeonato compl
 
 Com uma única Série A esses custos são aceitáveis, mas cresceriam diretamente quando o catálogo recebesse novos países e divisões.
 
-## Modelo persistido — CareerState schema 12
+## Modelo persistido — CareerState schema 13
 
-`CareerState.leagueSetup` guarda um `CareerLeagueSetup` com:
+`CareerState.leagueSetup` continua guardando um `CareerLeagueSetup` com:
 
 - `preset`: `fast`, `balanced`, `broad` ou `custom`;
 - mapa `competitionId -> LeagueLoadLevel`;
@@ -34,7 +34,7 @@ Regras:
 2. IDs de clubes e competições não são renomeados;
 3. clubes de competições `unloaded` não são materializados no novo save;
 4. ligas fora do save continuam intactas no catálogo/banco de instalação;
-5. saves schema 11 ou anteriores, que não possuem `leagueSetup`, são lidos como legado e suas competições já existentes ficam `full`.
+5. saves anteriores que não possuem `leagueSetup` são lidos como legado e suas competições já existentes ficam `full`; saves schema 12 são promovidos para o estado multi-competição do schema 13.
 
 A seleção não pode ser alterada depois que a carreira começa nesta etapa. Adicionar ou remover competições no meio do save exigiria definir reconstrução de calendário, rodadas, resultados, tabela, estatísticas e histórico. Isso deve ser projetado separadamente antes de ser liberado.
 
@@ -67,15 +67,11 @@ Nesta release não existem fixtures reais de uma segunda competição no catálo
 
 ## Temporada, tabela e número de rodadas
 
-`CareerState` passa a derivar:
+A partir do schema 13, `CompetitionSeasonState` mantém progresso, classificação, estatísticas e disciplina independentes por `competitionId`. `CareerState.fixtures` continua sendo o calendário global, enquanto `primaryCompetitionId`, `standings` e `roundIndex` permanecem como espelho compatível do torneio principal.
 
-- `primaryCompetitionId`;
-- clubes/fixtures da competição principal;
-- `totalUserRounds` a partir do calendário real.
+A conclusão da temporada considera todas as competições carregadas que possuem estado no save. A geração da temporada seguinte recria cada estado separadamente e reconcilia os calendários. Para a Série A atual o resultado continua sendo 38 rodadas.
 
-A conclusão da temporada, `currentRound`, a geração da temporada seguinte e o rateio de patrocínio do usuário deixam de depender diretamente do número 38. Para a Série A atual o resultado continua sendo 38 rodadas.
-
-O estado ainda mantém uma única classificação principal. Quando uma segunda liga real for adicionada, a próxima evolução deverá persistir estado competitivo por competição (classificação/estatísticas/calendário) sem duplicar controllers ou Match Engine. A estrutura de seleção e filtragem criada aqui é a base para essa extensão.
+Fixtures também persistem `stageId`, `groupId`, `tieId` e `leg`, preparando fases e mata-matas sem criar outro Match Engine. Consulte `docs/MULTI_COMPETITION_FOUNDATION.md`.
 
 ## CPU, mercado, contratos e avanço diário
 
@@ -102,6 +98,5 @@ SQLite v3 acrescenta somente metadados derivados para a Central de Carreiras: id
 ## Gargalos que permanecem preparados para evolução futura
 
 - O payload de uma carreira aberta continua sendo um JSON único no SQLite. Com muitas ligas completas, o tamanho do save ainda crescerá conforme os clubes efetivamente carregados.
-- A classificação persistida ainda representa a competição principal; múltiplas tabelas reais devem ser adicionadas quando houver uma segunda liga real para validar o fluxo.
 - O `CpuManagerEngine` continua executando mercado/contratos sobre todos os clubes carregados, como desejado para ligas completas e de segundo plano. Se o mundo crescer muito, frequência e profundidade da CPU de background podem ser reduzidas em uma etapa específica, sem mover essa lógica para `GameController`.
 - Não é seguro habilitar troca de ligas após a criação até existir política explícita para calendário, resultados e estatísticas já disputados.

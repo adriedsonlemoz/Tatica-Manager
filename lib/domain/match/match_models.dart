@@ -20,6 +20,10 @@ class MatchFixture {
     required this.awayClubId,
     required this.date,
     this.competitionId = 'br-series-a',
+    this.stageId = 'main',
+    this.groupId,
+    this.tieId,
+    this.leg = 1,
     this.kickoffHour = 16,
     this.kickoffMinute = 0,
     this.played = false,
@@ -32,6 +36,10 @@ class MatchFixture {
   final String awayClubId;
   final DateTime date;
   final String competitionId;
+  final String stageId;
+  final String? groupId;
+  final String? tieId;
+  final int leg;
   final int kickoffHour;
   final int kickoffMinute;
   final bool played;
@@ -45,6 +53,12 @@ class MatchFixture {
     MatchScore? score,
     DateTime? date,
     String? competitionId,
+    String? stageId,
+    String? groupId,
+    bool clearGroupId = false,
+    String? tieId,
+    bool clearTieId = false,
+    int? leg,
     int? kickoffHour,
     int? kickoffMinute,
   }) =>
@@ -55,6 +69,10 @@ class MatchFixture {
         awayClubId: awayClubId,
         date: date ?? this.date,
         competitionId: competitionId ?? this.competitionId,
+        stageId: stageId ?? this.stageId,
+        groupId: clearGroupId ? null : (groupId ?? this.groupId),
+        tieId: clearTieId ? null : (tieId ?? this.tieId),
+        leg: leg ?? this.leg,
         kickoffHour: kickoffHour ?? this.kickoffHour,
         kickoffMinute: kickoffMinute ?? this.kickoffMinute,
         played: played ?? this.played,
@@ -68,6 +86,10 @@ class MatchFixture {
         'awayClubId': awayClubId,
         'date': date.toIso8601String(),
         'competitionId': competitionId,
+        'stageId': stageId,
+        'groupId': groupId,
+        'tieId': tieId,
+        'leg': leg,
         'kickoffHour': kickoffHour,
         'kickoffMinute': kickoffMinute,
         'played': played,
@@ -81,6 +103,10 @@ class MatchFixture {
         awayClubId: json['awayClubId'] as String,
         date: DateTime.parse(json['date'] as String),
         competitionId: json['competitionId'] as String? ?? 'br-series-a',
+        stageId: json['stageId'] as String? ?? 'main',
+        groupId: json['groupId'] as String?,
+        tieId: json['tieId'] as String?,
+        leg: (json['leg'] as num?)?.toInt().clamp(1, 4).toInt() ?? 1,
         kickoffHour: (json['kickoffHour'] as int? ?? 16).clamp(0, 23).toInt(),
         kickoffMinute: (json['kickoffMinute'] as int? ?? 0).clamp(0, 59).toInt(),
         played: json['played'] as bool? ?? false,

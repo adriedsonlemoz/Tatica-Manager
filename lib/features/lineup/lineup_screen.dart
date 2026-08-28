@@ -20,18 +20,29 @@ class LineupScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final career = ref.watch(gameControllerProvider).career!;
+    final fixture = career.nextUserFixture;
+    final suspended = fixture == null
+        ? null
+        : career.suspendedPlayerIdsForCompetition(fixture.competitionId);
     final validation = LineupEngine.validate(
       career.userClub.squad,
       career.starterIds,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
     final assignments = validation.assignments;
     final reserves = career.userClub.squad
         .where((player) => !career.starterIds.contains(player.id))
         .toList();
-    final availableBench = reserves.where((player) => player.isAvailable).toList()
+    bool availableForNextMatch(Player player) => fixture == null
+        ? player.isAvailable
+        : career.isPlayerAvailableForCompetition(
+            player,
+            fixture.competitionId,
+          );
+    final availableBench = reserves.where(availableForNextMatch).toList()
       ..sort((a, b) => b.overall.compareTo(a.overall));
-    final unavailable = reserves.where((player) => !player.isAvailable).toList()
+    final unavailable = reserves.where((player) => !availableForNextMatch(player)).toList()
       ..sort((a, b) => b.overall.compareTo(a.overall));
     final accent = Color(career.userClub.colors.primaryHex);
     final improvised = assignments.where((assignment) => assignment.outOfPosition).length;

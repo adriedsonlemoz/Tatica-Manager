@@ -7,11 +7,16 @@ import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
 import '../../domain/club/club_identity.dart';
 import '../../domain/formation/formation.dart';
+import '../../domain/league/standing.dart';
+import '../../domain/match/match_models.dart';
 import '../../domain/season/career_state.dart';
+import '../../domain/season/competition_state.dart';
 import '../../domain/season/league_loading.dart';
 import '../../domain/tactic/tactic.dart';
 import '../club/club_identity_engine.dart';
 import '../finance/club_administration_engine.dart';
+import '../competition/competition_calendar_engine.dart';
+import '../competition/competition_schedule_engine.dart';
 import '../league/league_engine.dart';
 import '../lineup/lineup_engine.dart';
 import '../player/player_factory.dart';
@@ -117,10 +122,46 @@ abstract final class CareerFactory {
 
     final userClub = clubs.firstWhere((club) => club.id == userClubId);
     final starters = LineupEngine.autoSelect(userClub.squad, formation);
-    final fixtures = LeagueEngine.generateDoubleRoundRobin(
-      primaryClubs,
-      season: season,
-      competitionId: primarySeries.id,
+    final generatedFixtures = <MatchFixture>[];
+    final competitionStates = <CompetitionSeasonState>[];
+    for (final competition in CompetitionCatalog.allCompetitions) {
+      if (!effectiveLeagueSetup.isLoaded(competition.id)) continue;
+      final participantIds = competition.clubIds.toSet();
+      final competitionClubs = clubs
+          .where((club) => participantIds.contains(club.id))
+          .toList(growable: false);
+      if (competitionClubs.length < 2) continue;
+      final competitionFixtures = CompetitionScheduleEngine.generate(
+        competition: competition,
+        clubs: competitionClubs,
+        season: season,
+      );
+      generatedFixtures.addAll(competitionFixtures);
+      final participantClubIds =
+          competitionClubs.map((club) => club.id).toList(growable: false);
+      final initialStandings = competition.format.hasLeagueTable
+          ? LeagueEngine.initialStandings(competitionClubs)
+          : const <Standing>[];
+      competitionStates.add(
+        CompetitionSeasonState(
+          competitionId: competition.id,
+          participantClubIds: participantClubIds,
+          standings: initialStandings,
+          stages: competition.format.hasLeagueTable
+              ? [
+                  CompetitionStageState(
+                    id: 'main',
+                    kind: CompetitionStageKind.league,
+                    participantClubIds: participantClubIds,
+                    standingsByGroup: {'main': initialStandings},
+                  ),
+                ]
+              : const [],
+        ),
+      );
+    }
+    final fixtures = CompetitionCalendarEngine.resolveClubConflicts(
+      generatedFixtures,
     );
     final initialDate = CareerCalendarEngine.initialDateFor(
       fixtures: fixtures,
@@ -193,6 +234,7 @@ abstract final class CareerFactory {
         managers: careerManagers,
         createdAt: DateTime.now(),
         season: season,
+        primaryCompetitionId: primarySeries.id,
         roundIndex: 0,
         currentDate: initialDate,
         userClubId: userClubId,
@@ -212,7 +254,9 @@ abstract final class CareerFactory {
               baseOverall: 69,
             ),
         fixtures: fixtures,
-        standings: LeagueEngine.initialStandings(primaryClubs),
+        standings: competitionStates
+            .firstWhere((state) => state.competitionId == primarySeries.id)
+            .standings,
         formation: formation,
         tactic: tactic,
         starterIds: starters,
@@ -229,6 +273,7 @@ abstract final class CareerFactory {
         matchHistory: const [],
         settings: settings,
         leagueSetup: effectiveLeagueSetup,
+        competitionStates: competitionStates,
       ),
     );
     return ClubAdministrationEngine.ensureInitialized(career);

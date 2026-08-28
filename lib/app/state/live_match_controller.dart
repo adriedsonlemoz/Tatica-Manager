@@ -11,13 +11,13 @@ import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/cpu/cpu_manager_engine.dart';
 import '../../game/cpu/cpu_market_news_engine.dart';
+import '../../game/competition/competition_simulation_engine.dart';
+import '../../game/competition/competition_state_engine.dart';
 import '../../game/finance/finance_engine.dart';
-import '../../game/league/league_engine.dart';
 import '../../game/league/live_round_simulator.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../../game/match/engine/match_engine.dart';
-import '../../game/morale/morale_engine.dart';
-import '../../game/player/player_development_engine.dart';
+import '../../game/match/match_career_impact_engine.dart';
 import '../../game/season/inbox_engine.dart';
 import 'game_controller.dart';
 
@@ -92,10 +92,14 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       return null;
     }
 
+    final suspended = career.suspendedPlayerIdsForCompetition(
+      fixture.competitionId,
+    );
     final validation = LineupEngine.validate(
       career.userClub.squad,
       career.starterIds,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
     if (!validation.valid) {
       _game.showMessage(validation.message);
@@ -117,9 +121,17 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
         userAtHome ? LiveRoundSimulator.tacticFor(away) : career.tactic;
     final homeStarters = userAtHome
         ? career.starterIds
-        : LineupEngine.autoSelect(home.squad, homeFormation);
+        : LineupEngine.autoSelect(
+            home.squad,
+            homeFormation,
+            competitionSuspendedPlayerIds: suspended,
+          );
     final awayStarters = userAtHome
-        ? LineupEngine.autoSelect(away.squad, awayFormation)
+        ? LineupEngine.autoSelect(
+            away.squad,
+            awayFormation,
+            competitionSuspendedPlayerIds: suspended,
+          )
         : career.starterIds;
 
     final result = MatchEngine.simulate(
@@ -219,6 +231,9 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       career.userClub.squad,
       nextIds,
       live.userFormation,
+      competitionSuspendedPlayerIds: career.suspendedPlayerIdsForCompetition(
+        live.fixture.competitionId,
+      ),
     );
     if (!validation.valid) {
       _game.showMessage(validation.message);
@@ -287,11 +302,22 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
         userAtHome ? live.userTactic : LiveRoundSimulator.tacticFor(home);
     final awayTactic =
         userAtHome ? LiveRoundSimulator.tacticFor(away) : live.userTactic;
+    final suspended = career.suspendedPlayerIdsForCompetition(
+      fixture.competitionId,
+    );
     final homeIds = userAtHome
         ? live.userStarterIds
-        : LineupEngine.autoSelect(home.squad, homeFormation);
+        : LineupEngine.autoSelect(
+            home.squad,
+            homeFormation,
+            competitionSuspendedPlayerIds: suspended,
+          );
     final awayIds = userAtHome
-        ? LineupEngine.autoSelect(away.squad, awayFormation)
+        ? LineupEngine.autoSelect(
+            away.squad,
+            awayFormation,
+            competitionSuspendedPlayerIds: suspended,
+          )
         : live.userStarterIds;
 
     final result = MatchEngine.simulate(
@@ -324,12 +350,11 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final round = live.fixture.round;
     var clubs = [...career.clubs];
     var fixtures = [...career.fixtures];
+    var competitionStates = [...career.competitionStates];
     final results = <MatchResult>[live.result];
     final participantsByClub = <String, Set<String>>{};
     final startersByClub = <String, Set<String>>{};
 
-    // Garante que o desgaste e as estatísticas alcancem todos que realmente
-    // participaram, mesmo quando um titular não gerou evento individual.
     final userParticipants = <String>{
       ...career.starterIds,
       ...live.userStarterIds,
@@ -356,6 +381,9 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final opponentStarters = LineupEngine.autoSelect(
       opponent.squad,
       opponentFormation,
+      competitionSuspendedPlayerIds: career.suspendedPlayerIdsForCompetition(
+        live.fixture.competitionId,
+      ),
     );
     participantsByClub[opponent.id] = opponentStarters.toSet();
     startersByClub[opponent.id] = opponentStarters.toSet();
@@ -372,18 +400,71 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       results.add(prepared.result);
     }
 
-    // Todos os clubes disputam a rodada ainda respeitando lesões e
-    // suspensões que já estavam ativas. Só depois das simulações consumimos
-    // uma rodada dessas indisponibilidades; as novas ocorrências são aplicadas
-    // em seguida e, assim, permanecem válidas para a próxima partida.
     final userAvailabilityBefore = career.userClub.squad;
-    clubs = clubs
-        .map(
-          (club) => club.copyWith(
-            squad: PlayerDevelopmentEngine.advanceRoundAvailability(club.squad),
-          ),
-        )
-        .toList();
+    for (final result in results) {
+      final resultFixture = fixtures.firstWhere(
+        (fixture) => fixture.id == result.fixtureId,
+      );
+      fixtures = fixtures
+          .map(
+            (fixture) => fixture.id == result.fixtureId
+                ? fixture.copyWith(played: true, score: result.score)
+                : fixture,
+          )
+          .toList(growable: false);
+      final competitionState = competitionStates
+          .where(
+            (item) => item.competitionId == resultFixture.competitionId,
+          )
+          .firstOrNull ??
+          career.competitionStateFor(resultFixture.competitionId);
+      final impact = MatchCareerImpactEngine.apply(
+        clubs: clubs,
+        result: result,
+        participantsByClub: participantsByClub,
+        startersByClub: startersByClub,
+        competitionPlayerStats: competitionState.playerStats,
+        competitionPlayerDiscipline: competitionState.playerDiscipline,
+        mirrorCompetitionDisciplineToPlayer:
+            resultFixture.competitionId == career.primaryCompetitionId,
+      );
+      clubs = impact.clubs;
+      final updatedState = competitionState.copyWith(
+        playerStats: impact.competitionPlayerStats,
+        playerDiscipline: impact.competitionPlayerDiscipline,
+      );
+      competitionStates = [
+        for (final item in competitionStates)
+          if (item.competitionId != updatedState.competitionId) item,
+        updatedState,
+      ];
+    }
+
+    competitionStates = CompetitionStateEngine.rebuildAll(
+      states: competitionStates,
+      clubs: clubs,
+      fixtures: fixtures,
+    );
+    final liveCompetitionState = competitionStates.firstWhere(
+      (item) => item.competitionId == live.fixture.competitionId,
+    );
+    final primaryState = competitionStates.firstWhere(
+      (item) => item.competitionId == career.primaryCompetitionId,
+    );
+    final livePosition = liveCompetitionState.standings.indexWhere(
+          (standing) => standing.clubId == career.userClubId,
+        ) +
+        1;
+    final primaryPosition = primaryState.standings.indexWhere(
+          (standing) => standing.clubId == career.userClubId,
+        ) +
+        1;
+    final tablePosition = livePosition > 0
+        ? livePosition
+        : primaryPosition > 0
+            ? primaryPosition
+            : 1;
+
     final userAvailabilityAfter = clubs
         .firstWhere((club) => club.id == career.userClubId)
         .squad;
@@ -394,73 +475,52 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       clubId: career.userClubId,
     );
 
-    for (final result in results) {
-      fixtures = fixtures
-          .map(
-            (fixture) => fixture.id == result.fixtureId
-                ? fixture.copyWith(played: true, score: result.score)
-                : fixture,
+    final userHome = live.fixture.homeClubId == career.userClubId;
+    final userClub = clubs.firstWhere((club) => club.id == career.userClubId);
+    final primaryMatch = live.fixture.competitionId == career.primaryCompetitionId;
+    final finance = primaryMatch
+        ? FinanceEngine.settleUserRound(
+            club: userClub,
+            fixture: live.fixture,
+            season: career.season,
+            round: round,
+            home: userHome,
+            tablePosition: max(1, tablePosition),
+            roundsPerSeason: career.totalUserRounds,
           )
-          .toList();
-      clubs = _applyResultToClubs(
-        clubs,
-        result,
-        participantsByClub: participantsByClub,
-        startersByClub: startersByClub,
+        : FinanceEngine.settleAdditionalCompetitionMatch(
+            club: userClub,
+            fixture: live.fixture,
+            season: career.season,
+            home: userHome,
+            tablePosition: max(1, tablePosition),
+          );
+    clubs = clubs
+        .map((club) => club.id == userClub.id ? finance.club : club)
+        .toList(growable: false);
+
+    var freeAgents = career.freeAgents;
+    var marketEvents = <CareerEvent>[];
+    if (primaryMatch) {
+      final cpu = CpuManagerEngine.runRound(
+        clubs: clubs,
+        freeAgents: career.freeAgents,
+        userClubId: career.userClubId,
+        season: career.season,
+        round: round,
+        currentDate: career.currentDate,
+        careerId: career.careerId,
+      );
+      clubs = cpu.clubs;
+      freeAgents = cpu.freeAgents;
+      marketEvents = CpuMarketNewsEngine.build(
+        result: cpu,
+        date: career.currentDate,
+        season: career.season,
+        round: round,
       );
     }
 
-    var standings = LeagueEngine.rebuildStandings(
-      career.clubsForPrimaryCompetition(clubs),
-      fixtures
-          .where(
-            (fixture) => fixture.competitionId == career.primaryCompetitionId,
-          )
-          .toList(growable: false),
-    );
-    final userHome = live.fixture.homeClubId == career.userClubId;
-    final tablePosition =
-        standings.indexWhere((standing) => standing.clubId == career.userClubId) +
-            1;
-    final userClub = clubs.firstWhere((club) => club.id == career.userClubId);
-    final finance = FinanceEngine.settleUserRound(
-      club: userClub,
-      fixture: live.fixture,
-      season: career.season,
-      round: round,
-      home: userHome,
-      tablePosition: max(1, tablePosition),
-      roundsPerSeason: career.totalUserRounds,
-    );
-    clubs = clubs
-        .map((club) => club.id == userClub.id ? finance.club : club)
-        .toList();
-
-    final cpu = CpuManagerEngine.runRound(
-      clubs: clubs,
-      freeAgents: career.freeAgents,
-      userClubId: career.userClubId,
-      season: career.season,
-      round: round,
-      currentDate: career.currentDate,
-      careerId: career.careerId,
-    );
-    clubs = cpu.clubs;
-    standings = LeagueEngine.rebuildStandings(
-      career.clubsForPrimaryCompetition(clubs),
-      fixtures
-          .where(
-            (fixture) => fixture.competitionId == career.primaryCompetitionId,
-          )
-          .toList(growable: false),
-    );
-
-    final marketEvents = CpuMarketNewsEngine.build(
-      result: cpu,
-      date: career.currentDate,
-      season: career.season,
-      round: round,
-    );
     final mergedNews = [
       ...career.news,
       ...availabilityEvents,
@@ -470,11 +530,10 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
         ? mergedNews
         : mergedNews.sublist(mergedNews.length - CareerState.maxStoredNews);
     final nextBase = career.copyWith(
-      roundIndex: career.roundIndex + 1,
       clubs: clubs,
-      freeAgents: cpu.freeAgents,
+      freeAgents: freeAgents,
       fixtures: fixtures,
-      standings: standings,
+      competitionStates: competitionStates,
       starterIds: live.userStarterIds,
       tactic: live.userTactic,
       finances: [...career.finances, ...finance.transactions],
@@ -482,11 +541,17 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       matchHistory: [...career.matchHistory, live.result],
       lastMatch: live.result,
     );
-    final next = InboxEngine.appendEvents(
+    final sameDayResolved =
+        CompetitionSimulationEngine.resolveCpuFixturesThroughDate(
       nextBase,
+      throughDate: career.currentDate,
+      protectUserFixtures: true,
+    );
+    final next = InboxEngine.appendEvents(
+      sameDayResolved,
       [...availabilityEvents, ...marketEvents],
     );
-    await _game.commitCareer(next, message: 'Rodada $round concluída.');
+    await _game.commitCareer(next, message: 'Partida concluída.');
     state = null;
     return live.result;
   }
@@ -553,155 +618,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     }
     return MatchScore(home, away);
   }
+}
 
-  static List<Club> _applyResultToClubs(
-    List<Club> clubs,
-    MatchResult result, {
-    required Map<String, Set<String>> participantsByClub,
-    required Map<String, Set<String>> startersByClub,
-  }) {
-    return clubs.map((club) {
-      if (club.id != result.homeClubId && club.id != result.awayClubId) {
-        return club;
-      }
-      final home = club.id == result.homeClubId;
-      final goalsFor = home ? result.score.home : result.score.away;
-      final goalsAgainst = home ? result.score.away : result.score.home;
-      final form = [
-        ...club.recentForm,
-        goalsFor > goalsAgainst
-            ? 'V'
-            : goalsFor == goalsAgainst
-                ? 'E'
-                : 'D',
-      ];
-      while (form.length > 5) {
-        form.removeAt(0);
-      }
-
-      final eventByPlayer = <String, List<MatchEvent>>{};
-      for (final event in result.events.where(
-        (event) => event.teamId == club.id && event.playerId != null,
-      )) {
-        eventByPlayer.putIfAbsent(event.playerId!, () => []).add(event);
-      }
-
-      final squad = club.squad.map((player) {
-        final events = eventByPlayer[player.id] ?? const <MatchEvent>[];
-        final isStarter = startersByClub[club.id]?.contains(player.id) == true;
-        final participated =
-            participantsByClub[club.id]?.contains(player.id) == true ||
-                events.isNotEmpty ||
-                result.events.any(
-                  (event) =>
-                      event.playerId == player.id ||
-                      event.assistPlayerId == player.id ||
-                      event.secondaryPlayerId == player.id,
-                );
-        if (!participated) return player;
-
-        final substitutionIn = result.events
-            .where(
-              (event) =>
-                  event.type == MatchEventType.substitution &&
-                  event.teamId == club.id &&
-                  event.playerId == player.id,
-            )
-            .toList();
-        final substitutionOut = result.events
-            .where(
-              (event) =>
-                  event.type == MatchEventType.substitution &&
-                  event.teamId == club.id &&
-                  event.secondaryPlayerId == player.id,
-            )
-            .toList();
-        final dismissal = events
-            .where((event) => event.type == MatchEventType.red)
-            .toList();
-        final enteredAt = substitutionIn.isNotEmpty
-            ? substitutionIn.first.minute
-            : 0;
-        var leftAt = substitutionOut.isNotEmpty
-            ? substitutionOut.first.minute
-            : 90;
-        if (dismissal.isNotEmpty) {
-          leftAt = min(leftAt, dismissal.first.minute);
-        }
-        final minutesPlayed = max(1, leftAt - enteredAt);
-
-        final goals =
-            events.where((event) => event.type == MatchEventType.goal).length;
-        final assists = result.events
-            .where((event) => event.assistPlayerId == player.id)
-            .length;
-        final yellows = events
-            .where((event) => event.type == MatchEventType.yellow)
-            .length;
-        final reds =
-            events.where((event) => event.type == MatchEventType.red).length;
-        final injury = events.any(
-          (event) => event.type == MatchEventType.injury,
-        )
-            ? const PlayerInjury(
-                name: 'Desconforto muscular',
-                roundsRemaining: 1,
-              )
-            : player.injury;
-        final rating = (6.3 + goals * .8 + assists * .45 - reds * 1.2)
-            .clamp(1.0, 10.0)
-            .toDouble();
-        final recentRatings = [...player.recentRatings, rating];
-        while (recentRatings.length > 5) {
-          recentRatings.removeAt(0);
-        }
-        final stats = player.stats.copyWith(
-          appearances: player.stats.appearances + 1,
-          starts: player.stats.starts + (isStarter ? 1 : 0),
-          minutes: player.stats.minutes + minutesPlayed,
-          goals: player.stats.goals + goals,
-          assists: player.stats.assists + assists,
-          yellowCards: player.stats.yellowCards + yellows,
-          redCards: player.stats.redCards + reds,
-          ratingTotal: player.stats.ratingTotal + rating,
-        );
-        var yellowTotal = player.discipline.yellowCards + yellows;
-        var suspension =
-            player.discipline.suspendedRounds + (reds > 0 ? 1 : 0);
-        if (yellowTotal >= 3) {
-          yellowTotal -= 3;
-          suspension++;
-        }
-        return player.copyWith(
-          stats: stats,
-          recentRatings: recentRatings,
-          injury: injury,
-          discipline: player.discipline.copyWith(
-            yellowCards: yellowTotal,
-            redCards: player.discipline.redCards + reds,
-            suspendedRounds: suspension,
-          ),
-          fatigue: min(
-            100,
-            player.fatigue + max(6, (16 * minutesPlayed / 90).round()),
-          ),
-          condition: max(
-            35,
-            player.condition - max(3, (7 * minutesPlayed / 90).round()),
-          ),
-        );
-      }).toList();
-      final morale = MoraleEngine.moraleFromRecentForm(form);
-      return club.copyWith(
-        squad: squad
-            .map(
-              (player) => player.copyWith(
-                morale: ((player.morale + morale) / 2).round(),
-              ),
-            )
-            .toList(),
-        recentForm: form,
-      );
-    }).toList();
-  }
+extension<T> on Iterable<T> {
+  T? get firstOrNull => isEmpty ? null : first;
 }

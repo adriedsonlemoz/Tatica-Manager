@@ -36,6 +36,7 @@ abstract final class LiveRoundSimulator {
           (fixture) =>
               fixture.competitionId == competitionId &&
               fixture.round == round &&
+              _sameDate(fixture.date, career.nextUserFixture?.date) &&
               !fixture.played &&
               fixture.id != userFixtureId,
         )
@@ -51,8 +52,19 @@ abstract final class LiveRoundSimulator {
     final away = _club(career, fixture.awayClubId);
     final homeFormation = formationFor(home);
     final awayFormation = formationFor(away);
-    final homeStarters = LineupEngine.autoSelect(home.squad, homeFormation);
-    final awayStarters = LineupEngine.autoSelect(away.squad, awayFormation);
+    final suspended = career.suspendedPlayerIdsForCompetition(
+      fixture.competitionId,
+    );
+    final homeStarters = LineupEngine.autoSelect(
+      home.squad,
+      homeFormation,
+      competitionSuspendedPlayerIds: suspended,
+    );
+    final awayStarters = LineupEngine.autoSelect(
+      away.squad,
+      awayFormation,
+      competitionSuspendedPlayerIds: suspended,
+    );
     final result = CpuFixtureResolver.resolve(
       level: career.leagueSetup.levelFor(fixture.competitionId),
       fixture: fixture,
@@ -101,6 +113,12 @@ abstract final class LiveRoundSimulator {
     }
     return const Tactic();
   }
+
+  static bool _sameDate(DateTime value, DateTime? other) =>
+      other != null &&
+      value.year == other.year &&
+      value.month == other.month &&
+      value.day == other.day;
 
   static Club _club(CareerState career, String id) =>
       career.clubs.firstWhere((club) => club.id == id);

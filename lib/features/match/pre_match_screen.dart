@@ -36,16 +36,23 @@ class PreMatchScreen extends ConsumerWidget {
 
     final home = career.clubs.firstWhere((club) => club.id == fixture.homeClubId);
     final away = career.clubs.firstWhere((club) => club.id == fixture.awayClubId);
+    final suspended = career.suspendedPlayerIdsForCompetition(
+      fixture.competitionId,
+    );
     final validation = LineupEngine.validate(
       career.userClub.squad,
       career.starterIds,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
-    final unavailable = [...career.unavailableUserPlayers]
+    final unavailable = [
+      ...career.unavailableUserPlayersForCompetition(fixture.competitionId),
+    ]
       ..sort((a, b) => a.displayName.compareTo(b.displayName));
     final suggestedIds = LineupEngine.autoSelect(
       career.userClub.squad,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
     final suggestedDiffers = suggestedIds.join('|') != career.starterIds.join('|');
     final competitionName = CompetitionCatalog.displayNameForId(fixture.competitionId);

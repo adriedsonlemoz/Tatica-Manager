@@ -76,15 +76,23 @@ class HomeScreen extends ConsumerWidget {
         .where((tx) => tx.amount < 0)
         .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
     final boardConfidence = ManagerCareerEngine.reputationFor(career);
+    final primaryCompetitionState =
+        career.competitionStateFor(career.primaryCompetitionId);
+    final primaryClubIds = primaryCompetitionState.participantClubIds.toSet();
     final scorers = <HomeScorerEntry>[
       for (final team in career.clubs)
-        for (final player in team.squad)
-          HomeScorerEntry(player: player, club: team),
+        if (primaryClubIds.contains(team.id))
+          for (final player in team.squad)
+            HomeScorerEntry(
+              player: player,
+              club: team,
+              stats: primaryCompetitionState.statsForPlayer(player.id),
+            ),
     ]
       ..sort((a, b) {
-        final goals = b.player.stats.goals.compareTo(a.player.stats.goals);
+        final goals = b.stats.goals.compareTo(a.stats.goals);
         if (goals != 0) return goals;
-        return b.player.stats.assists.compareTo(a.player.stats.assists);
+        return b.stats.assists.compareTo(a.stats.assists);
       });
     final topScorers = scorers.take(3).toList(growable: false);
     final recentNews = career.news.reversed.take(5).toList(growable: false);

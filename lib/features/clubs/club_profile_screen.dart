@@ -21,7 +21,8 @@ class ClubProfileScreen extends ConsumerWidget {
     final career = ref.watch(gameControllerProvider).career!;
     final club = career.clubs.firstWhere((item) => item.id == clubId);
     final squad = [...club.squad]..sort((a, b) => b.overall.compareTo(a.overall));
-    final ordered = [...career.standings]
+    final clubCompetition = CompetitionCatalog.primarySeriesForClub(club.id);
+    final ordered = [...career.standingsFor(clubCompetition.id)]
       ..sort((a, b) {
         final points = b.points.compareTo(a.points);
         if (points != 0) return points;

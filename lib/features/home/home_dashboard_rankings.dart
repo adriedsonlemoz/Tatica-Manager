@@ -119,10 +119,15 @@ class HomeLeagueAndScorers extends StatelessWidget {
 }
 
 class HomeScorerEntry {
-  const HomeScorerEntry({required this.player, required this.club});
+  const HomeScorerEntry({
+    required this.player,
+    required this.club,
+    required this.stats,
+  });
 
   final Player player;
   final Club club;
+  final PlayerSeasonStats stats;
 }
 
 class _DashboardCard extends StatelessWidget {
@@ -221,7 +226,7 @@ class _ScorerRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 3),
-              Text('${entry.player.stats.goals}', style: TextStyle(fontSize: compact ? 11 : 13, fontWeight: FontWeight.w900)),
+              Text('${entry.stats.goals}', style: TextStyle(fontSize: compact ? 11 : 13, fontWeight: FontWeight.w900)),
             ],
           ),
         ),

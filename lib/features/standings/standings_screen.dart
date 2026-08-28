@@ -22,41 +22,38 @@ class _StandingsScreenState extends ConsumerState<StandingsScreen> {
   @override
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
-    final clubIds = career.clubs.map((club) => club.id).toSet();
-    final availableSeries = CompetitionCatalog.allSeries
-        .where((series) => series.clubIds.any(clubIds.contains))
+    final availableSeries = career.competitionStates
+        .map(
+          (state) => CompetitionCatalog.competitionByIdOrNull(
+            state.competitionId,
+          ),
+        )
+        .whereType<CompetitionSeries>()
         .toList(growable: false);
-    final fallback = CompetitionCatalog.primarySeriesForClub(career.userClubId);
+    final fallback = CompetitionCatalog.seriesById(career.primaryCompetitionId);
     final series = availableSeries.firstWhere(
       (item) => item.id == _selectedSeriesId,
       orElse: () => availableSeries.isEmpty ? fallback : availableSeries.first,
     );
     final competitionName = CompetitionCatalog.displayNameFor(series);
-    final seriesClubIds = series.clubIds.toSet();
+    final competitionState = career.competitionStateFor(series.id);
+    final seriesClubIds = competitionState.participantClubIds.toSet();
     final seriesClubs = career.clubs
         .where((club) => seriesClubIds.contains(club.id))
         .toList(growable: false);
-    final seriesFixtures = career.fixtures
-        .where(
-          (fixture) =>
-              seriesClubIds.contains(fixture.homeClubId) &&
-              seriesClubIds.contains(fixture.awayClubId),
-        )
-        .toList(growable: false);
+    final seriesFixtures = career.fixturesForCompetition(series.id);
     final movements = LeagueEngine.positionMovement(
-      seriesClubs.isEmpty ? career.clubs : seriesClubs,
-      seriesFixtures.isEmpty ? career.fixtures : seriesFixtures,
+      seriesClubs,
+      seriesFixtures,
     );
-    final filtered = career.standings
-        .where((standing) => series.clubIds.contains(standing.clubId))
-        .toList(growable: false);
-    final standings = filtered.isEmpty ? career.standings : filtered;
+    final standings = competitionState.standings;
+    final showSerieAZones = series.id == 'br-series-a';
 
     return PremiumScaffold(
       appBar: GameTopBar(
         title: competitionName,
         subtitle:
-            'Classificação • Temporada ${career.season} • após ${career.roundIndex} rodada(s)',
+            'Classificação • Temporada ${career.season} • após ${competitionState.roundIndex} rodada(s)',
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(10, 8, 10, 28),
@@ -135,7 +132,7 @@ class _StandingsScreenState extends ConsumerState<StandingsScreen> {
                       (item) => item.id == standing.clubId,
                     );
                     final isUser = club.id == career.userClubId;
-                    final zone = _zoneColor(entry.key);
+                    final zone = showSerieAZones ? _zoneColor(entry.key) : null;
                     final movement = movements[standing.clubId] ?? 0;
                     return DataRow(
                       color: WidgetStatePropertyAll(
@@ -218,11 +215,12 @@ class _StandingsScreenState extends ConsumerState<StandingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            const Row(
-              children: [
-                Expanded(
-                  child: _ZoneChip(
+            if (showSerieAZones) ...[
+              const SizedBox(height: 8),
+              const Row(
+                children: [
+                  Expanded(
+                    child: _ZoneChip(
                     color: AppColors.green,
                     title: 'Libertadores',
                     positions: '1º–4º',
@@ -244,8 +242,9 @@ class _StandingsScreenState extends ConsumerState<StandingsScreen> {
                     positions: '17º–20º',
                   ),
                 ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

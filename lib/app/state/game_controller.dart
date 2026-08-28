@@ -68,7 +68,15 @@ class GameController extends Notifier<GameState> {
   Future<void> setFormation(FormationType formation) async {
     final career = state.career;
     if (career == null || career.managerUnemployed) return;
-    final starters = LineupEngine.autoSelect(career.userClub.squad, formation);
+    final fixture = career.nextUserFixture;
+    final suspended = fixture == null
+        ? null
+        : career.suspendedPlayerIdsForCompetition(fixture.competitionId);
+    final starters = LineupEngine.autoSelect(
+      career.userClub.squad,
+      formation,
+      competitionSuspendedPlayerIds: suspended,
+    );
     final next = career.copyWith(formation: formation, starterIds: starters);
     await commitCareer(next);
   }
@@ -87,10 +95,14 @@ class GameController extends Notifier<GameState> {
       outgoingId,
       incomingId,
     );
+    final fixture = career.nextUserFixture;
     final validation = LineupEngine.validate(
       career.userClub.squad,
       starters,
       career.formation,
+      competitionSuspendedPlayerIds: fixture == null
+          ? null
+          : career.suspendedPlayerIdsForCompetition(fixture.competitionId),
     );
     if (!validation.valid) {
       showMessage(validation.message);
@@ -106,14 +118,20 @@ class GameController extends Notifier<GameState> {
   Future<void> autoSelectLineup() async {
     final career = state.career;
     if (career == null || career.managerUnemployed) return;
+    final fixture = career.nextUserFixture;
+    final suspended = fixture == null
+        ? null
+        : career.suspendedPlayerIdsForCompetition(fixture.competitionId);
     final starters = LineupEngine.autoSelect(
       career.userClub.squad,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
     final validation = LineupEngine.validate(
       career.userClub.squad,
       starters,
       career.formation,
+      competitionSuspendedPlayerIds: suspended,
     );
     await commitCareer(
       career.copyWith(starterIds: starters),

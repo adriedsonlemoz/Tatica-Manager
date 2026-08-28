@@ -30,7 +30,7 @@ class LeagueSelectionStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
       children: [
         Text(
-          'Ligas desta carreira',
+          'Competições desta carreira',
           style: Theme.of(context)
               .textTheme
               .headlineSmall
@@ -38,7 +38,7 @@ class LeagueSelectionStep extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         const Text(
-          'Escolha quanto do mundo será acompanhado neste save. A liga do seu clube permanece sempre completa.',
+          'Escolha quanto do mundo será acompanhado neste save. A competição de liga do seu clube permanece sempre completa.',
           style: TextStyle(color: AppColors.muted, height: 1.4),
         ),
         const SizedBox(height: 14),
@@ -199,11 +199,57 @@ class LeagueSelectionStep extends StatelessWidget {
               ],
             ),
           ),
-        if (CompetitionCatalog.allSeries.length == 1)
+        if (CompetitionCatalog.internationalCompetitions.isNotEmpty)
+          SectionCard(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.language_rounded,
+                      size: 18,
+                      color: AppColors.green,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      'Internacionais',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 9),
+                for (final competition
+                    in CompetitionCatalog.internationalCompetitions)
+                  _LeagueTile(
+                    name: CompetitionCatalog.displayNameFor(competition),
+                    level: normalized.levelFor(competition.id),
+                    locked: competition.id == userSeries.id,
+                    editable: normalized.preset == CareerWorldPreset.custom,
+                    onLevel: (level) => onChanged(
+                      CareerLeaguePlanner.normalize(
+                        setup: normalized.withLevel(
+                          competition.id,
+                          level,
+                          preset: CareerWorldPreset.custom,
+                        ),
+                        userClubId: userClubId,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        if (CompetitionCatalog.allCompetitions.length == 1)
           const Padding(
             padding: EdgeInsets.only(top: 2),
             child: Text(
-              'O banco atual possui somente esta liga. Quando novas competições reais forem adicionadas ao catálogo do jogo, elas aparecerão automaticamente nesta etapa.',
+              'O banco atual possui somente esta competição. Quando novas competições reais forem adicionadas ao catálogo do jogo, elas aparecerão automaticamente nesta etapa.',
               style: TextStyle(color: AppColors.muted, height: 1.4, fontSize: 12),
             ),
           ),
@@ -230,7 +276,7 @@ class _LevelHelp extends StatelessWidget {
             TextSpan(
               text: '$title: ',
               style: const TextStyle(
-                color: AppColors.text,
+                color: AppColors.white,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -380,11 +426,11 @@ extension on CareerWorldPreset {
         CareerWorldPreset.fast =>
           'Mantém somente o essencial completo para priorizar velocidade.',
         CareerWorldPreset.balanced =>
-          'Equilibra ligas completas e competições em segundo plano.',
+          'Equilibra competições completas e em segundo plano.',
         CareerWorldPreset.broad =>
           'Carrega todas as competições disponíveis com maior profundidade.',
         CareerWorldPreset.custom =>
-          'Permite escolher manualmente o nível de cada liga e divisão.',
+          'Permite escolher manualmente o nível de cada competição e divisão.',
       };
 }
 

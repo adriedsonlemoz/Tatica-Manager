@@ -12,6 +12,7 @@ import '../settings/match_presentation_settings.dart';
 import '../tactic/tactic.dart';
 import '../transfer/market_career.dart';
 import 'career_event.dart';
+import 'competition_state.dart';
 import 'inbox_message.dart';
 import 'league_loading.dart';
 
@@ -133,6 +134,7 @@ class CareerState {
     this.managers = const [],
     required this.createdAt,
     required this.season,
+    required this.primaryCompetitionId,
     required this.roundIndex,
     required this.currentDate,
     required this.userClubId,
@@ -156,10 +158,11 @@ class CareerState {
     this.youthAcademy = const [],
     this.clubAdministration = const ClubAdministrationState(),
     this.leagueSetup = const CareerLeagueSetup(),
+    this.competitionStates = const [],
     this.lastMatch,
   });
 
-  static const int currentSchemaVersion = 12;
+  static const int currentSchemaVersion = 13;
   static const int maxStoredNews = 80;
 
   final int schemaVersion;
@@ -170,6 +173,11 @@ class CareerState {
   final List<ManagerProfile> managers;
   final DateTime createdAt;
   final int season;
+  final String primaryCompetitionId;
+
+  /// Espelho legado da competição principal. Continua persistido por uma
+  /// versão para manter compatibilidade com saves e telas antigas. O estado
+  /// autoritativo multi-competição fica em [competitionStates].
   final int roundIndex;
   final DateTime currentDate;
   final String userClubId;
@@ -193,56 +201,149 @@ class CareerState {
   final List<Player> youthAcademy;
   final ClubAdministrationState clubAdministration;
   final CareerLeagueSetup leagueSetup;
+  final List<CompetitionSeasonState> competitionStates;
   final MatchResult? lastMatch;
 
   Club get userClub => clubs.firstWhere((club) => club.id == userClubId);
   bool get managerEmployed => managerCareer.isEmployed;
   bool get managerUnemployed => managerCareer.isUnemployed;
 
-  String get primaryCompetitionId {
+  CompetitionSeasonState? competitionStateOrNull(String competitionId) =>
+      competitionStates
+          .where((state) => state.competitionId == competitionId)
+          .firstOrNull;
+
+  CompetitionSeasonState competitionStateFor(String competitionId) {
+    final stored = competitionStateOrNull(competitionId);
+    if (stored != null) return stored;
+    final participants = <String>{};
     for (final fixture in fixtures) {
-      if (fixture.homeClubId == userClubId || fixture.awayClubId == userClubId) {
-        return fixture.competitionId;
-      }
+      if (fixture.competitionId != competitionId) continue;
+      participants.add(fixture.homeClubId);
+      participants.add(fixture.awayClubId);
     }
-    final full = leagueSetup.fullCompetitionIds;
-    return full.isNotEmpty ? full.first : 'br-series-a';
+    return CompetitionSeasonState(
+      competitionId: competitionId,
+      participantClubIds: participants.toList(growable: false),
+      roundIndex: competitionId == primaryCompetitionId ? roundIndex : 0,
+      standings: competitionId == primaryCompetitionId ? standings : const [],
+      completed: fixtures
+              .where((fixture) => fixture.competitionId == competitionId)
+              .isNotEmpty &&
+          fixtures
+              .where((fixture) => fixture.competitionId == competitionId)
+              .every((fixture) => fixture.played),
+    );
   }
 
-  List<MatchFixture> get primaryCompetitionFixtures => fixtures
-      .where((fixture) => fixture.competitionId == primaryCompetitionId)
+  List<Standing> standingsFor(String competitionId) =>
+      competitionStateFor(competitionId).standings;
+
+  PlayerSeasonStats playerStatsForCompetition(
+    String competitionId,
+    String playerId,
+  ) =>
+      competitionStateFor(competitionId).statsForPlayer(playerId);
+
+  PlayerDiscipline playerDisciplineForCompetition(
+    String competitionId,
+    String playerId,
+  ) =>
+      competitionStateFor(competitionId).disciplineForPlayer(playerId);
+
+  Set<String> suspendedPlayerIdsForCompetition(String competitionId) =>
+      competitionStateFor(competitionId).suspendedPlayerIds;
+
+  bool isPlayerAvailableForCompetition(
+    Player player,
+    String competitionId,
+  ) {
+    if (player.injury != null || player.condition < 35) return false;
+    return !suspendedPlayerIdsForCompetition(competitionId).contains(player.id);
+  }
+
+  List<Player> unavailableUserPlayersForCompetition(String competitionId) =>
+      userClub.squad
+          .where((player) => !isPlayerAvailableForCompetition(player, competitionId))
+          .toList(growable: false);
+
+  List<MatchFixture> fixturesForCompetition(String competitionId) => fixtures
+      .where((fixture) => fixture.competitionId == competitionId)
       .toList(growable: false);
 
-  Set<String> get primaryCompetitionClubIds {
+  List<MatchFixture> get primaryCompetitionFixtures =>
+      fixturesForCompetition(primaryCompetitionId);
+
+  Set<String> clubIdsForCompetition(String competitionId) {
+    final stored = competitionStateOrNull(competitionId);
+    if (stored != null && stored.participantClubIds.isNotEmpty) {
+      return stored.participantClubIds.toSet();
+    }
     final ids = <String>{};
     for (final fixture in fixtures) {
-      if (fixture.competitionId != primaryCompetitionId) continue;
+      if (fixture.competitionId != competitionId) continue;
       ids.add(fixture.homeClubId);
       ids.add(fixture.awayClubId);
     }
+    return ids;
+  }
+
+  Set<String> get primaryCompetitionClubIds {
+    final ids = clubIdsForCompetition(primaryCompetitionId);
     if (ids.isEmpty) ids.addAll(clubs.map((club) => club.id));
     return ids;
   }
 
-  List<Club> clubsForPrimaryCompetition([List<Club>? source]) {
+  List<Club> clubsForCompetition(
+    String competitionId, [
+    List<Club>? source,
+  ]) {
     final values = source ?? clubs;
-    final allowed = primaryCompetitionClubIds;
-    return values.where((club) => allowed.contains(club.id)).toList(growable: false);
+    final allowed = clubIdsForCompetition(competitionId);
+    return values
+        .where((club) => allowed.contains(club.id))
+        .toList(growable: false);
   }
 
-  int get totalUserRounds {
+  List<Club> clubsForPrimaryCompetition([List<Club>? source]) =>
+      clubsForCompetition(primaryCompetitionId, source);
+
+  int totalRoundsForCompetition(String competitionId) {
     var total = 0;
     for (final fixture in fixtures) {
-      if (fixture.competitionId == primaryCompetitionId && fixture.round > total) {
+      if (fixture.competitionId == competitionId && fixture.round > total) {
         total = fixture.round;
       }
     }
+    return total;
+  }
+
+  int get totalUserRounds {
+    final total = totalRoundsForCompetition(primaryCompetitionId);
     return total > 0 ? total : 38;
   }
 
-  bool get seasonComplete => roundIndex >= totalUserRounds;
+  bool get seasonComplete {
+    final loadedStates = competitionStates
+        .where((state) => leagueSetup.isLoaded(state.competitionId))
+        .toList(growable: false);
+    if (loadedStates.isNotEmpty) {
+      return loadedStates.every((state) => state.completed);
+    }
+    return fixtures.isNotEmpty && fixtures.every((fixture) => fixture.played);
+  }
+
   int get currentRound =>
       (roundIndex + 1).clamp(1, totalUserRounds).toInt();
+
+  CareerState withCompetitionState(CompetitionSeasonState updated) {
+    final values = <CompetitionSeasonState>[
+      for (final state in competitionStates)
+        if (state.competitionId != updated.competitionId) state,
+      updated,
+    ];
+    return copyWith(competitionStates: values);
+  }
 
   MatchFixture? get nextUserFixture {
     if (seasonComplete || managerUnemployed) return null;
@@ -283,6 +384,7 @@ class CareerState {
     List<ManagerProfile>? managers,
     DateTime? createdAt,
     int? season,
+    String? primaryCompetitionId,
     int? roundIndex,
     DateTime? currentDate,
     String? userClubId,
@@ -306,43 +408,79 @@ class CareerState {
     List<Player>? youthAcademy,
     ClubAdministrationState? clubAdministration,
     CareerLeagueSetup? leagueSetup,
+    List<CompetitionSeasonState>? competitionStates,
     MatchResult? lastMatch,
     bool clearLastMatch = false,
-  }) =>
-      CareerState(
-        schemaVersion: schemaVersion ?? this.schemaVersion,
-        careerId: careerId ?? this.careerId,
-        careerName: careerName ?? this.careerName,
-        manager: manager ?? this.manager,
-        managerCareer: managerCareer ?? this.managerCareer,
-        managers: managers ?? this.managers,
-        createdAt: createdAt ?? this.createdAt,
-        season: season ?? this.season,
-        roundIndex: roundIndex ?? this.roundIndex,
-        currentDate: currentDate ?? this.currentDate,
-        userClubId: userClubId ?? this.userClubId,
-        clubs: clubs ?? this.clubs,
-        freeAgents: freeAgents ?? this.freeAgents,
-        fixtures: fixtures ?? this.fixtures,
-        standings: standings ?? this.standings,
-        formation: formation ?? this.formation,
-        tactic: tactic ?? this.tactic,
-        starterIds: starterIds ?? this.starterIds,
-        finances: finances ?? this.finances,
-        seasonHistory: seasonHistory ?? this.seasonHistory,
-        news: news ?? this.news,
-        matchHistory: matchHistory ?? this.matchHistory,
-        settings: settings ?? this.settings,
-        managerHistory: managerHistory ?? this.managerHistory,
-        scoutingReports: scoutingReports ?? this.scoutingReports,
-        transferNegotiations: transferNegotiations ?? this.transferNegotiations,
-        transferInstallments: transferInstallments ?? this.transferInstallments,
-        inbox: inbox ?? this.inbox,
-        youthAcademy: youthAcademy ?? this.youthAcademy,
-        clubAdministration: clubAdministration ?? this.clubAdministration,
-        leagueSetup: leagueSetup ?? this.leagueSetup,
-        lastMatch: clearLastMatch ? null : (lastMatch ?? this.lastMatch),
-      );
+  }) {
+    final nextPrimaryId = primaryCompetitionId ?? this.primaryCompetitionId;
+    var nextStates = competitionStates ?? this.competitionStates;
+    var nextRoundIndex = roundIndex ?? this.roundIndex;
+    var nextStandings = standings ?? this.standings;
+
+    if (competitionStates != null || primaryCompetitionId != null) {
+      final primary = nextStates
+          .where((state) => state.competitionId == nextPrimaryId)
+          .firstOrNull;
+      if (primary != null) {
+        if (roundIndex == null) nextRoundIndex = primary.roundIndex;
+        if (standings == null) nextStandings = primary.standings;
+      }
+    }
+
+    if (roundIndex != null || standings != null) {
+      final existing = nextStates
+          .where((state) => state.competitionId == nextPrimaryId)
+          .firstOrNull;
+      if (existing != null) {
+        final updated = existing.copyWith(
+          roundIndex: nextRoundIndex,
+          standings: nextStandings,
+        );
+        nextStates = [
+          for (final state in nextStates)
+            if (state.competitionId != nextPrimaryId) state,
+          updated,
+        ];
+      }
+    }
+
+    return CareerState(
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+      careerId: careerId ?? this.careerId,
+      careerName: careerName ?? this.careerName,
+      manager: manager ?? this.manager,
+      managerCareer: managerCareer ?? this.managerCareer,
+      managers: managers ?? this.managers,
+      createdAt: createdAt ?? this.createdAt,
+      season: season ?? this.season,
+      primaryCompetitionId: nextPrimaryId,
+      roundIndex: nextRoundIndex,
+      currentDate: currentDate ?? this.currentDate,
+      userClubId: userClubId ?? this.userClubId,
+      clubs: clubs ?? this.clubs,
+      freeAgents: freeAgents ?? this.freeAgents,
+      fixtures: fixtures ?? this.fixtures,
+      standings: nextStandings,
+      formation: formation ?? this.formation,
+      tactic: tactic ?? this.tactic,
+      starterIds: starterIds ?? this.starterIds,
+      finances: finances ?? this.finances,
+      seasonHistory: seasonHistory ?? this.seasonHistory,
+      news: news ?? this.news,
+      matchHistory: matchHistory ?? this.matchHistory,
+      settings: settings ?? this.settings,
+      managerHistory: managerHistory ?? this.managerHistory,
+      scoutingReports: scoutingReports ?? this.scoutingReports,
+      transferNegotiations: transferNegotiations ?? this.transferNegotiations,
+      transferInstallments: transferInstallments ?? this.transferInstallments,
+      inbox: inbox ?? this.inbox,
+      youthAcademy: youthAcademy ?? this.youthAcademy,
+      clubAdministration: clubAdministration ?? this.clubAdministration,
+      leagueSetup: leagueSetup ?? this.leagueSetup,
+      competitionStates: nextStates,
+      lastMatch: clearLastMatch ? null : (lastMatch ?? this.lastMatch),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'schemaVersion': schemaVersion,
@@ -353,6 +491,7 @@ class CareerState {
         'managers': managers.map((e) => e.toJson()).toList(),
         'createdAt': createdAt.toIso8601String(),
         'season': season,
+        'primaryCompetitionId': primaryCompetitionId,
         'roundIndex': roundIndex,
         'currentDate': currentDate.toIso8601String(),
         'userClubId': userClubId,
@@ -376,6 +515,7 @@ class CareerState {
         'youthAcademy': youthAcademy.map((e) => e.toJson()).toList(),
         'clubAdministration': clubAdministration.toJson(),
         'leagueSetup': leagueSetup.toJson(),
+        'competitionStates': competitionStates.map((e) => e.toJson()).toList(),
         'lastMatch': lastMatch?.toJson(),
       };
 
@@ -388,7 +528,7 @@ class CareerState {
     final fixtures = ((json['fixtures'] as List?) ?? const [])
         .map((e) => MatchFixture.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
-    final userCompetitionId = fixtures
+    final derivedUserCompetitionId = fixtures
         .where(
           (fixture) =>
               fixture.homeClubId == userClubId ||
@@ -397,14 +537,46 @@ class CareerState {
         .map((fixture) => fixture.competitionId)
         .firstOrNull ??
         (fixtures.isNotEmpty ? fixtures.first.competitionId : 'br-series-a');
+    final storedPrimaryCompetitionId =
+        (json['primaryCompetitionId'] as String?)?.trim();
+    final primaryCompetitionId = storedPrimaryCompetitionId?.isNotEmpty == true
+        ? storedPrimaryCompetitionId!
+        : derivedUserCompetitionId;
     final leagueSetup = json['leagueSetup'] is Map
         ? CareerLeagueSetup.fromJson(
             Map<String, dynamic>.from(json['leagueSetup'] as Map),
-          ).ensureFull(userCompetitionId)
+          ).ensureFull(primaryCompetitionId)
         : CareerLeagueSetup.legacy(
             competitionIds: fixtures.map((fixture) => fixture.competitionId),
-            userCompetitionId: userCompetitionId,
+            userCompetitionId: primaryCompetitionId,
           );
+    final legacyRoundIndex = (json['roundIndex'] as num?)?.toInt() ?? 0;
+    final legacyStandings = ((json['standings'] as List?) ?? const [])
+        .whereType<Map>()
+        .map((item) => Standing.fromJson(Map<String, dynamic>.from(item)))
+        .toList(growable: false);
+    final storedCompetitionStates =
+        ((json['competitionStates'] as List?) ?? const [])
+            .whereType<Map>()
+            .map(
+              (item) => CompetitionSeasonState.fromJson(
+                Map<String, dynamic>.from(item),
+              ),
+            )
+            .where((state) => state.competitionId.isNotEmpty)
+            .toList(growable: false);
+    final competitionStates = storedCompetitionStates.isNotEmpty
+        ? storedCompetitionStates
+        : _legacyCompetitionStates(
+            clubs: clubs,
+            fixtures: fixtures,
+            primaryCompetitionId: primaryCompetitionId,
+            primaryRoundIndex: legacyRoundIndex,
+            primaryStandings: legacyStandings,
+          );
+    final primaryState = competitionStates
+        .where((state) => state.competitionId == primaryCompetitionId)
+        .firstOrNull;
     final legacyManagerName = clubs
         .where((club) => club.id == userClubId)
         .map((club) => club.managerName)
@@ -502,7 +674,8 @@ class CareerState {
       managers: managers,
       createdAt: DateTime.tryParse(createdAtValue ?? '') ?? DateTime(season),
       season: season,
-      roundIndex: json['roundIndex'] as int? ?? 0,
+      primaryCompetitionId: primaryCompetitionId,
+      roundIndex: primaryState?.roundIndex ?? legacyRoundIndex,
       currentDate: DateTime.tryParse(currentDateValue ?? '') ??
           _legacyCurrentDate(fixtures, userClubId, season),
       userClubId: userClubId,
@@ -511,9 +684,7 @@ class CareerState {
           .map((e) => Player.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
       fixtures: fixtures,
-      standings: ((json['standings'] as List?) ?? const [])
-          .map((e) => Standing.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
+      standings: primaryState?.standings ?? legacyStandings,
       formation: FormationType.values.firstWhere(
         (e) => e.name == json['formation'],
         orElse: () => FormationType.f433,
@@ -564,8 +735,91 @@ class CareerState {
         ),
       ),
       leagueSetup: leagueSetup,
+      competitionStates: competitionStates,
       lastMatch: lastMatch,
     );
+  }
+
+  static List<CompetitionSeasonState> _legacyCompetitionStates({
+    required List<Club> clubs,
+    required List<MatchFixture> fixtures,
+    required String primaryCompetitionId,
+    required int primaryRoundIndex,
+    required List<Standing> primaryStandings,
+  }) {
+    final ids = fixtures.map((fixture) => fixture.competitionId).toSet();
+    if (ids.isEmpty) ids.add(primaryCompetitionId);
+    final legacyPlayerStats = <String, PlayerSeasonStats>{
+      for (final club in clubs)
+        for (final player in club.squad)
+          if (player.stats.appearances > 0 ||
+              player.stats.goals > 0 ||
+              player.stats.assists > 0 ||
+              player.stats.yellowCards > 0 ||
+              player.stats.redCards > 0)
+            player.id: player.stats,
+    };
+    final legacyPlayerDiscipline = <String, PlayerDiscipline>{
+      for (final club in clubs)
+        for (final player in club.squad)
+          if (player.discipline.yellowCards > 0 ||
+              player.discipline.redCards > 0 ||
+              player.discipline.suspendedRounds > 0)
+            player.id: player.discipline,
+    };
+
+    return ids.map((competitionId) {
+      final competitionFixtures = fixtures
+          .where((fixture) => fixture.competitionId == competitionId)
+          .toList(growable: false);
+      final participants = <String>{
+        for (final fixture in competitionFixtures) ...[
+          fixture.homeClubId,
+          fixture.awayClubId,
+        ],
+      };
+      var completedRound = 0;
+      final rounds = competitionFixtures.map((fixture) => fixture.round).toSet()
+        ..removeWhere((round) => round <= 0);
+      final orderedRounds = rounds.toList()..sort();
+      for (final round in orderedRounds) {
+        final roundFixtures = competitionFixtures.where(
+          (fixture) => fixture.round == round,
+        );
+        if (roundFixtures.isNotEmpty &&
+            roundFixtures.every((fixture) => fixture.played)) {
+          completedRound = round;
+        } else {
+          break;
+        }
+      }
+      final isPrimary = competitionId == primaryCompetitionId;
+      final participantClubIds = participants.toList(growable: false);
+      final standings = isPrimary ? primaryStandings : const <Standing>[];
+      final completed = competitionFixtures.isNotEmpty &&
+          competitionFixtures.every((fixture) => fixture.played);
+      return CompetitionSeasonState(
+        competitionId: competitionId,
+        participantClubIds: participantClubIds,
+        roundIndex: isPrimary ? primaryRoundIndex : completedRound,
+        standings: standings,
+        playerStats: isPrimary ? legacyPlayerStats : const {},
+        playerDiscipline: isPrimary ? legacyPlayerDiscipline : const {},
+        stages: standings.isEmpty
+            ? const []
+            : [
+                CompetitionStageState(
+                  id: 'main',
+                  kind: CompetitionStageKind.league,
+                  participantClubIds: participantClubIds,
+                  roundIndex: isPrimary ? primaryRoundIndex : completedRound,
+                  standingsByGroup: {'main': standings},
+                  completed: completed,
+                ),
+              ],
+        completed: completed,
+      );
+    }).toList(growable: false);
   }
 
   static List<ManagerProfile> _legacyManagerDatabase({

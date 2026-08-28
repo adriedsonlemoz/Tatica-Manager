@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.75
-Android versionCode: 77
-pubspec: 0.1.1+77
+Release visível: 0.1.1.76
+Android versionCode: 78
+pubspec: 0.1.1+78
 
-Novidade desta base: adiciona seleção de ligas por save com presets e modo personalizado, persiste `CareerLeagueSetup` no `CareerState` schema 12, mantém a liga do jogador completa, prepara resolução estatística somente para jogos CPU de futuras ligas em segundo plano e migra o SQLite para v3 com resumo leve da Central de Carreiras. IDs e saves existentes são preservados e o Match Engine continua único.
+Novidade desta base: sobre a seleção de ligas da 0.1.1.75, adiciona a fundação multi-competição do `CareerState` schema 13. Cada `competitionId` possui progresso, tabela, estatísticas e disciplina próprios; fixtures continuam num calendário global e carregam metadados de fase/grupo/confronto. O Match Engine permanece único e apenas produz `MatchResult`; a aplicação ao save fica fora dele. O catálogo também fica preparado para futuras competições internacionais sem associá-las artificialmente a um país.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.76 com versionCode > 77.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.77 com versionCode > 78.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync
@@ -135,11 +135,11 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 Esses itens ainda precisam de validação no APK/aparelho quando aplicável. Se um problema continuar no dispositivo, corrija a causa sem desfazer a arquitetura.
 
 PRÓXIMAS PRIORIDADES
-1. Validar a 0.1.1.75 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
+1. Validar a 0.1.1.76 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
 2. Em aparelho, validar a nova etapa de seleção de ligas e confirmar que a Série A do clube permanece completa em todos os presets.
 3. Testar abertura da Central de Carreiras com múltiplos saves antigos e novos após a migração SQLite v2 -> v3.
 4. Exercitar avanço diário, jogos CPU, mercado e contratos para confirmar que a configuração persistida não altera a Série A atual.
-5. Quando uma segunda competição real for adicionada ao catálogo, evoluir calendário/classificação por competição antes de declarar suporte completo a múltiplas ligas simultâneas.
+5. A próxima expansão de dados pode adicionar a Série B real usando o estado por competição já existente; antes de estaduais/copas, implementar somente o regulamento/calendário específico de cada torneio.
 6. Manter alteração de ligas após o início da carreira bloqueada até existir reconstrução segura de calendário, tabela, resultados e estatísticas.
 
 ```
@@ -155,3 +155,15 @@ SQLite v3 mantém o payload integral, mas a Central de Carreiras usa colunas de 
 
 A troca de ligas após o início do save continua desabilitada até haver regras explícitas para reconstrução de calendário, classificação, resultados e estatísticas. Consulte `docs/LEAGUE_LOADING.md`.
 
+
+## Fundação multi-competição — 0.1.1.76 / schema 13
+
+A carreira agora possui estado competitivo independente por `competitionId` através de `CompetitionSeasonState`, incluindo participantes, progresso, classificação, estatísticas, disciplina e fases. `CareerState.fixtures` continua sendo o calendário global, e `primaryCompetitionId` define qual torneio alimenta os espelhos legados `standings`/`roundIndex` e as telas que ainda trabalham com uma competição principal.
+
+Preserve `CompetitionCalendarEngine`, `CompetitionStateEngine`, `CompetitionSimulationEngine` e `MatchCareerImpactEngine`. Não mova essas responsabilidades para `GameController` e não crie um novo Match Engine. O Match Engine atual deve continuar simulando a partida e retornando `MatchResult`; o impacto competitivo é aplicado depois no estado correspondente.
+
+O mesmo clube pode participar de vários torneios carregados. Estatísticas e suspensões são por competição; lesões, condição, fadiga e moral continuam globais. Fixtures novos podem persistir `stageId`, `groupId`, `tieId` e `leg`; a Série A deve conservar seus IDs históricos e novas competições devem usar IDs que incluam `competitionId`.
+
+O catálogo já diferencia ligas nacionais/regionais, copas nacionais, torneios continentais e mundiais, mas a 0.1.1.76 não adiciona dados fictícios. Ao inserir Série B, estaduais, Copa do Brasil, Libertadores ou outras competições, cadastre somente dados/regras reais e implemente o gerador do formato específico quando necessário. Não use um gerador genérico inventado de mata-mata/grupos.
+
+Saves schema 12 devem migrar para schema 13 sem alterar IDs persistentes. Alterar o conjunto de ligas carregadas depois que a carreira começou continua bloqueado; mudança de emprego só pode tornar principal/promover uma competição que já fazia parte do save.

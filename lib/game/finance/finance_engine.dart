@@ -120,4 +120,78 @@ abstract final class FinanceEngine {
       transactions: transactions,
     );
   }
+
+  /// Partidas de competições adicionais não podem cobrar novamente salários,
+  /// operações, TV e patrocínio da rodada da liga principal. Nesta fundação o
+  /// efeito financeiro compartilhado fica restrito ao matchday; premiações e
+  /// cotas específicas entram quando o regulamento real da competição existir.
+  static FinanceRoundResult settleAdditionalCompetitionMatch({
+    required Club club,
+    required MatchFixture fixture,
+    required int season,
+    required bool home,
+    required int tablePosition,
+  }) {
+    if (!home) {
+      return FinanceRoundResult(club: club, transactions: const []);
+    }
+    final stadium = StadiumEngine.settleMatchday(
+      club: club,
+      tablePosition: tablePosition,
+    );
+    var balance = club.money;
+    final transactions = <FinanceTransaction>[];
+
+    void add(String suffix, String description, int amount, FinanceKind kind) {
+      balance += amount;
+      transactions.add(
+        FinanceTransaction(
+          id: '${season}_${fixture.id}_$suffix',
+          season: season,
+          round: fixture.round,
+          description: description,
+          amount: amount,
+          kind: kind,
+          createdAt: fixture.date,
+        ),
+      );
+    }
+
+    add(
+      'tickets',
+      'Bilheteria — ${fixture.id} (${stadium.attendance} torcedores)',
+      stadium.ticketing,
+      FinanceKind.matchday,
+    );
+    add(
+      'hospitality',
+      'Camarotes e hospitalidade — ${fixture.id}',
+      stadium.hospitality,
+      FinanceKind.hospitality,
+    );
+    add(
+      'retail',
+      'Lojas e produtos oficiais — ${fixture.id}',
+      stadium.retail,
+      FinanceKind.retail,
+    );
+    add(
+      'food',
+      'Alimentação — ${fixture.id}',
+      stadium.food,
+      FinanceKind.food,
+    );
+    add(
+      'stadium-ads',
+      'Publicidade no estádio — ${fixture.id}',
+      stadium.advertising,
+      FinanceKind.stadiumAdvertising,
+    );
+
+    return FinanceRoundResult(
+      club: club.copyWith(money: balance),
+      transactions: transactions,
+    );
+  }
+
 }

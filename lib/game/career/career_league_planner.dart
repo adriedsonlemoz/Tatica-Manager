@@ -9,7 +9,7 @@ abstract final class CareerLeaguePlanner {
     CareerWorldPreset preset = CareerWorldPreset.balanced,
   }) {
     final userSeries = CompetitionCatalog.primarySeriesForClub(userClubId);
-    final allSeries = CompetitionCatalog.allSeries;
+    final allSeries = CompetitionCatalog.allCompetitions;
     final levels = <String, LeagueLoadLevel>{
       for (final series in allSeries) series.id: LeagueLoadLevel.unloaded,
     };
@@ -46,7 +46,9 @@ abstract final class CareerLeaguePlanner {
     required String userClubId,
   }) {
     final userSeries = CompetitionCatalog.primarySeriesForClub(userClubId);
-    final knownIds = CompetitionCatalog.allSeries.map((series) => series.id).toSet();
+    final knownIds = CompetitionCatalog.allCompetitions
+        .map((competition) => competition.id)
+        .toSet();
     return CareerLeagueSetup(
       preset: setup.preset,
       competitions: {
@@ -70,7 +72,7 @@ abstract final class CareerLeaguePlanner {
   static Set<String> activeClubIds(CareerLeagueSetup setup) {
     final loadedIds = setup.loadedCompetitionIds.toSet();
     return {
-      for (final series in CompetitionCatalog.allSeries)
+      for (final series in CompetitionCatalog.allCompetitions)
         if (loadedIds.contains(series.id)) ...series.clubIds,
     };
   }

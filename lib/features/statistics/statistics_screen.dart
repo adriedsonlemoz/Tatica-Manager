@@ -42,50 +42,58 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
   @override
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
-    final clubIds = career.clubs.map((club) => club.id).toSet();
-    final availableSeries = CompetitionCatalog.allSeries
-        .where((series) => series.clubIds.any(clubIds.contains))
+    final availableSeries = career.competitionStates
+        .map(
+          (state) => CompetitionCatalog.competitionByIdOrNull(
+            state.competitionId,
+          ),
+        )
+        .whereType<CompetitionSeries>()
         .toList(growable: false);
-    final fallback = CompetitionCatalog.primarySeriesForClub(career.userClubId);
+    final fallback = CompetitionCatalog.seriesById(career.primaryCompetitionId);
     final series = availableSeries.firstWhere(
       (item) => item.id == _selectedSeriesId,
       orElse: () => availableSeries.isEmpty ? fallback : availableSeries.first,
     );
-    final allowed = series.clubIds.toSet();
-    final clubs = career.clubs.where((club) => allowed.contains(club.id)).toList();
-    final fixtures = career.fixtures
-        .where((fixture) => allowed.contains(fixture.homeClubId) && allowed.contains(fixture.awayClubId))
-        .toList();
-    final standings = career.standings.where((item) => allowed.contains(item.clubId)).toList()
-      ..sort((a, b) {
-        final pts = b.points.compareTo(a.points);
-        if (pts != 0) return pts;
-        final gd = b.goalDifference.compareTo(a.goalDifference);
-        return gd != 0 ? gd : b.goalsFor.compareTo(a.goalsFor);
-      });
-    final players = <({Player player, Club club})>[
+    final competitionState = career.competitionStateFor(series.id);
+    final allowed = competitionState.participantClubIds.toSet();
+    final clubs = career.clubs
+        .where((club) => allowed.contains(club.id))
+        .toList(growable: false);
+    final fixtures = career.fixturesForCompetition(series.id);
+    final standings = [...competitionState.standings];
+    final players = <({Player player, Club club, PlayerSeasonStats stats})>[
       for (final club in clubs)
-        for (final player in club.squad) (player: player, club: club),
+        for (final player in club.squad)
+          (
+            player: player,
+            club: club,
+            stats: competitionState.statsForPlayer(player.id),
+          ),
     ];
     final scorers = [...players]
       ..sort((a, b) {
-        final goals = b.player.stats.goals.compareTo(a.player.stats.goals);
+        final goals = b.stats.goals.compareTo(a.stats.goals);
         if (goals != 0) return goals;
-        return b.player.stats.assists.compareTo(a.player.stats.assists);
+        return b.stats.assists.compareTo(a.stats.assists);
       });
     final assists = [...players]
       ..sort((a, b) {
-        final value = b.player.stats.assists.compareTo(a.player.stats.assists);
+        final value = b.stats.assists.compareTo(a.stats.assists);
         if (value != 0) return value;
-        return b.player.stats.goals.compareTo(a.player.stats.goals);
+        return b.stats.goals.compareTo(a.stats.goals);
       });
     final discipline = [...players]
       ..sort((a, b) {
-        final aScore = a.player.stats.redCards * 4 + a.player.stats.yellowCards;
-        final bScore = b.player.stats.redCards * 4 + b.player.stats.yellowCards;
+        final aScore = a.stats.redCards * 4 + a.stats.yellowCards;
+        final bScore = b.stats.redCards * 4 + b.stats.yellowCards;
         return bScore.compareTo(aScore);
       });
-    final managers = ManagerRankingEngine.rank(career, clubIds: allowed);
+    final managers = ManagerRankingEngine.rank(
+      career,
+      clubIds: allowed,
+      competitionId: series.id,
+    );
 
     return PremiumScaffold(
       appBar: GameTopBar(
@@ -127,9 +135,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
               children: [
                 _StandingsTab(standings: standings, clubs: clubs),
                 _MatchesTab(fixtures: fixtures, clubs: clubs),
-                _PlayerRankingTab(entries: scorers, valueBuilder: (p) => '${p.stats.goals} G', secondaryBuilder: (p) => '${p.stats.assists} A'),
-                _PlayerRankingTab(entries: assists, valueBuilder: (p) => '${p.stats.assists} A', secondaryBuilder: (p) => '${p.stats.goals} G'),
-                _PlayerRankingTab(entries: discipline, valueBuilder: (p) => '${p.stats.yellowCards} A', secondaryBuilder: (p) => '${p.stats.redCards} V'),
+                _PlayerRankingTab(entries: scorers, valueBuilder: (stats) => '${stats.goals} G', secondaryBuilder: (stats) => '${stats.assists} A'),
+                _PlayerRankingTab(entries: assists, valueBuilder: (stats) => '${stats.assists} A', secondaryBuilder: (stats) => '${stats.goals} G'),
+                _PlayerRankingTab(entries: discipline, valueBuilder: (stats) => '${stats.yellowCards} A', secondaryBuilder: (stats) => '${stats.redCards} V'),
                 _ManagersTab(entries: managers, clubs: clubs),
               ],
             ),
@@ -216,9 +224,9 @@ class _MatchesTab extends StatelessWidget {
 
 class _PlayerRankingTab extends StatelessWidget {
   const _PlayerRankingTab({required this.entries, required this.valueBuilder, required this.secondaryBuilder});
-  final List<({Player player, Club club})> entries;
-  final String Function(Player) valueBuilder;
-  final String Function(Player) secondaryBuilder;
+  final List<({Player player, Club club, PlayerSeasonStats stats})> entries;
+  final String Function(PlayerSeasonStats) valueBuilder;
+  final String Function(PlayerSeasonStats) secondaryBuilder;
 
   @override
   Widget build(BuildContext context) => ListView.builder(
@@ -239,8 +247,8 @@ class _PlayerRankingTab extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(valueBuilder(item.player), style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.w900)),
-                      Text(secondaryBuilder(item.player), style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                      Text(valueBuilder(item.stats), style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.w900)),
+                      Text(secondaryBuilder(item.stats), style: TextStyle(color: AppColors.muted, fontSize: 10)),
                     ],
                   ),
                 ),

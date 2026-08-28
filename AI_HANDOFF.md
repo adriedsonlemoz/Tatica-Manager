@@ -8,11 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.75`
-- **Android versionCode:** `77`
+- **Release deste handoff:** `0.1.1.76`
+- **Android versionCode:** `78`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+
+## Estado funcional da release 0.1.1.76
+
+- evolui `CareerState` para schema 13 com `CompetitionSeasonState` independente por `competitionId`;
+- mantém fixtures em um calendário global conciliado, permitindo o mesmo clube em liga, estadual e copa sem duplicar elenco ou Match Engine;
+- separa classificação, estatísticas e disciplina por competição e mantém `standings`/`roundIndex` legados como espelho da competição principal;
+- adiciona metadados de fase/grupo/confronto/ida-volta em `MatchFixture` e preserva os IDs históricos da Série A;
+- jogos CPU de todas as competições carregadas avançam pela data correta; `full` continua no Match Engine e `background` no resolvedor estatístico leve;
+- o Match Engine não foi refatorado desnecessariamente: ele já devolve `MatchResult` sem conhecer `CareerState`, tabela ou persistência;
+- o catálogo passa a suportar futuramente torneios internacionais fora da hierarquia de um país, sem cadastrar competições fictícias nesta release;
+- corrige o erro real do GitHub Actions em `league_selection_step.dart` (`AppColors.text` inexistente) e o lint correspondente do teste;
+- migrações de identidade alcançam também participantes e classificações persistidas dentro de fases/grupos.
+
+Consulte `docs/MULTI_COMPETITION_FOUNDATION.md` e `docs/RELEASE_0.1.1.76.md`.
 
 ## Estado funcional da release 0.1.1.75
 
@@ -438,10 +453,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         77
-pubspec:             0.1.1+77
+versionCode:         78
+pubspec:             0.1.1+78
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.76` e usar um `versionCode` maior que 77.
+A próxima alteração/entrega normalmente deve virar `0.1.1.77` e usar um `versionCode` maior que 78.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

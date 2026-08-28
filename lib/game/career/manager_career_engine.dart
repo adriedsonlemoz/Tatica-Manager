@@ -1,3 +1,4 @@
+import '../../data/competition_catalog.dart';
 import '../../domain/career/manager_career.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
@@ -82,6 +83,7 @@ abstract final class ManagerCareerEngine {
 
     for (final club in state.clubs) {
       if (club.id == currentClubId) continue;
+      if (_loadedLeagueForClub(state, club.id) == null) continue;
       final variance = (_stableHash(
                 '${club.id}-${state.season}-${state.currentDate.month}',
               ) %
@@ -116,7 +118,12 @@ abstract final class ManagerCareerEngine {
     if (vacancies.length >= 3) return vacancies;
     final existing = vacancies.map((item) => item.club.id).toSet();
     final fallback = state.clubs
-        .where((club) => club.id != currentClubId && !existing.contains(club.id))
+        .where(
+          (club) =>
+              club.id != currentClubId &&
+              !existing.contains(club.id) &&
+              _loadedLeagueForClub(state, club.id) != null,
+        )
         .toList()
       ..sort((a, b) => a.reputation.compareTo(b.reputation));
     for (final club in fallback) {
@@ -197,6 +204,12 @@ abstract final class ManagerCareerEngine {
       throw StateError('A diretoria ainda não considera seu perfil suficiente para esta vaga.');
     }
     final newClub = base.clubs.firstWhere((club) => club.id == clubId);
+    final newPrimaryCompetitionId = _loadedLeagueForClub(base, clubId);
+    if (newPrimaryCompetitionId == null) {
+      throw StateError(
+        'A liga deste clube não está carregada nesta carreira.',
+      );
+    }
     final previousClubId = base.userClubId;
     var tenures = [...base.managerCareer.tenures];
     if (base.managerEmployed) {
@@ -225,7 +238,12 @@ abstract final class ManagerCareerEngine {
       }
       return club;
     }).toList(growable: false);
-    final starters = LineupEngine.autoSelect(newClub.squad, base.formation);
+    final starters = LineupEngine.autoSelect(
+      newClub.squad,
+      base.formation,
+      competitionSuspendedPlayerIds:
+          base.suspendedPlayerIdsForCompetition(newPrimaryCompetitionId),
+    );
     final history = [...base.managerHistory];
     final seasonIndex = history.lastIndexWhere((entry) => entry.season == base.season);
     final snapshot = ManagerCareerHistoryEntry.fromProfile(
@@ -262,6 +280,8 @@ abstract final class ManagerCareerEngine {
       manager: userManager,
       managers: managers,
       userClubId: clubId,
+      primaryCompetitionId: newPrimaryCompetitionId,
+      leagueSetup: base.leagueSetup.ensureFull(newPrimaryCompetitionId),
       clubs: clubs,
       starterIds: starters,
       finances: const [],
@@ -334,6 +354,22 @@ abstract final class ManagerCareerEngine {
         clubId: vacancy.club.id,
       ),
     );
+  }
+
+
+  static String? _loadedLeagueForClub(CareerState state, String clubId) {
+    final candidates = CompetitionCatalog.allCompetitions.where(
+      (competition) =>
+          competition.format.hasLeagueTable &&
+          competition.clubIds.contains(clubId) &&
+          state.leagueSetup.isLoaded(competition.id) &&
+          state.competitionStateOrNull(competition.id) != null,
+    );
+    final national = candidates.where(
+      (competition) => competition.scope == CompetitionScope.nationalLeague,
+    );
+    if (national.isNotEmpty) return national.first.id;
+    return candidates.isEmpty ? null : candidates.first.id;
   }
 
   static int _stableHash(String value) {

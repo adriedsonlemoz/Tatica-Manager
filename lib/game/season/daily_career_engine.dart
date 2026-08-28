@@ -4,6 +4,7 @@ import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../career/manager_career_engine.dart';
+import '../competition/competition_simulation_engine.dart';
 import '../contract/contract_lifecycle_engine.dart';
 import '../cpu/cpu_user_offer_engine.dart';
 import '../finance/club_administration_engine.dart';
@@ -24,7 +25,12 @@ abstract final class DailyCareerEngine {
     final prepared = YouthAcademyEngine.ensureAcademy(
       ContractLifecycleEngine.reconcile(state).state,
     );
-    final advanced = CareerCalendarEngine.advanceDay(prepared);
+    final simulated = CompetitionSimulationEngine.resolveCpuFixturesThroughDate(
+      prepared,
+      throughDate: prepared.currentDate,
+      protectUserFixtures: prepared.managerEmployed,
+    );
+    final advanced = CareerCalendarEngine.advanceDay(simulated);
     var next = advanced.copyWith(
       news: prepared.managerEmployed
           ? CpuUserOfferEngine.expireInvalidOffers(
@@ -36,11 +42,11 @@ abstract final class DailyCareerEngine {
     final events = <CareerEvent>[];
 
     if (next.managerEmployed) {
-      _addRecoveryEvents(events, before: prepared, after: next);
+      _addRecoveryEvents(events, before: simulated, after: next);
       _addContractAlerts(events, next);
       _addNextMatchAlert(events, next);
       _addTransferOffer(events, next);
-      _addTrainingSummary(events, prepared, next);
+      _addTrainingSummary(events, simulated, next);
     }
     final marketAdvance = MarketCareerEngine.advanceDay(next);
     next = marketAdvance.state;

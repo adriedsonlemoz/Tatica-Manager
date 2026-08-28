@@ -26,6 +26,7 @@ abstract final class LeagueEngine {
     required int season,
     String competitionId = 'br-series-a',
     List<int> roundGapDays = defaultRoundGapDays,
+    DateTime? startDate,
   }) {
     if (clubs.length < 2 || clubs.length.isOdd) return const [];
     if (roundGapDays.isEmpty || roundGapDays.any((gap) => gap <= minimumRestDays)) {
@@ -39,7 +40,7 @@ abstract final class LeagueEngine {
     final matchesPerRound = clubs.length ~/ 2;
     final totalRounds = (clubs.length - 1) * 2;
     final roundDates = _roundDates(
-      firstMatchDate(season),
+      startDate ?? firstMatchDate(season),
       totalRounds,
       roundGapDays,
     );
@@ -58,7 +59,12 @@ abstract final class LeagueEngine {
         final kickoff = _kickoffFor(roundDate, matchIndex);
         firstHalf.add(
           MatchFixture(
-            id: '$season-r$round-m${matchIndex + 1}',
+            id: _fixtureId(
+              competitionId,
+              season,
+              round,
+              matchIndex + 1,
+            ),
             round: round,
             homeClubId: home,
             awayClubId: away,
@@ -81,7 +87,7 @@ abstract final class LeagueEngine {
       final kickoff = _kickoffFor(roundDate, matchIndex - 1);
       secondHalf.add(
         MatchFixture(
-          id: '$season-r$round-m$matchIndex',
+          id: _fixtureId(competitionId, season, round, matchIndex),
           round: round,
           homeClubId: fixture.awayClubId,
           awayClubId: fixture.homeClubId,
@@ -94,6 +100,19 @@ abstract final class LeagueEngine {
     }
 
     return [...firstHalf, ...secondHalf];
+  }
+
+
+  static String _fixtureId(
+    String competitionId,
+    int season,
+    int round,
+    int match,
+  ) {
+    // Mantém exatamente os IDs históricos da Série A já persistidos. Novas
+    // competições recebem prefixo para não colidir com jogos da mesma temporada.
+    final legacyPrefix = competitionId == 'br-series-a' ? '' : '$competitionId-';
+    return '$legacyPrefix$season-r$round-m$match';
   }
 
   static List<DateTime> _roundDates(

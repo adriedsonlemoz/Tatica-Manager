@@ -1566,3 +1566,23 @@ Regras atuais:
 - SQLite v3 preserva o payload integral e usa resumo leve para listar saves sem desserializá-los por completo.
 
 Consultar `docs/LEAGUE_LOADING.md` antes de expandir países/divisões ou alterar este fluxo.
+
+
+============================================================
+ATUALIZAÇÃO DA ARQUITETURA — 0.1.1.76
+============================================================
+
+O trecho inicial deste documento descreve o escopo histórico da primeira versão. A base atual já evoluiu para suportar expansão futura de competições.
+
+Preservar a fundação multi-competição existente:
+- `CareerLeagueSetup` define full/background/unloaded por save;
+- `CompetitionSeasonState` mantém progresso, classificação, estatísticas e disciplina por `competitionId`;
+- `CareerState.fixtures` é o calendário global usado para conciliar torneios simultâneos;
+- o mesmo clube/jogador pode participar de várias competições sem duplicação de elenco;
+- `MatchEngine` continua único e não conhece tabela/persistência;
+- Flame continua somente visual;
+- formatos de copa só devem ser ativados quando seu regulamento real for implementado;
+- competições internacionais futuras não devem ser forçadas para dentro de um país no catálogo;
+- preservar saves, IDs persistentes e migrações.
+
+A expansão planejada pode começar pela Série B e depois estaduais. Não adicionar ligas fictícias apenas para demonstrar a arquitetura.
