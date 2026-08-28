@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.85",
+  "version": "0.1.1.86",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+87"
+    "pubspecVersion": "0.1.1+88"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.85",
-    "versionCode": 87
+    "versionName": "0.1.1.86",
+    "versionCode": 88
   },
   "release": {
-    "version": "0.1.1.85",
-    "revision": 85,
-    "androidVersionCode": 87
+    "version": "0.1.1.86",
+    "revision": 86,
+    "androidVersionCode": 88
   },
   "changelog": [
+    "Corrige o único erro de análise estática do GitHub Actions da 0.1.1.85: o teste estrutural de substituições em lote interpolava plannedChanges dentro da própria expectativa, gerando undefined_identifier; a comparação passa a usar string raw e preserva integralmente o fluxo de substituições, a Home compacta, saves, IDs, fundação multi-competição e Match Engine.",
     "Reduz a altura e reorganiza a Home para aproximá-la da referência: cabeçalho e finanças ficam mais compactos, o Avançar passa ao canto superior direito da Próxima Partida, preparação é reduzida, Confiança da Diretoria mostra primeiro a porcentagem e depois o estádio sem foto, atalhos encolhem e Notícias, classificação e artilheiros passam a compartilhar a mesma linha em larguras de telefone compatíveis; o escudo do clube usa melhor as cores reais da identidade. Preserva CareerState schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine.",
     "Melhora o fluxo de substituições ao vivo: a janela permanece aberta para preparar várias trocas, permite revisar/remover o lote e só aplica tudo ao tocar em Confirmar trocas; o LiveMatchController valida e aplica o lote de forma única, mantendo cinco substituições, três janelas e intervalo sem consumir janela, sem alterar Match Engine, saves, IDs ou a fundação multi-competição.",
     "Completa a regra de substituições da partida ao vivo: mantém o teto de cinco jogadores, adiciona no máximo três janelas durante o tempo regulamentar, agrupa várias trocas feitas no mesmo minuto na mesma janela e não conta o intervalo como janela; centraliza a regra em LiveSubstitutionRules, exibe o uso no sheet e substitui o teste textual por regressões funcionais da regra, sem alterar saves, IDs, CareerState schema 13 ou o Match Engine de simulação.",
@@ -47,6 +48,6 @@
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
   ],
   "changes": [
-    "Reduz a altura e reorganiza a Home para aproximá-la da referência: cabeçalho e finanças ficam mais compactos, o Avançar passa ao canto superior direito da Próxima Partida, preparação é reduzida, Confiança da Diretoria mostra primeiro a porcentagem e depois o estádio sem foto, atalhos encolhem e Notícias, classificação e artilheiros passam a compartilhar a mesma linha em larguras de telefone compatíveis; o escudo do clube usa melhor as cores reais da identidade. Preserva CareerState schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine."
+    "Corrige o único erro de análise estática do GitHub Actions da 0.1.1.85: o teste estrutural de substituições em lote interpolava plannedChanges dentro da própria expectativa, gerando undefined_identifier; a comparação passa a usar string raw e preserva integralmente o fluxo de substituições, a Home compacta, saves, IDs, fundação multi-competição e Match Engine."
   ]
 }

@@ -24,7 +24,7 @@ void main() {
     expect(sheet, contains('_prepareCurrentChange'));
     expect(sheet, contains('Adicionar troca'));
     expect(sheet, contains('Confirmar 1 troca'));
-    expect(sheet, contains('Confirmar ${plannedChanges.length} trocas'));
+    expect(sheet, contains(r'Confirmar ${plannedChanges.length} trocas'));
     expect(sheet, contains('TROCAS PREPARADAS'));
     expect(sheet, contains('List<LiveSubstitutionChange>.unmodifiable'));
     expect(controller, contains('bool substituteMany('));

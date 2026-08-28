@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.85';
+  static const String version = '0.1.1.86';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.86',
+      title: 'Correção do CI de substituições',
+      changes: [
+        'Corrige a expectativa estrutural do fluxo de substituições em lote que fazia o analyzer interpretar plannedChanges como identificador do teste.',
+        'Mantém intactos o fluxo de várias trocas, a regra de cinco substituições em três janelas e a Home compacta.',
+        'Não altera saves, IDs, multi-competição ou Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.85',
       title: 'Home mais compacta',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'A janela de substituições permanece aberta para preparar várias trocas antes de confirmar.',
         'Permite revisar e remover trocas preparadas, aplicando o lote apenas no botão Confirmar trocas.',
         'Mantém cinco substituições, três janelas e o intervalo sem consumir janela, com validação central no controller.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.83',
-      title: 'Substituições com janelas',
-      changes: [
-        'Mantém o limite de cinco jogadores substituídos e passa a respeitar no máximo três janelas durante o jogo.',
-        'Várias trocas feitas no mesmo minuto usam a mesma janela e o intervalo não consome uma oportunidade.',
-        'Centraliza a regra fora da UI e adiciona testes funcionais para impedir regressão para substituições ilimitadas.',
       ],
     ),
   ];
