@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.80';
+  static const String version = '0.1.1.81';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.81',
+      title: 'Correção da Home 0.1.1.80',
+      changes: [
+        'Corrige o fechamento da classe de fundo da Home que interrompia o flutter analyze.',
+        'Mantém intacto o novo layout visual, os dois fundos de estádio e todos os dados reais exibidos na Home.',
+        'Adiciona regressão estrutural para impedir que componentes da Home voltem a ficar aninhados por erro de fechamento.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.80',
       title: 'Home integrada e mais compacta',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Reformula a Home com hierarquia mais compacta, fundos de estádio e componentes alinhados à referência visual aprovada.',
         'Integra os dados reais de clube, finanças, partida, estádio e confiança sem criar campos novos no save.',
         'Conecta o Panorama da Temporada à classificação e separa componentes visuais para facilitar manutenção.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.78',
-      title: 'Virada de temporada multi-competição',
-      changes: [
-        'Corrige a conclusão da temporada quando fixtures já estão encerrados, mas o flag persistido da competição ainda está desatualizado.',
-        'Mantém a conclusão baseada nos jogos reais de cada competição carregada, com fallback seguro para estados sem fixtures.',
-        'Atualiza a regressão de fadiga para acompanhar o MatchCareerImpactEngine sem devolver regra ao controller.',
       ],
     ),
   ];

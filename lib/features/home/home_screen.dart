@@ -676,6 +676,7 @@ class _HomeBackdrop extends StatelessWidget {
           ],
         ),
       );
+}
 
 class _DayAdvanceTransition extends StatelessWidget {
   const _DayAdvanceTransition({required this.from, required this.to});

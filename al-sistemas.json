@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.80",
+  "version": "0.1.1.81",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+82"
+    "pubspecVersion": "0.1.1+83"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.80",
-    "versionCode": 82
+    "versionName": "0.1.1.81",
+    "versionCode": 83
   },
   "release": {
-    "version": "0.1.1.80",
-    "revision": 80,
-    "androidVersionCode": 82
+    "version": "0.1.1.81",
+    "revision": 81,
+    "androidVersionCode": 83
   },
   "changelog": [
+    "Corrige a falha de análise estática da 0.1.1.80 causada pelo fechamento ausente de `_HomeBackdrop` em `home_screen.dart`, que fazia `_DayAdvanceTransition` e `_UnemployedHome` serem interpretadas como classes internas; adiciona regressão estrutural para o fechamento da classe e preserva integralmente a revisão visual da Home, assets, CareerState schema 13, saves, IDs, fundação multi-competição e Match Engine.",
     "Aprimora a Home da 0.1.1.79 com um layout mais integrado no bloco inferior: atalhos viram cards coloridos e fixos, notícias passam a um formato compacto em lista, a classificação e a artilharia ganham rodapés de navegação, a visão principal aproxima confiança e panorama, e um novo backdrop unifica o conjunto sem alterar os dados reais do save; preserva CareerState schema 13, IDs, saves, fundação multi-competição, CPU, finanças e Match Engine.",
     "Reformula visualmente a Home com composição inspirada na referência aprovada: cabeçalho do clube, cards financeiros, próxima partida com cenário de estádio, confiança da diretoria, panorama e avanço passam a usar uma hierarquia mais compacta e viva; adiciona dois assets originais otimizados para os cards, conecta o panorama à classificação existente, separa componentes visuais da Home e preserva CareerState schema 13, IDs, saves, calendário multi-competição, controllers e Match Engine.",
     "Corrige as quatro falhas de testes reveladas pelo GitHub Actions da 0.1.1.77: a conclusão da temporada passa a ser derivada dos fixtures efetivamente disputados de cada competição carregada, evitando bloqueio por flag CompetitionSeasonState.completed desatualizado em fluxos legados; atualiza o teste de fadiga para validar a responsabilidade extraída em MatchCareerImpactEngine, preservando schema 13, IDs, saves, calendário multi-competição e Match Engine.",
@@ -40,10 +41,9 @@
     "Reformula visualmente Contratos, Categoria de Base, Departamento Médico, Estádio, Dia de Jogo e Finanças usando apenas dados e ações já existentes, modulariza os novos componentes para evitar telas monolíticas e corrige a partida ao vivo para limitar o usuário a cinco substituições e impedir o retorno de jogador já substituído, preservando CareerState schema 11, saves, IDs e o Match Engine como fonte da lógica da partida.",
     "Corrige os três erros do flutter analyze na edição de escudos adicionando os imports explícitos de ClubIconValidator e das funções Base64 usadas pelos arquivos part do editor, sem alterar packs, saves, schema 11, Match Engine ou workflow.",
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine.",
-    "Adiciona importação de packs separados de escudos no formato tatica-manager-logos v1, associando imagens exclusivamente aos IDs permanentes dos clubes, com validação, prévia e aplicação parcial sem alterar nomes, elencos, técnicos, saves, schema 11 ou Match Engine.",
-    "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow."
+    "Adiciona importação de packs separados de escudos no formato tatica-manager-logos v1, associando imagens exclusivamente aos IDs permanentes dos clubes, com validação, prévia e aplicação parcial sem alterar nomes, elencos, técnicos, saves, schema 11 ou Match Engine."
   ],
   "changes": [
-    "Aprimora a Home da 0.1.1.79 com um layout mais integrado no bloco inferior: atalhos viram cards coloridos e fixos, notícias passam a um formato compacto em lista, a classificação e a artilharia ganham rodapés de navegação, a visão principal aproxima confiança e panorama, e um novo backdrop unifica o conjunto sem alterar os dados reais do save; preserva CareerState schema 13, IDs, saves, fundação multi-competição, CPU, finanças e Match Engine."
+    "Corrige a falha de análise estática da 0.1.1.80 causada pelo fechamento ausente de `_HomeBackdrop` em `home_screen.dart`, que fazia `_DayAdvanceTransition` e `_UnemployedHome` serem interpretadas como classes internas; adiciona regressão estrutural para o fechamento da classe e preserva integralmente a revisão visual da Home, assets, CareerState schema 13, saves, IDs, fundação multi-competição e Match Engine."
   ]
 }

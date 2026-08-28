@@ -54,6 +54,10 @@ void main() {
 
     expect(home, contains('HomeClubHeader'));
     expect(home, contains('_HomeBackdrop'));
+    expect(
+      home,
+      contains('      );\n}\n\nclass _DayAdvanceTransition extends StatelessWidget'),
+    );
     expect(home, contains('HomeFinanceGrid'));
     expect(home, contains('monthIncome'));
     expect(home, contains('monthExpenses'));

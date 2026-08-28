@@ -8,12 +8,21 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.80`
-- **Android versionCode:** `82`
+- **Release deste handoff:** `0.1.1.81`
+- **Android versionCode:** `83`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.81
+
+- corrige a causa real dos 33 erros do `flutter analyze` da 0.1.1.80: faltava fechar `_HomeBackdrop` antes das classes `_DayAdvanceTransition` e `_UnemployedHome`;
+- adiciona regressão estrutural em `calendar_and_standings_ui_test.dart` para proteger esse fechamento;
+- preserva integralmente o layout visual da Home 0.1.1.80 e seus dois assets WebP;
+- não altera `CareerState` schema 13, IDs, saves, calendário multi-competição, CPU, mercado, contratos, finanças ou Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.81.md`.
 
 ## Estado funcional da release 0.1.1.80
 
@@ -491,10 +500,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         82
-pubspec:             0.1.1+82
+versionCode:         83
+pubspec:             0.1.1+83
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.81` e usar um `versionCode` maior que 82.
+A próxima alteração/entrega normalmente deve virar `0.1.1.82` e usar um `versionCode` maior que 83.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
