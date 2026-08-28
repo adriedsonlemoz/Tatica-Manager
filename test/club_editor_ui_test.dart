@@ -4,19 +4,17 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Central de Carreiras expõe editor completo padrão e por save', () {
-    final source = [
-      'lib/features/career/career_hub_screen.dart',
-      'lib/features/career/career_hub_info_links.dart',
-      'lib/features/career/club_editor_screen.dart',
-    ].map((path) => File(path).readAsStringSync()).join('\n');
+  test('Central de Carreiras expõe apenas o editor padrão do jogo', () {
+    final hub = File('lib/features/career/career_hub_screen.dart').readAsStringSync();
+    final links = File('lib/features/career/career_hub_info_links.dart').readAsStringSync();
+    final editor = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
 
-    expect(source, contains("label: 'Edição'"));
-    expect(source, contains('onEditor:'));
-    expect(source, contains('Editor do banco'));
-    expect(source, contains("value: 'edit-clubs'"));
-    expect(source, contains('Editar banco da carreira'));
-    expect(source, contains('ClubEditorScreen('));
+    expect(links, contains("label: 'Editar dados do jogo'"));
+    expect(hub, contains('onEditor:'));
+    expect(hub, contains('const ClubEditorScreen()'));
+    expect(hub, isNot(contains("value: 'edit-clubs'")));
+    expect(hub, isNot(contains('Editar banco da carreira')));
+    expect(editor, contains("'Editar dados do jogo'"));
   });
 
   test('editor expõe clube, estádio, uniformes, ícone e jogadores', () {
@@ -24,6 +22,8 @@ void main() {
       'lib/features/career/club_editor_screen.dart',
       'lib/features/career/club_detail_editor_screen.dart',
       'lib/features/career/club_editor_widgets.dart',
+      'lib/features/career/club_editor_import_actions.dart',
+      'lib/features/career/game_data_editor_tutorial_screen.dart',
     ].map((path) => File(path).readAsStringSync()).join('\n');
 
     expect(source, contains('Importar pacote completo'));
@@ -34,7 +34,7 @@ void main() {
     expect(source, contains(r"label: 'Técnicos', value: '$managerCount'"));
     expect(source, contains('ClubLogoPackImporter.decodeBytes'));
     expect(source, contains('ClubLogoPackEngine.applyToIdentityPack'));
-    expect(source, contains('A associação usa somente o ID permanente do clube'));
+    expect(source, contains('A associação é feita pelo ID permanente'));
     expect(source, contains('ClubPackImporter.decodeBytes'));
     expect(source, contains('ClubIdentityEngine.normalizeAndValidatePack'));
     expect(source, contains('ID permanente:'));
@@ -49,6 +49,13 @@ void main() {
     expect(librarySource, contains("import '../../game/club/club_icon_validator.dart';"));
     expect(source, contains('Jogadores'));
     expect(source, contains('Jogadores livres'));
+    expect(source, contains('Como editar os dados'));
+    expect(source, contains('Tutorial de edição'));
+    expect(source, contains('Restaurar dados padrão?'));
+    expect(source, contains('insetPadding: const EdgeInsets.symmetric(horizontal: 8'));
+    expect(source, contains('showEditorNotice('));
+    expect(source, contains('Navigator.of(context).push<ClubIdentity>'));
+    expect(source, contains('_ClubDetailEditorScreen('));
   });
 
   test('editor de jogadores expõe dados-base e atributos avançados', () {

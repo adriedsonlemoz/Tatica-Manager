@@ -75,13 +75,16 @@ void main() {
 
   test('Central de Edição oferece técnicos, importação, exportação e restauração', () {
     final central = File('lib/features/career/club_editor_screen.dart').readAsStringSync();
-    final editor = File('lib/features/career/manager_database_editor_screen.dart')
-        .readAsStringSync();
+    final editor = [
+      File('lib/features/career/manager_database_editor_screen.dart').readAsStringSync(),
+      File('lib/features/career/manager_editor_screen.dart').readAsStringSync(),
+    ].join('\n');
     expect(central, contains("title: const Text('Técnicos'"));
-    expect(editor, contains('Criar técnico'));
+    expect(editor, contains("label: const Text('Criar')"));
     expect(editor, contains('Importar'));
-    expect(editor, contains('Exportar selecionados'));
-    expect(editor, contains('Restaurar técnicos originais'));
+    expect(editor, contains('Exportar dados'));
+    expect(editor, contains("label: const Text('Padrão')"));
+    expect(editor, contains('Restaurar técnicos padrão?'));
     expect(editor, contains('Aparência / foto'));
     expect(editor, contains('Data de nascimento'));
     expect(editor, contains('Contrato até a temporada'));
@@ -100,6 +103,52 @@ void main() {
     expect(photoStore, contains('cropAlignmentX'));
     expect(photoStore, contains('cropAlignmentY'));
     expect(photoStore, contains('cropZoom'));
+  });
+
+  test('técnicos sem aparência personalizada recebem faces estáveis e diferentes', () {
+    const first = ManagerProfile(
+      id: 'manager-a',
+      displayName: 'Técnico Alfa',
+      birthCountry: 'Brasil',
+      birthCity: 'Recife',
+    );
+    const second = ManagerProfile(
+      id: 'manager-b',
+      displayName: 'Técnico Beta',
+      birthCountry: 'Portugal',
+      birthCity: 'Porto',
+    );
+
+    final firstIdentity = first.appearance.toAvatarIdentity(
+      first.avatarSeedSource,
+      age: first.ageAtStart,
+    );
+    final repeatedIdentity = first.appearance.toAvatarIdentity(
+      first.avatarSeedSource,
+      age: first.ageAtStart,
+    );
+    final secondIdentity = second.appearance.toAvatarIdentity(
+      second.avatarSeedSource,
+      age: second.ageAtStart,
+    );
+
+    List<int> face(dynamic identity) => [
+          identity.skinTone,
+          identity.hairStyle,
+          identity.hairColor,
+          identity.faceShape,
+          identity.eyeStyle,
+          identity.eyeColor,
+          identity.eyebrowStyle,
+          identity.noseStyle,
+          identity.mouthStyle,
+          identity.beardStyle,
+          identity.moustacheStyle,
+          identity.detailStyle,
+        ];
+
+    expect(firstIdentity, repeatedIdentity);
+    expect(face(firstIdentity), isNot(face(secondIdentity)));
   });
 
   test('Finanças usa resumo, gráficos e seções expansíveis', () {

@@ -10,6 +10,7 @@ import '../../core/config/app_preferences.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/settings/match_presentation_settings.dart';
+import 'match_ball_picker.dart';
 
 class PreCareerSettingsScreen extends ConsumerStatefulWidget {
   const PreCareerSettingsScreen({super.key});
@@ -128,25 +129,21 @@ class _PreCareerSettingsScreenState
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int>(
-                  initialValue: _settings.matchBallStyle,
-                  decoration: const InputDecoration(
-                    labelText: 'Bola da partida',
-                    prefixIcon: Icon(Icons.sports_soccer_rounded),
+                const SizedBox(height: 14),
+                const Text(
+                  'Bola da partida',
+                  style: TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 0, child: Text('Clássica')),
-                    DropdownMenuItem(value: 1, child: Text('Branca e verde')),
-                    DropdownMenuItem(value: 2, child: Text('Amarela')),
-                    DropdownMenuItem(value: 3, child: Text('Retrô')),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    unawaited(
-                      _change(_settings.copyWith(matchBallStyle: value)),
-                    );
-                  },
+                ),
+                const SizedBox(height: 7),
+                MatchBallPicker(
+                  value: _settings.matchBallStyle,
+                  onChanged: (value) => unawaited(
+                    _change(_settings.copyWith(matchBallStyle: value)),
+                  ),
                 ),
               ],
             ),

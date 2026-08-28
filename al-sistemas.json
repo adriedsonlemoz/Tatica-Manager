@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.70",
+  "version": "0.1.1.71",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+72"
+    "pubspecVersion": "0.1.1+73"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.70",
-    "versionCode": 72
+    "versionName": "0.1.1.71",
+    "versionCode": 73
   },
   "release": {
-    "version": "0.1.1.70",
-    "revision": 70,
-    "androidVersionCode": 72
+    "version": "0.1.1.71",
+    "revision": 71,
+    "androidVersionCode": 73
   },
   "changelog": [
+    "Aprimora a Central de Carreiras e a edição: saves passam a exibir escudo, colocação e próximo jogo com exclusão direta e confirmação personalizada; a marca ganha logo arredondada, texto Carregar jogo salvo e rodapé Beta 2.0 que abre a Central de Diagnóstico; técnicos sem aparência própria recebem faces determinísticas distintas; a Central de Edição vira Editar dados do jogo, abre clubes em tela própria, inclui tutorial, ações compactas, confirmações de restauração e feedback centralizado; a edição de técnicos compacta exportação/Padrão; a seleção da bola passa a ser visual e usa o mesmo renderer da partida; o diagnóstico registra contexto/stack e falhas operacionais de carreira/editor, preservando saves, CareerState schema 11 e Match Engine.",
     "Corrige os dois testes estruturais revelados pelo GitHub Actions após a reformulação da 0.1.1.69: o teste do editor de aparência passa a validar o agrupamento atual de traços do rosto e o teste da Central de Carreiras passa a acompanhar o link de Edição extraído para career_hub_info_links.dart, sem reintroduzir pesquisa/filtros, textos antigos ou alterar código funcional, saves, CareerState schema 11, IDs ou Match Engine.",
     "Reformula o fluxo de criação de carreira e a identidade visual com base azul-grafite e verde de destaque; compacta formação, clubes, técnicos e aparência, remodela assinatura e primeira apresentação do treinador, adiciona aceite inicial de Termos/Privacidade e links de informações/configurações na Central de Carreiras, e reduz a duração visual para 1, 2 ou 3 minutos por tempo com conversão retrocompatível dos antigos presets 4/6/8, preservando CareerState schema 11, IDs, saves e Match Engine.",
     "Corrige o lint use_null_aware_elements revelado pelo GitHub Actions em management_dashboard_widgets.dart usando elemento null-aware no trailing do cabeçalho; também restaura Sobre / Novidades ao limite documentado de três releases para evitar a falha seguinte de app_info_test, sem alterar visual, gameplay, saves, schema 11 ou Match Engine.",
@@ -127,6 +128,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Corrige os dois testes estruturais revelados pelo GitHub Actions após a reformulação da 0.1.1.69: o teste do editor de aparência passa a validar o agrupamento atual de traços do rosto e o teste da Central de Carreiras passa a acompanhar o link de Edição extraído para career_hub_info_links.dart, sem reintroduzir pesquisa/filtros, textos antigos ou alterar código funcional, saves, CareerState schema 11, IDs ou Match Engine."
+    "Aprimora a Central de Carreiras e a edição: saves passam a exibir escudo, colocação e próximo jogo com exclusão direta e confirmação personalizada; a marca ganha logo arredondada, texto Carregar jogo salvo e rodapé Beta 2.0 que abre a Central de Diagnóstico; técnicos sem aparência própria recebem faces determinísticas distintas; a Central de Edição vira Editar dados do jogo, abre clubes em tela própria, inclui tutorial, ações compactas, confirmações de restauração e feedback centralizado; a edição de técnicos compacta exportação/Padrão; a seleção da bola passa a ser visual e usa o mesmo renderer da partida; o diagnóstico registra contexto/stack e falhas operacionais de carreira/editor, preservando saves, CareerState schema 11 e Match Engine."
   ]
 }

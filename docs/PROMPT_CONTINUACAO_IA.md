@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.70
-Android versionCode: 72
-pubspec: 0.1.1+72
+Release visível: 0.1.1.71
+Android versionCode: 73
+pubspec: 0.1.1+73
 
-Novidade desta base: corrige os dois testes estruturais que falharam no GitHub Actions após a reformulação da criação de carreira. Os testes passam a acompanhar o agrupamento atual do editor de aparência e o link Edição extraído para `career_hub_info_links.dart`, sem alterar código funcional, UI, `CareerState` schema 11, IDs/saves ou Match Engine.
+Novidade desta base: aprimora a Central de Carreiras e a Central de Edição, diferencia faces padrão dos técnicos, adiciona tutorial e feedback centralizado ao editor, mostra a bola da partida visualmente e amplia a Central de Diagnóstico com contexto/stack e falhas operacionais. Preserva `CareerState` schema 11, SQLite v2, IDs/saves e Match Engine.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.71 com versionCode > 72.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.72 com versionCode > 73.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import '../../../core/theme/match_ball_styles.dart';
 import '../../../domain/match/match_models.dart';
 
 abstract final class MatchPitchVisuals {
@@ -198,31 +199,11 @@ abstract final class MatchPitchVisuals {
       4.4,
       Paint()..color = const Color(0x66000000),
     );
-    final baseColor = switch (style) {
-      1 => const Color(0xFFF5FFF6),
-      2 => const Color(0xFFFFD83D),
-      3 => const Color(0xFFF2E2BE),
-      _ => const Color(0xFFFFFFFF),
-    };
-    final detailColor = switch (style) {
-      1 => const Color(0xFF6CD91B),
-      2 => const Color(0xFF342A14),
-      3 => const Color(0xFF7B4E2F),
-      _ => const Color(0xFF101010),
-    };
-    canvas.drawCircle(ball, 4.3, Paint()..color = baseColor);
-    canvas.drawCircle(
-      ball,
-      4.3,
-      Paint()
-        ..color = detailColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.05,
-    );
-    canvas.drawCircle(
-      Offset(ball.dx + .7, ball.dy - .6),
-      1.15,
-      Paint()..color = detailColor,
+    drawMatchBallGraphic(
+      canvas,
+      center: ball,
+      radius: 4.3,
+      style: style,
     );
   }
 

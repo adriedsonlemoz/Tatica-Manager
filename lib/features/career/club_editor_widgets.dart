@@ -1,5 +1,40 @@
 part of 'club_editor_screen.dart';
 
+
+class _EditorQuickAction extends StatelessWidget {
+  const _EditorQuickAction({
+    required this.icon,
+    required this.label,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String tooltip;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: tooltip,
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(0, 52),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20),
+              const SizedBox(height: 3),
+              Text(label, maxLines: 1, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+            ],
+          ),
+        ),
+      );
+}
+
 class _EditorMenuTile extends StatelessWidget {
   const _EditorMenuTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
   final IconData icon;

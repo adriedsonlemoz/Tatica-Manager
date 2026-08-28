@@ -44,7 +44,7 @@ void main() {
       'Como funciona',
       'Termos de Uso',
       'Privacidade',
-      'Edição',
+      'Editar dados do jogo',
       'Configurações',
     ]) {
       expect(links, contains(label));

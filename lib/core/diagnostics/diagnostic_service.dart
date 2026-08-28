@@ -8,17 +8,27 @@ import '../config/app_info.dart';
 import 'diagnostic_platform.dart';
 
 class DiagnosticEntry {
-  const DiagnosticEntry({required this.time, required this.type, required this.message, this.stack});
+  const DiagnosticEntry({
+    required this.time,
+    required this.type,
+    required this.message,
+    this.stack,
+    this.context,
+  });
   final DateTime time;
   final String type;
   final String message;
   final String? stack;
+  final String? context;
+
+  bool get isError => type != 'CHECKPOINT' && type != 'APP_STATE';
 
   Map<String, dynamic> toJson() => {
         'time': time.toIso8601String(),
         'type': type,
         'message': message,
         if (stack != null && stack!.isNotEmpty) 'stack': stack,
+        if (context != null && context!.isNotEmpty) 'context': context,
       };
 
   factory DiagnosticEntry.fromJson(Map<String, dynamic> json) => DiagnosticEntry(
@@ -26,6 +36,7 @@ class DiagnosticEntry {
         type: json['type'] as String? ?? 'UNKNOWN',
         message: json['message'] as String? ?? '',
         stack: json['stack'] as String?,
+        context: json['context'] as String?,
       );
 }
 
@@ -70,9 +81,37 @@ class DiagnosticService {
     } catch (_) {}
   }
 
-  Future<void> record(String type, Object error, [StackTrace? stack]) => _append(
-        DiagnosticEntry(time: DateTime.now(), type: type, message: error.toString(), stack: stack?.toString()),
+  Future<void> record(
+    String type,
+    Object error, [
+    StackTrace? stack,
+    String? context,
+  ]) =>
+      _append(
+        DiagnosticEntry(
+          time: DateTime.now(),
+          type: type,
+          message: error.toString(),
+          stack: stack?.toString(),
+          context: context,
+        ),
       );
+
+  Future<void> recordFlutterError(FlutterErrorDetails details) {
+    final contextParts = <String>[
+      if (details.library?.trim().isNotEmpty == true) 'Biblioteca: ${details.library}',
+      if (details.context != null) 'Contexto: ${details.context!.toDescription()}',
+    ];
+    return _append(
+      DiagnosticEntry(
+        time: DateTime.now(),
+        type: 'FLUTTER_ERROR',
+        message: details.exceptionAsString(),
+        stack: details.stack?.toString(),
+        context: contextParts.isEmpty ? null : contextParts.join(' • '),
+      ),
+    );
+  }
 
   Future<void> checkpoint(String message) => _append(
         DiagnosticEntry(time: DateTime.now(), type: 'CHECKPOINT', message: message),
@@ -119,6 +158,7 @@ class DiagnosticService {
     } else {
       for (final entry in entries) {
         buffer.writeln('[${entry.time.toIso8601String()}] ${entry.type}: ${entry.message}');
+        if (entry.context != null && entry.context!.isNotEmpty) buffer.writeln(entry.context);
         if (entry.stack != null && entry.stack!.isNotEmpty) buffer.writeln(entry.stack);
         buffer.writeln();
       }
@@ -142,7 +182,7 @@ class DiagnosticService {
 void installGlobalDiagnostics() {
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    unawaited(DiagnosticService.instance.record('FLUTTER_ERROR', details.exception, details.stack));
+    unawaited(DiagnosticService.instance.recordFlutterError(details));
   };
   PlatformDispatcher.instance.onError = (error, stack) {
     unawaited(DiagnosticService.instance.record('DART_ASYNC_ERROR', error, stack));

@@ -52,7 +52,7 @@ class ManagerProfile {
   String get preferredName => nickname.trim().isEmpty ? displayName : nickname;
 
   String get avatarSeedSource =>
-      'manager:$displayName|$careerStartSeason|$birthCountry|$birthCity';
+      'manager:$id|$displayName|$careerStartSeason|$birthCountry|$birthCity';
 
   int ageInSeason(int season) => birthDate != null
       ? (season - birthDate!.year).clamp(18, 100).toInt()

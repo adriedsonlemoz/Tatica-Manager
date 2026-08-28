@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/manager_avatar.dart';
 import '../../core/diagnostics/diagnostic_platform.dart';
+import '../../core/diagnostics/diagnostic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/country_catalog.dart';
 import '../../domain/career/manager_appearance.dart';
@@ -14,7 +15,10 @@ import '../../domain/club/club_identity.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/club/club_identity_engine.dart';
+import 'editor_feedback_dialog.dart';
 import 'manager_appearance_editor.dart';
+
+part 'manager_editor_screen.dart';
 
 class ManagerDatabaseEditorScreen extends StatefulWidget {
   const ManagerDatabaseEditorScreen({
@@ -29,8 +33,7 @@ class ManagerDatabaseEditorScreen extends StatefulWidget {
       _ManagerDatabaseEditorScreenState();
 }
 
-class _ManagerDatabaseEditorScreenState
-    extends State<ManagerDatabaseEditorScreen> {
+class _ManagerDatabaseEditorScreenState extends State<ManagerDatabaseEditorScreen> {
   static const _jsonType = XTypeGroup(
     label: 'Técnicos Tática Manager',
     extensions: ['json', 'tmclubs'],
@@ -70,11 +73,12 @@ class _ManagerDatabaseEditorScreenState
     }).toList()
       ..sort((a, b) => a.displayName.compareTo(b.displayName));
     final clubs = {for (final club in widget.pack.clubs) club.clubId: club.name};
+    final employed = _managers.where((manager) => manager.currentClubId != null).length;
 
     return PremiumScaffold(
       appBar: const GameTopBar(
         title: 'Técnicos',
-        subtitle: 'Central de Edição',
+        subtitle: 'Editar dados do jogo',
       ),
       safeBottom: true,
       bottomNavigationBar: SafeArea(
@@ -86,71 +90,129 @@ class _ManagerDatabaseEditorScreenState
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 24),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 24),
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: _createManager,
-                  icon: const Icon(Icons.person_add_alt_1_rounded),
-                  label: const Text('Criar técnico'),
+          SectionCard(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppColors.green.withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: const Icon(Icons.sports_rounded, color: AppColors.green),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_managers.length} técnicos no banco',
+                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                          ),
+                          Text(
+                            '$employed em clubes • ${_managers.length - employed} livres',
+                            style: const TextStyle(color: AppColors.muted, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _importManagers,
-                  icon: const Icon(Icons.file_open_rounded),
-                  label: const Text('Importar'),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: _createManager,
+                        icon: const Icon(Icons.person_add_alt_1_rounded),
+                        label: const Text('Criar'),
+                      ),
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _importManagers,
+                        icon: const Icon(Icons.file_open_rounded),
+                        label: const Text('Importar'),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _managers.isEmpty ? null : () => _exportManagers(),
-            icon: const Icon(Icons.ios_share_rounded),
-            label: Text(_selected.isEmpty
-                ? 'Exportar todos'
-                : 'Exportar selecionados (${_selected.length})'),
-          ),
-          if (_managers.any((manager) => manager.userCreated)) ...[
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => _exportManagers(customOnly: true),
-              icon: const Icon(Icons.person_pin_outlined),
-              label: const Text('Exportar personalizados'),
+                const SizedBox(height: 7),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _managers.isEmpty ? null : () => _exportManagers(),
+                        icon: const Icon(Icons.ios_share_rounded),
+                        label: Text(
+                          _selected.isEmpty ? 'Exportar dados' : 'Exportar (${_selected.length})',
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _restoreDefaults,
+                        icon: const Icon(Icons.restore_rounded),
+                        label: const Text('Padrão'),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_managers.any((manager) => manager.userCreated)) ...[
+                  const SizedBox(height: 3),
+                  TextButton.icon(
+                    onPressed: () => _exportManagers(customOnly: true),
+                    icon: const Icon(Icons.person_pin_outlined, size: 18),
+                    label: const Text('Exportar somente personalizados'),
+                  ),
+                ],
+              ],
             ),
-          ],
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _restoreDefaults,
-            icon: const Icon(Icons.restore_rounded),
-            label: const Text('Restaurar técnicos originais'),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           TextField(
             controller: _search,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search_rounded),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search_rounded),
               hintText: 'Pesquisar técnico',
+              suffixIcon: query.isEmpty
+                  ? null
+                  : IconButton(
+                      tooltip: 'Limpar pesquisa',
+                      onPressed: () {
+                        _search.clear();
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.close_rounded),
+                    ),
             ),
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            value: _status,
-            decoration: const InputDecoration(labelText: 'Status'),
-            items: const ['Todos', 'Em clube', 'Livres']
-                .map((value) => DropdownMenuItem(
-                      value: value,
-                      child: Text(value),
-                    ))
-                .toList(growable: false),
-            onChanged: (value) => setState(() => _status = value ?? 'Todos'),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: [
+              for (final value in const ['Todos', 'Em clube', 'Livres'])
+                ChoiceChip(
+                  label: Text(value),
+                  selected: _status == value,
+                  onSelected: (_) => setState(() => _status = value),
+                ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           if (filtered.isEmpty)
             const EmptyState(
               icon: Icons.sports_rounded,
@@ -158,69 +220,17 @@ class _ManagerDatabaseEditorScreenState
               text: 'Crie um técnico ou importe uma base compatível.',
             )
           else
-            ...filtered.map((manager) {
-              final selected = _selected.contains(manager.id);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SectionCard(
-                  padding: const EdgeInsets.all(10),
-                  borderColor: selected ? AppColors.green : null,
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: selected,
-                        onChanged: (_) => _toggleSelected(manager),
-                      ),
-                      ManagerAvatar(manager: manager, size: 58),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              manager.preferredName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 15,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
-                              style: const TextStyle(color: AppColors.muted),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${clubs[manager.currentClubId] ?? 'Livre'} • ${manager.style} • Rep. ${manager.reputation}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuButton<String>(
-                        onSelected: (value) {
-                          if (value == 'edit') _editManager(manager);
-                          if (value == 'delete') _deleteManager(manager);
-                        },
-                        itemBuilder: (_) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Text('Editar'),
-                          ),
-                          if (manager.userCreated)
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Text('Excluir'),
-                            ),
-                        ],
-                      ),
-                    ],
+            ...filtered.map((manager) => Padding(
+                  padding: const EdgeInsets.only(bottom: 7),
+                  child: _ManagerDatabaseCard(
+                    manager: manager,
+                    clubName: clubs[manager.currentClubId] ?? 'Livre',
+                    selected: _selected.contains(manager.id),
+                    onSelect: () => _toggleSelected(manager),
+                    onEdit: () => _editManager(manager),
+                    onDelete: manager.userCreated ? () => _deleteManager(manager) : null,
                   ),
-                ),
-              );
-            }),
+                )),
         ],
       ),
     );
@@ -249,18 +259,13 @@ class _ManagerDatabaseEditorScreenState
         ),
       ),
     );
-    if (manager != null && mounted) {
-      setState(() => _managers.add(manager));
-    }
+    if (manager != null && mounted) setState(() => _managers.add(manager));
   }
 
   Future<void> _editManager(ManagerProfile current) async {
     final manager = await Navigator.of(context).push<ManagerProfile>(
       MaterialPageRoute(
-        builder: (_) => ManagerEditorScreen(
-          manager: current,
-          clubs: widget.pack.clubs,
-        ),
+        builder: (_) => ManagerEditorScreen(manager: current, clubs: widget.pack.clubs),
       ),
     );
     if (manager == null || !mounted) return;
@@ -278,12 +283,28 @@ class _ManagerDatabaseEditorScreenState
     });
   }
 
-  void _restoreDefaults() {
+  Future<void> _restoreDefaults() async {
+    final confirmed = await showEditorConfirmation(
+      context,
+      title: 'Restaurar técnicos padrão?',
+      message: 'A lista atual de técnicos será substituída pela base original do Tática Manager. Técnicos personalizados e alterações ainda não aplicadas nesta tela serão descartados.',
+      confirmLabel: 'Usar padrão',
+      icon: Icons.restore_rounded,
+      accent: AppColors.warning,
+    );
+    if (!confirmed || !mounted) return;
     final defaults = ClubIdentityEngine.defaultPack().managers ?? const <ManagerProfile>[];
     setState(() {
       _managers = [...defaults];
       _selected.clear();
     });
+    await showEditorNotice(
+      context,
+      title: 'Técnicos restaurados',
+      message: 'A base padrão foi preparada. Toque em Aplicar alterações para retornar à Central de Edição e depois salve o banco.',
+      icon: Icons.restore_rounded,
+      accent: AppColors.warning,
+    );
   }
 
   Future<void> _importManagers() async {
@@ -298,9 +319,7 @@ class _ManagerDatabaseEditorScreenState
         throw const FormatException('Use um pacote Tática Manager compatível.');
       }
       final raw = decoded['managers'] ?? decoded['coaches'];
-      if (raw is! List) {
-        throw const FormatException('O pacote não contém uma lista de técnicos.');
-      }
+      if (raw is! List) throw const FormatException('O pacote não contém uma lista de técnicos.');
       final imported = raw
           .whereType<Map>()
           .map((item) => ManagerProfile.fromJson(Map<String, dynamic>.from(item)))
@@ -315,10 +334,26 @@ class _ManagerDatabaseEditorScreenState
       }
       if (!mounted) return;
       setState(() => _managers = byId.values.toList(growable: true));
-      _show('Técnicos importados com sucesso.');
-    } catch (error) {
+      await showEditorNotice(
+        context,
+        title: 'Técnicos importados',
+        message: '${imported.length} perfil(is) foram lidos do pacote. Revise a lista antes de aplicar as alterações.',
+      );
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'MANAGER_IMPORT_ERROR',
+        error,
+        stack,
+        'Falha ao importar técnicos no editor de dados.',
+      );
       if (!mounted) return;
-      _show(error is FormatException ? error.message.toString() : error.toString());
+      await showEditorNotice(
+        context,
+        title: 'Não foi possível importar',
+        message: error is FormatException ? error.message.toString() : error.toString(),
+        icon: Icons.error_outline_rounded,
+        accent: AppColors.danger,
+      );
     }
   }
 
@@ -327,9 +362,7 @@ class _ManagerDatabaseEditorScreenState
         ? _managers.where((manager) => manager.userCreated).toList()
         : _selected.isEmpty
             ? _managers
-            : _managers
-                .where((manager) => _selected.contains(manager.id))
-                .toList();
+            : _managers.where((manager) => _selected.contains(manager.id)).toList();
     if (selected.isEmpty) return;
     final exportPack = ClubIdentityPack(
       name: widget.pack.name,
@@ -339,364 +372,84 @@ class _ManagerDatabaseEditorScreenState
       managers: selected,
     );
     const fileName = 'tatica-manager-tecnicos.json';
-    final path = await const DiagnosticPlatform().exportTextFile(
-      exportPack.encode(),
-      fileName,
-    );
+    final path = await const DiagnosticPlatform().exportTextFile(exportPack.encode(), fileName);
     if (!mounted) return;
-    _show(
-      path == null
-          ? 'Não foi possível exportar os técnicos.'
-          : 'Técnicos exportados para $path',
+    await showEditorNotice(
+      context,
+      title: path == null ? 'Falha ao exportar' : 'Dados exportados',
+      message: path == null
+          ? 'Não foi possível exportar os técnicos para o armazenamento do aparelho.'
+          : '${selected.length} técnico(s) exportado(s) para:\n$path',
+      icon: path == null ? Icons.error_outline_rounded : Icons.ios_share_rounded,
+      accent: path == null ? AppColors.danger : AppColors.green,
     );
   }
-
-  void _show(String message) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }
 
-class ManagerEditorScreen extends StatefulWidget {
-  const ManagerEditorScreen({
-    super.key,
+class _ManagerDatabaseCard extends StatelessWidget {
+  const _ManagerDatabaseCard({
     required this.manager,
-    required this.clubs,
+    required this.clubName,
+    required this.selected,
+    required this.onSelect,
+    required this.onEdit,
+    this.onDelete,
   });
 
   final ManagerProfile manager;
-  final List<ClubIdentity> clubs;
+  final String clubName;
+  final bool selected;
+  final VoidCallback onSelect;
+  final VoidCallback onEdit;
+  final VoidCallback? onDelete;
 
   @override
-  State<ManagerEditorScreen> createState() => _ManagerEditorScreenState();
-}
-
-class _ManagerEditorScreenState extends State<ManagerEditorScreen> {
-  late final TextEditingController _name;
-  late final TextEditingController _nickname;
-  late final TextEditingController _age;
-  late final TextEditingController _style;
-  late final TextEditingController _reputation;
-  late final TextEditingController _experience;
-  late final TextEditingController _overall;
-  late final TextEditingController _contractUntil;
-  DateTime? _birthDate;
-  late String _nationality;
-  late String? _clubId;
-  late FormationType _formation;
-  late Mentality _mentality;
-  late ManagerAppearance _appearance;
-
-  @override
-  void initState() {
-    super.initState();
-    final manager = widget.manager;
-    _name = TextEditingController(text: manager.displayName);
-    _nickname = TextEditingController(text: manager.nickname);
-    _age = TextEditingController(text: '${manager.ageAtStart}');
-    _style = TextEditingController(text: manager.style);
-    _reputation = TextEditingController(text: '${manager.reputation}');
-    _experience = TextEditingController(text: '${manager.experienceYears}');
-    _overall = TextEditingController(text: '${manager.overall}');
-    _contractUntil = TextEditingController(
-      text: manager.contractUntilSeason?.toString() ?? '',
-    );
-    _birthDate = manager.birthDate;
-    _nationality = CountryCatalog.all.any((item) => item.name == manager.nationality)
-        ? manager.nationality
-        : 'Brasil';
-    _clubId = widget.clubs.any((club) => club.clubId == manager.currentClubId)
-        ? manager.currentClubId
-        : null;
-    _formation = manager.preferredFormation;
-    _mentality = manager.preferredMentality;
-    _appearance = manager.appearance;
-  }
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _nickname.dispose();
-    _age.dispose();
-    _style.dispose();
-    _reputation.dispose();
-    _experience.dispose();
-    _overall.dispose();
-    _contractUntil.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final preview = widget.manager.copyWith(
-      displayName: _name.text.trim().isEmpty ? 'Técnico' : _name.text.trim(),
-      nickname: _nickname.text.trim(),
-      nationality: _nationality,
-      appearance: _appearance,
-    );
-    return PremiumScaffold(
-      appBar: const GameTopBar(title: 'Editar técnico', subtitle: 'Perfil completo'),
-      safeBottom: true,
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-        child: FilledButton.icon(
-          onPressed: _save,
-          icon: const Icon(Icons.save_rounded),
-          label: const Text('Salvar técnico'),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 24),
-        children: [
-          SectionCard(
+  Widget build(BuildContext context) => SectionCard(
+        padding: EdgeInsets.zero,
+        borderColor: selected ? AppColors.green : null,
+        child: InkWell(
+          onTap: onEdit,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 9, 5, 9),
             child: Row(
               children: [
-                ManagerAvatar(manager: preview, size: 82),
-                const SizedBox(width: 12),
+                ManagerAvatar(manager: manager, size: 52),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(preview.preferredName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w900, fontSize: 18)),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: () => _editAppearance(preview),
-                        icon: const Icon(Icons.face_retouching_natural_rounded),
-                        label: const Text('Aparência / foto'),
+                      Text(manager.preferredName, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14.5)),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
+                        style: const TextStyle(color: AppColors.muted, fontSize: 12),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$clubName • ${manager.style} • Rep. ${manager.reputation}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 11.5),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          SectionCard(
-            child: Column(
-              children: [
-                TextField(
-                  controller: _name,
-                  maxLength: 50,
-                  decoration: const InputDecoration(labelText: 'Nome'),
-                  onChanged: (_) => setState(() {}),
-                ),
-                TextField(
-                  controller: _nickname,
-                  maxLength: 24,
-                  decoration: const InputDecoration(labelText: 'Apelido'),
-                  onChanged: (_) => setState(() {}),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _age,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Idade'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _nationality,
-                        decoration: const InputDecoration(labelText: 'País'),
-                        items: CountryCatalog.all
-                            .map((item) => DropdownMenuItem(
-                                  value: item.name,
-                                  child: Text(item.label),
-                                ))
-                            .toList(growable: false),
-                        onChanged: (value) =>
-                            setState(() => _nationality = value ?? 'Brasil'),
-                      ),
-                    ),
+                Checkbox(value: selected, onChanged: (_) => onSelect()),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit();
+                    if (value == 'delete') onDelete?.call();
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: 'edit', child: Text('Editar')),
+                    if (onDelete != null) const PopupMenuItem(value: 'delete', child: Text('Excluir')),
                   ],
-                ),
-                const SizedBox(height: 8),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.cake_outlined, color: AppColors.green),
-                  title: const Text('Data de nascimento'),
-                  subtitle: Text(
-                    _birthDate == null
-                        ? 'Não informada'
-                        : '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}',
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_birthDate != null)
-                        IconButton(
-                          tooltip: 'Remover data',
-                          onPressed: () => setState(() => _birthDate = null),
-                          icon: const Icon(Icons.close_rounded),
-                        ),
-                      IconButton(
-                        tooltip: 'Escolher data',
-                        onPressed: _pickBirthDate,
-                        icon: const Icon(Icons.calendar_month_rounded),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          SectionCard(
-            child: Column(
-              children: [
-                DropdownButtonFormField<String?>(
-                  value: _clubId,
-                  decoration: const InputDecoration(labelText: 'Clube atual'),
-                  items: [
-                    const DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text('Livre'),
-                    ),
-                    ...widget.clubs.map((club) => DropdownMenuItem<String?>(
-                          value: club.clubId,
-                          child: Text(club.name),
-                        )),
-                  ],
-                  onChanged: (value) => setState(() => _clubId = value),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _contractUntil,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Contrato até a temporada',
-                    hintText: 'Ex.: 2028',
-                  ),
-                ),
-                TextField(
-                  controller: _style,
-                  maxLength: 30,
-                  decoration: const InputDecoration(labelText: 'Estilo de jogo'),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _reputation,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Reputação'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _overall,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Nível geral'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _experience,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Experiência'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<FormationType>(
-                  value: _formation,
-                  decoration: const InputDecoration(labelText: 'Formação preferida'),
-                  items: FormationType.values
-                      .map((value) => DropdownMenuItem(
-                            value: value,
-                            child: Text(value.label),
-                          ))
-                      .toList(growable: false),
-                  onChanged: (value) =>
-                      setState(() => _formation = value ?? FormationType.f433),
-                ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<Mentality>(
-                  value: _mentality,
-                  decoration: const InputDecoration(labelText: 'Mentalidade preferida'),
-                  items: Mentality.values
-                      .map((value) => DropdownMenuItem(
-                            value: value,
-                            child: Text(value.label),
-                          ))
-                      .toList(growable: false),
-                  onChanged: (value) =>
-                      setState(() => _mentality = value ?? Mentality.balanced),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _pickBirthDate() async {
-    final now = DateTime.now();
-    final initial = _birthDate ?? DateTime(now.year - (int.tryParse(_age.text) ?? 35));
-    final selected = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: DateTime(1930),
-      lastDate: DateTime(now.year - 18, now.month, now.day),
-    );
-    if (selected == null || !mounted) return;
-    final age = now.year - selected.year -
-        ((now.month < selected.month ||
-                (now.month == selected.month && now.day < selected.day))
-            ? 1
-            : 0);
-    setState(() {
-      _birthDate = selected;
-      _age.text = '$age';
-    });
-  }
-
-  Future<void> _editAppearance(ManagerProfile preview) async {
-    final value = await showManagerAppearanceEditor(
-      context,
-      previewManager: preview,
-    );
-    if (value != null && mounted) setState(() => _appearance = value);
-  }
-
-  void _save() {
-    try {
-      final age = int.tryParse(_age.text.trim());
-      if (age == null) throw const FormatException('Digite uma idade válida.');
-      final contractText = _contractUntil.text.trim();
-      final contractUntil = contractText.isEmpty ? null : int.tryParse(contractText);
-      if (contractText.isNotEmpty && contractUntil == null) {
-        throw const FormatException('Digite uma temporada de contrato válida.');
-      }
-      final manager = ManagerProfile.normalized(
-        id: widget.manager.id,
-        displayName: _name.text,
-        nickname: _nickname.text,
-        nationality: _nationality,
-        ageAtStart: age,
-        careerStartSeason: widget.manager.careerStartSeason,
-        appearance: _appearance,
-        birthDate: _birthDate,
-        currentClubId: _clubId,
-        contractUntilSeason: _clubId == null ? null : contractUntil,
-        reputation: int.tryParse(_reputation.text.trim()) ?? 50,
-        style: _style.text,
-        preferredFormation: _formation,
-        preferredMentality: _mentality,
-        experienceYears: int.tryParse(_experience.text.trim()) ?? 0,
-        overall: int.tryParse(_overall.text.trim()) ?? 65,
-        userCreated: widget.manager.userCreated,
+        ),
       );
-      Navigator.of(context).pop(manager);
-    } on FormatException catch (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.message.toString())));
-    }
-  }
 }

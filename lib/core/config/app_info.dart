@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.70';
+  static const String version = '0.1.1.71';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.71',
+      title: 'Carreiras, edição e diagnóstico aprimorados',
+      changes: [
+        'Saves passam a mostrar escudo, colocação e próximo jogo com exclusão direta; a tela inicial ganha versão clicável para o diagnóstico.',
+        'Editor de dados recebe tutorial, ações compactas, confirmações e mensagens centrais; técnicos padrão deixam de compartilhar a mesma face.',
+        'Bolas passam a ser escolhidas visualmente e o diagnóstico exibe contexto/stack e registra falhas operacionais de carreira e edição.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.70',
       title: 'Correção dos testes da criação e edição',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Adota azul-grafite como base do jogo, mantendo o verde como destaque e clareando também a Home.',
         'Compacta formação, clubes e técnicos, remodela aparência e contrato e adiciona a apresentação única da chegada do treinador.',
         'Inclui Termos/Privacidade na primeira abertura e reduz a transmissão para 1, 2 ou 3 minutos por tempo sem alterar o Match Engine.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.68',
-      title: 'Correção final do analyze e Novidades',
-      changes: [
-        'Corrige o lint null-aware no cabeçalho reutilizável dos painéis sem alterar o layout.',
-        'Sobre / Novidades volta a manter exatamente as três releases previstas pelo teste de regressão.',
-        'Preserva gameplay, CareerState schema 11, saves, IDs e Match Engine.',
       ],
     ),
   ];

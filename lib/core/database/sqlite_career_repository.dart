@@ -6,6 +6,7 @@ import '../../domain/career/career_save_summary.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club_identity.dart';
 import '../../domain/season/career_state.dart';
+import '../../game/league/league_engine.dart';
 import '../save/career_repository.dart';
 
 class SqliteCareerRepository implements CareerRepository {
@@ -110,17 +111,68 @@ class SqliteCareerRepository implements CareerRepository {
   @override
   Future<List<CareerSaveSummary>> listSaves() async {
     final rows = await (await _db()).query('career_saves', orderBy: 'updated_at DESC');
-    return rows.map((row) => CareerSaveSummary(
-          careerId: row['id'] as String,
-          careerName: row['career_name'] as String? ?? 'Carreira',
-          managerName: row['manager_name'] as String? ?? 'Técnico',
-          userClubId: row['user_club_id'] as String? ?? '',
-          userClubName: row['user_club_name'] as String? ?? 'Clube',
-          season: row['season'] as int? ?? 2026,
-          roundIndex: row['round_index'] as int? ?? 0,
-          createdAt: DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int? ?? 0),
-          updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int? ?? 0),
-        )).toList();
+    return rows.map(_summaryFromRow).toList(growable: false);
+  }
+
+  static CareerSaveSummary _summaryFromRow(Map<String, Object?> row) {
+    CareerState? career;
+    try {
+      final payload = row['payload'] as String?;
+      if (payload?.isNotEmpty == true) {
+        career = CareerState.fromJson(
+          jsonDecode(payload!) as Map<String, dynamic>,
+        );
+      }
+    } catch (_) {
+      // A Central de Carreiras continua exibindo os metadados SQL mesmo se o
+      // payload estiver incompleto. O erro real será tratado ao abrir o save.
+    }
+
+    final userClub = (() {
+      final value = career;
+      if (value == null) return null;
+      try {
+        return value.userClub;
+      } catch (_) {
+        return null;
+      }
+    })();
+    var standingIndex = -1;
+    if (career != null) {
+      final userClubId = career.userClubId;
+      standingIndex = LeagueEngine.rebuildStandings(career.clubs, career.fixtures)
+          .indexWhere((standing) => standing.clubId == userClubId);
+    }
+    final fixture = career?.nextUserFixture;
+    String? opponentName;
+    bool? atHome;
+    if (career != null && fixture != null) {
+      atHome = fixture.homeClubId == career.userClubId;
+      final opponentId = atHome ? fixture.awayClubId : fixture.homeClubId;
+      for (final club in career.clubs) {
+        if (club.id == opponentId) {
+          opponentName = club.name;
+          break;
+        }
+      }
+    }
+
+    return CareerSaveSummary(
+      careerId: row['id'] as String,
+      careerName: row['career_name'] as String? ?? 'Carreira',
+      managerName: row['manager_name'] as String? ?? 'Técnico',
+      userClubId: row['user_club_id'] as String? ?? '',
+      userClubName: row['user_club_name'] as String? ?? 'Clube',
+      season: row['season'] as int? ?? 2026,
+      roundIndex: row['round_index'] as int? ?? 0,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int? ?? 0),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int? ?? 0),
+      userClub: userClub,
+      leaguePosition: standingIndex >= 0 ? standingIndex + 1 : null,
+      nextOpponentName: opponentName,
+      nextMatchDate: fixture?.date,
+      nextMatchAtHome: atHome,
+    );
   }
 
   @override

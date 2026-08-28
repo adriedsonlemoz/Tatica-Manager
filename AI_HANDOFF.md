@@ -8,10 +8,23 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.70`
-- **Android versionCode:** `72`
+- **Release deste handoff:** `0.1.1.71`
+- **Android versionCode:** `73`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
+
+
+## Estado funcional da release 0.1.1.71
+
+- Central de Carreiras remove o botão Continuar e a edição por save; cada save é um card acionável com escudo, colocação atual, próximo jogo e lixeira direta com confirmação personalizada;
+- cabeçalho inicial usa logo arredondada, subtítulo `Carregar jogo salvo` e rodapé `Tática Manager Beta 2.0` ligado à Central de Diagnóstico;
+- técnicos que não possuem aparência própria recebem identidade visual determinística baseada no perfil/ID, evitando faces idênticas sem adicionar campos obrigatórios ao save;
+- Central de Edição passa a se chamar `Editar dados do jogo`, mantém clubes em tela própria, inclui tutorial interno, ações compactas para pacote/Padrão/escudos e confirmações antes de restaurações;
+- feedback de importação/salvamento deixa o snackbar claro no rodapé e usa diálogo central personalizado; confirmações de pacote usam margem lateral mínima;
+- editor de técnicos reorganiza ações, coloca `Exportar dados` e `Padrão` lado a lado e exige confirmação para restaurar a base;
+- Configurações exibe quatro modelos de bola diretamente na tela e o preview compartilha o mesmo renderer visual usado durante a partida;
+- Central de Diagnóstico passa a organizar erros, contexto/origem e stack trace e registra também falhas capturadas de abertura/criação/exclusão de carreira e operações do editor;
+- arquivos grandes de edição foram separados em componentes/parts menores, preservando arquitetura, `CareerState` schema 11, SQLite v2, IDs, saves, Match Engine e Flame somente visual.
 
 
 ## Estado funcional da release 0.1.1.70
@@ -391,11 +404,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.70
-versionCode:         72
-pubspec:             0.1.1+72
+release/versionName: 0.1.1.71
+versionCode:         73
+pubspec:             0.1.1+73
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.71` e usar um `versionCode` maior que 72.
+A próxima alteração/entrega normalmente deve virar `0.1.1.72` e usar um `versionCode` maior que 73.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

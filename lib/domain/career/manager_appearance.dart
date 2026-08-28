@@ -97,12 +97,29 @@ class ManagerAppearance {
         customPhotoPath: _optionalPath(json['customPhotoPath']),
       );
 
+  bool get isDefault =>
+      skinTone == 2 &&
+      hairStyle == 0 &&
+      hairColor == 0 &&
+      faceShape == 0 &&
+      eyeStyle == 0 &&
+      eyeColor == 0 &&
+      eyebrowStyle == 0 &&
+      noseStyle == 0 &&
+      mouthStyle == 0 &&
+      beardStyle == 0 &&
+      moustacheStyle == 0 &&
+      detailStyle == 0 &&
+      customPhotoPath == null;
+
   PlayerAvatarIdentity toAvatarIdentity(
     String seedSource, {
     int age = 35,
-  }) =>
-      PlayerAvatarIdentity(
-        seed: stablePlayerSeed(seedSource),
+  }) {
+    final seed = stablePlayerSeed(seedSource);
+    if (!isDefault) {
+      return PlayerAvatarIdentity(
+        seed: seed,
         skinTone: skinTone.clamp(0, 5).toInt(),
         hairStyle: hairStyle.clamp(0, 7).toInt(),
         hairColor: hairColor.clamp(0, 4).toInt(),
@@ -117,6 +134,36 @@ class ManagerAppearance {
         detailStyle: detailStyle.clamp(0, 4).toInt(),
         ageStyle: age >= 34 ? 2 : age >= 29 ? 1 : 0,
       );
+    }
+
+    // Técnicos importados sem aparência própria não devem compartilhar a mesma
+    // face. A identidade é derivada do seed estável do perfil sem persistir
+    // campos novos, preservando saves e IDs existentes.
+    var state = seed;
+    int next(int max) {
+      state = ((state * 1103515245 + 12345) & 0x7fffffff);
+      return state % max;
+    }
+
+    final generatedBeard = age >= 28 && next(10) >= 5 ? 1 + next(4) : 0;
+    final generatedMoustache = generatedBeard == 4 || next(10) < 6 ? 0 : 1 + next(3);
+    return PlayerAvatarIdentity(
+      seed: seed,
+      skinTone: next(6),
+      hairStyle: next(8),
+      hairColor: next(5),
+      faceShape: next(4),
+      eyeStyle: next(4),
+      eyeColor: next(5),
+      eyebrowStyle: next(4),
+      noseStyle: next(4),
+      mouthStyle: next(4),
+      beardStyle: generatedBeard,
+      moustacheStyle: generatedMoustache,
+      detailStyle: next(5),
+      ageStyle: age >= 34 ? 2 : age >= 29 ? 1 : 0,
+    );
+  }
 
   static int _clamp(Object? value, int min, int max, int fallback) {
     if (value is! num) return fallback;

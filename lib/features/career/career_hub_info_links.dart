@@ -27,7 +27,7 @@ class CareerHubInfoLinks extends StatelessWidget {
       (icon: Icons.route_rounded, label: 'Como funciona', onTap: onHowItWorks),
       (icon: Icons.gavel_rounded, label: 'Termos de Uso', onTap: onTerms),
       (icon: Icons.privacy_tip_outlined, label: 'Privacidade', onTap: onPrivacy),
-      (icon: Icons.edit_note_rounded, label: 'Edição', onTap: onEditor),
+      (icon: Icons.edit_note_rounded, label: 'Editar dados do jogo', onTap: onEditor),
       (icon: Icons.settings_outlined, label: 'Configurações', onTap: onSettings),
     ];
 

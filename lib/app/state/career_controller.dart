@@ -4,6 +4,7 @@ import '../../domain/career/career_save_summary.dart';
 import '../../domain/career/new_career_config.dart';
 import '../../domain/club/club_identity.dart';
 import '../../core/config/app_preferences.dart';
+import '../../core/diagnostics/diagnostic_service.dart';
 import '../../game/career/career_factory.dart';
 import '../../game/club/club_identity_engine.dart';
 import '../../game/contract/contract_lifecycle_engine.dart';
@@ -98,7 +99,13 @@ class CareerController extends Notifier<CareerHubState> {
         saves: saves,
         lastActiveCareerId: lastActiveCareerId,
       );
-    } catch (error) {
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'CAREER_LIST_ERROR',
+        error,
+        stack,
+        'Falha ao listar ou migrar os saves na Central de Carreiras.',
+      );
       state = CareerHubState(
         loading: false,
         bootstrapped: bootstrapped ?? true,
@@ -147,7 +154,13 @@ class CareerController extends Notifier<CareerHubState> {
       ref.read(gameControllerProvider.notifier).attachCareer(career);
       state = state.copyWith(loading: false, lastActiveCareerId: careerId);
       return true;
-    } catch (error) {
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'CAREER_OPEN_ERROR',
+        error,
+        stack,
+        'Falha ao carregar, reconciliar ou anexar a carreira $careerId.',
+      );
       state = state.copyWith(loading: false, message: 'Não foi possível abrir a carreira: $error');
       return false;
     }
@@ -192,7 +205,13 @@ class CareerController extends Notifier<CareerHubState> {
         lastActiveCareerId: careerId,
       );
       return true;
-    } catch (error) {
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'CAREER_CREATE_ERROR',
+        error,
+        stack,
+        'Falha durante a criação e persistência de uma nova carreira.',
+      );
       state = state.copyWith(loading: false, message: 'Falha ao criar a carreira: $error');
       return false;
     }
@@ -220,7 +239,13 @@ class CareerController extends Notifier<CareerHubState> {
       }
       await refresh();
       return true;
-    } catch (error) {
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'CAREER_DELETE_ERROR',
+        error,
+        stack,
+        'Falha ao excluir a carreira $careerId e seus metadados locais.',
+      );
       state = state.copyWith(loading: false, message: 'Não foi possível apagar a carreira: $error');
       return false;
     }

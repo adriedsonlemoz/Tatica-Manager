@@ -15,6 +15,7 @@ import '../../domain/settings/match_presentation_settings.dart';
 import '../career/manager_appearance_editor.dart';
 import '../career/manager_profile_screen.dart';
 import 'audio_settings_screen.dart';
+import 'match_ball_picker.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -134,23 +135,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: TextStyle(color: AppColors.muted, fontSize: 12),
                 ),
                 const SizedBox(height: 10),
-                DropdownButtonFormField<int>(
-                  initialValue: settings.matchBallStyle,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.sports_soccer_rounded),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 0, child: Text('Clássica')), 
-                    DropdownMenuItem(value: 1, child: Text('Branca e verde')),
-                    DropdownMenuItem(value: 2, child: Text('Amarela')),
-                    DropdownMenuItem(value: 3, child: Text('Retrô')),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    ref.read(gameControllerProvider.notifier).updateSettings(
-                          settings.copyWith(matchBallStyle: value),
-                        );
-                  },
+                MatchBallPicker(
+                  value: settings.matchBallStyle,
+                  onChanged: (value) => ref
+                      .read(gameControllerProvider.notifier)
+                      .updateSettings(settings.copyWith(matchBallStyle: value)),
                 ),
               ],
             ),
