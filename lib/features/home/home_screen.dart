@@ -106,7 +106,13 @@ class HomeScreen extends ConsumerWidget {
 
     return PremiumScaffold(
       body: Container(
-        color: AppColors.background,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0B141A), AppColors.background, Color(0xFF0D171C)],
+          ),
+        ),
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
@@ -126,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 110),
+              padding: const EdgeInsets.fromLTRB(10, 7, 10, 110),
               sliver: SliverList.list(
                 children: [
                   SizedBox(
@@ -155,6 +161,9 @@ class HomeScreen extends ConsumerWidget {
                     daysUntilMatch: daysUntilMatch ?? 0,
                     onStadiumTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const StadiumScreen()),
+                    ),
+                    onSeasonTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StandingsScreen()),
                     ),
                     onMatchTap: fixture == null
                         ? null

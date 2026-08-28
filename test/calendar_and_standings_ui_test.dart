@@ -44,6 +44,13 @@ void main() {
         .readAsStringSync();
     final dashboard = File('lib/features/home/home_dashboard_match.dart')
         .readAsStringSync();
+    final board = File('lib/features/home/home_dashboard_board.dart')
+        .readAsStringSync();
+    final controls = File('lib/features/home/home_dashboard_controls.dart')
+        .readAsStringSync();
+    final visuals = File('lib/features/home/home_visual_components.dart')
+        .readAsStringSync();
+    final pubspec = File('pubspec.yaml').readAsStringSync();
 
     expect(home, contains('HomeClubHeader'));
     expect(home, contains('HomeFinanceGrid'));
@@ -63,7 +70,15 @@ void main() {
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
     expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
-    expect(dashboard, contains('ESTÁDIO'));
+    expect(board, contains('ESTÁDIO'));
+    expect(board, contains('HomeVisualAssets.stadiumAerial'));
+    expect(dashboard, contains('HomeVisualAssets.matchStadium'));
+    expect(controls, contains('PANORAMA DA TEMPORADA'));
+    expect(home, contains('onSeasonTap'));
+    expect(visuals, contains('class HomeClubCrest'));
+    expect(pubspec, contains('assets/images/home/'));
+    expect(File('assets/images/home/match_stadium.webp').existsSync(), isTrue);
+    expect(File('assets/images/home/stadium_aerial.webp').existsSync(), isTrue);
     expect(dashboard, isNot(contains('ÚLTIMAS 5 PARTIDAS')));
     expect(rankings, contains('compactColumns: dense && canSplit'));
     expect(home, contains('NewsHighlightsScreen'));
