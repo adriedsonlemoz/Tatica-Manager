@@ -1,0 +1,18 @@
+{
+  "format": "tatica-manager-logos",
+  "version": 1,
+  "name": "Exemplo de pack de escudos",
+  "author": "Tática Manager",
+  "logos": [
+    {
+      "clubId": "br-club-001",
+      "label": "Clube de exemplo 1",
+      "iconBase64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAL0lEQVR42u3OIQEAAAgDMEKQjnQ0hRg3E/Or3rmkEhAQEBAQEBAQEBAQEBAQSAceOh40eawX9zkAAAAASUVORK5CYII="
+    },
+    {
+      "clubId": "br-club-002",
+      "label": "Clube de exemplo 2",
+      "iconBase64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAL0lEQVR42u3OIQEAAAgDMOIQh8RUgxg3E/Ornr2kEhAQEBAQEBAQEBAQEBAQSAcelaXUeeubMkIAAAAASUVORK5CYII="
+    }
+  ]
+}

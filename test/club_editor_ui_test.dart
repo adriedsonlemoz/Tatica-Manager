@@ -21,7 +21,15 @@ void main() {
       'lib/features/career/club_editor_widgets.dart',
     ].map((path) => File(path).readAsStringSync()).join('\n');
 
-    expect(source, contains('Importar banco'));
+    expect(source, contains('Importar pacote completo'));
+    expect(source, contains("extensions: ['json', 'tmclubs', 'tmpack', 'xml']"));
+    expect(source, contains('Importar somente escudos'));
+    expect(source, contains('Técnicos'));
+    expect(source, contains('_confirmFullPackImport'));
+    expect(source, contains(r"label: 'Técnicos', value: '$managerCount'"));
+    expect(source, contains('ClubLogoPackImporter.decodeBytes'));
+    expect(source, contains('ClubLogoPackEngine.applyToIdentityPack'));
+    expect(source, contains('A associação usa somente o ID permanente do clube'));
     expect(source, contains('ClubPackImporter.decodeBytes'));
     expect(source, contains('ClubIdentityEngine.normalizeAndValidatePack'));
     expect(source, contains('ID permanente:'));

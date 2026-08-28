@@ -2,26 +2,28 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.61",
+  "version": "0.1.1.63",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+63"
+    "pubspecVersion": "0.1.1+65"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.61",
-    "versionCode": 63
+    "versionName": "0.1.1.63",
+    "versionCode": 65
   },
   "release": {
-    "version": "0.1.1.61",
-    "revision": 61,
-    "androidVersionCode": 63
+    "version": "0.1.1.63",
+    "revision": 63,
+    "androidVersionCode": 65
   },
   "changelog": [
+    "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine.",
+    "Adiciona importação de packs separados de escudos no formato tatica-manager-logos v1, associando imagens exclusivamente aos IDs permanentes dos clubes, com validação, prévia e aplicação parcial sem alterar nomes, elencos, técnicos, saves, schema 11 ou Match Engine.",
     "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow.",
     "Corrige os dois warnings unused_element_parameter introduzidos na Home 0.1.1.59, removendo parâmetros opcionais de padding nunca utilizados em Notícias e Rankings sem alterar o layout, dados, saves, Match Engine ou workflow.",
     "Remodela a Home no padrão visual premium de gestão esportiva, com cabeçalho de clube/técnico, indicadores de posição, próximo jogo, competição e desempenho, card de confronto, confiança/forma recente, avanço diário destacado, notícias em cards, classificação e artilheiros, preservando os dados existentes, atalhos, saves e Match Engine.",
@@ -118,6 +120,6 @@
     "GitHub Actions limpa builds antigos e rejeita APK com versionName/versionCode divergentes."
   ],
   "changes": [
-    "Alinha três testes estruturais revelados pelo GitHub Actions à UI atual: criação do técnico valida País, Finanças valida as seções Salários/Patrocínios remodeladas e avatares da Home passam a ser verificados nos widgets modulares, sem alterar código funcional, saves, schema 11, Match Engine ou workflow."
+    "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
   ]
 }

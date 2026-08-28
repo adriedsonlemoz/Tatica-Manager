@@ -14,11 +14,13 @@ class HomeMainOverview extends StatelessWidget {
     required this.fixture,
     required this.competitionName,
     required this.boardConfidence,
-    required this.recentForm,
     required this.position,
     required this.totalRounds,
     required this.currentRound,
+    required this.isMatchDay,
+    required this.daysUntilMatch,
     this.onMatchTap,
+    this.onStadiumTap,
   });
 
   final Club club;
@@ -26,11 +28,13 @@ class HomeMainOverview extends StatelessWidget {
   final MatchFixture? fixture;
   final String competitionName;
   final int boardConfidence;
-  final List<String> recentForm;
   final int position;
   final int totalRounds;
   final int currentRound;
+  final bool isMatchDay;
+  final int daysUntilMatch;
   final VoidCallback? onMatchTap;
+  final VoidCallback? onStadiumTap;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -41,13 +45,16 @@ class HomeMainOverview extends StatelessWidget {
             opponent: opponent,
             fixture: fixture,
             competitionName: competitionName,
+            isMatchDay: isMatchDay,
+            daysUntilMatch: daysUntilMatch,
             onTap: onMatchTap,
           );
           final side = Column(
             children: [
               HomeBoardConfidenceCard(
                 confidence: boardConfidence,
-                recentForm: recentForm,
+                club: club,
+                onStadiumTap: onStadiumTap,
               ),
               const SizedBox(height: 8),
               HomeSeasonCard(
@@ -79,6 +86,8 @@ class HomeNextMatchCard extends StatelessWidget {
     required this.opponent,
     required this.fixture,
     required this.competitionName,
+    required this.isMatchDay,
+    required this.daysUntilMatch,
     this.onTap,
   });
 
@@ -86,6 +95,8 @@ class HomeNextMatchCard extends StatelessWidget {
   final Club? opponent;
   final MatchFixture? fixture;
   final String competitionName;
+  final bool isMatchDay;
+  final int daysUntilMatch;
   final VoidCallback? onTap;
 
   @override
@@ -140,7 +151,7 @@ class HomeNextMatchCard extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     const Color(0xFF0F1D1A),
-                    Color(club.colors.primaryHex).withValues(alpha: .16),
+                    Color(club.colors.primaryHex).withValues(alpha: .20),
                     const Color(0xFF07100E),
                   ],
                 ),
@@ -163,7 +174,7 @@ class HomeNextMatchCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 9, 12, 10),
+              padding: const EdgeInsets.fromLTRB(12, 9, 12, 8),
               child: Row(
                 children: [
                   Expanded(child: _MatchInfo(icon: Icons.stadium_outlined, value: stadium)),
@@ -171,6 +182,53 @@ class HomeNextMatchCard extends StatelessWidget {
                   Expanded(child: _MatchInfo(icon: Icons.schedule_rounded, value: fixture!.kickoffLabel)),
                   const _MiniDivider(),
                   Expanded(child: _MatchInfo(icon: Icons.emoji_events_outlined, value: '$competitionName • R${fixture!.round}')),
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.green.withValues(alpha: .17),
+                    const Color(0xFF0B1812),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.green.withValues(alpha: .25)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    isMatchDay ? Icons.sports_soccer_rounded : Icons.fitness_center_rounded,
+                    color: AppColors.green,
+                    size: 17,
+                  ),
+                  const SizedBox(width: 7),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isMatchDay ? 'DIA DE JOGO' : 'PREPARAÇÃO EM ANDAMENTO',
+                          style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: AppColors.green),
+                        ),
+                        const SizedBox(height: 1),
+                        Text(
+                          isMatchDay
+                              ? 'A preparação está pronta para a partida.'
+                              : daysUntilMatch <= 1
+                                  ? 'Últimos ajustes antes da partida.'
+                                  : 'Faltam $daysUntilMatch dias para o jogo.',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 8, color: AppColors.muted, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.green, size: 18),
                 ],
               ),
             ),
@@ -182,60 +240,84 @@ class HomeNextMatchCard extends StatelessWidget {
 }
 
 class HomeBoardConfidenceCard extends StatelessWidget {
-  const HomeBoardConfidenceCard({super.key, required this.confidence, required this.recentForm});
+  const HomeBoardConfidenceCard({
+    super.key,
+    required this.confidence,
+    required this.club,
+    this.onStadiumTap,
+  });
 
   final int confidence;
-  final List<String> recentForm;
+  final Club club;
+  final VoidCallback? onStadiumTap;
 
   @override
   Widget build(BuildContext context) => _DashboardCard(
+        accent: const Color(0xFF41C8B4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('CONFIANÇA DA DIRETORIA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 9),
-            const Text('ÚLTIMAS 5 PARTIDAS', style: TextStyle(fontSize: 8, color: AppColors.muted, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 6),
-            Row(
-              children: List.generate(5, (index) {
-                final value = index < recentForm.length ? recentForm[index] : '—';
-                final color = switch (value) {
-                  'V' => AppColors.green,
-                  'E' => AppColors.warning,
-                  'D' => AppColors.danger,
-                  _ => AppColors.surfaceSoft,
-                };
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(right: index == 4 ? 0 : 3),
-                    height: 24,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                    child: Text(value, style: const TextStyle(color: Colors.black, fontSize: 9, fontWeight: FontWeight.w900)),
-                  ),
-                );
-              }),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: onStadiumTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF13201E),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .22)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.stadium_rounded, color: Color(0xFF62DCC9), size: 15),
+                        SizedBox(width: 5),
+                        Text('ESTÁDIO', style: TextStyle(fontSize: 7, color: AppColors.muted, fontWeight: FontWeight.w900)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      club.stadium.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${_compactCount(club.stadium.capacity)} lugares • Ingresso ${compactMoney(club.stadium.ticketPrice)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 7, color: AppColors.muted),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             Divider(height: 1, color: AppColors.border.withValues(alpha: .9)),
             const SizedBox(height: 9),
             Center(
               child: SizedBox(
-                width: 86,
-                height: 86,
+                width: 82,
+                height: 82,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     CircularProgressIndicator(
                       value: confidence / 100,
-                      strokeWidth: 9,
-                      backgroundColor: const Color(0xFFB6BEC0),
+                      strokeWidth: 8,
+                      backgroundColor: const Color(0xFF313B3A),
                       color: AppColors.green,
                     ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('$confidence%', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
+                        Text('$confidence%', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                         const Text('CONFIANÇA', style: TextStyle(fontSize: 7, color: AppColors.muted, fontWeight: FontWeight.w800)),
                       ],
                     ),
@@ -246,6 +328,11 @@ class HomeBoardConfidenceCard extends StatelessWidget {
           ],
         ),
       );
+
+  static String _compactCount(int value) {
+    if (value >= 1000) return '${(value / 1000).toStringAsFixed(value % 1000 == 0 ? 0 : 1)} mil';
+    return '$value';
+  }
 }
 
 class HomeSeasonCard extends StatelessWidget {
@@ -264,6 +351,7 @@ class HomeSeasonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final remaining = (totalRounds - currentRound).clamp(0, totalRounds);
     return _DashboardCard(
+      accent: AppColors.danger,
       child: Row(
         children: [
           const Icon(Icons.track_changes_rounded, color: AppColors.danger, size: 20),
@@ -293,92 +381,77 @@ class HomeAdvanceStrip extends StatelessWidget {
   const HomeAdvanceStrip({
     super.key,
     required this.isMatchDay,
-    required this.currentDate,
-    required this.daysUntilMatch,
     required this.onAdvance,
     required this.onMatchDay,
   });
 
   final bool isMatchDay;
-  final DateTime currentDate;
-  final int daysUntilMatch;
   final VoidCallback onAdvance;
   final VoidCallback onMatchDay;
 
   @override
-  Widget build(BuildContext context) {
-    final nextDate = currentDate.add(const Duration(days: 1));
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isMatchDay ? onMatchDay : onAdvance,
-        borderRadius: BorderRadius.circular(17),
-        child: Ink(
-          padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF84E91D), Color(0xFF63C90B)]),
-            borderRadius: BorderRadius.circular(17),
-            boxShadow: const [BoxShadow(color: Color(0x335ECC00), blurRadius: 18, offset: Offset(0, 8))],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(color: Colors.black.withValues(alpha: .10), shape: BoxShape.circle),
-                child: Icon(isMatchDay ? Icons.sports_soccer_rounded : Icons.play_arrow_rounded, color: Colors.black, size: 28),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isMatchDay ? 'DIA DE JOGO' : 'PREPARAÇÃO EM ANDAMENTO',
-                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 12),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      isMatchDay
-                          ? 'Entre na preparação e avance para a partida.'
-                          : 'Avance para ${shortDate(nextDate)} • ${daysUntilMatch <= 1 ? 'a próxima partida está próxima' : 'faltam $daysUntilMatch dias para o jogo'}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.black.withValues(alpha: .72), fontSize: 9, fontWeight: FontWeight.w700),
-                    ),
-                  ],
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isMatchDay ? onMatchDay : onAdvance,
+          borderRadius: BorderRadius.circular(15),
+          child: Ink(
+            height: 48,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [Color(0xFF84E91D), Color(0xFF63C90B)]),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [BoxShadow(color: Color(0x335ECC00), blurRadius: 16, offset: Offset(0, 7))],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(isMatchDay ? Icons.sports_soccer_rounded : Icons.play_arrow_rounded, color: Colors.black, size: 24),
+                const SizedBox(width: 7),
+                Text(
+                  isMatchDay ? 'ABRIR PARTIDA' : 'AVANÇAR',
+                  style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .3),
                 ),
-              ),
-              Text(isMatchDay ? 'ABRIR' : 'AVANÇAR', style: const TextStyle(color: Colors.black, fontSize: 9, fontWeight: FontWeight.w900)),
-              const SizedBox(width: 5),
-              const Icon(Icons.arrow_forward_rounded, color: Colors.black, size: 18),
-            ],
+                const SizedBox(width: 7),
+                const Icon(Icons.arrow_forward_rounded, color: Colors.black, size: 19),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
-
 class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child, this.padding = const EdgeInsets.all(12)});
+  const _DashboardCard({
+    required this.child,
+    this.padding = const EdgeInsets.all(12),
+    this.accent,
+  });
 
   final Widget child;
   final EdgeInsets padding;
+  final Color? accent;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: const Color(0xFF091110),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF25302F)),
-          boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
-        ),
-        child: child,
-      );
+  Widget build(BuildContext context) {
+    final accentColor = accent;
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        gradient: accentColor == null
+            ? null
+            : LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [accentColor.withValues(alpha: .08), const Color(0xFF091110)],
+              ),
+        color: accentColor == null ? const Color(0xFF091110) : null,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accentColor?.withValues(alpha: .20) ?? const Color(0xFF25302F)),
+        boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
+      ),
+      child: child,
+    );
+  }
 }
 
 class _MatchClub extends StatelessWidget {
@@ -427,7 +500,6 @@ class _MiniDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(width: 1, height: 26, margin: const EdgeInsets.symmetric(horizontal: 5), color: AppColors.border);
 }
-
 
 class _PitchLines extends StatelessWidget {
   const _PitchLines();

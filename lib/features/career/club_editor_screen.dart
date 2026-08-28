@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,9 +9,11 @@ import '../../data/competition_catalog.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
 import '../../domain/club/club_identity.dart';
+import '../../domain/club/club_logo_pack.dart';
 import '../../domain/player/player.dart';
-import '../../game/club/club_icon_validator.dart';
 import '../../game/club/club_identity_engine.dart';
+import '../../game/club/club_logo_pack_engine.dart';
+import '../../game/club/club_logo_pack_importer.dart';
 import '../../game/club/club_pack_importer.dart';
 import 'competition_browser_widgets.dart';
 import 'kit_editor_screen.dart';
@@ -47,9 +47,16 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
   bool _dirty = false;
   CompetitionBrowserLevel _browserLevel = CompetitionBrowserLevel.country;
 
+  static const _logoPackTypes = XTypeGroup(
+    label: 'Pack de escudos Tática Manager',
+    extensions: ['json', 'tmlogos'],
+    mimeTypes: ['application/json', 'application/octet-stream'],
+    uniformTypeIdentifiers: ['public.json', 'public.data'],
+  );
+
   static const _fileTypes = XTypeGroup(
-    label: 'Banco Tática Manager',
-    extensions: ['json', 'tmclubs', 'xml'],
+    label: 'Pacote completo Tática Manager',
+    extensions: ['json', 'tmclubs', 'tmpack', 'xml'],
     mimeTypes: ['application/json', 'application/xml', 'text/xml', 'application/octet-stream'],
     uniformTypeIdentifiers: ['public.json', 'public.data'],
   );
@@ -160,7 +167,7 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
                     child: OutlinedButton.icon(
                       onPressed: _saving ? null : _importPack,
                       icon: const Icon(Icons.file_open_rounded),
-                      label: const Text('Importar banco'),
+                      label: const Text('Importar pacote completo'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -174,9 +181,19 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
                 ],
               ),
               const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _saving ? null : _importLogoPack,
+                  icon: const Icon(Icons.collections_rounded),
+                  label: const Text('Importar somente escudos'),
+                ),
+              ),
+              const SizedBox(height: 10),
               Text(
-                'Formato: ${ClubIdentityPack.format} v${ClubIdentityPack.formatVersion} '
-                '• JSON/.tmclubs/XML • limite de 8 MiB.',
+                'Pacote completo: clubes + jogadores + técnicos + escudos. '
+                'Também é possível importar apenas escudos por ID permanente. '
+                'Limite de 8 MiB por arquivo.',
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -411,16 +428,207 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
         }
       }
       if (!mounted) return;
+      final confirmed = await _confirmFullPackImport(normalized);
+      if (confirmed != true || !mounted) return;
       setState(() {
         _pack = normalized;
         _dirty = true;
         _error = null;
       });
-      _show('Banco “${normalized.name}” carregado. Revise e toque em Salvar alterações.');
+      final playerCount = _allPlayerIds(normalized).length;
+      final logoCount = normalized.clubs.where((club) => club.iconBase64?.isNotEmpty == true).length;
+      _show(
+        'Pacote “${normalized.name}” carregado: ${normalized.clubs.length} clubes, '
+        '$playerCount jogadores, ${normalized.managers?.length ?? 0} técnicos e '
+        '$logoCount escudos. Revise e toque em Salvar alterações.',
+      );
     } catch (error) {
       if (!mounted) return;
       setState(() => _error = _friendlyError(error));
     }
+  }
+
+  Future<bool?> _confirmFullPackImport(ClubIdentityPack pack) {
+    final playerCount = _allPlayerIds(pack).length;
+    final logoCount = pack.clubs
+        .where((club) => club.iconBase64?.isNotEmpty == true)
+        .length;
+    final managerCount = pack.managers?.length ?? 0;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.inventory_2_rounded, color: AppColors.green, size: 42),
+        title: const Text('Importar pacote completo'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(pack.name, style: const TextStyle(fontWeight: FontWeight.w900)),
+            if (pack.author?.isNotEmpty == true) ...[
+              const SizedBox(height: 3),
+              Text('Por ${pack.author}', style: const TextStyle(color: AppColors.muted)),
+            ],
+            const SizedBox(height: 12),
+            _PackSummaryRow(icon: Icons.shield_outlined, label: 'Clubes', value: '${pack.clubs.length}'),
+            _PackSummaryRow(icon: Icons.groups_2_outlined, label: 'Jogadores', value: '$playerCount'),
+            _PackSummaryRow(icon: Icons.sports_rounded, label: 'Técnicos', value: '$managerCount'),
+            _PackSummaryRow(icon: Icons.image_outlined, label: 'Escudos', value: '$logoCount'),
+            const SizedBox(height: 10),
+            const Text(
+              'Clubes, elencos, técnicos e escudos são aplicados juntos usando os IDs '
+              'internos permanentes. Em uma carreira existente, os IDs de jogadores '
+              'continuam obrigatoriamente preservados.',
+              style: TextStyle(color: AppColors.muted, height: 1.35),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.download_done_rounded),
+            label: const Text('Carregar pacote'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _importLogoPack() async {
+    try {
+      final file = await openFile(acceptedTypeGroups: const [_logoPackTypes]);
+      if (file == null) return;
+      final length = await file.length();
+      if (length > 8 * 1024 * 1024) {
+        throw const FormatException('O pack de escudos é grande demais. Limite: 8 MiB.');
+      }
+      final current = _pack!;
+      final decoded = ClubLogoPackImporter.decodeBytes(await file.readAsBytes());
+      final normalized = ClubLogoPackEngine.normalizeAndValidate(
+        decoded,
+        expectedIds: current.clubs.map((club) => club.clubId),
+      );
+      final proposed = ClubLogoPackEngine.applyToIdentityPack(current, normalized);
+      if (!mounted) return;
+      final confirmed = await _confirmLogoPackImport(
+        pack: normalized,
+        current: current,
+        proposed: proposed,
+      );
+      if (confirmed != true || !mounted) return;
+      setState(() {
+        _pack = proposed;
+        _dirty = true;
+        _error = null;
+      });
+      _show(
+        '${normalized.logos.length} escudo(s) carregado(s). '
+        'Revise e toque em Salvar alterações.',
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _error = _friendlyError(error));
+    }
+  }
+
+  Future<bool?> _confirmLogoPackImport({
+    required ClubLogoPack pack,
+    required ClubIdentityPack current,
+    required ClubIdentityPack proposed,
+  }) {
+    final currentById = {for (final club in current.clubs) club.clubId: club};
+    final proposedById = {for (final club in proposed.clubs) club.clubId: club};
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.collections_rounded, color: AppColors.green, size: 42),
+        title: const Text('Importar pack de escudos'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${pack.name} • ${pack.logos.length} escudo(s)',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              if (pack.author?.isNotEmpty == true) ...[
+                const SizedBox(height: 3),
+                Text('Por ${pack.author}', style: TextStyle(color: AppColors.muted)),
+              ],
+              const SizedBox(height: 8),
+              Text(
+                'A associação usa somente o ID permanente do clube. '
+                'Nomes, elencos, uniformes, estádio e técnicos não serão alterados.',
+                style: TextStyle(color: AppColors.muted, height: 1.35),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: (pack.logos.length * 72).clamp(120, 360).toDouble(),
+                child: ListView.separated(
+                  itemCount: pack.logos.length,
+                  separatorBuilder: (_, _) => const Divider(height: 12),
+                  itemBuilder: (context, index) {
+                    final entry = pack.logos[index];
+                    final before = currentById[entry.clubId]!;
+                    final after = proposedById[entry.clubId]!;
+                    return Row(
+                      children: [
+                        _ClubIdentityBadge(identity: before, size: 40),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(Icons.arrow_forward_rounded, size: 18),
+                        ),
+                        _ClubIdentityBadge(identity: after, size: 40),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                entry.label?.isNotEmpty == true ? entry.label! : before.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontWeight: FontWeight.w800),
+                              ),
+                              Text(
+                                '${before.name} • ${entry.clubId}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: AppColors.muted),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(context, true),
+            icon: const Icon(Icons.check_rounded),
+            label: const Text('Aplicar escudos'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _restoreDefaults() {
@@ -515,4 +723,29 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
     final text = error.toString();
     return text.startsWith('Bad state: ') ? text.substring(11) : text;
   }
+}
+
+class _PackSummaryRow extends StatelessWidget {
+  const _PackSummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: AppColors.green),
+            const SizedBox(width: 8),
+            Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700))),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
+          ],
+        ),
+      );
 }

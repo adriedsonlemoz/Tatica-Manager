@@ -25,6 +25,7 @@ class AudioManager {
 
   GameSettings _settings = const GameSettings();
   bool _inMatch = false;
+  bool _matchFinished = false;
   bool _menuPlaylistLoaded = false;
   Future<bool>? _menuLoadTask;
   int? _menuLoadGeneration;
@@ -126,6 +127,7 @@ class AudioManager {
     required String awayName,
   }) async {
     _inMatch = true;
+    _matchFinished = false;
     await _safe(_musicPlayer.pause);
     await _startMatchAmbience();
     await playMatchCue(MatchAudioCue.kickoff);
@@ -135,9 +137,19 @@ class AudioManager {
     );
   }
 
+  Future<void> finishMatchPresentation() async {
+    if (!_inMatch || _matchFinished) return;
+    _matchFinished = true;
+    _ambienceDuckToken++;
+    await _safe(_ambiencePlayer.stop);
+    await _narration.stop();
+  }
+
   Future<void> exitMatch() async {
     _inMatch = false;
+    _matchFinished = false;
     _ambienceDuckToken++;
+    await _safe(_matchPlayer.stop);
     await _safe(_ambiencePlayer.stop);
     await _narration.stop();
     await startMenuMusic();
@@ -212,6 +224,9 @@ class AudioManager {
   }
 
   Future<void> stopAll() async {
+    _inMatch = false;
+    _matchFinished = false;
+    _ambienceDuckToken++;
     await _safe(_musicPlayer.stop);
     await _safe(_uiPlayer.stop);
     await _safe(_matchPlayer.stop);
@@ -297,7 +312,7 @@ class AudioManager {
       };
 
   Future<void> _startMatchAmbience() async {
-    if (!_inMatch || !_masterEnabled || !_settings.audio.matchEnabled) {
+    if (!_inMatch || _matchFinished || !_masterEnabled || !_settings.audio.matchEnabled) {
       await _safe(_ambiencePlayer.pause);
       return;
     }

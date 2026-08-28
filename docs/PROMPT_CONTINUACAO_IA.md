@@ -12,10 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.61
-Android versionCode: 63
-pubspec: 0.1.1+63
-Release atual: correção de três testes estruturais desatualizados após a remodelação de técnico, Finanças e modularização da Home; não altera código funcional, `CareerState` schema 11, IDs, saves, Match Engine ou workflow.
+Release visível: 0.1.1.63
+Android versionCode: 65
+pubspec: 0.1.1+65
+
+Novidade desta base: a Home usa resumo financeiro e módulo próprio de notícias, a preparação fica integrada ao próximo jogo, o pacote completo importa clubes/jogadores/técnicos/escudos por IDs permanentes e o áudio pós-partida encerra ambiente/efeitos explicitamente. `CareerState` permanece schema 11 e o Match Engine não é alterado.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -49,7 +50,7 @@ MATCH ENGINE
 O Match Engine já foi modularizado. Preserve os módulos de força, probabilidade, seleção de jogadores, eventos, timeline, estatísticas e trajetória. match_engine.dart deve continuar principalmente como orquestrador.
 
 FLUXO DE NOVA CARREIRA
-Bootstrap → Central de Carreiras → Nova carreira → Perfil/origem do técnico → Competição/clube → Formação → Mentalidade/pressão/ritmo → Assinatura visual do contrato → Home.
+Bootstrap → Central de Carreiras → Nova carreira → Escolha do técnico (existente ou criado) → Competição/clube → Formação → Mentalidade/pressão/ritmo → Assinatura visual do contrato → Home.
 
 A carreira suporta múltiplos saves. Não reintroduza save único global.
 
@@ -58,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.62 com versionCode > 63.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.64 com versionCode > 65.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync

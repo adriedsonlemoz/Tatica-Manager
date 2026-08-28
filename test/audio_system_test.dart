@@ -219,4 +219,21 @@ void main() {
     expect(manager, contains('AudioPlayer(maxSkipsOnError: 8)'));
   });
 
+  test('fim da partida encerra ambiente e efeitos sem usar ref no dispose', () {
+    final manager = File('lib/app/audio/audio_manager.dart').readAsStringSync();
+    final match = File('lib/features/match/match_screen.dart').readAsStringSync();
+    final disposeStart = match.indexOf('void dispose()');
+    final disposeEnd = match.indexOf('@override', disposeStart + 1);
+    final disposeBody = match.substring(disposeStart, disposeEnd);
+
+    expect(manager, contains('Future<void> finishMatchPresentation()'));
+    expect(manager, contains('await _safe(_matchPlayer.stop)'));
+    expect(manager, contains('await _safe(_ambiencePlayer.stop)'));
+    expect(manager, contains('_matchFinished'));
+    expect(match, contains('late final AudioManager _audioManager'));
+    expect(match, contains('_audioManager.finishMatchPresentation()'));
+    expect(match, contains('await _leaveMatchAudio()'));
+    expect(disposeBody, isNot(contains('ref.read')));
+  });
+
 }

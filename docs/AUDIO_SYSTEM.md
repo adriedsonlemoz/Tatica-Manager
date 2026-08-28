@@ -185,3 +185,10 @@ Narração TTS continua desligada por padrão. O replay não repete cues porque 
 O `AudioManager` permanece singleton e passa a ser preparado durante o splash. `TaticaManagerApp` consulta a última carreira para aplicar suas preferências antes da primeira tela útil, sem bloquear a construção da interface. O carregamento da playlist é serializado por uma única tarefa interna e protegido por geração de configuração, evitando duas preparações concorrentes do mesmo `AudioPlayer` quando o estado da carreira chega durante a inicialização.
 
 A política tátil também fica centralizada: `interfaceTap` não produz vibração e `matchEvent` só solicita `mediumImpact` para `goal`/`ownGoal`, sempre condicionado a `GameSettings.haptics`. Cartões, faltas, trave, substituições, replay, navegação, botões, cards e demais eventos permanecem sem feedback háptico. A regra é de apresentação e não altera a timeline ou o Match Engine.
+
+
+## Encerramento limpo da partida — 0.1.1.63
+
+O `MatchScreen` guarda a referência do `AudioManager` enquanto ainda está montado e não usa `ref.read` durante `dispose`. Ao atingir o fim da partida, `finishMatchPresentation()` encerra o ambiente em loop e a narração; ao sair da tela, `exitMatch()` também para explicitamente o player de efeitos antes de retomar a música de menu. A saída é idempotente para evitar execução dupla entre conclusão e `dispose`.
+
+A mudança atua apenas na apresentação de áudio. A timeline, os eventos e o resultado continuam sendo produzidos pelo Match Engine sem dependência do player.

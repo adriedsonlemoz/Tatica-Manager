@@ -46,7 +46,9 @@ void main() {
         .readAsStringSync();
 
     expect(home, contains('HomeClubHeader'));
-    expect(home, contains('HomeStatusGrid'));
+    expect(home, contains('HomeFinanceGrid'));
+    expect(home, contains('monthIncome'));
+    expect(home, contains('monthExpenses'));
     expect(home, contains('HomeMainOverview'));
     expect(home, contains('HomeAdvanceStrip'));
     expect(home, contains('HomeNewsHighlights'));
@@ -61,6 +63,11 @@ void main() {
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
     expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
+    expect(dashboard, contains('ESTÁDIO'));
+    expect(dashboard, isNot(contains('ÚLTIMAS 5 PARTIDAS')));
+    expect(rankings, contains('compactColumns: dense && canSplit'));
+    expect(home, contains('NewsHighlightsScreen'));
+    expect(home, isNot(contains('onNotificationsTap')));
     expect(home, contains('final totalRounds = career.fixtures.fold<int>'));
     expect(home, isNot(contains(r'Rodada ${career.currentRound}/38')));
   });

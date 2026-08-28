@@ -28,10 +28,12 @@ import '../player/player_profile_screen.dart';
 import '../season/season_history_screen.dart';
 import '../standings/standings_screen.dart';
 import '../statistics/statistics_screen.dart';
+import '../stadium/stadium_screen.dart';
 import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
 import 'home_dashboard_widgets.dart';
 import 'match_day_presentation_screen.dart';
+import 'news_highlights_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -60,13 +62,20 @@ class HomeScreen extends ConsumerWidget {
     final competitionName = fixture == null
         ? CompetitionCatalog.displayNameFor(primarySeries)
         : CompetitionCatalog.displayNameForId(fixture.competitionId);
-    final standing = career.standings.where((row) => row.clubId == club.id).firstOrNull;
-    final points = standing?.points ?? 0;
     final unreadMessages = career.inbox
         .where((message) => !message.read && !message.archived && !message.deleted)
         .length;
+    final monthTransactions = career.finances.where(
+      (tx) => tx.createdAt.year == career.currentDate.year &&
+          tx.createdAt.month == career.currentDate.month,
+    );
+    final monthIncome = monthTransactions
+        .where((tx) => tx.amount > 0)
+        .fold<int>(0, (sum, tx) => sum + tx.amount);
+    final monthExpenses = monthTransactions
+        .where((tx) => tx.amount < 0)
+        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
     final boardConfidence = ManagerCareerEngine.reputationFor(career);
-    final performance = _performanceFor(club.recentForm);
     final scorers = <HomeScorerEntry>[
       for (final team in career.clubs)
         for (final player in team.squad)
@@ -100,9 +109,6 @@ class HomeScreen extends ConsumerWidget {
                 competitionName: competitionName,
                 nextMatchLabel: nextMatchLabel,
                 unreadMessages: unreadMessages,
-                onNotificationsTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const InboxScreen()),
-                ),
                 onInboxTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const InboxScreen()),
                 ),
@@ -116,29 +122,14 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverList.list(
                 children: [
                   SizedBox(
-                    height: 100,
-                    child: HomeStatusGrid(
-                      position: position,
-                      points: points,
-                      nextFixture: fixture,
-                      competitionLabel: primarySeries.name,
-                      performanceLabel: performance.label,
-                      performanceProgress: performance.progress,
-                      onPositionTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                      ),
-                      onNextMatchTap: fixture == null
-                          ? null
-                          : () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
-                                ),
-                              ),
-                      onCompetitionTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                      ),
-                      onPerformanceTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                    height: 86,
+                    child: HomeFinanceGrid(
+                      balance: club.money,
+                      transferBudget: club.transferBudget,
+                      monthIncome: monthIncome,
+                      monthExpenses: monthExpenses,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const FinancesScreen()),
                       ),
                     ),
                   ),
@@ -149,10 +140,14 @@ class HomeScreen extends ConsumerWidget {
                     fixture: fixture,
                     competitionName: competitionName,
                     boardConfidence: boardConfidence,
-                    recentForm: club.recentForm,
                     position: position,
                     totalRounds: totalRounds,
                     currentRound: career.currentRound,
+                    isMatchDay: career.isMatchDay,
+                    daysUntilMatch: daysUntilMatch ?? 0,
+                    onStadiumTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StadiumScreen()),
+                    ),
                     onMatchTap: fixture == null
                         ? null
                         : () {
@@ -175,8 +170,6 @@ class HomeScreen extends ConsumerWidget {
                   if (fixture != null)
                     HomeAdvanceStrip(
                       isMatchDay: career.isMatchDay,
-                      currentDate: career.currentDate,
-                      daysUntilMatch: daysUntilMatch ?? 0,
                       onAdvance: () => _advanceDayWithTransition(
                         context,
                         ref,
@@ -268,7 +261,21 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     onViewAll: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const InboxScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => NewsHighlightsScreen(
+                          events: career.news.reversed.toList(growable: false),
+                          onEventTap: (newsContext, event) => _openCareerEvent(
+                            newsContext,
+                            ref,
+                            career,
+                            event,
+                            transferActionable: CpuUserOfferEngine.isOfferActive(
+                              state: career,
+                              event: event,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -303,34 +310,6 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  static ({String label, double progress}) _performanceFor(List<String> form) {
-    if (form.isEmpty) return (label: 'SEM DADOS', progress: .15);
-    final recent = form.take(5);
-    var points = 0;
-    var matches = 0;
-    for (final result in recent) {
-      if (result == 'V') {
-        points += 3;
-        matches++;
-      } else if (result == 'E') {
-        points += 1;
-        matches++;
-      } else if (result == 'D') {
-        matches++;
-      }
-    }
-    if (matches == 0) return (label: 'SEM DADOS', progress: .15);
-    final progress = points / (matches * 3);
-    final label = progress >= .8
-        ? 'ÓTIMA'
-        : progress >= .55
-            ? 'BOA'
-            : progress >= .3
-                ? 'REGULAR'
-                : 'ALERTA';
-    return (label: label, progress: progress);
   }
 
   static Future<void> _advanceDayWithTransition(

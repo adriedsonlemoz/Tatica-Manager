@@ -119,12 +119,14 @@ class HomeCompactStandings extends StatelessWidget {
     required this.clubs,
     required this.userClubId,
     this.onClubTap,
+    this.compactColumns = false,
   });
 
   final List<Standing> standings;
   final List<Club> clubs;
   final String userClubId;
   final ValueChanged<String>? onClubTap;
+  final bool compactColumns;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +136,7 @@ class HomeCompactStandings extends StatelessWidget {
 
     return Column(
       children: [
-        const _CompactStandingsHeader(),
+        _CompactStandingsHeader(compactColumns: compactColumns),
         const SizedBox(height: 4),
         for (var index = 0; index < topRows.length; index++)
           _CompactStandingRow(
@@ -142,6 +144,7 @@ class HomeCompactStandings extends StatelessWidget {
             row: topRows[index],
             club: _clubFor(topRows[index].clubId),
             highlighted: topRows[index].clubId == userClubId,
+            compactColumns: compactColumns,
             onTap: onClubTap == null ? null : () => onClubTap!(topRows[index].clubId),
           ),
         if (showUserSeparately) ...[
@@ -154,6 +157,7 @@ class HomeCompactStandings extends StatelessWidget {
             row: standings[userIndex],
             club: _clubFor(standings[userIndex].clubId),
             highlighted: true,
+            compactColumns: compactColumns,
             onTap: onClubTap == null ? null : () => onClubTap!(standings[userIndex].clubId),
           ),
         ],
@@ -166,7 +170,9 @@ class HomeCompactStandings extends StatelessWidget {
 }
 
 class _CompactStandingsHeader extends StatelessWidget {
-  const _CompactStandingsHeader();
+  const _CompactStandingsHeader({required this.compactColumns});
+
+  final bool compactColumns;
 
   static const _headerStyle = TextStyle(
     color: AppColors.muted,
@@ -175,18 +181,20 @@ class _CompactStandingsHeader extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => const Row(
+  Widget build(BuildContext context) => Row(
         children: [
-          SizedBox(width: 20, child: Text('#', style: _headerStyle)),
-          SizedBox(width: 26),
-          SizedBox(width: 5),
-          Expanded(child: Text('CLUBE', style: _headerStyle)),
-          _StandingCell('J', header: true),
-          _StandingCell('V', header: true),
-          _StandingCell('E', header: true),
-          _StandingCell('D', header: true),
-          _StandingCell('SG', width: 28, header: true),
-          _StandingCell('PTS', width: 30, header: true),
+          const SizedBox(width: 20, child: Text('#', style: _headerStyle)),
+          const SizedBox(width: 26),
+          const SizedBox(width: 5),
+          const Expanded(child: Text('CLUBE', style: _headerStyle)),
+          const _StandingCell('J', header: true),
+          if (!compactColumns) ...[
+            const _StandingCell('V', header: true),
+            const _StandingCell('E', header: true),
+            const _StandingCell('D', header: true),
+            const _StandingCell('SG', width: 28, header: true),
+          ],
+          const _StandingCell('PTS', width: 30, header: true),
         ],
       );
 }
@@ -197,6 +205,7 @@ class _CompactStandingRow extends StatelessWidget {
     required this.row,
     required this.club,
     required this.highlighted,
+    required this.compactColumns,
     this.onTap,
   });
 
@@ -204,6 +213,7 @@ class _CompactStandingRow extends StatelessWidget {
   final Standing row;
   final Club club;
   final bool highlighted;
+  final bool compactColumns;
   final VoidCallback? onTap;
 
   @override
@@ -247,15 +257,17 @@ class _CompactStandingRow extends StatelessWidget {
               ),
             ),
             _StandingCell('${row.played}'),
-            _StandingCell('${row.wins}'),
-            _StandingCell('${row.draws}'),
-            _StandingCell('${row.losses}'),
-            _StandingCell(
-              row.goalDifference > 0
-                  ? '+${row.goalDifference}'
-                  : '${row.goalDifference}',
-              width: 28,
-            ),
+            if (!compactColumns) ...[
+              _StandingCell('${row.wins}'),
+              _StandingCell('${row.draws}'),
+              _StandingCell('${row.losses}'),
+              _StandingCell(
+                row.goalDifference > 0
+                    ? '+${row.goalDifference}'
+                    : '${row.goalDifference}',
+                width: 28,
+              ),
+            ],
             _StandingCell('${row.points}', width: 30, strong: true),
           ],
         ),

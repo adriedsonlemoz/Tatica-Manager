@@ -54,6 +54,17 @@ void main() {
         restored.managers!.length);
   });
 
+  test('pacote completo também aceita coaches como alias de managers', () {
+    final base = ClubIdentityEngine.defaultPack();
+    final json = base.toJson();
+    json['coaches'] = json.remove('managers');
+    final restored = ClubIdentityPack.fromJson(json);
+
+    expect(restored.managers, isNotNull);
+    expect(restored.managers, hasLength(base.managers!.length));
+    expect(restored.managers!.first.id, base.managers!.first.id);
+  });
+
   test('schema de carreira inclui banco de técnicos e migração legada', () {
     final source = File('lib/domain/season/career_state.dart').readAsStringSync();
     expect(CareerState.currentSchemaVersion, 11);

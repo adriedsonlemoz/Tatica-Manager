@@ -6,7 +6,6 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
-import '../../domain/match/match_models.dart';
 
 class HomeClubHeader extends StatelessWidget {
   const HomeClubHeader({
@@ -17,7 +16,6 @@ class HomeClubHeader extends StatelessWidget {
     required this.competitionName,
     required this.nextMatchLabel,
     required this.unreadMessages,
-    required this.onNotificationsTap,
     required this.onInboxTap,
     required this.onManagerTap,
   });
@@ -28,7 +26,6 @@ class HomeClubHeader extends StatelessWidget {
   final String competitionName;
   final String nextMatchLabel;
   final int unreadMessages;
-  final VoidCallback onNotificationsTap;
   final VoidCallback onInboxTap;
   final VoidCallback onManagerTap;
 
@@ -89,12 +86,6 @@ class HomeClubHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 _HeaderIconButton(
-                  icon: Icons.notifications_none_rounded,
-                  showDot: unreadMessages > 0,
-                  onTap: onNotificationsTap,
-                ),
-                const SizedBox(width: 4),
-                _HeaderIconButton(
                   icon: Icons.mail_outline_rounded,
                   showDot: unreadMessages > 0,
                   badgeText: unreadMessages > 9 ? '9+' : unreadMessages > 0 ? '$unreadMessages' : null,
@@ -132,81 +123,68 @@ class HomeClubHeader extends StatelessWidget {
       );
 }
 
-class HomeStatusGrid extends StatelessWidget {
-  const HomeStatusGrid({
+class HomeFinanceGrid extends StatelessWidget {
+  const HomeFinanceGrid({
     super.key,
-    required this.position,
-    required this.points,
-    required this.nextFixture,
-    required this.competitionLabel,
-    required this.performanceLabel,
-    required this.performanceProgress,
-    this.onPositionTap,
-    this.onNextMatchTap,
-    this.onCompetitionTap,
-    this.onPerformanceTap,
+    required this.balance,
+    required this.transferBudget,
+    required this.monthIncome,
+    required this.monthExpenses,
+    this.onTap,
   });
 
-  final int position;
-  final int points;
-  final MatchFixture? nextFixture;
-  final String competitionLabel;
-  final String performanceLabel;
-  final double performanceProgress;
-  final VoidCallback? onPositionTap;
-  final VoidCallback? onNextMatchTap;
-  final VoidCallback? onCompetitionTap;
-  final VoidCallback? onPerformanceTap;
+  final int balance;
+  final int transferBudget;
+  final int monthIncome;
+  final int monthExpenses;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: _StatusCard(
-              icon: Icons.stadium_outlined,
-              label: 'POSIÇÃO NA LIGA',
-              value: position > 0 ? '$positionº LUGAR' : '—',
-              footer: '$points PTS',
-              onTap: onPositionTap,
+            child: _FinanceStatusCard(
+              icon: Icons.account_balance_wallet_outlined,
+              label: 'SALDO',
+              value: compactMoney(balance),
+              accent: AppColors.green,
+              onTap: onTap,
             ),
           ),
           const SizedBox(width: 7),
           Expanded(
-            child: _StatusCard(
-              icon: Icons.calendar_month_rounded,
-              label: 'PRÓXIMO JOGO',
-              value: nextFixture == null ? 'SEM JOGO' : shortDate(nextFixture!.date),
-              footer: nextFixture?.kickoffLabel ?? '—',
-              footerAccent: false,
-              onTap: onNextMatchTap,
+            child: _FinanceStatusCard(
+              icon: Icons.swap_horiz_rounded,
+              label: 'TRANSFERÊNCIAS',
+              value: compactMoney(transferBudget),
+              accent: const Color(0xFF5EC8FF),
+              onTap: onTap,
             ),
           ),
           const SizedBox(width: 7),
           Expanded(
-            child: _StatusCard(
-              icon: Icons.emoji_events_outlined,
-              label: 'COMPETIÇÃO',
-              value: competitionLabel,
-              footer: nextFixture == null ? '—' : '${nextFixture!.round}ª ROD.',
-              footerAccent: false,
-              onTap: onCompetitionTap,
+            child: _FinanceStatusCard(
+              icon: Icons.south_west_rounded,
+              label: 'RECEITAS / MÊS',
+              value: compactMoney(monthIncome),
+              accent: const Color(0xFF8EEA3C),
+              onTap: onTap,
             ),
           ),
           const SizedBox(width: 7),
           Expanded(
-            child: _StatusCard(
-              icon: Icons.trending_up_rounded,
-              label: 'DESEMPENHO',
-              value: performanceLabel,
-              progress: performanceProgress,
-              onTap: onPerformanceTap,
+            child: _FinanceStatusCard(
+              icon: Icons.north_east_rounded,
+              label: 'DESPESAS / MÊS',
+              value: compactMoney(monthExpenses),
+              accent: AppColors.danger,
+              onTap: onTap,
             ),
           ),
         ],
       );
 }
-
 
 class _HeaderIconButton extends StatelessWidget {
   const _HeaderIconButton({required this.icon, required this.showDot, required this.onTap, this.badgeText});
@@ -221,18 +199,18 @@ class _HeaderIconButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: SizedBox(
-          width: 34,
-          height: 42,
+          width: 38,
+          height: 46,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Icon(icon, size: 25, color: AppColors.white),
+              Icon(icon, size: 27, color: AppColors.white),
               if (showDot)
                 Positioned(
                   top: 4,
-                  right: 2,
+                  right: 1,
                   child: Container(
-                    constraints: const BoxConstraints(minWidth: 10, minHeight: 10),
+                    constraints: const BoxConstraints(minWidth: 11, minHeight: 11),
                     padding: badgeText == null ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 3),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(color: AppColors.green, borderRadius: BorderRadius.circular(8)),
@@ -247,23 +225,19 @@ class _HeaderIconButton extends StatelessWidget {
       );
 }
 
-class _StatusCard extends StatelessWidget {
-  const _StatusCard({
+class _FinanceStatusCard extends StatelessWidget {
+  const _FinanceStatusCard({
     required this.icon,
     required this.label,
     required this.value,
-    this.footer,
-    this.footerAccent = true,
-    this.progress,
+    required this.accent,
     this.onTap,
   });
 
   final IconData icon;
   final String label;
   final String value;
-  final String? footer;
-  final bool footerAccent;
-  final double? progress;
+  final Color accent;
   final VoidCallback? onTap;
 
   @override
@@ -271,73 +245,65 @@ class _StatusCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          height: 100,
-          padding: const EdgeInsets.fromLTRB(9, 10, 9, 9),
+          height: 86,
+          padding: const EdgeInsets.fromLTRB(9, 9, 8, 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D1515),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [accent.withValues(alpha: .13), const Color(0xFF0A1211)],
+            ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: accent.withValues(alpha: .24)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(icon, color: AppColors.green, size: 17),
-                  const SizedBox(width: 5),
+                  Icon(icon, color: accent, size: 16),
+                  const SizedBox(width: 4),
                   Expanded(
-                    child: Text(label, maxLines: 2, style: const TextStyle(fontSize: 7.5, color: AppColors.muted, fontWeight: FontWeight.w900)),
+                    child: Text(
+                      label,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 7, color: AppColors.muted, fontWeight: FontWeight.w900),
+                    ),
                   ),
                 ],
               ),
               const Spacer(),
-              Text(value, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-              if (footer != null) ...[
-                const SizedBox(height: 2),
-                Text(footer!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 8, color: footerAccent ? AppColors.green : AppColors.muted, fontWeight: FontWeight.w900)),
-              ],
-              if (progress != null) ...[
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress!.clamp(0.0, 1.0).toDouble(),
-                    minHeight: 6,
-                    backgroundColor: const Color(0xFF505958),
-                    color: AppColors.green,
-                  ),
-                ),
-              ],
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
+              ),
+              const SizedBox(height: 3),
+              Container(height: 2, width: 24, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
             ],
           ),
         ),
       );
 }
 
-
 class _HomeStadiumGlow extends StatelessWidget {
   const _HomeStadiumGlow();
 
   @override
-  Widget build(BuildContext context) => CustomPaint(painter: _StadiumGlowPainter());
+  Widget build(BuildContext context) => CustomPaint(painter: _HomeStadiumGlowPainter());
 }
 
-class _StadiumGlowPainter extends CustomPainter {
+class _HomeStadiumGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final glow = Paint()
+    final paint = Paint()
       ..shader = RadialGradient(
-        colors: [Colors.white.withValues(alpha: .18), Colors.transparent],
-      ).createShader(Rect.fromCircle(center: Offset(size.width * .78, size.height * .72), radius: size.width * .28));
-    canvas.drawCircle(Offset(size.width * .78, size.height * .72), size.width * .28, glow);
-    final line = Paint()..color = Colors.white.withValues(alpha: .05)..strokeWidth = 1;
-    for (var index = 0; index < 5; index++) {
-      final y = size.height * (.67 + index * .045);
-      canvas.drawLine(Offset(size.width * .58, y), Offset(size.width, y - 12), line);
-    }
+        colors: [Colors.white.withValues(alpha: .09), Colors.transparent],
+      ).createShader(Rect.fromCircle(center: Offset(size.width * .72, size.height * .45), radius: size.width * .45));
+    canvas.drawRect(Offset.zero & size, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _StadiumGlowPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _HomeStadiumGlowPainter oldDelegate) => false;
 }
-

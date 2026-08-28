@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/audio/audio_manager.dart';
 import '../../app/audio/audio_providers.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/state/live_match_controller.dart';
@@ -48,6 +49,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   bool pendingHalftime = false;
   bool pendingFullTime = false;
   MatchEvent? presentedEvent;
+  late final AudioManager _audioManager;
+  bool _audioExited = false;
   LiveRoundGoalAlert? roundAlert;
 
   @override
@@ -61,8 +64,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     final away = career.clubs.firstWhere(
       (club) => club.id == live.fixture.awayClubId,
     );
-    final audio = ref.read(audioManagerProvider);
-    unawaited(audio.enterMatch(homeName: home.name, awayName: away.name));
+    _audioManager = ref.read(audioManagerProvider);
+    unawaited(_audioManager.enterMatch(homeName: home.name, awayName: away.name));
     pitchGame = MatchPitchGame(
       homeColor: Color(home.colors.primaryHex),
       awayColor: Color(away.colors.primaryHex),
@@ -74,7 +77,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       onEventStarted: (event) {
         if (!mounted) return;
         unawaited(
-          ref.read(audioManagerProvider).presentMatchEvent(
+          _audioManager.presentMatchEvent(
                 event,
                 teamName: _eventTeamName(event, home, away),
               ),
@@ -141,6 +144,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         }
       }
     });
+    if (fullTime) unawaited(_audioManager.finishMatchPresentation());
   }
 
   void _completePendingPhase() {
@@ -153,12 +157,13 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       pendingFullTime = false;
       fullTime = true;
       paused = true;
+      unawaited(_audioManager.finishMatchPresentation());
     }
   }
 
   void _startSecondHalf() {
     if (!mounted || !atHalftime) return;
-    unawaited(ref.read(audioManagerProvider).announceSecondHalf());
+    unawaited(_audioManager.announceSecondHalf());
     setState(() {
       atHalftime = false;
       paused = false;
@@ -178,17 +183,25 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     timer?.cancel();
     final result =
         await ref.read(liveMatchControllerProvider.notifier).finishMatch();
-    if (!mounted || result == null) return;
+    if (result == null) return;
+    await _leaveMatchAudio();
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => ResultScreen(result: result)),
     );
+  }
+
+  Future<void> _leaveMatchAudio() async {
+    if (_audioExited) return;
+    _audioExited = true;
+    await _audioManager.exitMatch();
   }
 
   @override
   void dispose() {
     timer?.cancel();
     roundAlertTimer?.cancel();
-    unawaited(ref.read(audioManagerProvider).exitMatch());
+    unawaited(_leaveMatchAudio());
     super.dispose();
   }
 
@@ -320,7 +333,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                       await ref
                           .read(gameControllerProvider.notifier)
                           .updateSettings(settings);
-                      await ref.read(audioManagerProvider).applySettings(settings);
+                      await _audioManager.applySettings(settings);
                     },
                     onTactic: () => _liveTactic(context, ref, live.userTactic),
                     onSubstitution: () => _substitution(
@@ -494,7 +507,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         (landing.type == MatchEventType.halftime ||
             landing.type == MatchEventType.fulltime)) {
       unawaited(
-        ref.read(audioManagerProvider).presentMatchEvent(
+        _audioManager.presentMatchEvent(
               landing,
               teamName: 'Partida',
             ),
@@ -512,6 +525,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       fullTime = target >= 90;
       paused = atHalftime || fullTime || !resumeAfterSheet;
     });
+    if (fullTime) unawaited(_audioManager.finishMatchPresentation());
   }
 
   void _showRoundAlertForRange(

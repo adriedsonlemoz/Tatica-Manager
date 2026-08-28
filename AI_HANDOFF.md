@@ -8,11 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.61`
-- **Android versionCode:** `63`
+- **Release deste handoff:** `0.1.1.63`
+- **Android versionCode:** `65`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.63
+
+- Home substitui os quatro indicadores esportivos por saldo, orçamento de transferências, receitas e despesas do mês usando os dados financeiros existentes;
+- cabeçalho mantém apenas o e-mail ao lado do técnico; preparação passa para o card do próximo jogo e o botão externo fica somente como Avançar/Abrir partida;
+- confiança usa informações reais do estádio no lugar da forma recente; classificação e artilheiros ficam compactos/lado a lado quando há largura; Notícias & Destaques ganha tela própria;
+- pacote completo `.tmpack`/`.tmclubs` deixa explícita a importação conjunta de clubes, jogadores, técnicos e escudos por IDs permanentes; o pack somente de escudos continua disponível;
+- áudio da partida encerra efeitos, ambiente e narração no fim/saída e `MatchScreen.dispose` não consulta mais `ref`, reduzindo risco de chiado residual;
+- preserva CareerState schema 11, IDs, saves e Match Engine.
+
+## Estado funcional da release 0.1.1.62
+
+- adiciona pack separado de escudos `tatica-manager-logos` v1, importável em `.tmlogos`/JSON pela Central de Edição;
+- cada escudo é associado exclusivamente ao `Club.id` permanente, com suporte a packs parciais e prévia antes da aplicação;
+- reutiliza `ClubIconValidator` e altera somente `iconBase64`, preservando nomes, elencos, técnicos, estádio, uniformes, schema 11, saves e Match Engine.
 
 ## Estado funcional da release 0.1.1.61
 
@@ -325,10 +340,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.53
-versionCode:         63
-pubspec:             0.1.1+63
+versionCode:         65
+pubspec:             0.1.1+65
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.62` e usar um `versionCode` maior que 63.
+A próxima alteração/entrega normalmente deve virar `0.1.1.64` e usar um `versionCode` maior que 65.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
