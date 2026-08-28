@@ -76,10 +76,27 @@ void main() {
     expect(AudioCatalog.cueForEvent(event(MatchEventType.possession)), isNull);
   });
 
-  test('catálogo padrão usa Football e todos os arquivos de efeitos', () {
-    expect(AudioCatalog.menuAssets, ['assets/audio/menu/football.mp3']);
+  test('catálogo padrão usa somente as 11 novas músicas OGG', () {
+    expect(AudioCatalog.menuTracks, hasLength(11));
+    expect(AudioCatalog.menuAssets, hasLength(11));
+    expect(
+      AudioCatalog.menuTracks.map((track) => track.displayName),
+      containsAll([
+        "Ash O'Connor — Vibe",
+        'Electro-Light — Symbolism',
+        "Lensko — Let's Go",
+        'Jim Yosef — Lights',
+        'DEAF KEV — Invincible',
+      ]),
+    );
     for (final path in AudioCatalog.menuAssets) {
+      expect(path, endsWith('.ogg'));
       expect(File(path).existsSync(), isTrue, reason: path);
+    }
+    expect(File('assets/audio/menu/football.mp3').existsSync(), isFalse);
+    for (var index = 1; index <= 5; index++) {
+      final suffix = index.toString().padLeft(2, '0');
+      expect(File('assets/audio/menu/menu_$suffix.m4a').existsSync(), isFalse);
     }
     for (final path in AudioCatalog.uiAssets.values) {
       expect(File(path).existsSync(), isTrue, reason: path);
@@ -100,6 +117,31 @@ void main() {
       AudioCatalog.uiAssets[UiAudioCue.tap],
       'assets/audio/ui/navigation.mp3',
     );
+  });
+
+
+  test('player de menu expõe faixa atual, seleção e próxima música', () {
+    final manager = File('lib/app/audio/audio_manager.dart').readAsStringSync();
+    final player =
+        File('lib/features/settings/menu_music_player_card.dart').readAsStringSync();
+    final settings =
+        File('lib/features/settings/audio_settings_screen.dart').readAsStringSync();
+
+    expect(manager, contains('Stream<MenuPlaybackState> get menuPlaybackStream'));
+    expect(manager, contains('Future<void> nextMenuTrack()'));
+    expect(manager, contains('Future<void> selectMenuTrack(int index)'));
+    expect(manager, contains('_musicPlayer.seekToNext'));
+    expect(manager, contains('_musicPlayer.seek(Duration.zero, index: index)'));
+    expect(player, contains('TOCANDO AGORA'));
+    expect(player, contains('Selecionar música'));
+    expect(player, contains('Próxima música'));
+    expect(settings, contains('MenuMusicPlayerCard('));
+  });
+
+  test('gerador de efeitos não recria a playlist antiga', () {
+    final generator = File('tool/generate_audio_assets.py').readAsStringSync();
+    expect(generator, isNot(contains('menu_{idx:02d}.m4a')));
+    expect(generator, isNot(contains('5 original menu loops')));
   });
 
   test('duração, velocidade legada e bola recebem defaults retrocompatíveis', () {

@@ -67,7 +67,12 @@ void main() {
     expect(arrival, contains('ManagerAvatar('));
     expect(arrival, contains('ClubBadge('));
     expect(arrival, contains('CompetitionCatalog.primarySeriesForClub'));
+    expect(arrival, contains('APRESENTAÇÃO OFICIAL'));
+    expect(arrival, contains(r'EDIÇÃO\nESPECIAL'));
+    expect(arrival, contains('NOVO DESAFIO'));
     expect(arrival, contains('Começar carreira'));
+    expect(arrival, contains('A partir daqui, a temporada começa oficialmente.'));
+    expect(arrival, isNot(contains('Icons.menu_rounded')));
   });
 
   test('duração nova usa 1 2 e 3 minutos por tempo sem mover regra para Flame', () {

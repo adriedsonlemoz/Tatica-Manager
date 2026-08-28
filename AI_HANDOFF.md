@@ -8,11 +8,20 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.73`
-- **Android versionCode:** `75`
+- **Release deste handoff:** `0.1.1.74`
+- **Android versionCode:** `76`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+## Estado funcional da release 0.1.1.74
+
+- remove integralmente a música padrão anterior (`football.mp3` e `menu_01.m4a` a `menu_05.m4a`) e passa a usar somente as 11 faixas OGG fornecidas para o projeto;
+- mantém `AudioManager` como único player e adiciona estado de faixa atual, seleção manual e comando de próxima música, preservando shuffle/loop e playlist personalizada;
+- extrai a interface navegável da playlist para `menu_music_player_card.dart`, evitando ampliar ainda mais `audio_settings_screen.dart`;
+- reorganiza `career_arrival_screen.dart` para integrar melhor a matéria ao azul-grafite e eliminar o grande vazio entre conteúdo e botão, preservando dados reais da carreira e a flag de primeira entrada;
+- atualiza testes de áudio/onboarding e impede `tool/generate_audio_assets.py` de recriar a playlist M4A antiga;
+- preserva `CareerState` schema 11, SQLite v2, IDs, saves, controllers e Match Engine; Flame continua apenas como apresentação.
 
 ## Estado funcional da release 0.1.1.73
 
@@ -186,7 +195,7 @@
 
 ## Estado funcional da release 0.1.1.49
 
-- aplica `Football.mp3` como música padrão em volume baixo e `somdenavegamenu.mp3` para toque/navegação;
+- a playlist padrão atual usa 11 faixas OGG navegáveis no mesmo `AudioManager`; `somdenavegamenu.mp3` permanece como som de toque/navegação;
 - novas preferências iniciam em 1x e com narração desligada; vibração reage na apresentação a eventos como trave, gol e cartões;
 - aviso de validação da carreira é central/temático; bola possui quatro estilos e movimento ocioso discreto;
 - editor do técnico mantém prévia fixa e aceita foto normalizada; Clubes usa País > Campeonato > Série > Clubes;
@@ -371,7 +380,7 @@ Na linha `0.1.1.x` foram tratados:
 - partida ao vivo modernizada com HUD/placar compacto fora da rolagem, narração contínua e notificações para todos os `MatchEventType`, substituições com avatares, cinco ajustes táticos acessíveis e `MatchPitchGame` enfileirando/representando trajetórias sem conhecer o Match Engine ou usar `Random`.
 - campo 2D horizontal em proporção 105:68 dentro do modo retrato; `MatchPitchGame` converte apenas a representação `x=1-y / y=x`, deixando coordenadas, timeline e regras do Match Engine intactas.
 - a partida 2D avançada agora inclui mergulho visual do goleiro, comemorações em grupo, pênalti com preparação específica, bola na trave como evento real do Match Engine, replay de trave/pênalti defendido, transições de intervalo/fim e estádio/torcida animados; Flame continua apenas encenando a timeline.
-- sistema de áudio modular em `app/audio` + `core/audio`, com cinco músicas originais de menu, efeitos de interface e partida, controles independentes, suporte a arquivos do aparelho e resolução de efeitos por `MatchEvent`; o Match Engine não conhece nem dispara áudio.
+- sistema de áudio modular em `app/audio` + `core/audio`, com 11 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface e partida, controles independentes, suporte a arquivos do aparelho e resolução de efeitos por `MatchEvent`; o Match Engine não conhece nem dispara áudio.
 - narração falada opcional por TTS do aparelho em `MatchNarrationService`, com volume próprio e frases derivadas apenas dos eventos relevantes; posse/passes não são falados e o Match Engine permanece sem dependência de áudio/TTS.
 - `GameSettings.sound` foi preservado como chave geral legada; as novas preferências ficam em `AudioSettings` com defaults compatíveis, sem exigir migração destrutiva do save.
 - preferência de validação em aparelho: acumular mudanças e testar APKs em blocos maiores, evitando solicitar instalação a cada microrelease; CI e validações locais continuam obrigatórios quando disponíveis.
@@ -418,10 +427,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.73
-versionCode:         75
-pubspec:             0.1.1+75
+versionCode:         76
+pubspec:             0.1.1+76
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.74` e usar um `versionCode` maior que 75.
+A próxima alteração/entrega normalmente deve virar `0.1.1.75` e usar um `versionCode` maior que 76.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

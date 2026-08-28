@@ -12,9 +12,9 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.73
-Android versionCode: 75
-pubspec: 0.1.1+75
+Release visível: 0.1.1.74
+Android versionCode: 76
+pubspec: 0.1.1+76
 
 Novidade desta base: corrige o único teste estrutural restante do GitHub Actions da 0.1.1.72, atualizando `editor_experience_test.dart` para validar o salvamento modularizado entre o arquivo principal, `club_editor_import_actions.dart` e `editor_feedback_dialog.dart`, sem alterar código funcional. Preserva `CareerState` schema 11, SQLite v2, IDs/saves e Match Engine.
 
@@ -59,7 +59,7 @@ A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
 
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.74 com versionCode > 75.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.75 com versionCode > 76.
 
 Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync
@@ -117,7 +117,7 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 - avanço diário com notícias, recuperação, propostas e alertas de contratos;
 - janelas de transferências;
 - narração e resumo com nomes completos dos clubes e tipos de eventos claros.
-- áudio modular com cinco músicas originais, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
+- áudio modular com 11 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
 - narração falada opcional por TTS do aparelho, com liga/desliga e volume próprios; apenas lances relevantes são falados e replay não repete a voz.
 - clubes padrão fictícios com IDs neutros permanentes `br-club-001` a `br-club-020`.
 - editor de nome, apelido e sigla na Central de Carreiras, por padrão global ou por save.

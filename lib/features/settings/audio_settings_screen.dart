@@ -12,6 +12,7 @@ import '../../core/audio/audio_file_store.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/settings/audio_settings.dart';
+import 'menu_music_player_card.dart';
 
 class AudioSettingsScreen extends ConsumerStatefulWidget {
   const AudioSettingsScreen({super.key});
@@ -86,7 +87,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
           _AudioCategoryCard(
             icon: Icons.music_note_rounded,
             title: 'MÚSICA DOS MENUS',
-            subtitle: 'Football em volume baixo, sem competir com a partida.',
+            subtitle: 'Playlist do Tática Manager com seleção manual e troca de faixa.',
             enabled: audio.musicEnabled,
             volume: audio.musicVolume,
             masterEnabled: _settings.sound,
@@ -97,6 +98,11 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
             onVolumeChanged: (value) => _changeAudio(
               audio.copyWith(musicVolume: value),
             ),
+          ),
+          const SizedBox(height: 10),
+          MenuMusicPlayerCard(
+            audioManager: ref.read(audioManagerProvider),
+            enabled: _settings.sound && audio.musicEnabled,
           ),
           const SizedBox(height: 10),
           _AudioCategoryCard(
@@ -188,7 +194,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Os sons e a música incluídos no Tática Manager são originais desta distribuição. Arquivos escolhidos por você ficam na área privada do aplicativo e substituem apenas o item configurado.',
+                    'O Tática Manager reproduz as faixas incluídas no pacote do jogo e também aceita arquivos escolhidos por você. Arquivos personalizados ficam na área privada do aplicativo e substituem apenas a playlist ou o evento configurado.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.muted,
                           height: 1.45,
@@ -222,7 +228,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
             const SizedBox(height: 6),
             Text(
               audio.customMenuTracks.isEmpty
-                  ? 'Use Football ou selecione faixas armazenadas no celular.'
+                  ? 'Use as músicas do Tática Manager ou selecione faixas armazenadas no celular.'
                   : '${audio.customMenuTracks.length} faixa(s) personalizada(s) importada(s).',
               style: const TextStyle(color: AppColors.muted, height: 1.4),
             ),
@@ -232,7 +238,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
                 contentPadding: EdgeInsets.zero,
                 value: audio.useCustomMenuMusic,
                 title: const Text('Usar minha playlist'),
-                subtitle: const Text('Desative para voltar às músicas originais sem apagar sua seleção.'),
+                subtitle: const Text('Desative para voltar às 11 músicas incluídas no jogo sem apagar sua seleção.'),
                 onChanged: (value) => _changeAudio(
                   audio.copyWith(useCustomMenuMusic: value),
                   immediate: true,

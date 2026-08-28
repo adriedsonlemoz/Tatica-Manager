@@ -31,7 +31,8 @@ lib/domain/settings/
 └── audio_settings.dart
 
 lib/features/settings/
-└── audio_settings_screen.dart
+├── audio_settings_screen.dart
+└── menu_music_player_card.dart
 ```
 
 ### AudioManager
@@ -99,21 +100,21 @@ Se um save contendo caminhos de áudio personalizados for movido para outro apar
 
 ## Assets incluídos e licença
 
-A base mantém as cinco músicas de menu introduzidas na 0.1.1.36. Na 0.1.1.44, os efeitos principais de partida e o som de navegação foram substituídos pelos arquivos fornecidos para esta etapa do projeto; cues sem substituto específico continuam usando os assets já existentes.
+A partir da 0.1.1.74, a playlist padrão contém somente as 11 faixas OGG entregues para o projeto. `football.mp3` e os antigos `menu_01.m4a` a `menu_05.m4a` foram removidos dos assets e do catálogo. Os arquivos OGG não possuem metadados embutidos; a interface exibe nomes legíveis derivados exclusivamente dos nomes dos próprios arquivos, sem inventar informações.
 
-Os assets podem ser regenerados por:
+Os efeitos de interface e partida continuam podendo ser regenerados por:
 
 ```bash
 python3 tool/generate_audio_assets.py
 ```
 
-A geração das cinco músicas M4A usa `ffmpeg` apenas como ferramenta de conversão; isso não é necessário para executar ou compilar o aplicativo porque os assets prontos já ficam versionados.
+Esse utilitário não gera mais músicas de menu, evitando que a playlist antiga volte ao projeto. As 11 faixas OGG são assets versionados e devem ser mantidos diretamente em `assets/audio/menu/`.
 
 ## Música de menu
 
 A música de fundo inicia **desativada por padrão** em novas configurações/saves sem preferência explícita. Quando o jogador a ativa, o player escolhe uma faixa inicial variável e mantém shuffle + loop da playlist. Ao entrar em uma partida, a música é pausada. Ao sair da partida, a mesma camada de áudio retoma a reprodução.
 
-Quando o usuário ativa uma playlist personalizada e existem arquivos válidos, ela substitui a lista padrão. Desativar a opção volta às cinco músicas originais sem apagar os arquivos importados.
+O player expõe a faixa atual, permite selecionar qualquer música da lista ativa e avançar manualmente para a próxima, mantendo shuffle e loop no mesmo `AudioManager`. Quando o usuário ativa uma playlist personalizada e existem arquivos válidos, ela substitui a lista padrão. Desativar a opção volta às 11 faixas OGG incluídas no jogo sem apagar os arquivos importados.
 
 ## Sons da interface
 
@@ -192,3 +193,10 @@ A política tátil também fica centralizada: `interfaceTap` não produz vibraç
 O `MatchScreen` guarda a referência do `AudioManager` enquanto ainda está montado e não usa `ref.read` durante `dispose`. Ao atingir o fim da partida, `finishMatchPresentation()` encerra o ambiente em loop e a narração; ao sair da tela, `exitMatch()` também para explicitamente o player de efeitos antes de retomar a música de menu. A saída é idempotente para evitar execução dupla entre conclusão e `dispose`.
 
 A mudança atua apenas na apresentação de áudio. A timeline, os eventos e o resultado continuam sendo produzidos pelo Match Engine sem dependência do player.
+
+
+## Playlist navegável e apresentação inicial — 0.1.1.74
+
+A playlist padrão passa a usar exclusivamente 11 faixas OGG otimizadas. `AudioManager` continua sendo o único player de música e passa a publicar `MenuPlaybackState`, permitindo que Configurações mostre a faixa atual, ofereça seleção manual e execute `Próxima música` sem criar um serviço paralelo. A playlist personalizada do aparelho continua compatível e usa nomes derivados dos arquivos locais.
+
+A apresentação da primeira entrada da carreira também foi reorganizada visualmente: o conteúdo editorial continua usando apenas técnico, avatar, clube, escudo, competição, temporada e data reais do save, mas o botão deixa de ficar isolado por um grande vazio vertical e a matéria fica melhor integrada à base azul-grafite. A flag que limita a apresentação à primeira entrada do save permanece inalterada.

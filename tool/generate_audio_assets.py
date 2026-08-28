@@ -1,4 +1,4 @@
-import math, random, wave, struct, subprocess, os, pathlib
+import math, random, wave, struct, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SR=22050
 
@@ -80,47 +80,6 @@ write_wav(ROOT/'assets/audio/match/penalty.wav', mix([(0,tone(.4,[165,220],[.28,
 write_wav(ROOT/'assets/audio/match/penalty_saved.wav', mix([(0,tone(.12,[115,230],[.48,.16],noise=.08,attack=.002,release=.1),.65),(.05,crowd(1.05,23,.55),.55)],1.08))
 write_wav(ROOT/'assets/audio/match/injury.wav', mix([(0,tone(.34,[260,390],[.26,.12],attack=.015,release=.22),.55),(.2,tone(.38,[220,330],[.24,.1],attack=.01,release=.25),.45)],.7))
 
-# 5 original menu loops: gentle pad/pluck patterns.
-chords = [
-    ([220.0, 277.18, 329.63], [246.94,311.13,369.99], [196.0,246.94,293.66], [220.0,277.18,329.63]),
-    ([196.0,246.94,293.66], [174.61,220.0,261.63], [220.0,261.63,329.63], [196.0,246.94,293.66]),
-    ([261.63,329.63,392.0], [220.0,277.18,329.63], [233.08,293.66,349.23], [196.0,246.94,293.66]),
-    ([174.61,220.0,261.63], [196.0,246.94,293.66], [146.83,196.0,246.94], [174.61,220.0,261.63]),
-    ([233.08,293.66,349.23], [261.63,329.63,392.0], [220.0,277.18,329.63], [233.08,293.66,349.23]),
-]
-for idx, prog in enumerate(chords,1):
-    duration=20.0; out=[0.0]*int(duration*SR); rng=random.Random(100+idx)
-    seg=duration/4
-    for ci,ch in enumerate(prog):
-        start=ci*seg
-        # pad with gentle tremolo
-        for i in range(int(seg*SR)):
-            t=i/SR; gt=start+t
-            edge=min(1,t/.7,(seg-t)/.8); edge=max(0,edge)
-            v=0
-            for j,f in enumerate(ch):
-                v += (0.085/(j+1)**.2)*math.sin(2*math.pi*f*t + j*.4)
-                v += 0.025*math.sin(2*math.pi*(f/2)*t + j)
-            v *= edge*(.9+.1*math.sin(2*math.pi*.18*gt+idx))
-            out[int(start*SR)+i]+=v
-        # sparse soft plucks
-        for beat in range(8):
-            pstart=start + beat*(seg/8) + (0.06 if beat%2 else 0)
-            f=ch[(beat+idx)%len(ch)]*2
-            plen=.55
-            for i in range(int(plen*SR)):
-                t=i/SR; j=int(pstart*SR)+i
-                if j>=len(out): break
-                e=math.exp(-5.2*t)
-                out[j]+=0.055*e*(math.sin(2*math.pi*f*t)+.32*math.sin(2*math.pi*f*2*t))
-    # tiny texture, fade ends for safer loop
-    for i in range(len(out)):
-        t=i/SR; out[i]+=rng.uniform(-1,1)*0.002
-        fade=min(1,t/.35,(duration-t)/.35); out[i]*=max(0,fade)
-    m=max(abs(x) for x in out); out=[x*(.58/m) for x in out]
-    wav=ROOT/f'/tmp/menu_{idx:02d}.wav'
-    write_wav(wav,out)
-    m4a=ROOT/f'assets/audio/menu/menu_{idx:02d}.m4a'
-    subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(wav),'-c:a','aac','-b:a','72k',str(m4a)],check=True)
-    wav.unlink()
-print('generated')
+# As músicas de menu são assets OGG fornecidos ao projeto e não são
+# regeneradas por este utilitário. O script mantém apenas UI e efeitos.
+print('generated ui/match audio')

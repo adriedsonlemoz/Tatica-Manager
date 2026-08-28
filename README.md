@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.73`
-**Android versionCode:** `75`
+**Release atual:** `0.1.1.74`
+**Android versionCode:** `76`
 
 ## Fonte oficial de versão
 
@@ -14,18 +14,18 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.73`);
+- `VERSION` — versão visível simples (`0.1.1.74`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+75`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.73` e `versionCode 75`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+76`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.74` e `versionCode 76`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.73` é representada internamente como `0.1.1+75`. A versão visível do aplicativo/Android continua sendo `0.1.1.73`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.74` é representada internamente como `0.1.1+76`. A versão visível do aplicativo/Android continua sendo `0.1.1.74`.
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.74`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.75`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -37,6 +37,8 @@ python3 tool/versioning.py verify
 O workflow usa a plataforma Android versionada, cache de Flutter/Pub/Gradle e executa `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --release`, além de conferir o `versionName`/`versionCode` do APK. Não recria `android/` e não executa `flutter clean` em runner novo. O `flutter pub get` resolve as dependências no workspace, mas o CI publica **somente o APK versionado** como Artifact. O `pubspec.lock` não é disponibilizado nos Artifacts.
 
 ## Etapa atual
+
+A `0.1.1.74` substitui integralmente a música de menu anterior pelas 11 faixas OGG fornecidas para o projeto, removendo `football.mp3` e os cinco loops M4A antigos. O mesmo `AudioManager` passa a expor faixa atual, seleção manual e próxima música, enquanto a playlist personalizada do aparelho continua compatível. A tela de Áudio ganha um componente separado para a playlist navegável. A apresentação exibida somente na primeira entrada da carreira também é reorganizada para aproximar o botão da matéria, eliminar o grande vazio vertical e integrar melhor o conteúdo ao azul-grafite, sem alterar a flag do onboarding, saves, `CareerState` schema 11, SQLite v2, IDs ou Match Engine.
 
 A `0.1.1.73` corrige o único teste restante do GitHub Actions da 0.1.1.72. O código funcional já estava correto: a confirmação de salvamento havia sido modularizada para `club_editor_import_actions.dart` e `editor_feedback_dialog.dart`, enquanto `editor_experience_test.dart` ainda procurava `_showSaveConfirmation` e o `AlertDialog` antigo somente em `club_editor_screen.dart`. O teste agora valida a composição atual (`_save` + `showEditorNotice` + `AlertDialog` central) sem reintroduzir código obsoleto. UI, `CareerState` schema 11, SQLite v2, IDs, saves e Match Engine permanecem inalterados.
 
