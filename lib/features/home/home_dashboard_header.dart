@@ -31,122 +31,102 @@ class HomeClubHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = AppColors.readableAccent(Color(club.colors.primaryHex));
+    final rawPrimary = Color(club.colors.primaryHex);
+    final rawSecondary = Color(club.colors.secondaryHex);
+    final accent = HSLColor.fromColor(rawSecondary).saturation >
+            HSLColor.fromColor(rawPrimary).saturation + .12
+        ? rawSecondary
+        : rawPrimary;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+      padding: const EdgeInsets.fromLTRB(10, 6, 10, 3),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(11, 10, 10, 10),
+        height: 70,
+        padding: const EdgeInsets.fromLTRB(9, 7, 8, 7),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color.lerp(AppColors.surfaceRaised, accent, .08)!,
+              Color.lerp(AppColors.surfaceRaised, accent, .11)!,
               AppColors.surface.withValues(alpha: .98),
               AppColors.background,
             ],
           ),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),
           boxShadow: const [
-            BoxShadow(
-              color: Color(0x44000000),
-              blurRadius: 22,
-              offset: Offset(0, 9),
-            ),
+            BoxShadow(color: Color(0x36000000), blurRadius: 16, offset: Offset(0, 6)),
           ],
         ),
-        child: Stack(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Positioned(
-              right: 58,
-              top: -34,
-              child: Container(
-                width: 150,
-                height: 130,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [accent.withValues(alpha: .11), Colors.transparent],
+            HomeClubCrest(club: club, size: 54, framed: true),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    club.name.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: .18,
+                      height: 1,
+                    ),
                   ),
-                ),
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                HomeClubCrest(club: club, size: 74, framed: true),
-                const SizedBox(width: 11),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                  const SizedBox(height: 4),
+                  Text(
+                    'Temporada $season • $competitionName',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 8.3,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
                     children: [
-                      Text(
-                        club.name.toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: .25,
-                          height: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 7),
-                      Text(
-                        'Temporada $season • $competitionName',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.muted,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month_rounded,
+                      const Icon(Icons.calendar_month_rounded, color: AppColors.green, size: 11),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          nextMatchLabel.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             color: AppColors.green,
-                            size: 14,
+                            fontSize: 7.8,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: .10,
                           ),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              nextMatchLabel.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: AppColors.green,
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: .15,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 7),
-                _HeaderIconButton(
-                  icon: Icons.mail_outline_rounded,
-                  showDot: unreadMessages > 0,
-                  badgeText: unreadMessages > 9
-                      ? '9+'
-                      : unreadMessages > 0
-                          ? '$unreadMessages'
-                          : null,
-                  onTap: onInboxTap,
-                ),
-                const SizedBox(width: 7),
-                _ManagerCard(manager: manager, onTap: onManagerTap),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(width: 5),
+            _HeaderIconButton(
+              icon: Icons.mail_outline_rounded,
+              showDot: unreadMessages > 0,
+              badgeText: unreadMessages > 9
+                  ? '9+'
+                  : unreadMessages > 0
+                      ? '$unreadMessages'
+                      : null,
+              onTap: onInboxTap,
+            ),
+            const SizedBox(width: 5),
+            _ManagerCard(manager: manager, onTap: onManagerTap),
           ],
         ),
       ),
@@ -183,7 +163,7 @@ class HomeFinanceGrid extends StatelessWidget {
               onTap: onTap,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 5),
           Expanded(
             child: _FinanceStatusCard(
               icon: Icons.swap_horiz_rounded,
@@ -193,7 +173,7 @@ class HomeFinanceGrid extends StatelessWidget {
               onTap: onTap,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 5),
           Expanded(
             child: _FinanceStatusCard(
               icon: Icons.trending_up_rounded,
@@ -203,7 +183,7 @@ class HomeFinanceGrid extends StatelessWidget {
               onTap: onTap,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 5),
           Expanded(
             child: _FinanceStatusCard(
               icon: Icons.trending_down_rounded,
@@ -226,10 +206,10 @@ class _ManagerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
-          width: 64,
-          padding: const EdgeInsets.fromLTRB(5, 5, 5, 4),
+          width: 49,
+          padding: const EdgeInsets.fromLTRB(4, 4, 4, 3),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -240,27 +220,21 @@ class _ManagerCard extends StatelessWidget {
                 AppColors.background,
               ],
             ),
-            borderRadius: BorderRadius.circular(17),
-            border: Border.all(
-              color: AppColors.green.withValues(alpha: .75),
-              width: 1.1,
-            ),
-            boxShadow: const [
-              BoxShadow(color: Color(0x33000000), blurRadius: 12, offset: Offset(0, 5)),
-            ],
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.green.withValues(alpha: .55), width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ManagerAvatar(manager: manager, size: 48),
-              const SizedBox(height: 3),
+              ManagerAvatar(manager: manager, size: 34),
+              const SizedBox(height: 2),
               const Text(
                 'TÉCNICO',
                 style: TextStyle(
                   color: AppColors.white,
-                  fontSize: 7.5,
+                  fontSize: 5.8,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: .25,
+                  letterSpacing: .16,
                 ),
               ),
             ],
@@ -285,40 +259,36 @@ class _HeaderIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(13),
+        borderRadius: BorderRadius.circular(11),
         child: Container(
-          width: 42,
-          height: 48,
+          width: 34,
+          height: 38,
           decoration: BoxDecoration(
             color: AppColors.background.withValues(alpha: .54),
-            borderRadius: BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(11),
             border: Border.all(color: AppColors.border.withValues(alpha: .75)),
           ),
           child: Stack(
             alignment: Alignment.center,
             clipBehavior: Clip.none,
             children: [
-              Icon(icon, size: 26, color: AppColors.white),
+              Icon(icon, size: 21, color: AppColors.white),
               if (showDot)
                 Positioned(
-                  top: -6,
-                  right: -5,
+                  top: -5,
+                  right: -4,
                   child: Container(
-                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: AppColors.green,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.background, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.background, width: 1.2),
                     ),
                     child: Text(
                       badgeText ?? '',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: const TextStyle(color: Colors.black, fontSize: 6.6, fontWeight: FontWeight.w900),
                     ),
                   ),
                 ),
@@ -346,23 +316,23 @@ class _FinanceStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(9, 9, 8, 7),
+          padding: const EdgeInsets.fromLTRB(7, 6, 7, 5),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                accent.withValues(alpha: .17),
-                AppColors.surfaceRaised.withValues(alpha: .97),
+                accent.withValues(alpha: .16),
+                AppColors.surfaceRaised.withValues(alpha: .96),
                 AppColors.background.withValues(alpha: .95),
               ],
             ),
-            borderRadius: BorderRadius.circular(17),
-            border: Border.all(color: accent.withValues(alpha: .30)),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: accent.withValues(alpha: .28)),
             boxShadow: const [
-              BoxShadow(color: Color(0x26000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(color: Color(0x22000000), blurRadius: 8, offset: Offset(0, 3)),
             ],
           ),
           child: Column(
@@ -370,17 +340,17 @@ class _FinanceStatusCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(icon, color: accent, size: 16),
-                  const SizedBox(width: 4),
+                  Icon(icon, color: accent, size: 12),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: Text(
                       label,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: accent,
-                        fontSize: 7,
-                        height: 1.05,
+                        fontSize: 5.8,
+                        height: 1,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -395,13 +365,13 @@ class _FinanceStatusCard extends StatelessWidget {
                   value,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 14,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: .15,
+                    letterSpacing: .1,
                   ),
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 1),
               HomeAccentLine(color: accent),
             ],
           ),

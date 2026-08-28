@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.82`
-**Android versionCode:** `84`
+**Release atual:** `0.1.1.85`
+**Android versionCode:** `87`
 
 ## Fonte oficial de versão
 
@@ -14,18 +14,28 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.82`);
+- `VERSION` — versão visível simples (`0.1.1.85`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+84`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.82` e `versionCode 84`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+87`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.85` e `versionCode 87`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.82` é representada internamente como `0.1.1+84`. A versão visível do aplicativo/Android continua sendo `0.1.1.82`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.85` é representada internamente como `0.1.1+87`. A versão visível do aplicativo/Android continua sendo `0.1.1.85`.
+
+## Home compacta — 0.1.1.85
+
+- reduz significativamente altura do cabeçalho, finanças, próxima partida, preparação, confiança, panorama e atalhos;
+- move o comando Avançar para o cabeçalho da Próxima Partida, eliminando a faixa verde isolada que ocupava uma linha inteira;
+- Confiança da Diretoria passa a exibir porcentagem primeiro e estádio depois, sem foto do estádio;
+- Notícias, classificação e artilheiros passam a compartilhar a mesma linha em larguras de telefone compatíveis, com fallback responsivo para telas mais estreitas;
+- o quadro do escudo no cabeçalho usa as cores reais disponíveis do clube em vez de forçar borda verde;
+- reduz padding inferior da Home porque a navegação do `GameShell` já fica fora da área útil do conteúdo;
+- preserva `CareerState` schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine.
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.83`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.86`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -36,6 +46,25 @@ python3 tool/versioning.py verify
 
 O workflow usa a plataforma Android versionada, cache de Flutter/Pub/Gradle e executa `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --release`, além de conferir o `versionName`/`versionCode` do APK. Não recria `android/` e não executa `flutter clean` em runner novo. O `flutter pub get` resolve as dependências no workspace, mas o CI publica **somente o APK versionado** como Artifact. O `pubspec.lock` não é disponibilizado nos Artifacts.
 
+
+## Fluxo de substituições em lote — 0.1.1.84
+
+- a janela de substituições não fecha mais ao preparar a primeira troca;
+- permite adicionar várias trocas, revisar a lista e remover uma preparação antes de confirmar;
+- apenas `Confirmar trocas` altera a partida, e cancelar a janela descarta todo o lote;
+- o `LiveMatchController` valida o lote inteiro antes de aplicar, evitando estado parcial;
+- várias trocas confirmadas juntas usam uma única janela, respeitando cinco substituições, três janelas e a exceção do intervalo;
+- preserva Match Engine, Flame apenas visual, `CareerState` schema 13, saves, IDs e fundação multi-competição.
+
+## Regra de substituições — 0.1.1.83
+
+- mantém o limite de cinco jogadores substituídos por partida e adiciona o limite de três janelas durante o tempo regulamentar;
+- várias trocas feitas no mesmo minuto contam como uma única janela;
+- substituições feitas no intervalo continuam contando no total de cinco, mas não gastam uma janela;
+- a regra passa a ser centralizada em `LiveSubstitutionRules` e usada pelo `LiveMatchController` e pela tela, evitando depender apenas de bloqueio visual;
+- o sheet mostra jogadores usados e janelas consumidas;
+- testes funcionais cobrem quinta/sexta troca, repetição no mesmo minuto, quarta janela e exceção do intervalo;
+- não altera `CareerState` schema 13, saves, IDs, calendário multi-competição ou o Match Engine de simulação.
 
 ## Correção de teste — 0.1.1.82
 

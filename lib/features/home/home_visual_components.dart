@@ -25,7 +25,16 @@ class HomeClubCrest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = AppColors.readableAccent(Color(club.colors.primaryHex));
+    final primary = Color(club.colors.primaryHex);
+    final secondary = Color(club.colors.secondaryHex);
+    final primaryHsl = HSLColor.fromColor(primary);
+    final secondaryHsl = HSLColor.fromColor(secondary);
+    final rawAccent = secondaryHsl.saturation > primaryHsl.saturation + .12
+        ? secondary
+        : primary;
+    final accent = rawAccent.computeLuminance() < .035
+        ? Color.lerp(rawAccent, AppColors.white, .24)!
+        : rawAccent;
     final customIcon = _customIcon();
     final crest = customIcon ?? ClubBadge(club: club, size: size * .82);
 
@@ -46,18 +55,18 @@ class HomeClubCrest extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            accent.withValues(alpha: .18),
-            AppColors.surfaceRaised.withValues(alpha: .92),
-            AppColors.background.withValues(alpha: .98),
+            accent.withValues(alpha: .56),
+            Color.lerp(AppColors.surfaceRaised, accent, .22)!,
+            AppColors.background.withValues(alpha: .97),
           ],
         ),
         borderRadius: BorderRadius.circular(size * .24),
-        border: Border.all(color: AppColors.green.withValues(alpha: .78), width: 1.2),
+        border: Border.all(color: accent.withValues(alpha: .78), width: 1.15),
         boxShadow: [
           BoxShadow(
-            color: accent.withValues(alpha: .13),
-            blurRadius: 18,
-            spreadRadius: 1,
+            color: accent.withValues(alpha: .20),
+            blurRadius: 14,
+            spreadRadius: .5,
           ),
         ],
       ),

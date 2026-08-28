@@ -62,7 +62,9 @@ void main() {
     expect(home, contains('monthIncome'));
     expect(home, contains('monthExpenses'));
     expect(home, contains('HomeMainOverview'));
-    expect(home, contains('HomeAdvanceStrip'));
+    expect(home, isNot(contains('HomeAdvanceStrip')));
+    expect(dashboard, contains('_CompactAdvanceButton'));
+    expect(dashboard, contains('required this.onAdvance'));
     expect(home, contains('HomeNewsHighlights'));
     expect(home, contains('HomeLeagueAndScorers'));
     expect(rankings, contains('HomeCompactStandings'));
@@ -75,9 +77,10 @@ void main() {
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
     expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
-    expect(dashboard, contains('height: 142'));
+    expect(dashboard, contains('height: 92'));
     expect(board, contains('ESTÁDIO'));
-    expect(board, contains('HomeVisualAssets.stadiumAerial'));
+    expect(board, isNot(contains('HomeVisualAssets.stadiumAerial')));
+    expect(board, isNot(contains('HomeImageShade')));
     expect(dashboard, contains('HomeVisualAssets.matchStadium'));
     expect(controls, contains('PANORAMA DA TEMPORADA'));
     expect(controls, contains('_SeasonTrendPainter'));
@@ -89,6 +92,9 @@ void main() {
     expect(File('assets/images/home/stadium_aerial.webp').existsSync(), isTrue);
     expect(dashboard, isNot(contains('ÚLTIMAS 5 PARTIDAS')));
     expect(rankings, contains('compactColumns: dense && canSplit'));
+    expect(rankings, contains('compactSingleRow'));
+    expect(overview, contains('ultraCompact'));
+    expect(home, contains('final sameRow = constraints.maxWidth >= 315'));
     expect(home, contains('NewsHighlightsScreen'));
     expect(home, isNot(contains('onNotificationsTap')));
     expect(home, contains('final totalRounds = career.fixtures.fold<int>'));

@@ -17,6 +17,7 @@ import '../../game/finance/finance_engine.dart';
 import '../../game/league/live_round_simulator.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../../game/match/engine/match_engine.dart';
+import '../../game/match/live_substitution_rules.dart';
 import '../../game/match/match_career_impact_engine.dart';
 import '../../game/season/inbox_engine.dart';
 import 'game_controller.dart';
@@ -69,7 +70,8 @@ class LiveMatchSession {
 }
 
 class LiveMatchController extends Notifier<LiveMatchSession?> {
-  static const int maxSubstitutions = 5;
+  static const int maxSubstitutions = LiveSubstitutionRules.maxSubstitutions;
+  static const int maxSubstitutionWindows = LiveSubstitutionRules.maxWindows;
 
   @override
   LiveMatchSession? build() => null;
@@ -177,35 +179,44 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
   }
 
   void substitute(String outgoingId, String incomingId, int minute) {
+    substituteMany(
+      [
+        LiveSubstitutionChange(
+          outgoingId: outgoingId,
+          incomingId: incomingId,
+        ),
+      ],
+      minute,
+    );
+  }
+
+  bool substituteMany(
+    List<LiveSubstitutionChange> changes,
+    int minute,
+  ) {
     final career = _career;
     final live = state;
-    if (career == null || live == null) return;
-    if (!live.userStarterIds.contains(outgoingId)) return;
-    if (outgoingId == incomingId || live.userStarterIds.contains(incomingId)) return;
+    if (career == null || live == null || changes.isEmpty) return false;
 
-    final previousSubstitutions = live.result.events
-        .where(
-          (event) =>
-              event.type == MatchEventType.substitution &&
-              event.teamId == career.userClubId,
-        )
-        .toList(growable: false);
-    final substitutionsUsed = previousSubstitutions.length;
-    if (substitutionsUsed >= maxSubstitutions) {
-      _game.showMessage(
-        'Limite de $maxSubstitutions substituições atingido nesta partida.',
-      );
-      return;
+    final previousSubstitutions = LiveSubstitutionRules.substitutionsForTeam(
+      live.result.events,
+      career.userClubId,
+    );
+    final violation = LiveSubstitutionRules.violationMessage(
+      events: live.result.events,
+      teamId: career.userClubId,
+      minute: minute,
+      requestedSubstitutions: changes.length,
+    );
+    if (violation != null) {
+      _game.showMessage(violation);
+      return false;
     }
+
     final alreadySubstitutedOut = previousSubstitutions
         .map((event) => event.secondaryPlayerId)
         .whereType<String>()
         .toSet();
-    if (alreadySubstitutedOut.contains(incomingId)) {
-      _game.showMessage('Jogador substituído não pode retornar à partida.');
-      return;
-    }
-
     final dismissedPlayerIds = live.result.events
         .where(
           (event) =>
@@ -216,17 +227,57 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
         .map((event) => event.playerId)
         .whereType<String>()
         .toSet();
-    if (dismissedPlayerIds.contains(outgoingId)) {
-      _game.showMessage('Jogador expulso não pode ser substituído.');
-      return;
-    }
-    if (dismissedPlayerIds.contains(incomingId)) return;
+    final squadById = {
+      for (final player in career.userClub.squad) player.id: player,
+    };
+    final originalStarters = live.userStarterIds.toSet();
+    var nextIds = [...live.userStarterIds];
+    final plannedOutgoing = <String>{};
+    final plannedIncoming = <String>{};
 
-    final nextIds = LineupEngine.replaceStarter(
-      live.userStarterIds,
-      outgoingId,
-      incomingId,
-    );
+    for (final change in changes) {
+      final outgoingId = change.outgoingId;
+      final incomingId = change.incomingId;
+      if (!originalStarters.contains(outgoingId) ||
+          !nextIds.contains(outgoingId)) {
+        _game.showMessage('Jogador escolhido para sair não está mais em campo.');
+        return false;
+      }
+      if (!plannedOutgoing.add(outgoingId)) {
+        _game.showMessage('O mesmo jogador não pode sair duas vezes na mesma janela.');
+        return false;
+      }
+      if (outgoingId == incomingId || nextIds.contains(incomingId)) {
+        _game.showMessage('Escolha um reserva que ainda não esteja em campo.');
+        return false;
+      }
+      if (!plannedIncoming.add(incomingId)) {
+        _game.showMessage('O mesmo reserva não pode entrar duas vezes na mesma janela.');
+        return false;
+      }
+      if (alreadySubstitutedOut.contains(incomingId)) {
+        _game.showMessage('Jogador substituído não pode retornar à partida.');
+        return false;
+      }
+      if (dismissedPlayerIds.contains(outgoingId)) {
+        _game.showMessage('Jogador expulso não pode ser substituído.');
+        return false;
+      }
+      if (dismissedPlayerIds.contains(incomingId)) {
+        _game.showMessage('Jogador expulso não pode entrar na partida.');
+        return false;
+      }
+      if (!squadById.containsKey(incomingId)) {
+        _game.showMessage('Reserva selecionado não pertence ao elenco da partida.');
+        return false;
+      }
+      nextIds = LineupEngine.replaceStarter(
+        nextIds,
+        outgoingId,
+        incomingId,
+      );
+    }
+
     final validation = LineupEngine.validate(
       career.userClub.squad,
       nextIds,
@@ -237,7 +288,7 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     );
     if (!validation.valid) {
       _game.showMessage(validation.message);
-      return;
+      return false;
     }
 
     final prefix = live.result.events
@@ -247,30 +298,34 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
               event.type != MatchEventType.fulltime,
         )
         .toList();
-    final incoming = career.userClub.squad.firstWhere(
-      (player) => player.id == incomingId,
-    );
-    final outgoing = career.userClub.squad.firstWhere(
-      (player) => player.id == outgoingId,
-    );
-    final subEvent = MatchEvent(
-      minute: minute,
-      sequence: prefix.isEmpty
-          ? 0
-          : prefix.map((event) => event.sequence).reduce(max) + 1,
-      type: MatchEventType.substitution,
-      teamId: career.userClubId,
-      playerId: incomingId,
-      secondaryPlayerId: outgoingId,
-      text:
-          'Substituição em ${career.userClub.name}: entra ${incoming.displayName}, sai ${outgoing.displayName}.',
-    );
+    var nextSequence = prefix.isEmpty
+        ? 0
+        : prefix.map((event) => event.sequence).reduce(max) + 1;
+    final substitutionEvents = <MatchEvent>[];
+    for (final change in changes) {
+      final incoming = squadById[change.incomingId]!;
+      final outgoing = squadById[change.outgoingId]!;
+      substitutionEvents.add(
+        MatchEvent(
+          minute: minute,
+          sequence: nextSequence++,
+          type: MatchEventType.substitution,
+          teamId: career.userClubId,
+          playerId: incoming.id,
+          secondaryPlayerId: outgoing.id,
+          text:
+              'Substituição em ${career.userClub.name}: entra ${incoming.displayName}, sai ${outgoing.displayName}.',
+        ),
+      );
+    }
+
     state = _resimulateFromMinute(
       career,
       live.copyWith(userStarterIds: nextIds),
       minute,
-      extraPrefix: [subEvent],
+      extraPrefix: substitutionEvents,
     );
+    return true;
   }
 
   LiveMatchSession _resimulateFromMinute(

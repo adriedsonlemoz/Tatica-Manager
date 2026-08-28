@@ -20,6 +20,8 @@ class HomeMainOverview extends StatelessWidget {
     required this.currentRound,
     required this.isMatchDay,
     required this.daysUntilMatch,
+    required this.onAdvance,
+    required this.onMatchDay,
     this.onMatchTap,
     this.onStadiumTap,
     this.onSeasonTap,
@@ -35,6 +37,8 @@ class HomeMainOverview extends StatelessWidget {
   final int currentRound;
   final bool isMatchDay;
   final int daysUntilMatch;
+  final VoidCallback onAdvance;
+  final VoidCallback onMatchDay;
   final VoidCallback? onMatchTap;
   final VoidCallback? onStadiumTap;
   final VoidCallback? onSeasonTap;
@@ -50,11 +54,13 @@ class HomeMainOverview extends StatelessWidget {
             isMatchDay: isMatchDay,
             daysUntilMatch: daysUntilMatch,
             onTap: onMatchTap,
+            onAdvance: onAdvance,
+            onMatchDay: onMatchDay,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           LayoutBuilder(
             builder: (context, constraints) {
-              final canSplit = constraints.maxWidth >= 335;
+              final canSplit = constraints.maxWidth >= 310;
               if (!canSplit) {
                 return Column(
                   children: [
@@ -63,42 +69,40 @@ class HomeMainOverview extends StatelessWidget {
                       club: club,
                       onStadiumTap: onStadiumTap,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     HomeSeasonCard(
                       position: position,
                       currentRound: currentRound,
                       totalRounds: totalRounds,
                       onTap: onSeasonTap,
-                      height: 112,
+                      height: 88,
                     ),
                   ],
                 );
               }
-              return IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      flex: 15,
-                      child: HomeBoardConfidenceCard(
-                        confidence: boardConfidence,
-                        club: club,
-                        onStadiumTap: onStadiumTap,
-                      ),
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 15,
+                    child: HomeBoardConfidenceCard(
+                      confidence: boardConfidence,
+                      club: club,
+                      onStadiumTap: onStadiumTap,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      flex: 13,
-                      child: HomeSeasonCard(
-                        position: position,
-                        currentRound: currentRound,
-                        totalRounds: totalRounds,
-                        onTap: onSeasonTap,
-                        height: 142,
-                      ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    flex: 13,
+                    child: HomeSeasonCard(
+                      position: position,
+                      currentRound: currentRound,
+                      totalRounds: totalRounds,
+                      onTap: onSeasonTap,
+                      height: 92,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           ),
@@ -115,6 +119,8 @@ class HomeNextMatchCard extends StatelessWidget {
     required this.competitionName,
     required this.isMatchDay,
     required this.daysUntilMatch,
+    required this.onAdvance,
+    required this.onMatchDay,
     this.onTap,
   });
 
@@ -124,6 +130,8 @@ class HomeNextMatchCard extends StatelessWidget {
   final String competitionName;
   final bool isMatchDay;
   final int daysUntilMatch;
+  final VoidCallback onAdvance;
+  final VoidCallback onMatchDay;
   final VoidCallback? onTap;
 
   @override
@@ -132,27 +140,17 @@ class HomeNextMatchCard extends StatelessWidget {
     final nextFixture = fixture;
     if (nextFixture == null || opponentClub == null) {
       return _HomeDashboardCard(
-        child: SizedBox(
-          height: 180,
+        child: const SizedBox(
+          height: 106,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.emoji_events_outlined,
-                  color: AppColors.green,
-                  size: 36,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'TEMPORADA CONCLUÍDA',
-                  style: TextStyle(fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Não há próxima partida agendada.',
-                  style: TextStyle(color: AppColors.muted, fontSize: 10),
-                ),
+                Icon(Icons.emoji_events_outlined, color: AppColors.green, size: 28),
+                SizedBox(height: 5),
+                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontWeight: FontWeight.w900)),
+                SizedBox(height: 2),
+                Text('Não há próxima partida agendada.', style: TextStyle(color: AppColors.muted, fontSize: 8)),
               ],
             ),
           ),
@@ -170,49 +168,53 @@ class HomeNextMatchCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(13, 10, 13, 8),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'PRÓXIMA PARTIDA',
-                        style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: .2,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_rounded, size: 12, color: AppColors.textSecondary),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
+              SizedBox(
+                height: 30,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 4, 6, 4),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'PRÓXIMA PARTIDA',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 9.6,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: .15,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const Icon(Icons.calendar_today_rounded, size: 9, color: AppColors.textSecondary),
+                      const SizedBox(width: 3),
+                      Text(
+                        '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 7.2,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      _CompactAdvanceButton(
+                        isMatchDay: isMatchDay,
+                        onTap: isMatchDay ? onMatchDay : onAdvance,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
-                height: 126,
+                height: 82,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     const HomeImageShade(
                       asset: HomeVisualAssets.matchStadium,
-                      overlayStrength: .22,
+                      overlayStrength: .25,
                     ),
                     DecoratedBox(
                       decoration: BoxDecoration(
@@ -220,36 +222,27 @@ class HomeNextMatchCard extends StatelessWidget {
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                           colors: [
-                            Color(homeClub.colors.primaryHex).withValues(alpha: .26),
+                            Color(homeClub.colors.primaryHex).withValues(alpha: .24),
                             Colors.transparent,
-                            Color(awayClub.colors.primaryHex).withValues(alpha: .26),
+                            Color(awayClub.colors.primaryHex).withValues(alpha: .24),
                           ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.symmetric(
-                          horizontal: BorderSide(
-                            color: AppColors.border.withValues(alpha: .62),
-                          ),
                         ),
                       ),
                     ),
                     Row(
                       children: [
-                        Expanded(child: _MatchClub(club: homeClub, showFullName: true)),
+                        Expanded(child: _MatchClub(club: homeClub)),
                         const _VersusBadge(),
-                        Expanded(child: _MatchClub(club: awayClub, showFullName: true)),
+                        Expanded(child: _MatchClub(club: awayClub)),
                       ],
                     ),
                   ],
                 ),
               ),
               SizedBox(
-                height: 56,
+                height: 38,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       Expanded(
@@ -272,7 +265,7 @@ class HomeNextMatchCard extends StatelessWidget {
                         child: _MatchInfo(
                           icon: Icons.emoji_events_outlined,
                           value: competitionName,
-                          caption: 'Rodada ${nextFixture.round}',
+                          caption: 'R${nextFixture.round}',
                         ),
                       ),
                     ],
@@ -280,71 +273,43 @@ class HomeNextMatchCard extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 48,
-                margin: const EdgeInsets.fromLTRB(9, 0, 9, 9),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                height: 32,
+                margin: const EdgeInsets.fromLTRB(7, 0, 7, 7),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF5A1DBF).withValues(alpha: .78),
-                      const Color(0xFF361275).withValues(alpha: .90),
+                      const Color(0xFF5A1DBF).withValues(alpha: .72),
+                      const Color(0xFF361275).withValues(alpha: .86),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF9754FF).withValues(alpha: .34)),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFF9754FF).withValues(alpha: .28)),
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      width: 31,
-                      height: 31,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: .08),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        isMatchDay
-                            ? Icons.sports_soccer_rounded
-                            : Icons.rule_folder_rounded,
-                        color: const Color(0xFFFFD85B),
-                        size: 19,
-                      ),
+                    Icon(
+                      isMatchDay ? Icons.sports_soccer_rounded : Icons.rule_folder_rounded,
+                      color: const Color(0xFFFFD85B),
+                      size: 14,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isMatchDay ? 'DIA DE JOGO' : 'PREPARAÇÃO EM ANDAMENTO',
-                            style: const TextStyle(
-                              color: Color(0xFFFFD85B),
-                              fontSize: 8.8,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const SizedBox(height: 1),
-                          Text(
-                            _preparationText(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.white,
-                              fontSize: 8.2,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        isMatchDay
+                            ? 'DIA DE JOGO • Preparação concluída'
+                            : 'PREPARAÇÃO • ${_preparationText()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 7.1,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     if (onTap != null)
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        color: AppColors.white,
-                        size: 22,
-                      ),
+                      const Icon(Icons.chevron_right_rounded, color: AppColors.white, size: 17),
                   ],
                 ),
               ),
@@ -356,16 +321,62 @@ class HomeNextMatchCard extends StatelessWidget {
   }
 
   String _preparationText() {
-    if (isMatchDay) return 'A preparação está pronta para a partida.';
-    if (daysUntilMatch <= 1) return 'Últimos ajustes antes da partida.';
+    if (isMatchDay) return 'A preparação está pronta.';
+    if (daysUntilMatch <= 1) return 'Últimos ajustes para o jogo.';
     return 'Faltam $daysUntilMatch dias para o jogo.';
   }
+}
+
+class _CompactAdvanceButton extends StatelessWidget {
+  const _CompactAdvanceButton({required this.isMatchDay, required this.onTap});
+
+  final bool isMatchDay;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          child: Ink(
+            height: 22,
+            padding: const EdgeInsets.symmetric(horizontal: 7),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFB8FB21), Color(0xFF7BD20F)],
+              ),
+              borderRadius: BorderRadius.circular(9),
+              border: Border.all(color: const Color(0xFFA9FF3C).withValues(alpha: .45)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isMatchDay ? Icons.sports_soccer_rounded : Icons.play_arrow_rounded,
+                  size: 12,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  isMatchDay ? 'JOGAR' : 'AVANÇAR',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 6.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 class _HomeDashboardCard extends StatelessWidget {
   const _HomeDashboardCard({
     required this.child,
-    this.padding = const EdgeInsets.all(12),
+    this.padding = const EdgeInsets.all(10),
   });
 
   final Widget child;
@@ -380,10 +391,10 @@ class _HomeDashboardCard extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [Color(0xFF12202A), Color(0xFF162229), Color(0xFF111A20)],
           ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.border.withValues(alpha: .88)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border.withValues(alpha: .82)),
           boxShadow: const [
-            BoxShadow(color: Color(0x30000000), blurRadius: 14, offset: Offset(0, 6)),
+            BoxShadow(color: Color(0x26000000), blurRadius: 10, offset: Offset(0, 4)),
           ],
         ),
         child: child,
@@ -391,33 +402,32 @@ class _HomeDashboardCard extends StatelessWidget {
 }
 
 class _MatchClub extends StatelessWidget {
-  const _MatchClub({required this.club, this.showFullName = false});
+  const _MatchClub({required this.club});
 
   final Club club;
-  final bool showFullName;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HomeClubCrest(club: club, size: 72),
-            const SizedBox(height: 4),
-            Text(
-              showFullName ? club.name.toUpperCase() : club.shortName.toUpperCase(),
+  Widget build(BuildContext context) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          HomeClubCrest(club: club, size: 49),
+          const SizedBox(height: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              club.shortName.toUpperCase(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.white,
-                fontSize: 10,
+                fontSize: 7.8,
                 fontWeight: FontWeight.w900,
-                shadows: [Shadow(color: Colors.black, blurRadius: 5)],
+                shadows: [Shadow(color: Colors.black, blurRadius: 4)],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
 }
 
@@ -426,29 +436,22 @@ class _VersusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 64,
-        height: 64,
+        width: 42,
+        height: 42,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.black.withValues(alpha: .16),
-          border: Border.all(color: AppColors.green.withValues(alpha: .34), width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.green.withValues(alpha: .08),
-              blurRadius: 16,
-              spreadRadius: 1,
-            ),
-          ],
+          color: Colors.black.withValues(alpha: .17),
+          border: Border.all(color: AppColors.green.withValues(alpha: .28), width: 1),
         ),
         child: const Text(
           'VS',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: 24,
+            fontSize: 16,
             height: 1,
             fontWeight: FontWeight.w900,
-            shadows: [Shadow(color: Colors.black, blurRadius: 6)],
+            shadows: [Shadow(color: Colors.black, blurRadius: 5)],
           ),
         ),
       );
@@ -468,8 +471,8 @@ class _MatchInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Icon(icon, color: AppColors.textSecondary, size: 16),
-          const SizedBox(width: 6),
+          Icon(icon, color: AppColors.textSecondary, size: 11),
+          const SizedBox(width: 4),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -481,20 +484,18 @@ class _MatchInfo extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 7.5,
+                    fontSize: 5.5,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 1),
                 Text(
                   value,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 8.8,
+                    fontSize: 6.7,
                     fontWeight: FontWeight.w800,
-                    height: 1.15,
                   ),
                 ),
               ],
@@ -510,8 +511,8 @@ class _MiniDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         width: 1,
-        height: 26,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        color: AppColors.border.withValues(alpha: .75),
+        height: 20,
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        color: AppColors.border.withValues(alpha: .68),
       );
 }

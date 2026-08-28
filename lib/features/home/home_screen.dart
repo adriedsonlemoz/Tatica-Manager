@@ -127,11 +127,11 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(10, 7, 10, 110),
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 12),
               sliver: SliverList.list(
                 children: [
                   SizedBox(
-                    height: 86,
+                    height: 58,
                     child: HomeFinanceGrid(
                       balance: club.money,
                       transferBudget: club.transferBudget,
@@ -154,6 +154,16 @@ class HomeScreen extends ConsumerWidget {
                     currentRound: career.currentRound,
                     isMatchDay: career.isMatchDay,
                     daysUntilMatch: daysUntilMatch ?? 0,
+                    onAdvance: () => _advanceDayWithTransition(
+                      context,
+                      ref,
+                      career.currentDate,
+                    ),
+                    onMatchDay: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const MatchDayPresentationScreen(),
+                      ),
+                    ),
                     onStadiumTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const StadiumScreen()),
                     ),
@@ -178,35 +188,22 @@ class HomeScreen extends ConsumerWidget {
                             );
                           },
                   ),
-                  const SizedBox(height: 8),
-                  if (fixture != null)
-                    HomeAdvanceStrip(
-                      isMatchDay: career.isMatchDay,
-                      onAdvance: () => _advanceDayWithTransition(
-                        context,
-                        ref,
-                        career.currentDate,
-                      ),
-                      onMatchDay: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const MatchDayPresentationScreen(),
-                        ),
-                      ),
-                    )
-                  else
+                  if (fixture == null) ...[
+                    const SizedBox(height: 6),
                     SectionCard(
+                      padding: const EdgeInsets.all(10),
                       borderColor: AppColors.green.withValues(alpha: .45),
                       child: Row(
                         children: [
-                          const Icon(Icons.emoji_events_rounded, color: AppColors.green, size: 32),
-                          const SizedBox(width: 10),
+                          const Icon(Icons.emoji_events_rounded, color: AppColors.green, size: 24),
+                          const SizedBox(width: 8),
                           const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontWeight: FontWeight.w900)),
-                                SizedBox(height: 2),
-                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
+                                SizedBox(height: 1),
+                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 7)),
                               ],
                             ),
                           ),
@@ -217,77 +214,77 @@ class HomeScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFF10222D), Color(0xFF0F1A22), Color(0xFF0D171C)],
-                      ),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: AppColors.border.withValues(alpha: .88)),
-                      boxShadow: const [
-                        BoxShadow(color: Color(0x22000000), blurRadius: 16, offset: Offset(0, 6)),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        HomeQuickAccess(
-                          items: [
-                            HomeQuickAccessItem(
-                              icon: Icons.sports_soccer_rounded,
-                              label: 'Táticas',
-                              accent: const Color(0xFF7B35E8),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const TacticsScreen()),
-                              ),
-                            ),
-                            HomeQuickAccessItem(
-                              icon: Icons.calendar_month_rounded,
-                              label: 'Calendário',
-                              accent: const Color(0xFFE28A1B),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const CalendarScreen()),
-                              ),
-                            ),
-                            HomeQuickAccessItem(
-                              icon: Icons.account_balance_wallet_rounded,
-                              label: 'Finanças',
-                              accent: const Color(0xFF1ABEA1),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const FinancesScreen()),
-                              ),
-                            ),
-                            HomeQuickAccessItem(
-                              icon: Icons.school_rounded,
-                              label: 'Base',
-                              accent: const Color(0xFF2F8BFF),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const YouthAcademyScreen()),
-                              ),
-                            ),
-                            HomeQuickAccessItem(
-                              icon: Icons.medical_services_rounded,
-                              label: 'Departamento\nMédico',
-                              accent: const Color(0xFFE24F87),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
-                              ),
-                            ),
-                          ],
+                  ],
+                  const SizedBox(height: 6),
+
+                  HomeQuickAccess(
+                    items: [
+                      HomeQuickAccessItem(
+                        icon: Icons.sports_soccer_rounded,
+                        label: 'Táticas',
+                        accent: const Color(0xFF7B35E8),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const TacticsScreen()),
                         ),
-                        const SizedBox(height: 10),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final wide = constraints.maxWidth >= 700;
-                            final newsCard = HomeNewsHighlights(
-                              events: recentNews,
-                              playerForEvent: (playerId) => _playerForEvent(career, playerId),
-                              playerAccent: (player) => _playerAccent(career, player),
-                              onEventTap: (event) => _openCareerEvent(
-                                context,
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.calendar_month_rounded,
+                        label: 'Calendário',
+                        accent: const Color(0xFFE28A1B),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.account_balance_wallet_rounded,
+                        label: 'Finanças',
+                        accent: const Color(0xFF1ABEA1),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const FinancesScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.school_rounded,
+                        label: 'Base',
+                        accent: const Color(0xFF2F8BFF),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const YouthAcademyScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.medical_services_rounded,
+                        label: 'Departamento\nMédico',
+                        accent: const Color(0xFFE24F87),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final sameRow = constraints.maxWidth >= 315;
+                      final newsCard = HomeNewsHighlights(
+                        events: recentNews,
+                        playerForEvent: (playerId) => _playerForEvent(career, playerId),
+                        playerAccent: (player) => _playerAccent(career, player),
+                        onEventTap: (event) => _openCareerEvent(
+                          context,
+                          ref,
+                          career,
+                          event,
+                          transferActionable: CpuUserOfferEngine.isOfferActive(
+                            state: career,
+                            event: event,
+                          ),
+                        ),
+                        onViewAll: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => NewsHighlightsScreen(
+                              events: career.news.reversed.toList(growable: false),
+                              onEventTap: (newsContext, event) => _openCareerEvent(
+                                newsContext,
                                 ref,
                                 career,
                                 event,
@@ -296,69 +293,54 @@ class HomeScreen extends ConsumerWidget {
                                   event: event,
                                 ),
                               ),
-                              onViewAll: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => NewsHighlightsScreen(
-                                    events: career.news.reversed.toList(growable: false),
-                                    onEventTap: (newsContext, event) => _openCareerEvent(
-                                      newsContext,
-                                      ref,
-                                      career,
-                                      event,
-                                      transferActionable: CpuUserOfferEngine.isOfferActive(
-                                        state: career,
-                                        event: event,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                            final rankings = HomeLeagueAndScorers(
-                              standings: career.standings,
-                              clubs: career.clubs,
-                              userClubId: career.userClubId,
-                              scorers: topScorers,
-                              competitionName: primarySeries.name,
-                              onClubTap: (clubId) => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
-                              ),
-                              onPlayerTap: (entry) => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PlayerProfileScreen(
-                                    playerId: entry.player.id,
-                                    clubId: entry.club.id,
-                                  ),
-                                ),
-                              ),
-                              onStandingsTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                              ),
-                              onScorersTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-                              ),
-                            );
-                            if (!wide) {
-                              return Column(
-                                children: [
-                                  newsCard,
-                                  const SizedBox(height: 8),
-                                  rankings,
-                                ],
-                              );
-                            }
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(flex: 13, child: newsCard),
-                                const SizedBox(width: 8),
-                                Expanded(flex: 15, child: rankings),
-                              ],
-                            );
-                          },
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
+                        compact: sameRow,
+                      );
+                      final rankings = HomeLeagueAndScorers(
+                        standings: career.standings,
+                        clubs: career.clubs,
+                        userClubId: career.userClubId,
+                        scorers: topScorers,
+                        competitionName: primarySeries.name,
+                        onClubTap: (clubId) => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
+                        ),
+                        onPlayerTap: (entry) => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PlayerProfileScreen(
+                              playerId: entry.player.id,
+                              clubId: entry.club.id,
+                            ),
+                          ),
+                        ),
+                        onStandingsTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                        ),
+                        onScorersTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                        ),
+                        compactSingleRow: sameRow,
+                      );
+                      if (!sameRow) {
+                        return Column(
+                          children: [
+                            newsCard,
+                            const SizedBox(height: 6),
+                            rankings,
+                          ],
+                        );
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 13, child: newsCard),
+                          const SizedBox(width: 5),
+                          Expanded(flex: 17, child: rankings),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),

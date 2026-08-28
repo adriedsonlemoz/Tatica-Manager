@@ -7,36 +7,36 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.82';
+  static const String version = '0.1.1.85';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
     ReleaseNote(
-      version: '0.1.1.82',
-      title: 'Correção do teste da Home',
+      version: '0.1.1.85',
+      title: 'Home mais compacta',
       changes: [
-        'Corrige a única falha restante do GitHub Actions após 266 testes já aprovados.',
-        'A regressão passa a comparar literalmente o escape de quebra de linha usado no rótulo Departamento Médico.',
-        'Não altera layout, assets, saves, dados ou lógica do jogo.',
+        'Compacta cabeçalho, finanças, próxima partida, preparação, confiança, panorama e atalhos para reduzir rolagem.',
+        'Move Avançar para a Próxima Partida e coloca Notícias, classificação e artilheiros na mesma linha quando há largura suficiente.',
+        'Remove a foto do estádio da Confiança da Diretoria e usa melhor as cores reais do clube no quadro do escudo.',
       ],
     ),
     ReleaseNote(
-      version: '0.1.1.81',
-      title: 'Correção de sintaxe da Home',
+      version: '0.1.1.84',
+      title: 'Trocas preparadas em lote',
       changes: [
-        'Corrige o fechamento da classe de backdrop que causava erros em cascata no analyzer.',
-        'Preserva integralmente o layout visual e os assets da Home 0.1.1.80.',
-        'Adiciona regressão estrutural para proteger a composição da Home.',
+        'A janela de substituições permanece aberta para preparar várias trocas antes de confirmar.',
+        'Permite revisar e remover trocas preparadas, aplicando o lote apenas no botão Confirmar trocas.',
+        'Mantém cinco substituições, três janelas e o intervalo sem consumir janela, com validação central no controller.',
       ],
     ),
     ReleaseNote(
-      version: '0.1.1.80',
-      title: 'Home integrada e mais compacta',
+      version: '0.1.1.83',
+      title: 'Substituições com janelas',
       changes: [
-        'Integra melhor o bloco inferior da Home com painel único e backdrop mais vivo.',
-        'Transforma Notícias & Destaques em lista compacta e reforça atalhos, tabela e artilharia.',
-        'Mantém todos os dados ligados ao save e preserva a arquitetura do jogo.',
+        'Mantém o limite de cinco jogadores substituídos e passa a respeitar no máximo três janelas durante o jogo.',
+        'Várias trocas feitas no mesmo minuto usam a mesma janela e o intervalo não consome uma oportunidade.',
+        'Centraliza a regra fora da UI e adiciona testes funcionais para impedir regressão para substituições ilimitadas.',
       ],
     ),
   ];

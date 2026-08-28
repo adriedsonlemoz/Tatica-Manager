@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/club/club.dart';
-import 'home_visual_components.dart';
 
 class HomeBoardConfidenceCard extends StatelessWidget {
   const HomeBoardConfidenceCard({
@@ -19,49 +18,28 @@ class HomeBoardConfidenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(11, 10, 11, 11),
+        height: 92,
+        padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF143B3A), Color(0xFF142B2D), AppColors.surface],
+            colors: [Color(0xFF123735), Color(0xFF142B2D), AppColors.surface],
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .28)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .25)),
           boxShadow: const [
-            BoxShadow(color: Color(0x2A000000), blurRadius: 14, offset: Offset(0, 6)),
+            BoxShadow(color: Color(0x24000000), blurRadius: 10, offset: Offset(0, 4)),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            const Text(
-              'CONFIANÇA DA DIRETORIA',
-              style: TextStyle(
-                color: AppColors.white,
-                fontSize: 10.5,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .25,
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 112,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 19,
-                    child: _StadiumSummary(
-                      club: club,
-                      onTap: onStadiumTap,
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    flex: 10,
-                    child: _ConfidenceGauge(confidence: confidence),
-                  ),
-                ],
+            _ConfidenceGauge(confidence: confidence),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _StadiumSummary(
+                club: club,
+                onTap: onStadiumTap,
               ),
             ),
           ],
@@ -80,97 +58,70 @@ class _StadiumSummary extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(12),
           child: Ink(
+            padding: const EdgeInsets.fromLTRB(8, 7, 8, 6),
             decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .22)),
+              color: AppColors.background.withValues(alpha: .62),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF41C8B4).withValues(alpha: .18)),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  const HomeImageShade(
-                    asset: HomeVisualAssets.stadiumAerial,
-                    alignment: Alignment.center,
-                    overlayStrength: .68,
-                  ),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: .12),
-                          AppColors.background.withValues(alpha: .20),
-                          AppColors.background.withValues(alpha: .93),
-                        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.stadium_rounded, color: AppColors.green, size: 11),
+                    SizedBox(width: 4),
+                    Text(
+                      'ESTÁDIO',
+                      style: TextStyle(
+                        color: AppColors.green,
+                        fontSize: 6.3,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  club.stadium.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 9.2,
+                    fontWeight: FontWeight.w900,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.stadium_rounded, color: AppColors.green, size: 14),
-                            SizedBox(width: 5),
-                            Text(
-                              'ESTÁDIO',
-                              style: TextStyle(
-                                color: AppColors.green,
-                                fontSize: 7.5,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          club.stadium.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _StadiumMetric(
-                                icon: Icons.groups_2_outlined,
-                                label: 'CAPACIDADE',
-                                value: _compactCount(club.stadium.capacity),
-                              ),
-                            ),
-                            Expanded(
-                              child: _StadiumMetric(
-                                icon: Icons.local_activity_outlined,
-                                label: 'INGRESSO',
-                                value: compactMoney(club.stadium.ticketPrice),
-                              ),
-                            ),
-                            Expanded(
-                              child: _StadiumMetric(
-                                icon: Icons.apartment_rounded,
-                                label: 'ARQUIB.',
-                                value: 'Nv. ${club.stadium.standsLevel}',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StadiumMetric(
+                        icon: Icons.groups_2_outlined,
+                        label: 'CAP.',
+                        value: _compactCount(club.stadium.capacity),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    Expanded(
+                      child: _StadiumMetric(
+                        icon: Icons.local_activity_outlined,
+                        label: 'ING.',
+                        value: compactMoney(club.stadium.ticketPrice),
+                      ),
+                    ),
+                    Expanded(
+                      child: _StadiumMetric(
+                        icon: Icons.apartment_rounded,
+                        label: 'ARQ.',
+                        value: 'Nv. ${club.stadium.standsLevel}',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -194,13 +145,14 @@ class _StadiumMetric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: AppColors.textSecondary, size: 11),
-          const SizedBox(width: 3),
+          Icon(icon, color: AppColors.textSecondary, size: 8),
+          const SizedBox(width: 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   label,
@@ -208,8 +160,9 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 5.8,
+                    fontSize: 4.2,
                     fontWeight: FontWeight.w900,
+                    height: 1,
                   ),
                 ),
                 const SizedBox(height: 1),
@@ -219,8 +172,9 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 7.5,
+                    fontSize: 5.7,
                     fontWeight: FontWeight.w800,
+                    height: 1,
                   ),
                 ),
               ],
@@ -238,78 +192,58 @@ class _ConfidenceGauge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final value = confidence.clamp(0, 100).toInt();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 84,
-          height: 84,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox.expand(
-                child: CircularProgressIndicator(
-                  value: value / 100,
-                  strokeWidth: 8,
-                  strokeCap: StrokeCap.round,
-                  backgroundColor: const Color(0xFF30433D),
-                  color: AppColors.green,
-                ),
-              ),
-              Container(
-                width: 66,
-                height: 66,
-                decoration: const BoxDecoration(
-                  color: Color(0xDD101820),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$value%',
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 22,
-                      height: 1,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  const Text(
-                    'CONFIANÇA',
-                    style: TextStyle(
-                      color: AppColors.green,
-                      fontSize: 6.5,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+    return SizedBox(
+      width: 68,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'CONFIANÇA',
+            maxLines: 1,
+            style: TextStyle(
+              color: AppColors.white,
+              fontSize: 6.4,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          _confidenceText(value),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 6.8,
-            height: 1.15,
+          const SizedBox(height: 4),
+          SizedBox(
+            width: 54,
+            height: 54,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox.expand(
+                  child: CircularProgressIndicator(
+                    value: value / 100,
+                    strokeWidth: 5.5,
+                    strokeCap: StrokeCap.round,
+                    backgroundColor: const Color(0xFF30433D),
+                    color: AppColors.green,
+                  ),
+                ),
+                Container(
+                  width: 43,
+                  height: 43,
+                  decoration: const BoxDecoration(
+                    color: Color(0xDD101820),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Text(
+                  '$value%',
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14.5,
+                    height: 1,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
-  }
-
-  static String _confidenceText(int value) {
-    if (value >= 80) return 'Diretoria muito satisfeita.';
-    if (value >= 65) return 'Diretoria satisfeita.';
-    if (value >= 50) return 'Diretoria acompanha de perto.';
-    return 'Diretoria espera uma reação.';
   }
 }

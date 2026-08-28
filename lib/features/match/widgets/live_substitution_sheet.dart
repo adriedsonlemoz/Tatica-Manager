@@ -7,13 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../domain/formation/formation.dart';
 import '../../../domain/player/player.dart';
 import '../../../game/lineup/lineup_engine.dart';
-
-class LiveSubstitutionSelection {
-  const LiveSubstitutionSelection({required this.outgoingId, required this.incomingId});
-
-  final String outgoingId;
-  final String incomingId;
-}
+import '../../../game/match/live_substitution_rules.dart';
 
 class LiveSubstitutionSheet extends StatefulWidget {
   const LiveSubstitutionSheet({
@@ -26,6 +20,10 @@ class LiveSubstitutionSheet extends StatefulWidget {
     this.dismissedPlayerIds = const {},
     this.substitutionsUsed = 0,
     this.substitutionLimit = 5,
+    this.substitutionWindowsUsed = 0,
+    this.substitutionWindowLimit = 3,
+    this.halftime = false,
+    this.willUseNewWindow = true,
   });
 
   final List<Player> squad;
@@ -36,6 +34,10 @@ class LiveSubstitutionSheet extends StatefulWidget {
   final Set<String> dismissedPlayerIds;
   final int substitutionsUsed;
   final int substitutionLimit;
+  final int substitutionWindowsUsed;
+  final int substitutionWindowLimit;
+  final bool halftime;
+  final bool willUseNewWindow;
 
   @override
   State<LiveSubstitutionSheet> createState() => _LiveSubstitutionSheetState();
@@ -44,11 +46,36 @@ class LiveSubstitutionSheet extends StatefulWidget {
 class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
   String? outgoingId;
   String? incomingId;
+  final List<LiveSubstitutionChange> plannedChanges = [];
+
+  Set<String> get plannedOutgoingIds =>
+      plannedChanges.map((change) => change.outgoingId).toSet();
+
+  Set<String> get plannedIncomingIds =>
+      plannedChanges.map((change) => change.incomingId).toSet();
+
+  List<String> get provisionalStarterIds {
+    var ids = [...widget.starterIds];
+    for (final change in plannedChanges) {
+      ids = LineupEngine.replaceStarter(
+        ids,
+        change.outgoingId,
+        change.incomingId,
+      );
+    }
+    return ids;
+  }
+
+  int get remainingSlots =>
+      (widget.substitutionLimit - widget.substitutionsUsed - plannedChanges.length)
+          .clamp(0, widget.substitutionLimit)
+          .toInt();
 
   List<Player> get starters {
     final byId = {for (final player in widget.squad) player.id: player};
-    return widget.starterIds
+    return provisionalStarterIds
         .where((id) => !widget.dismissedPlayerIds.contains(id))
+        .where((id) => !plannedIncomingIds.contains(id))
         .map((id) => byId[id])
         .whereType<Player>()
         .toList();
@@ -65,17 +92,26 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
   PlayerPosition? get selectedRole {
     final id = outgoingId;
     if (id == null) return null;
-    return LineupEngine.slotForStarter(widget.starterIds, widget.formation, id)?.role;
+    return LineupEngine.slotForStarter(
+      provisionalStarterIds,
+      widget.formation,
+      id,
+    )?.role;
   }
 
   List<Player> get bench {
     final role = selectedRole;
+    final excluded = {
+      ...provisionalStarterIds,
+      ...widget.excludedIncomingIds,
+      ...plannedOutgoingIds,
+      ...widget.dismissedPlayerIds,
+    };
     if (role == null) {
       final players = widget.squad
           .where(
             (player) =>
-                !widget.starterIds.contains(player.id) &&
-                !widget.excludedIncomingIds.contains(player.id) &&
+                !excluded.contains(player.id) &&
                 player.isAvailable,
           )
           .toList()
@@ -85,16 +121,48 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
     return LineupEngine.candidatesForRole(
       widget.squad,
       role,
-      excludedIds: {...widget.starterIds, ...widget.excludedIncomingIds},
+      excludedIds: excluded,
     ).map((candidate) => candidate.player).toList();
+  }
+
+  void _prepareCurrentChange() {
+    final outgoing = outgoingId;
+    final incoming = incomingId;
+    if (outgoing == null || incoming == null || remainingSlots <= 0) return;
+    setState(() {
+      plannedChanges.add(
+        LiveSubstitutionChange(
+          outgoingId: outgoing,
+          incomingId: incoming,
+        ),
+      );
+      outgoingId = null;
+      incomingId = null;
+    });
+  }
+
+  void _removePlannedChange(int index) {
+    setState(() {
+      plannedChanges.removeAt(index);
+      outgoingId = null;
+      incomingId = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final height = min(MediaQuery.sizeOf(context).height * .88, 720.0);
+    final height = min(MediaQuery.sizeOf(context).height * .90, 740.0);
     final outgoing = _findPlayer(outgoingId);
     final incoming = _findPlayer(incomingId);
     final role = selectedRole;
+    final projectedSubstitutions =
+        widget.substitutionsUsed + plannedChanges.length;
+    final projectedWindows = widget.substitutionWindowsUsed +
+        (plannedChanges.isNotEmpty &&
+                !widget.halftime &&
+                widget.willUseNewWindow
+            ? 1
+            : 0);
 
     return SafeArea(
       child: SizedBox(
@@ -124,7 +192,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Fazer substituição',
+                          'Preparar substituições',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 18,
@@ -132,7 +200,9 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Substituições: ${widget.substitutionsUsed}/${widget.substitutionLimit} • escolha quem sai e quem entra.',
+                          widget.halftime
+                              ? 'Substituições: $projectedSubstitutions/${widget.substitutionLimit} • intervalo não consome janela.'
+                              : 'Substituições: $projectedSubstitutions/${widget.substitutionLimit} • janelas: $projectedWindows/${widget.substitutionWindowLimit}.',
                           style: const TextStyle(
                             color: AppColors.muted,
                             fontSize: 11,
@@ -149,8 +219,53 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
               ),
             ),
             const Divider(height: 1),
+            if (plannedChanges.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 9, 16, 5),
+                child: Row(
+                  children: [
+                    const Text(
+                      'TROCAS PREPARADAS',
+                      style: TextStyle(
+                        color: AppColors.green,
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: .4,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${plannedChanges.length} nesta janela',
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 9.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 58,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: plannedChanges.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 7),
+                  itemBuilder: (context, index) {
+                    final change = plannedChanges[index];
+                    return _PreparedSwapChip(
+                      outgoing: _findPlayer(change.outgoingId)!,
+                      incoming: _findPlayer(change.incomingId)!,
+                      accentColor: widget.accentColor,
+                      onRemove: () => _removePlannedChange(index),
+                    );
+                  },
+                ),
+              ),
+              const Divider(height: 1),
+            ],
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 7),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 7),
               child: Row(
                 children: [
                   const Text(
@@ -177,33 +292,42 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
             ),
             SizedBox(
               height: 104,
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                itemCount: starters.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final player = starters[index];
-                  return _StarterChoice(
-                    player: player,
-                    role: LineupEngine.slotForStarter(
-                          widget.starterIds,
-                          widget.formation,
-                          player.id,
-                        )?.role ??
-                        player.primaryPosition,
-                    selected: player.id == outgoingId,
-                    accentColor: widget.accentColor,
-                    onTap: () => setState(() {
-                      outgoingId = player.id;
-                      incomingId = null;
-                    }),
-                  );
-                },
-              ),
+              child: starters.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Não há outra troca disponível nesta janela.',
+                        style: TextStyle(color: AppColors.muted, fontSize: 11),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: starters.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final player = starters[index];
+                        return _StarterChoice(
+                          player: player,
+                          role: LineupEngine.slotForStarter(
+                                provisionalStarterIds,
+                                widget.formation,
+                                player.id,
+                              )?.role ??
+                              player.primaryPosition,
+                          selected: player.id == outgoingId,
+                          accentColor: widget.accentColor,
+                          onTap: remainingSlots <= 0
+                              ? () {}
+                              : () => setState(() {
+                                    outgoingId = player.id;
+                                    incomingId = null;
+                                  }),
+                        );
+                      },
+                    ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 13, 16, 7),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 7),
               child: Row(
                 children: [
                   const Text(
@@ -216,7 +340,12 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                     ),
                   ),
                   const Spacer(),
-                  if (outgoing == null)
+                  if (remainingSlots <= 0)
+                    const Text(
+                      'Limite de trocas preparado',
+                      style: TextStyle(color: AppColors.warning, fontSize: 10),
+                    )
+                  else if (outgoing == null)
                     const Text(
                       'Selecione primeiro quem sai',
                       style: TextStyle(color: AppColors.muted, fontSize: 10),
@@ -248,7 +377,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                               LineupEngine.positionFit(player, role) >= .8,
                           selected: player.id == incomingId,
                           accentColor: widget.accentColor,
-                          onTap: outgoing == null
+                          onTap: outgoing == null || remainingSlots <= 0
                               ? null
                               : () => setState(() => incomingId = player.id),
                         );
@@ -256,7 +385,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                     ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 9, 16, 12),
               decoration: const BoxDecoration(
                 color: AppColors.surface,
                 border: Border(top: BorderSide(color: AppColors.border)),
@@ -269,22 +398,40 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                       incoming: incoming,
                       accentColor: widget.accentColor,
                     ),
-                    const SizedBox(height: 9),
+                    const SizedBox(height: 8),
                   ],
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: outgoing == null || incoming == null
-                          ? null
-                          : () => Navigator.of(context).pop(
-                                LiveSubstitutionSelection(
-                                  outgoingId: outgoing.id,
-                                  incomingId: incoming.id,
-                                ),
-                              ),
-                      icon: const Icon(Icons.swap_vert_rounded),
-                      label: const Text('Confirmar substituição'),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: outgoing == null ||
+                                  incoming == null ||
+                                  remainingSlots <= 0
+                              ? null
+                              : _prepareCurrentChange,
+                          icon: const Icon(Icons.add_rounded),
+                          label: const Text('Adicionar troca'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: plannedChanges.isEmpty
+                              ? null
+                              : () => Navigator.of(context).pop(
+                                    List<LiveSubstitutionChange>.unmodifiable(
+                                      plannedChanges,
+                                    ),
+                                  ),
+                          icon: const Icon(Icons.check_rounded),
+                          label: Text(
+                            plannedChanges.length == 1
+                                ? 'Confirmar 1 troca'
+                                : 'Confirmar ${plannedChanges.length} trocas',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -294,6 +441,53 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
       ),
     );
   }
+}
+
+class _PreparedSwapChip extends StatelessWidget {
+  const _PreparedSwapChip({
+    required this.outgoing,
+    required this.incoming,
+    required this.accentColor,
+    required this.onRemove,
+  });
+
+  final Player outgoing;
+  final Player incoming;
+  final Color accentColor;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 190,
+        padding: const EdgeInsets.fromLTRB(8, 5, 4, 5),
+        decoration: BoxDecoration(
+          color: accentColor.withValues(alpha: .08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: accentColor.withValues(alpha: .28)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '${outgoing.displayName} → ${incoming.displayName}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w800,
+                  height: 1.15,
+                ),
+              ),
+            ),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              tooltip: 'Remover troca',
+              onPressed: onRemove,
+              icon: const Icon(Icons.close_rounded, size: 18),
+            ),
+          ],
+        ),
+      );
 }
 
 class _StarterChoice extends StatelessWidget {

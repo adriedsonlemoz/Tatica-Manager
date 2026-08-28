@@ -14,6 +14,7 @@ class HomeNewsHighlights extends StatelessWidget {
     required this.playerAccent,
     required this.onEventTap,
     required this.onViewAll,
+    this.compact = false,
   });
 
   final List<CareerEvent> events;
@@ -21,9 +22,11 @@ class HomeNewsHighlights extends StatelessWidget {
   final Color Function(Player) playerAccent;
   final ValueChanged<CareerEvent> onEventTap;
   final VoidCallback onViewAll;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => _DashboardCard(
+        compact: compact,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,16 +35,23 @@ class HomeNewsHighlights extends StatelessWidget {
               title: 'NOTÍCIAS & DESTAQUES',
               action: 'VER TODAS',
               onAction: onViewAll,
+              compact: compact,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: compact ? 4 : 8),
             if (events.isEmpty)
               SizedBox(
-                height: 92,
+                height: compact ? 112 : 92,
                 child: Center(
                   child: Text(
                     'Avance os dias para receber notícias, treinos, contratos e eventos do clube.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.muted, fontSize: 10.5),
+                    maxLines: compact ? 4 : 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppColors.muted,
+                      fontSize: compact ? 6.7 : 10.5,
+                      height: 1.25,
+                    ),
                   ),
                 ),
               )
@@ -49,18 +59,25 @@ class HomeNewsHighlights extends StatelessWidget {
               Column(
                 children: [
                   for (var index = 0; index < events.length; index++) ...[
-                    _NewsListTile(
-                      event: events[index],
-                      player: playerForEvent(events[index].playerId),
-                      playerAccent: playerForEvent(events[index].playerId) == null
-                          ? AppColors.green
-                          : playerAccent(playerForEvent(events[index].playerId)!),
-                      onTap: () => onEventTap(events[index]),
+                    Builder(
+                      builder: (context) {
+                        final event = events[index];
+                        final player = playerForEvent(event.playerId);
+                        return _NewsListTile(
+                          event: event,
+                          player: player,
+                          playerAccent: player == null
+                              ? _newsColor(event.type)
+                              : playerAccent(player),
+                          compact: compact,
+                          onTap: () => onEventTap(event),
+                        );
+                      },
                     ),
                     if (index != events.length - 1)
                       Divider(
                         height: 1,
-                        color: AppColors.border.withValues(alpha: .65),
+                        color: AppColors.border.withValues(alpha: .58),
                       ),
                   ],
                 ],
@@ -81,28 +98,31 @@ class HomeQuickAccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          final useRow = items.length <= 5 && constraints.maxWidth >= 290;
+          final useRow = items.length <= 5 && constraints.maxWidth >= 285;
           if (!useRow) {
             return SizedBox(
-              height: 76,
+              height: 54,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 7),
+                separatorBuilder: (_, _) => const SizedBox(width: 5),
                 itemBuilder: (context, index) => SizedBox(
-                  width: 88,
+                  width: 76,
                   child: _QuickAccessTile(item: items[index]),
                 ),
               ),
             );
           }
-          return Row(
-            children: [
-              for (var index = 0; index < items.length; index++) ...[
-                Expanded(child: _QuickAccessTile(item: items[index])),
-                if (index != items.length - 1) const SizedBox(width: 7),
+          return SizedBox(
+            height: 54,
+            child: Row(
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  Expanded(child: _QuickAccessTile(item: items[index])),
+                  if (index != items.length - 1) const SizedBox(width: 5),
+                ],
               ],
-            ],
+            ),
           );
         },
       );
@@ -132,52 +152,51 @@ class _QuickAccessTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: item.onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(13),
           child: Ink(
-            height: 76,
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  item.accent.withValues(alpha: .16),
+                  item.accent.withValues(alpha: .14),
                   AppColors.surfaceRaised,
                   AppColors.background,
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: item.accent.withValues(alpha: .24)),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: item.accent.withValues(alpha: .22)),
               boxShadow: const [
-                BoxShadow(color: Color(0x22000000), blurRadius: 10, offset: Offset(0, 4)),
+                BoxShadow(color: Color(0x1D000000), blurRadius: 7, offset: Offset(0, 3)),
               ],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 34,
-                  height: 34,
+                  width: 26,
+                  height: 26,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        item.accent.withValues(alpha: .85),
-                        item.accent.withValues(alpha: .42),
+                        item.accent.withValues(alpha: .86),
+                        item.accent.withValues(alpha: .45),
                       ],
                     ),
                   ),
-                  child: Icon(item.icon, color: AppColors.white, size: 18),
+                  child: Icon(item.icon, color: AppColors.white, size: 14),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 Text(
                   item.label,
                   maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 8.8, fontWeight: FontWeight.w800, height: 1.1),
+                  style: const TextStyle(fontSize: 6.3, fontWeight: FontWeight.w800, height: 1.05),
                 ),
               ],
             ),
@@ -187,54 +206,76 @@ class _QuickAccessTile extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.child});
+  const _DashboardCard({required this.child, required this.compact});
 
   final Widget child;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(11),
+        padding: EdgeInsets.all(compact ? 7 : 11),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [Color(0xFF132231), Color(0xFF10202A), Color(0xFF0E181F)],
           ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.border.withValues(alpha: .92)),
-          boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
+          borderRadius: BorderRadius.circular(compact ? 14 : 18),
+          border: Border.all(color: AppColors.border.withValues(alpha: .86)),
+          boxShadow: const [BoxShadow(color: Color(0x1E000000), blurRadius: 9, offset: Offset(0, 4))],
         ),
         child: child,
       );
 }
 
 class _DashboardSectionHeader extends StatelessWidget {
-  const _DashboardSectionHeader({required this.title, this.icon, this.action, this.onAction});
+  const _DashboardSectionHeader({
+    required this.title,
+    required this.compact,
+    this.icon,
+    this.action,
+    this.onAction,
+  });
 
   final String title;
   final IconData? icon;
   final String? action;
   final VoidCallback? onAction;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: AppColors.green, size: 17),
-            const SizedBox(width: 5),
+            Icon(icon, color: AppColors.green, size: compact ? 11 : 17),
+            SizedBox(width: compact ? 3 : 5),
           ],
-          Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.3, fontWeight: FontWeight.w900))),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: compact ? 6.7 : 9.3, fontWeight: FontWeight.w900),
+            ),
+          ),
           if (action != null)
             InkWell(
               onTap: onAction,
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 child: Row(
                   children: [
-                    Text(action!, style: const TextStyle(color: AppColors.green, fontSize: 7.4, fontWeight: FontWeight.w900)),
+                    Text(
+                      action!,
+                      style: TextStyle(
+                        color: AppColors.green,
+                        fontSize: compact ? 5.3 : 7.4,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     const SizedBox(width: 1),
-                    const Icon(Icons.arrow_forward_rounded, size: 12, color: AppColors.green),
+                    Icon(Icons.arrow_forward_rounded, size: compact ? 9 : 12, color: AppColors.green),
                   ],
                 ),
               ),
@@ -248,71 +289,90 @@ class _NewsListTile extends StatelessWidget {
     required this.event,
     required this.player,
     required this.playerAccent,
+    required this.compact,
     required this.onTap,
   });
 
   final CareerEvent event;
   final Player? player;
   final Color playerAccent;
+  final bool compact;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+          padding: EdgeInsets.symmetric(vertical: compact ? 4 : 8, horizontal: 1),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: player != null
-                    ? PlayerAvatar(player: player!, size: 38, accentColor: playerAccent)
-                    : Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: playerAccent.withValues(alpha: .16),
-                          borderRadius: BorderRadius.circular(12),
+              if (!compact) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: player != null
+                      ? PlayerAvatar(player: player!, size: 38, accentColor: playerAccent)
+                      : Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: playerAccent.withValues(alpha: .16),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(_newsIcon(event.type), color: playerAccent, size: 19),
                         ),
-                        child: Icon(_newsIcon(event.type), color: playerAccent, size: 19),
-                      ),
-              ),
-              const SizedBox(width: 8),
+                ),
+                const SizedBox(width: 8),
+              ] else ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Container(
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(color: playerAccent, shape: BoxShape.circle),
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(color: playerAccent, shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             event.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 9.2, fontWeight: FontWeight.w900),
+                            style: TextStyle(
+                              fontSize: compact ? 6.2 : 9.2,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 3),
                         Text(
                           shortDate(event.date),
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 7.5, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: compact ? 4.9 : 7.5,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: compact ? 1 : 3),
                     Text(
                       event.message,
-                      maxLines: 2,
+                      maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 8.3, color: AppColors.muted, height: 1.2),
+                      style: TextStyle(
+                        fontSize: compact ? 5.4 : 8.3,
+                        color: AppColors.muted,
+                        height: 1.15,
+                      ),
                     ),
                   ],
                 ),
@@ -334,3 +394,11 @@ class _NewsListTile extends StatelessWidget {
         CareerEventType.info => Icons.info_outline_rounded,
       };
 }
+
+Color _newsColor(CareerEventType type) => switch (type) {
+      CareerEventType.transferOffer => const Color(0xFF64C9FF),
+      CareerEventType.training => const Color(0xFFE6A82C),
+      CareerEventType.playerRecovered || CareerEventType.injuryEnded => const Color(0xFF41C8B4),
+      CareerEventType.contractExpiring => AppColors.warning,
+      _ => AppColors.green,
+    };

@@ -13,6 +13,7 @@ import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
+import '../../game/match/live_substitution_rules.dart';
 import '../../game/match/renderer/match_pitch_game.dart';
 import 'live_match_playback.dart';
 import 'live_round_feed.dart';
@@ -404,26 +405,27 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     final currentLive = ref.read(liveMatchControllerProvider);
     if (currentLive == null) return;
     final userClubId = ref.read(gameControllerProvider).career?.userClubId;
-    final alreadySubstitutedOut = currentLive.result.events
-        .where(
-          (event) =>
-              event.type == MatchEventType.substitution &&
-              event.teamId == userClubId,
-        )
+    if (userClubId == null) return;
+    final previousSubstitutions = LiveSubstitutionRules.substitutionsForTeam(
+      currentLive.result.events,
+      userClubId,
+    );
+    final alreadySubstitutedOut = previousSubstitutions
         .map((event) => event.secondaryPlayerId)
         .whereType<String>()
         .toSet();
-    final substitutionsUsed = currentLive.result.events
-        .where(
-          (event) =>
-              event.type == MatchEventType.substitution &&
-              event.teamId == userClubId,
-        )
-        .length;
-    if (substitutionsUsed >= LiveMatchController.maxSubstitutions) {
-      ref.read(gameControllerProvider.notifier).showMessage(
-            'Limite de ${LiveMatchController.maxSubstitutions} substituições atingido nesta partida.',
-          );
+    final substitutionsUsed = previousSubstitutions.length;
+    final substitutionWindowsUsed = LiveSubstitutionRules.substitutionWindowsUsed(
+      currentLive.result.events,
+      userClubId,
+    );
+    final violation = LiveSubstitutionRules.violationMessage(
+      events: currentLive.result.events,
+      teamId: userClubId,
+      minute: minute,
+    );
+    if (violation != null) {
+      ref.read(gameControllerProvider.notifier).showMessage(violation);
       return;
     }
     final dismissedPlayerIds = currentLive.result.events
@@ -440,7 +442,12 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       paused = true;
       presentationElapsedMs = 0;
     });
-    final selection = await showModalBottomSheet<LiveSubstitutionSelection>(
+    final willUseNewWindow = LiveSubstitutionRules.wouldConsumeNewWindow(
+      events: currentLive.result.events,
+      teamId: userClubId,
+      minute: minute,
+    );
+    final selections = await showModalBottomSheet<List<LiveSubstitutionChange>>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -454,32 +461,42 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         dismissedPlayerIds: dismissedPlayerIds,
         substitutionsUsed: substitutionsUsed,
         substitutionLimit: LiveMatchController.maxSubstitutions,
+        substitutionWindowsUsed: substitutionWindowsUsed,
+        substitutionWindowLimit: LiveMatchController.maxSubstitutionWindows,
+        halftime: minute == LiveSubstitutionRules.halftimeMinute,
+        willUseNewWindow: willUseNewWindow,
       ),
     );
     if (!mounted) return;
-    if (selection != null) {
-      ref.read(liveMatchControllerProvider.notifier).substitute(
-            selection.outgoingId,
-            selection.incomingId,
-            minute,
-          );
+    if (selections != null && selections.isNotEmpty) {
+      final applied = ref
+          .read(liveMatchControllerProvider.notifier)
+          .substituteMany(selections, minute);
       final updated = ref.read(liveMatchControllerProvider);
-      if (updated != null) {
+      if (applied && updated != null) {
         pitchGame.updateLineups(
           homePlayerIds: updated.homeStarterIds,
           awayPlayerIds: updated.awayStarterIds,
         );
+        final selectedPairs = {
+          for (final selection in selections)
+            '${selection.incomingId}|${selection.outgoingId}',
+        };
         final substitutionEvents = updated.result.events
             .where(
               (event) =>
                   event.minute == minute &&
                   event.type == MatchEventType.substitution &&
-                  event.playerId == selection.incomingId &&
-                  event.secondaryPlayerId == selection.outgoingId,
+                  event.playerId != null &&
+                  event.secondaryPlayerId != null &&
+                  selectedPairs.contains(
+                    '${event.playerId}|${event.secondaryPlayerId}',
+                  ),
             )
-            .toList();
+            .toList()
+          ..sort((a, b) => a.sequence.compareTo(b.sequence));
         if (substitutionEvents.isNotEmpty) {
-          pitchGame.playEvent(substitutionEvents.last);
+          pitchGame.playEvents(substitutionEvents);
         }
       }
     }

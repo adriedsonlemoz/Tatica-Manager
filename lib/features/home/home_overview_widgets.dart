@@ -120,6 +120,7 @@ class HomeCompactStandings extends StatelessWidget {
     required this.userClubId,
     this.onClubTap,
     this.compactColumns = false,
+    this.ultraCompact = false,
   });
 
   final List<Standing> standings;
@@ -127,6 +128,7 @@ class HomeCompactStandings extends StatelessWidget {
   final String userClubId;
   final ValueChanged<String>? onClubTap;
   final bool compactColumns;
+  final bool ultraCompact;
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +138,11 @@ class HomeCompactStandings extends StatelessWidget {
 
     return Column(
       children: [
-        _CompactStandingsHeader(compactColumns: compactColumns),
-        const SizedBox(height: 4),
+        _CompactStandingsHeader(
+          compactColumns: compactColumns,
+          ultraCompact: ultraCompact,
+        ),
+        SizedBox(height: ultraCompact ? 2 : 4),
         for (var index = 0; index < topRows.length; index++)
           _CompactStandingRow(
             position: index + 1,
@@ -145,11 +150,12 @@ class HomeCompactStandings extends StatelessWidget {
             club: _clubFor(topRows[index].clubId),
             highlighted: topRows[index].clubId == userClubId,
             compactColumns: compactColumns,
+            ultraCompact: ultraCompact,
             onTap: onClubTap == null ? null : () => onClubTap!(topRows[index].clubId),
           ),
         if (showUserSeparately) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3),
+            padding: EdgeInsets.symmetric(vertical: ultraCompact ? 1 : 3),
             child: Divider(height: 1, color: AppColors.border),
           ),
           _CompactStandingRow(
@@ -158,6 +164,7 @@ class HomeCompactStandings extends StatelessWidget {
             club: _clubFor(standings[userIndex].clubId),
             highlighted: true,
             compactColumns: compactColumns,
+            ultraCompact: ultraCompact,
             onTap: onClubTap == null ? null : () => onClubTap!(standings[userIndex].clubId),
           ),
         ],
@@ -170,33 +177,43 @@ class HomeCompactStandings extends StatelessWidget {
 }
 
 class _CompactStandingsHeader extends StatelessWidget {
-  const _CompactStandingsHeader({required this.compactColumns});
+  const _CompactStandingsHeader({
+    required this.compactColumns,
+    required this.ultraCompact,
+  });
 
   final bool compactColumns;
-
-  static const _headerStyle = TextStyle(
-    color: AppColors.muted,
-    fontSize: 8,
-    fontWeight: FontWeight.w900,
-  );
+  final bool ultraCompact;
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          const SizedBox(width: 20, child: Text('#', style: _headerStyle)),
-          const SizedBox(width: 26),
-          const SizedBox(width: 5),
-          const Expanded(child: Text('CLUBE', style: _headerStyle)),
-          const _StandingCell('J', header: true),
-          if (!compactColumns) ...[
-            const _StandingCell('V', header: true),
-            const _StandingCell('E', header: true),
-            const _StandingCell('D', header: true),
-            const _StandingCell('SG', width: 28, header: true),
-          ],
-          const _StandingCell('PTS', width: 30, header: true),
+  Widget build(BuildContext context) {
+    final positionWidth = ultraCompact ? 12.0 : 20.0;
+    final badgeWidth = ultraCompact ? 18.0 : 26.0;
+    final gap = ultraCompact ? 3.0 : 5.0;
+    final cellWidth = ultraCompact ? 14.0 : 20.0;
+    final pointsWidth = ultraCompact ? 20.0 : 30.0;
+    final headerStyle = TextStyle(
+      color: AppColors.muted,
+      fontSize: ultraCompact ? 5.8 : 8,
+      fontWeight: FontWeight.w900,
+    );
+    return Row(
+      children: [
+        SizedBox(width: positionWidth, child: Text('#', style: headerStyle)),
+        SizedBox(width: badgeWidth),
+        SizedBox(width: gap),
+        Expanded(child: Text('CLUBE', style: headerStyle)),
+        _StandingCell('J', width: cellWidth, header: true, compact: ultraCompact),
+        if (!compactColumns) ...[
+          _StandingCell('V', width: cellWidth, header: true, compact: ultraCompact),
+          _StandingCell('E', width: cellWidth, header: true, compact: ultraCompact),
+          _StandingCell('D', width: cellWidth, header: true, compact: ultraCompact),
+          _StandingCell('SG', width: ultraCompact ? 20 : 28, header: true, compact: ultraCompact),
         ],
-      );
+        _StandingCell('PTS', width: pointsWidth, header: true, compact: ultraCompact),
+      ],
+    );
+  }
 }
 
 class _CompactStandingRow extends StatelessWidget {
@@ -206,6 +223,7 @@ class _CompactStandingRow extends StatelessWidget {
     required this.club,
     required this.highlighted,
     required this.compactColumns,
+    required this.ultraCompact,
     this.onTap,
   });
 
@@ -214,15 +232,22 @@ class _CompactStandingRow extends StatelessWidget {
   final Club club;
   final bool highlighted;
   final bool compactColumns;
+  final bool ultraCompact;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.symmetric(vertical: 5),
+  Widget build(BuildContext context) {
+    final positionWidth = ultraCompact ? 12.0 : 20.0;
+    final badgeSize = ultraCompact ? 18.0 : 26.0;
+    final gap = ultraCompact ? 3.0 : 5.0;
+    final cellWidth = ultraCompact ? 14.0 : 20.0;
+    final pointsWidth = ultraCompact ? 20.0 : 30.0;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: ultraCompact ? .5 : 2),
+        padding: EdgeInsets.symmetric(vertical: ultraCompact ? 1.5 : 5),
         decoration: BoxDecoration(
           color: highlighted
               ? AppColors.green.withValues(alpha: .08)
@@ -232,47 +257,51 @@ class _CompactStandingRow extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 20,
+              width: positionWidth,
               child: Text(
                 '$position',
                 style: TextStyle(
                   color: position == 1 ? AppColors.green : AppColors.muted,
-                  fontSize: 10,
+                  fontSize: ultraCompact ? 6.2 : 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ),
-            ClubBadge(club: club, size: 26),
-            const SizedBox(width: 5),
+            ClubBadge(club: club, size: badgeSize),
+            SizedBox(width: gap),
             Expanded(
               child: Text(
                 club.shortName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 10,
-                  fontWeight:
-                      highlighted ? FontWeight.w900 : FontWeight.w700,
+                  fontSize: ultraCompact ? 6.5 : 10,
+                  fontWeight: highlighted ? FontWeight.w900 : FontWeight.w700,
                 ),
               ),
             ),
-            _StandingCell('${row.played}'),
+            _StandingCell('${row.played}', width: cellWidth, compact: ultraCompact),
             if (!compactColumns) ...[
-              _StandingCell('${row.wins}'),
-              _StandingCell('${row.draws}'),
-              _StandingCell('${row.losses}'),
+              _StandingCell('${row.wins}', width: cellWidth, compact: ultraCompact),
+              _StandingCell('${row.draws}', width: cellWidth, compact: ultraCompact),
+              _StandingCell('${row.losses}', width: cellWidth, compact: ultraCompact),
               _StandingCell(
-                row.goalDifference > 0
-                    ? '+${row.goalDifference}'
-                    : '${row.goalDifference}',
-                width: 28,
+                row.goalDifference > 0 ? '+${row.goalDifference}' : '${row.goalDifference}',
+                width: ultraCompact ? 20 : 28,
+                compact: ultraCompact,
               ),
             ],
-            _StandingCell('${row.points}', width: 30, strong: true),
+            _StandingCell(
+              '${row.points}',
+              width: pointsWidth,
+              strong: true,
+              compact: ultraCompact,
+            ),
           ],
         ),
       ),
     );
+  }
 }
 
 class _StandingCell extends StatelessWidget {
@@ -281,12 +310,14 @@ class _StandingCell extends StatelessWidget {
     this.width = 20,
     this.header = false,
     this.strong = false,
+    this.compact = false,
   });
 
   final String value;
   final double width;
   final bool header;
   final bool strong;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -296,7 +327,7 @@ class _StandingCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: header ? AppColors.muted : null,
-            fontSize: header ? 8 : 10,
+            fontSize: compact ? (header ? 5.8 : 6.3) : (header ? 8 : 10),
             fontWeight:
                 header || strong ? FontWeight.w900 : FontWeight.w700,
           ),

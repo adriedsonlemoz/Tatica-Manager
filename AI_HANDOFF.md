@@ -8,12 +8,44 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.82`
-- **Android versionCode:** `84`
+- **Release deste handoff:** `0.1.1.85`
+- **Android versionCode:** `87`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.85
+
+- compacta a Home para reduzir rolagem e aproximar proporções da referência enviada pelo usuário;
+- reduz cabeçalho, finanças, próxima partida, preparação e atalhos sem alterar os dados exibidos;
+- move Avançar para o canto superior direito da Próxima Partida;
+- reorganiza Confiança da Diretoria para porcentagem primeiro e estádio depois, removendo a foto do estádio;
+- passa a compor Notícias, classificação e artilheiros na mesma linha em larguras compatíveis, com modo ultracompacto da tabela;
+- usa melhor as cores reais do clube no quadro do escudo e preserva `CareerState` schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.85.md`.
+
+## Estado funcional da release 0.1.1.84
+
+- melhora o fluxo da janela de substituições: a escolha de uma troca não fecha mais o sheet;
+- permite preparar várias trocas, revisar/remover o lote e aplicar somente ao tocar em `Confirmar trocas`;
+- adiciona `substituteMany` ao `LiveMatchController`, validando o lote completo antes de modificar a sessão e ressimulando apenas uma vez;
+- várias trocas confirmadas juntas permanecem no mesmo minuto e consomem uma única janela;
+- cancelar o sheet não aplica nenhuma troca preparada;
+- preserva cinco substituições, três janelas, intervalo sem consumir janela, Match Engine, Flame somente visual, `CareerState` schema 13, saves, IDs e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.84.md`.
+
+## Estado funcional da release 0.1.1.83
+
+- completa a regra de substituições da partida ao vivo com cinco jogadores no máximo e três janelas durante o tempo regulamentar;
+- várias trocas feitas no mesmo minuto usam a mesma janela e o intervalo não consome uma janela, embora continue contando no limite de cinco jogadores;
+- centraliza a regra em `lib/game/match/live_substitution_rules.dart`, com `LiveMatchController` mantendo a aplicação e a UI apenas antecipando/exibindo o estado;
+- substitui o teste puramente textual por regressões funcionais da regra e mantém o bloqueio de retorno de jogador já substituído;
+- preserva `CareerState` schema 13, IDs, saves, calendário multi-competição, CPU, mercado, contratos, finanças e o Match Engine de simulação.
+
+Consulte `docs/RELEASE_0.1.1.83.md`.
 
 ## Estado funcional da release 0.1.1.82
 
@@ -508,10 +540,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.82
-versionCode:         84
-pubspec:             0.1.1+84
+versionCode:         87
+pubspec:             0.1.1+87
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.83` e usar um `versionCode` maior que 84.
+A próxima alteração/entrega normalmente deve virar `0.1.1.86` e usar um `versionCode` maior que 87.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

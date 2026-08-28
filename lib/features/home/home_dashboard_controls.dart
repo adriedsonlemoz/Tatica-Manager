@@ -25,20 +25,20 @@ class HomeSeasonCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         child: Ink(
           height: height,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [Color(0xFF571B24), Color(0xFF3B171D), Color(0xFF24171B)],
             ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.danger.withValues(alpha: .34)),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.danger.withValues(alpha: .32)),
             boxShadow: const [
-              BoxShadow(color: Color(0x26000000), blurRadius: 14, offset: Offset(0, 5)),
+              BoxShadow(color: Color(0x22000000), blurRadius: 10, offset: Offset(0, 4)),
             ],
           ),
           child: Stack(
@@ -46,7 +46,7 @@ class HomeSeasonCard extends StatelessWidget {
               Positioned.fill(
                 child: IgnorePointer(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(19),
+                    borderRadius: BorderRadius.circular(17),
                     child: CustomPaint(painter: _SeasonTrendPainter()),
                   ),
                 ),
@@ -54,21 +54,21 @@ class HomeSeasonCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: height >= 110 ? 44 : 40,
-                    height: height >= 110 ? 44 : 40,
+                    width: 34,
+                    height: 34,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: AppColors.danger.withValues(alpha: .16),
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: AppColors.danger.withValues(alpha: .26)),
+                      borderRadius: BorderRadius.circular(11),
+                      border: Border.all(color: AppColors.danger.withValues(alpha: .24)),
                     ),
                     child: const Icon(
                       Icons.emoji_events_rounded,
                       color: Color(0xFFFFC857),
-                      size: 22,
+                      size: 18,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 7),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,46 +79,33 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: 6.8,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: .2,
+                            letterSpacing: .1,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Text(
                           position > 0 ? '$positionº NA LIGA' : 'SEM POSIÇÃO',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: height >= 110 ? 18 : 14,
+                          style: const TextStyle(
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w900,
                             height: 1,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Text(
-                          '$remaining rodadas restantes',
+                          '$remaining rodadas restantes • R$currentRound',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 8.5,
+                            fontSize: 6.5,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (height >= 110) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            currentRound > 0
-                                ? 'Rodada atual: $currentRound'
-                                : 'Competição em preparação',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),
@@ -126,7 +113,7 @@ class HomeSeasonCard extends StatelessWidget {
                     const Icon(
                       Icons.chevron_right_rounded,
                       color: AppColors.white,
-                      size: 26,
+                      size: 20,
                     ),
                 ],
               ),
