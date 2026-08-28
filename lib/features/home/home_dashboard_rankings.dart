@@ -55,17 +55,22 @@ class HomeLeagueAndScorers extends StatelessWidget {
                   compactColumns: dense && canSplit,
                   onClubTap: onClubTap,
                 ),
+                const SizedBox(height: 6),
+                _FooterLink(
+                  label: dense && canSplit ? 'VER TABELA' : 'VER TABELA COMPLETA',
+                  onTap: onStandingsTap,
+                ),
               ],
             ),
           );
           final scorersCard = _DashboardCard(
-            accent: const Color(0xFFFFC857),
+            accent: const Color(0xFFE4A92E),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
                   title: 'ARTILHEIROS',
-                  action: dense ? null : 'VER TODOS',
+                  action: dense ? null : 'RANKING',
                   onAction: onScorersTap,
                 ),
                 const SizedBox(height: 5),
@@ -82,24 +87,11 @@ class HomeLeagueAndScorers extends StatelessWidget {
                       compact: dense && canSplit,
                       onTap: () => onPlayerTap(scorers[index]),
                     ),
-                if (dense && canSplit) ...[
-                  const SizedBox(height: 3),
-                  InkWell(
-                    onTap: onScorersTap,
-                    borderRadius: BorderRadius.circular(8),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('RANKING', style: TextStyle(color: AppColors.green, fontSize: 7, fontWeight: FontWeight.w900)),
-                          SizedBox(width: 2),
-                          Icon(Icons.chevron_right_rounded, color: AppColors.green, size: 13),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                const SizedBox(height: 6),
+                _FooterLink(
+                  label: dense && canSplit ? 'VER RANKING' : 'VER RANKING COMPLETO',
+                  onTap: onScorersTap,
+                ),
               ],
             ),
           );
@@ -144,12 +136,13 @@ class _DashboardCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              (accent ?? AppColors.green).withValues(alpha: .07),
+              (accent ?? AppColors.green).withValues(alpha: .12),
               AppColors.surface,
+              AppColors.background,
             ],
           ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: (accent ?? AppColors.border).withValues(alpha: .20)),
+          border: Border.all(color: (accent ?? AppColors.border).withValues(alpha: .22)),
           boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 5))],
         ),
         child: child,
@@ -227,6 +220,37 @@ class _ScorerRow extends StatelessWidget {
               ),
               const SizedBox(width: 3),
               Text('${entry.stats.goals}', style: TextStyle(fontSize: compact ? 11 : 13, fontWeight: FontWeight.w900)),
+            ],
+          ),
+        ),
+      );
+}
+
+class _FooterLink extends StatelessWidget {
+  const _FooterLink({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.green,
+                  fontSize: 7.5,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(width: 2),
+              const Icon(Icons.arrow_forward_rounded, color: AppColors.green, size: 14),
             ],
           ),
         ),

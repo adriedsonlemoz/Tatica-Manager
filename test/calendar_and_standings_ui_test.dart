@@ -53,6 +53,7 @@ void main() {
     final pubspec = File('pubspec.yaml').readAsStringSync();
 
     expect(home, contains('HomeClubHeader'));
+    expect(home, contains('_HomeBackdrop'));
     expect(home, contains('HomeFinanceGrid'));
     expect(home, contains('monthIncome'));
     expect(home, contains('monthExpenses'));
@@ -70,10 +71,13 @@ void main() {
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
     expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
+    expect(dashboard, contains('height: 142'));
     expect(board, contains('ESTÁDIO'));
     expect(board, contains('HomeVisualAssets.stadiumAerial'));
     expect(dashboard, contains('HomeVisualAssets.matchStadium'));
     expect(controls, contains('PANORAMA DA TEMPORADA'));
+    expect(controls, contains('_SeasonTrendPainter'));
+    expect(home, contains("label: 'Departamento\nMédico'"));
     expect(home, contains('onSeasonTap'));
     expect(visuals, contains('class HomeClubCrest'));
     expect(pubspec, contains('assets/images/home/'));
