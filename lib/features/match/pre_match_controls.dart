@@ -212,17 +212,13 @@ class PreMatchPlanCard extends StatelessWidget {
 
 
 class _PremiumPanel extends StatelessWidget {
-  const _PremiumPanel({
-    required this.child,
-    this.padding = const EdgeInsets.all(14),
-  });
+  const _PremiumPanel({required this.child});
 
   final Widget child;
-  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: padding,
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,

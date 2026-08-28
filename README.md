@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.90`
-**Android versionCode:** `92`
+**Release atual:** `0.1.1.91`
+**Android versionCode:** `93`
 
 ## Fonte oficial de versão
 
@@ -14,14 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.90`);
+- `VERSION` — versão visível simples (`0.1.1.91`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+92`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.90` e `versionCode 92`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+93`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.91` e `versionCode 93`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.90` é representada internamente como `0.1.1+92`. A versão visível do aplicativo/Android continua sendo `0.1.1.90`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.91` é representada internamente como `0.1.1+93`. A versão visível do aplicativo/Android continua sendo `0.1.1.91`.
+
+## Tipografia responsiva da Home e correção de analyzer — 0.1.1.91
+
+- aumenta em 3 px/lp a base das fontes da Home, usando encaixe responsivo em áreas estreitas e sem alterar as dimensões dos cards;
+- tabela compacta passa a exibir o nome completo dos clubes;
+- botão central usa `AVANÇAR DIA` e `JOGAR PARTIDA`, competição aparece como `Brasileiro Série A` e escudos da Próxima Partida crescem 10 px;
+- Últimas Partidas passa a indicar também a rodada com o rótulo `RODADA`;
+- corrige os quatro problemas apontados pelo `flutter analyze` da 0.1.1.90 no novo pré-jogo: import da extension `PlayerPositionX`, parâmetro opcional não utilizado e aspas do teste estrutural;
+- preserva `CareerState` schema 13, saves, IDs, multi-competição, CPU, mercado, contratos e Match Engine.
 
 ## Preparação da partida premium — 0.1.1.90
 
@@ -66,7 +75,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.91`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.92`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

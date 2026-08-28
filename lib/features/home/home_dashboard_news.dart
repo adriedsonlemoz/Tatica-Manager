@@ -49,7 +49,7 @@ class HomeNewsHighlights extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppColors.muted,
-                      fontSize: compact ? 8.2 : 10.5,
+                      fontSize: compact ? 11.2 : 13.5,
                       height: 1.25,
                     ),
                   ),
@@ -201,15 +201,20 @@ class _QuickAccessTile extends StatelessWidget {
                         child: Icon(item.icon, color: AppColors.white, size: 18),
                       ),
                       const SizedBox(height: 3),
-                      Text(
-                        item.label,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 8.2,
-                          fontWeight: FontWeight.w800,
-                          height: 1.05,
+                      SizedBox(
+                        height: 18,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            item.label,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 11.2,
+                              fontWeight: FontWeight.w800,
+                              height: 1.05,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -286,7 +291,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: compact ? 8.8 : 9.3, fontWeight: FontWeight.w900),
+              style: TextStyle(fontSize: compact ? 11.8 : 12.3, fontWeight: FontWeight.w900),
             ),
           ),
           if (action != null)
@@ -301,7 +306,7 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 6.8 : 7.4,
+                        fontSize: compact ? 9.8 : 10.4,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -378,7 +383,7 @@ class _NewsListTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: compact ? 8.0 : 9.2,
+                              fontSize: compact ? 11 : 12.2,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -388,7 +393,7 @@ class _NewsListTile extends StatelessWidget {
                           shortDate(event.date),
                           style: TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: compact ? 6.3 : 7.5,
+                            fontSize: compact ? 9.3 : 10.5,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -400,7 +405,7 @@ class _NewsListTile extends StatelessWidget {
                       maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: compact ? 7.0 : 8.3,
+                        fontSize: compact ? 10 : 11.3,
                         color: AppColors.muted,
                         height: 1.15,
                       ),

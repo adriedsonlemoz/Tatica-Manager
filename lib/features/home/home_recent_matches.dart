@@ -11,12 +11,14 @@ class HomeRecentMatchEntry {
     required this.opponent,
     required this.userClubId,
     this.date,
+    this.round,
   });
 
   final MatchResult result;
   final Club opponent;
   final String userClubId;
   final DateTime? date;
+  final int? round;
 
   bool get userIsHome => result.homeClubId == userClubId;
   int get userGoals => userIsHome ? result.score.home : result.score.away;
@@ -62,7 +64,7 @@ class HomeRecentMatches extends StatelessWidget {
               SizedBox(width: 4),
               Text(
                 'ÚLTIMAS PARTIDAS',
-                style: TextStyle(fontSize: 8.8, fontWeight: FontWeight.w900),
+                style: TextStyle(fontSize: 11.8, fontWeight: FontWeight.w900),
               ),
             ],
           ),
@@ -123,54 +125,85 @@ class _RecentMatchTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: accent.withValues(alpha: .20)),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 13,
-                    height: 13,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: .18),
-                      borderRadius: BorderRadius.circular(4),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 13,
+                          height: 13,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: accent.withValues(alpha: .18),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            entry.outcome,
+                            style: TextStyle(
+                              color: accent,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 3),
+                        Flexible(
+                          child: Text(
+                            entry.opponent.shortName.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 10.4, fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      entry.outcome,
-                      style: TextStyle(
-                        color: accent,
-                        fontSize: 7,
+                    const SizedBox(height: 1),
+                    Text(
+                      '${entry.userGoals} - ${entry.opponentGoals}',
+                      style: const TextStyle(fontSize: 13.2, fontWeight: FontWeight.w900, height: .9),
+                    ),
+                    if (entry.date != null)
+                      Text(
+                        shortDate(entry.date!),
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 8.8,
+                          fontWeight: FontWeight.w700,
+                          height: .9,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (entry.round != null) ...[
+                const SizedBox(width: 2),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'R${entry.round}',
+                      style: const TextStyle(
+                        color: AppColors.green,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
+                        height: .9,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 3),
-                  Flexible(
-                    child: Text(
-                      entry.opponent.shortName.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 7.4, fontWeight: FontWeight.w900),
+                    const Text(
+                      'RODADA',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 6.8,
+                        fontWeight: FontWeight.w900,
+                        height: .9,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${entry.userGoals} - ${entry.opponentGoals}',
-                style: const TextStyle(fontSize: 10.2, fontWeight: FontWeight.w900, height: 1),
-              ),
-              if (entry.date != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  shortDate(entry.date!),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 5.8,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  ],
                 ),
               ],
             ],

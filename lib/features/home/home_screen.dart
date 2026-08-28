@@ -36,6 +36,13 @@ import 'home_dashboard_widgets.dart';
 import 'match_day_presentation_screen.dart';
 import 'news_highlights_screen.dart';
 
+String _homeCompetitionLabel(String value) {
+  const prefix = 'Campeonato Brasileiro ';
+  return value.startsWith(prefix)
+      ? 'Brasileiro ${value.substring(prefix.length)}'
+      : value;
+}
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -60,9 +67,11 @@ class HomeScreen extends ConsumerWidget {
     );
 
     final primarySeries = CompetitionCatalog.primarySeriesForClub(club.id);
-    final competitionName = fixture == null
-        ? CompetitionCatalog.displayNameFor(primarySeries)
-        : CompetitionCatalog.displayNameForId(fixture.competitionId);
+    final competitionName = _homeCompetitionLabel(
+      fixture == null
+          ? CompetitionCatalog.displayNameFor(primarySeries)
+          : CompetitionCatalog.displayNameForId(fixture.competitionId),
+    );
     final unreadMessages = career.inbox
         .where((message) => !message.read && !message.archived && !message.deleted)
         .length;
@@ -128,6 +137,7 @@ class HomeScreen extends ConsumerWidget {
           opponent: recentOpponent,
           userClubId: club.id,
           date: relatedFixture?.date,
+          round: relatedFixture?.round,
         ),
       );
       if (recentUserMatches.length == 5) break;
@@ -240,9 +250,9 @@ class HomeScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
+                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                                 SizedBox(height: 1),
-                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 7)),
+                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 10)),
                               ],
                             ),
                           ),

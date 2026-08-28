@@ -57,7 +57,7 @@ class HomeDailyAdvancePanel extends StatelessWidget {
                 '+1 DIA',
                 style: TextStyle(
                   color: AppColors.green,
-                  fontSize: 10,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -68,7 +68,7 @@ class HomeDailyAdvancePanel extends StatelessWidget {
             'Ao avançar, o jogo processa recuperação, contratos, mercado, notícias e a preparação até a próxima partida.',
             style: TextStyle(
               color: AppColors.muted,
-              fontSize: 11,
+              fontSize: 14,
               height: 1.35,
             ),
           ),
@@ -95,7 +95,7 @@ class HomeDailyAdvancePanel extends StatelessWidget {
                             '${shortDate(nextDate)} • $matchStatus',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 10),
+                            style: const TextStyle(fontSize: 13),
                           ),
                         ],
                       ),
@@ -194,7 +194,7 @@ class _CompactStandingsHeader extends StatelessWidget {
     final pointsWidth = ultraCompact ? 20.0 : 30.0;
     final headerStyle = TextStyle(
       color: AppColors.muted,
-      fontSize: ultraCompact ? 7.2 : 8,
+      fontSize: ultraCompact ? 10.2 : 11,
       fontWeight: FontWeight.w900,
     );
     return Row(
@@ -262,7 +262,7 @@ class _CompactStandingRow extends StatelessWidget {
                 '$position',
                 style: TextStyle(
                   color: position == 1 ? AppColors.green : AppColors.muted,
-                  fontSize: ultraCompact ? 7.8 : 10,
+                  fontSize: ultraCompact ? 10.8 : 13,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -272,13 +272,16 @@ class _CompactStandingRow extends StatelessWidget {
               SizedBox(width: gap),
             ],
             Expanded(
-              child: Text(
-                club.shortName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: ultraCompact ? 8.2 : 10,
-                  fontWeight: highlighted ? FontWeight.w900 : FontWeight.w700,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  club.name,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: ultraCompact ? 11.2 : 13,
+                    fontWeight: highlighted ? FontWeight.w900 : FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -329,7 +332,7 @@ class _StandingCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: header ? AppColors.muted : null,
-            fontSize: compact ? (header ? 7.0 : 7.8) : (header ? 8 : 10),
+            fontSize: compact ? (header ? 10 : 10.8) : (header ? 11 : 13),
             fontWeight:
                 header || strong ? FontWeight.w900 : FontWeight.w700,
           ),

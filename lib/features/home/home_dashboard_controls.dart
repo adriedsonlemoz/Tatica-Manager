@@ -79,7 +79,7 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 6.8,
+                            fontSize: 9.8,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .1,
                           ),
@@ -90,7 +90,7 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 15.5,
                             fontWeight: FontWeight.w900,
                             height: 1,
                           ),
@@ -101,7 +101,7 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 6.5,
+                            fontSize: 9.5,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w700,
                           ),
@@ -177,7 +177,7 @@ class HomeAdvanceStrip extends StatelessWidget {
                       isMatchDay ? 'ABRIR PARTIDA' : 'AVANÇAR',
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 16,
+                        fontSize: 19,
                         fontWeight: FontWeight.w900,
                         letterSpacing: .35,
                       ),

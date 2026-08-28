@@ -86,7 +86,7 @@ class HomeLeagueAndScorers extends StatelessWidget {
                       'Sem gols.',
                       style: TextStyle(
                         color: AppColors.muted,
-                        fontSize: forceCompact ? 7.0 : 9,
+                        fontSize: forceCompact ? 10 : 12,
                       ),
                     ),
                   )
@@ -205,7 +205,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: compact ? 8.5 : 9,
+                fontSize: compact ? 11.5 : 12,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -222,7 +222,7 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 6.8 : 7,
+                        fontSize: compact ? 9.8 : 10,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -268,7 +268,7 @@ class _ScorerRow extends StatelessWidget {
                 child: Text(
                   '$position',
                   style: TextStyle(
-                    fontSize: ultraCompact ? 7.5 : 8,
+                    fontSize: ultraCompact ? 10.5 : 11,
                     color: AppColors.muted,
                     fontWeight: FontWeight.w900,
                   ),
@@ -286,7 +286,7 @@ class _ScorerRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: ultraCompact ? 7.8 : compact ? 8 : 9,
+                    fontSize: ultraCompact ? 10.8 : compact ? 11 : 12,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -295,7 +295,7 @@ class _ScorerRow extends StatelessWidget {
               Text(
                 '${entry.stats.goals}',
                 style: TextStyle(
-                  fontSize: ultraCompact ? 9 : compact ? 11 : 13,
+                  fontSize: ultraCompact ? 12 : compact ? 14 : 16,
                   fontWeight: FontWeight.w900,
                 ),
               ),

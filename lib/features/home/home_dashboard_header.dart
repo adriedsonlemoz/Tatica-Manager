@@ -68,27 +68,33 @@ class HomeClubHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    club.name.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: .18,
-                      height: 1,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      club.name.toUpperCase(),
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: .18,
+                        height: 1,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'Temporada $season • $competitionName',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.muted,
-                      fontSize: 8.8,
-                      fontWeight: FontWeight.w600,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Temporada $season • $competitionName',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 11.8,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -97,15 +103,18 @@ class HomeClubHeader extends StatelessWidget {
                       const Icon(Icons.calendar_month_rounded, color: AppColors.green, size: 11),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: Text(
-                          nextMatchLabel.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.green,
-                            fontSize: 10.0,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .10,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            nextMatchLabel.toUpperCase(),
+                            maxLines: 1,
+                            style: const TextStyle(
+                              color: AppColors.green,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: .10,
+                            ),
                           ),
                         ),
                       ),
@@ -232,7 +241,7 @@ class _ManagerCard extends StatelessWidget {
                 'TÉCNICO',
                 style: TextStyle(
                   color: AppColors.white,
-                  fontSize: 5.8,
+                  fontSize: 8.8,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .16,
                 ),
@@ -288,7 +297,7 @@ class _HeaderIconButton extends StatelessWidget {
                     ),
                     child: Text(
                       badgeText ?? '',
-                      style: const TextStyle(color: Colors.black, fontSize: 6.6, fontWeight: FontWeight.w900),
+                      style: const TextStyle(color: Colors.black, fontSize: 9.6, fontWeight: FontWeight.w900),
                     ),
                   ),
                 ),
@@ -343,15 +352,18 @@ class _FinanceStatusCard extends StatelessWidget {
                   Icon(icon, color: accent, size: 13),
                   const SizedBox(width: 3),
                   Expanded(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: accent,
-                        fontSize: 6.8,
-                        height: 1,
-                        fontWeight: FontWeight.w900,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: accent,
+                          fontSize: 9.8,
+                          height: 1,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ),
@@ -365,7 +377,7 @@ class _FinanceStatusCard extends StatelessWidget {
                   value,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 11.5,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w900,
                     letterSpacing: .1,
                   ),

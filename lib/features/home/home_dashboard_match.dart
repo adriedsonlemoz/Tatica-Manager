@@ -150,7 +150,7 @@ class HomeNextMatchCard extends StatelessWidget {
                 SizedBox(height: 5),
                 Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontWeight: FontWeight.w900)),
                 SizedBox(height: 2),
-                Text('Não há próxima partida agendada.', style: TextStyle(color: AppColors.muted, fontSize: 8)),
+                Text('Não há próxima partida agendada.', style: TextStyle(color: AppColors.muted, fontSize: 11)),
               ],
             ),
           ),
@@ -182,7 +182,7 @@ class HomeNextMatchCard extends StatelessWidget {
                           'PRÓXIMA PARTIDA',
                           style: TextStyle(
                             color: AppColors.white,
-                            fontSize: 11.2,
+                            fontSize: 14.2,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .15,
                           ),
@@ -194,7 +194,7 @@ class HomeNextMatchCard extends StatelessWidget {
                         '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 9.2,
+                          fontSize: 12.2,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -299,7 +299,7 @@ class HomeNextMatchCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.white,
-                          fontSize: 8.2,
+                          fontSize: 11.2,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -354,12 +354,19 @@ class _CompactAdvanceButton extends StatelessWidget {
                   color: Colors.black,
                 ),
                 const SizedBox(width: 2),
-                Text(
-                  isMatchDay ? 'JOGAR' : 'AVANÇAR',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 8.0,
-                    fontWeight: FontWeight.w900,
+                SizedBox(
+                  width: 60,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -406,7 +413,7 @@ class _MatchClub extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HomeClubCrest(club: club, size: 58),
+          HomeClubCrest(club: club, size: 68),
           const SizedBox(height: 1),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -417,7 +424,7 @@ class _MatchClub extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.white,
-                fontSize: 8.4,
+                fontSize: 11.4,
                 fontWeight: FontWeight.w900,
                 shadows: [Shadow(color: Colors.black, blurRadius: 4)],
               ),
@@ -444,7 +451,7 @@ class _VersusBadge extends StatelessWidget {
           'VS',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: 16,
+            fontSize: 19,
             height: 1,
             fontWeight: FontWeight.w900,
             shadows: [Shadow(color: Colors.black, blurRadius: 5)],
@@ -480,7 +487,7 @@ class _MatchInfo extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 6.2,
+                    fontSize: 9.2,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -490,7 +497,7 @@ class _MatchInfo extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 7.6,
+                    fontSize: 10.6,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

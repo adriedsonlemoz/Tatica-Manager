@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.90",
+  "version": "0.1.1.91",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+92"
+    "pubspecVersion": "0.1.1+93"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.90",
-    "versionCode": 92
+    "versionName": "0.1.1.91",
+    "versionCode": 93
   },
   "release": {
-    "version": "0.1.1.90",
-    "revision": 90,
-    "androidVersionCode": 92
+    "version": "0.1.1.91",
+    "revision": 91,
+    "androidVersionCode": 93
   },
   "changelog": [
+    "Aumenta a tipografia da Home em +3 px/lp de base com ajustes de encaixe responsivo sem ampliar os cards; mostra nomes completos na tabela, renomeia o avanço para AVANÇAR DIA/JOGAR PARTIDA, reduz o nome da competição para Brasileiro Série A, aumenta em 10 px os escudos da Próxima Partida e adiciona RODADA ao histórico recente; corrige também os quatro problemas de analyzer da 0.1.1.90 no pré-jogo, preservando CareerState schema 13, IDs, saves, multi-competição e Match Engine.",
     "Reformula visualmente a Preparação da Partida com hero do confronto, duração da transmissão, plano de jogo e titulares desenhados em campo tático somente leitura, reutilizando o fundo de estádio já existente e todos os dados reais da carreira; preserva Match Engine, Flame, CareerState schema 13, saves, IDs e fundação multi-competição.",
     "Refina a legibilidade da Home sem recuperar o layout esticado: amplia fontes de finanças, próxima partida, estádio, notícias, classificação, artilheiros e atalhos; aumenta escudos e presença do confronto, remove os rodapés redundantes Ver tabela/Ver ranking e torna os cards correspondentes acionáveis; mostra até quatro notícias, adiciona uma faixa compacta de últimas partidas usando matchHistory quando há espaço de tela e adiciona pontos de atenção aos atalhos somente para estados reais já existentes (escalação inválida, dia de jogo, proposta financeira pendente e lesão), preservando CareerState schema 13, saves, IDs, multi-competição e Match Engine.",
     "Refina a Home compacta aumentando a legibilidade sem voltar ao layout esticado: o botão Avançar/Jogar ocupa a coluna central de informações da Próxima Partida no lugar do horário duplicado, a tipografia do topo, atalhos, notícias, classificação e artilheiros cresce, a tabela compacta deixa de mostrar escudos e os três cards inferiores passam a compartilhar melhor a altura e a largura; preserva dados reais, CareerState schema 13, saves, IDs, fundação multi-competição e Match Engine.",
@@ -52,6 +53,6 @@
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
   ],
   "changes": [
-    "Reformula visualmente a Preparação da Partida com hero do confronto, duração da transmissão, plano de jogo e titulares desenhados em campo tático somente leitura, reutilizando o fundo de estádio já existente e todos os dados reais da carreira; preserva Match Engine, Flame, CareerState schema 13, saves, IDs e fundação multi-competição."
+    "Aumenta a tipografia da Home em +3 px/lp de base com ajustes de encaixe responsivo sem ampliar os cards; mostra nomes completos na tabela, renomeia o avanço para AVANÇAR DIA/JOGAR PARTIDA, reduz o nome da competição para Brasileiro Série A, aumenta em 10 px os escudos da Próxima Partida e adiciona RODADA ao histórico recente; corrige também os quatro problemas de analyzer da 0.1.1.90 no pré-jogo, preservando CareerState schema 13, IDs, saves, multi-competição e Match Engine."
   ]
 }

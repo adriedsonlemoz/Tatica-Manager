@@ -27,8 +27,9 @@ void main() {
     expect(screen, contains('PreMatchDurationCard'));
     expect(screen, contains('PreMatchPlanCard'));
     expect(screen, contains('PreMatchLineupCard'));
-    expect(hero, contains("assets/images/home/match_stadium.webp"));
+    expect(hero, contains('assets/images/home/match_stadium.webp'));
     expect(lineupCard, contains('class _ReadOnlyTacticalPitch'));
+    expect(lineupCard, contains('import \'../../domain/player/player.dart\';'));
     expect(lineupCard, contains('assignment.slot.x'));
     expect(lineupCard, contains('assignment.slot.y'));
     expect(lineupCard, contains(r'OVR ${assignment.effectiveOverall}'));

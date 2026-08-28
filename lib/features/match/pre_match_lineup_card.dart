@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../domain/formation/formation.dart';
+import '../../domain/player/player.dart';
 import '../../game/lineup/lineup_engine.dart';
 
 class PreMatchLineupCard extends StatelessWidget {

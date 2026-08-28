@@ -78,7 +78,7 @@ class _StadiumSummary extends StatelessWidget {
                       'ESTÁDIO',
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: 7.0,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -91,7 +91,7 @@ class _StadiumSummary extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 10.2,
+                    fontSize: 13.2,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -160,7 +160,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 5.1,
+                    fontSize: 8.1,
                     fontWeight: FontWeight.w900,
                     height: 1,
                   ),
@@ -172,7 +172,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 6.5,
+                    fontSize: 9.5,
                     fontWeight: FontWeight.w800,
                     height: 1,
                   ),
@@ -202,7 +202,7 @@ class _ConfidenceGauge extends StatelessWidget {
             maxLines: 1,
             style: TextStyle(
               color: AppColors.white,
-              fontSize: 6.4,
+              fontSize: 9.4,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -234,7 +234,7 @@ class _ConfidenceGauge extends StatelessWidget {
                   '$value%',
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 14.5,
+                    fontSize: 17.5,
                     height: 1,
                     fontWeight: FontWeight.w900,
                   ),
