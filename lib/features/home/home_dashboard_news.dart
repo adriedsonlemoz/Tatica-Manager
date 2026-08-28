@@ -49,7 +49,7 @@ class HomeNewsHighlights extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppColors.muted,
-                      fontSize: compact ? 7.5 : 10.5,
+                      fontSize: compact ? 8.2 : 10.5,
                       height: 1.25,
                     ),
                   ),
@@ -101,7 +101,7 @@ class HomeQuickAccess extends StatelessWidget {
           final useRow = items.length <= 5 && constraints.maxWidth >= 285;
           if (!useRow) {
             return SizedBox(
-              height: 60,
+              height: 62,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
@@ -114,7 +114,7 @@ class HomeQuickAccess extends StatelessWidget {
             );
           }
           return SizedBox(
-            height: 60,
+            height: 62,
             child: Row(
               children: [
                 for (var index = 0; index < items.length; index++) ...[
@@ -134,12 +134,14 @@ class HomeQuickAccessItem {
     required this.label,
     required this.onTap,
     this.accent = AppColors.green,
+    this.showDot = false,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final Color accent;
+  final bool showDot;
 }
 
 class _QuickAccessTile extends StatelessWidget {
@@ -150,57 +152,86 @@ class _QuickAccessTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: item.onTap,
-          borderRadius: BorderRadius.circular(13),
-          child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  item.accent.withValues(alpha: .14),
-                  AppColors.surfaceRaised,
-                  AppColors.background,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: item.accent.withValues(alpha: .22)),
-              boxShadow: const [
-                BoxShadow(color: Color(0x1D000000), blurRadius: 7, offset: Offset(0, 3)),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              child: InkWell(
+                onTap: item.onTap,
+                borderRadius: BorderRadius.circular(13),
+                child: Ink(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        item.accent.withValues(alpha: .86),
-                        item.accent.withValues(alpha: .45),
+                        item.accent.withValues(alpha: .14),
+                        AppColors.surfaceRaised,
+                        AppColors.background,
                       ],
                     ),
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: item.accent.withValues(alpha: .22)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1D000000),
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  child: Icon(item.icon, color: AppColors.white, size: 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              item.accent.withValues(alpha: .86),
+                              item.accent.withValues(alpha: .45),
+                            ],
+                          ),
+                        ),
+                        child: Icon(item.icon, color: AppColors.white, size: 18),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        item.label,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 8.2,
+                          fontWeight: FontWeight.w800,
+                          height: 1.05,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  item.label,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 7.4, fontWeight: FontWeight.w800, height: 1.05),
-                ),
-              ],
+              ),
             ),
-          ),
+            if (item.showDot)
+              Positioned(
+                top: 5,
+                right: 5,
+                child: Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: item.accent,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.background, width: 1),
+                  ),
+                ),
+              ),
+          ],
         ),
       );
 }
@@ -213,7 +244,7 @@ class _DashboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.all(compact ? 7 : 11),
+        padding: EdgeInsets.all(compact ? 8 : 11),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -255,7 +286,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: compact ? 7.8 : 9.3, fontWeight: FontWeight.w900),
+              style: TextStyle(fontSize: compact ? 8.8 : 9.3, fontWeight: FontWeight.w900),
             ),
           ),
           if (action != null)
@@ -270,7 +301,7 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 6.1 : 7.4,
+                        fontSize: compact ? 6.8 : 7.4,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -304,7 +335,7 @@ class _NewsListTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: compact ? 5 : 8, horizontal: 1),
+          padding: EdgeInsets.symmetric(vertical: compact ? 5.5 : 8, horizontal: 1),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -347,7 +378,7 @@ class _NewsListTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: compact ? 7.1 : 9.2,
+                              fontSize: compact ? 8.0 : 9.2,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -357,7 +388,7 @@ class _NewsListTile extends StatelessWidget {
                           shortDate(event.date),
                           style: TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: compact ? 5.7 : 7.5,
+                            fontSize: compact ? 6.3 : 7.5,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -369,7 +400,7 @@ class _NewsListTile extends StatelessWidget {
                       maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: compact ? 6.2 : 8.3,
+                        fontSize: compact ? 7.0 : 8.3,
                         color: AppColors.muted,
                         height: 1.15,
                       ),

@@ -172,7 +172,7 @@ class HomeNextMatchCard extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: 30,
+                height: 32,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10, 4, 6, 4),
                   child: Row(
@@ -182,19 +182,19 @@ class HomeNextMatchCard extends StatelessWidget {
                           'PRÓXIMA PARTIDA',
                           style: TextStyle(
                             color: AppColors.white,
-                            fontSize: 10.4,
+                            fontSize: 11.2,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .15,
                           ),
                         ),
                       ),
-                      const Icon(Icons.calendar_today_rounded, size: 9, color: AppColors.textSecondary),
+                      const Icon(Icons.calendar_today_rounded, size: 10, color: AppColors.textSecondary),
                       const SizedBox(width: 3),
                       Text(
                         '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 8.0,
+                          fontSize: 9.2,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -203,7 +203,7 @@ class HomeNextMatchCard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 82,
+                height: 94,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -235,7 +235,7 @@ class HomeNextMatchCard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 38,
+                height: 42,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
@@ -269,7 +269,7 @@ class HomeNextMatchCard extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 32,
+                height: 36,
                 margin: const EdgeInsets.fromLTRB(7, 0, 7, 7),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
@@ -287,7 +287,7 @@ class HomeNextMatchCard extends StatelessWidget {
                     Icon(
                       isMatchDay ? Icons.sports_soccer_rounded : Icons.rule_folder_rounded,
                       color: const Color(0xFFFFD85B),
-                      size: 14,
+                      size: 15,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -299,7 +299,7 @@ class HomeNextMatchCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.white,
-                          fontSize: 7.1,
+                          fontSize: 8.2,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -406,7 +406,7 @@ class _MatchClub extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HomeClubCrest(club: club, size: 49),
+          HomeClubCrest(club: club, size: 58),
           const SizedBox(height: 1),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -417,7 +417,7 @@ class _MatchClub extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.white,
-                fontSize: 7.8,
+                fontSize: 8.4,
                 fontWeight: FontWeight.w900,
                 shadows: [Shadow(color: Colors.black, blurRadius: 4)],
               ),
@@ -467,7 +467,7 @@ class _MatchInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Icon(icon, color: AppColors.textSecondary, size: 11),
+          Icon(icon, color: AppColors.textSecondary, size: 12),
           const SizedBox(width: 4),
           Expanded(
             child: Column(
@@ -480,7 +480,7 @@ class _MatchInfo extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 5.5,
+                    fontSize: 6.2,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -490,7 +490,7 @@ class _MatchInfo extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 6.7,
+                    fontSize: 7.6,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

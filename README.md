@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.88`
-**Android versionCode:** `90`
+**Release atual:** `0.1.1.89`
+**Android versionCode:** `91`
 
 ## Fonte oficial de versão
 
@@ -14,14 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.88`);
+- `VERSION` — versão visível simples (`0.1.1.89`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+90`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.88` e `versionCode 90`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+91`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.89` e `versionCode 91`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.88` é representada internamente como `0.1.1+90`. A versão visível do aplicativo/Android continua sendo `0.1.1.88`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.89` é representada internamente como `0.1.1+91`. A versão visível do aplicativo/Android continua sendo `0.1.1.89`.
+
+## Ajustes finos da Home — 0.1.1.89
+
+- aumenta fontes de finanças, próximo jogo, estádio, atalhos, notícias, classificação e artilheiros sem recuperar alturas excessivas;
+- aumenta os escudos e a área visual da Próxima Partida, além de dar mais presença à faixa Dia de jogo/Preparação;
+- remove os rodapés redundantes Ver tabela e Ver ranking e mantém os próprios cards como acesso às telas completas;
+- mostra até quatro notícias recentes e aproveita o espaço inferior com uma faixa compacta de últimas partidas baseada em `matchHistory` quando a altura da tela comporta;
+- pontos de atenção nos atalhos aparecem somente para estados reais já existentes: escalação inválida, dia de jogo, proposta financeira pendente e jogador lesionado;
+- preserva `CareerState` schema 13, saves, IDs persistentes, fundação multi-competição e Match Engine.
 
 ## Correção do CI — 0.1.1.87
 
@@ -47,7 +56,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.89`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.90`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

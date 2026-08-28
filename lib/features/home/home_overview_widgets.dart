@@ -194,7 +194,7 @@ class _CompactStandingsHeader extends StatelessWidget {
     final pointsWidth = ultraCompact ? 20.0 : 30.0;
     final headerStyle = TextStyle(
       color: AppColors.muted,
-      fontSize: ultraCompact ? 6.5 : 8,
+      fontSize: ultraCompact ? 7.2 : 8,
       fontWeight: FontWeight.w900,
     );
     return Row(
@@ -247,7 +247,7 @@ class _CompactStandingRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: ultraCompact ? .5 : 2),
-        padding: EdgeInsets.symmetric(vertical: ultraCompact ? 1.5 : 5),
+        padding: EdgeInsets.symmetric(vertical: ultraCompact ? 2.2 : 5),
         decoration: BoxDecoration(
           color: highlighted
               ? AppColors.green.withValues(alpha: .08)
@@ -262,7 +262,7 @@ class _CompactStandingRow extends StatelessWidget {
                 '$position',
                 style: TextStyle(
                   color: position == 1 ? AppColors.green : AppColors.muted,
-                  fontSize: ultraCompact ? 7.0 : 10,
+                  fontSize: ultraCompact ? 7.8 : 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -277,7 +277,7 @@ class _CompactStandingRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: ultraCompact ? 7.4 : 10,
+                  fontSize: ultraCompact ? 8.2 : 10,
                   fontWeight: highlighted ? FontWeight.w900 : FontWeight.w700,
                 ),
               ),
@@ -329,7 +329,7 @@ class _StandingCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: header ? AppColors.muted : null,
-            fontSize: compact ? (header ? 6.4 : 7.0) : (header ? 8 : 10),
+            fontSize: compact ? (header ? 7.0 : 7.8) : (header ? 8 : 10),
             fontWeight:
                 header || strong ? FontWeight.w900 : FontWeight.w700,
           ),

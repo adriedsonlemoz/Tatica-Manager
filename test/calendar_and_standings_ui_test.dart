@@ -50,6 +50,8 @@ void main() {
         .readAsStringSync();
     final visuals = File('lib/features/home/home_visual_components.dart')
         .readAsStringSync();
+    final recentMatches = File('lib/features/home/home_recent_matches.dart')
+        .readAsStringSync();
     final pubspec = File('pubspec.yaml').readAsStringSync();
 
     expect(home, contains('HomeClubHeader'));
@@ -69,9 +71,20 @@ void main() {
     expect(dashboard, contains('required this.onAdvance'));
     expect(home, contains('HomeNewsHighlights'));
     expect(home, contains('HomeLeagueAndScorers'));
+    expect(home, contains('HomeRecentMatches'));
+    expect(home, contains('recentUserMatches'));
+    expect(recentMatches, contains('ÚLTIMAS PARTIDAS'));
     expect(rankings, contains('HomeCompactStandings'));
+    expect(rankings, isNot(contains('VER TABELA')));
+    expect(rankings, isNot(contains('VER RANKING')));
     expect(rankings, isNot(contains('this.padding = const EdgeInsets.all(12)')));
     expect(news, isNot(contains('this.padding = const EdgeInsets.all(12)')));
+    expect(news, contains('final bool showDot'));
+    expect(home, contains('showDot: lineupNeedsAttention'));
+    expect(home, contains('showDot: career.isMatchDay'));
+    expect(home, contains('showDot: financeNeedsAttention'));
+    expect(home, contains('showDot: medicalNeedsAttention'));
+    expect(home, contains('career.news.reversed.take(4)'));
     expect(overview, contains("_StandingCell('J'"));
     expect(overview, contains("_StandingCell('V'"));
     expect(overview, contains("_StandingCell('E'"));
@@ -79,7 +92,10 @@ void main() {
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
     expect(dashboard, contains('PREPARAÇÃO •'));
-    expect(dashboard, contains('height: 92'));
+    expect(dashboard, contains('HomeClubCrest(club: club, size: 58)'));
+    expect(dashboard, contains('height: 94'));
+    expect(dashboard, contains('height: 36'));
+    expect(dashboard, contains('fontSize: 9.2'));
     expect(board, contains('ESTÁDIO'));
     expect(board, isNot(contains('HomeVisualAssets.stadiumAerial')));
     expect(board, isNot(contains('HomeImageShade')));

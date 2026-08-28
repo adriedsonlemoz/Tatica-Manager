@@ -42,6 +42,7 @@ class HomeLeagueAndScorers extends StatelessWidget {
           final tableCard = _DashboardCard(
             accent: AppColors.green,
             compact: forceCompact,
+            onTap: onStandingsTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -61,28 +62,19 @@ class HomeLeagueAndScorers extends StatelessWidget {
                   ultraCompact: forceCompact,
                   onClubTap: onClubTap,
                 ),
-                SizedBox(height: forceCompact ? 3 : 6),
-                _FooterLink(
-                  label: forceCompact
-                      ? 'VER TABELA'
-                      : dense && canSplit
-                          ? 'VER TABELA'
-                          : 'VER TABELA COMPLETA',
-                  onTap: onStandingsTap,
-                  compact: forceCompact,
-                ),
               ],
             ),
           );
           final scorersCard = _DashboardCard(
             accent: const Color(0xFFE4A92E),
             compact: forceCompact,
+            onTap: onScorersTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
                   title: 'ARTILHEIROS',
-                  action: forceCompact || dense ? null : 'RANKING',
+                  action: 'RANKING',
                   onAction: onScorersTap,
                   compact: forceCompact,
                 ),
@@ -107,16 +99,6 @@ class HomeLeagueAndScorers extends StatelessWidget {
                       ultraCompact: forceCompact,
                       onTap: () => onPlayerTap(scorers[index]),
                     ),
-                SizedBox(height: forceCompact ? 2 : 6),
-                _FooterLink(
-                  label: forceCompact
-                      ? 'VER RANKING'
-                      : dense && canSplit
-                          ? 'VER RANKING'
-                          : 'VER RANKING COMPLETO',
-                  onTap: onScorersTap,
-                  compact: forceCompact,
-                ),
               ],
             ),
           );
@@ -154,33 +136,45 @@ class _DashboardCard extends StatelessWidget {
     required this.child,
     required this.compact,
     this.accent,
+    this.onTap,
   });
 
   final Widget child;
   final Color? accent;
   final bool compact;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.all(compact ? 7 : 10),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              (accent ?? AppColors.green).withValues(alpha: compact ? .10 : .12),
-              AppColors.surface,
-              AppColors.background,
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(compact ? 14 : 18);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Ink(
+          padding: EdgeInsets.all(compact ? 8 : 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                (accent ?? AppColors.green).withValues(alpha: compact ? .10 : .12),
+                AppColors.surface,
+                AppColors.background,
+              ],
+            ),
+            borderRadius: radius,
+            border: Border.all(color: (accent ?? AppColors.border).withValues(alpha: .21)),
+            boxShadow: const [
+              BoxShadow(color: Color(0x1E000000), blurRadius: 9, offset: Offset(0, 4)),
             ],
           ),
-          borderRadius: BorderRadius.circular(compact ? 14 : 18),
-          border: Border.all(color: (accent ?? AppColors.border).withValues(alpha: .21)),
-          boxShadow: const [
-            BoxShadow(color: Color(0x1E000000), blurRadius: 9, offset: Offset(0, 4)),
-          ],
+          child: child,
         ),
-        child: child,
-      );
+      ),
+    );
+  }
 }
 
 class _DashboardSectionHeader extends StatelessWidget {
@@ -202,7 +196,7 @@ class _DashboardSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: AppColors.green, size: compact ? 12 : 17),
+            Icon(icon, color: AppColors.green, size: compact ? 13 : 17),
             SizedBox(width: compact ? 3 : 5),
           ],
           Expanded(
@@ -211,7 +205,7 @@ class _DashboardSectionHeader extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: compact ? 7.3 : 9,
+                fontSize: compact ? 8.5 : 9,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -228,7 +222,7 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 6.0 : 7,
+                        fontSize: compact ? 6.8 : 7,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -266,7 +260,7 @@ class _ScorerRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: ultraCompact ? 3.5 : compact ? 5 : 7),
+          padding: EdgeInsets.symmetric(vertical: ultraCompact ? 4.5 : compact ? 5 : 7),
           child: Row(
             children: [
               SizedBox(
@@ -274,7 +268,7 @@ class _ScorerRow extends StatelessWidget {
                 child: Text(
                   '$position',
                   style: TextStyle(
-                    fontSize: ultraCompact ? 6.8 : 8,
+                    fontSize: ultraCompact ? 7.5 : 8,
                     color: AppColors.muted,
                     fontWeight: FontWeight.w900,
                   ),
@@ -282,7 +276,7 @@ class _ScorerRow extends StatelessWidget {
               ),
               PlayerAvatar(
                 player: entry.player,
-                size: ultraCompact ? 24 : compact ? 27 : 34,
+                size: ultraCompact ? 27 : compact ? 27 : 34,
                 accentColor: Color(entry.club.colors.primaryHex),
               ),
               SizedBox(width: ultraCompact ? 3 : compact ? 4 : 7),
@@ -292,7 +286,7 @@ class _ScorerRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: ultraCompact ? 6.8 : compact ? 8 : 9,
+                    fontSize: ultraCompact ? 7.8 : compact ? 8 : 9,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -301,49 +295,9 @@ class _ScorerRow extends StatelessWidget {
               Text(
                 '${entry.stats.goals}',
                 style: TextStyle(
-                  fontSize: ultraCompact ? 8 : compact ? 11 : 13,
+                  fontSize: ultraCompact ? 9 : compact ? 11 : 13,
                   fontWeight: FontWeight.w900,
                 ),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-class _FooterLink extends StatelessWidget {
-  const _FooterLink({
-    required this.label,
-    required this.onTap,
-    required this.compact,
-  });
-
-  final String label;
-  final VoidCallback onTap;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: compact ? 2 : 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: AppColors.green,
-                  fontSize: compact ? 6.1 : 7.5,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(width: 1),
-              Icon(
-                Icons.arrow_forward_rounded,
-                color: AppColors.green,
-                size: compact ? 10 : 14,
               ),
             ],
           ),

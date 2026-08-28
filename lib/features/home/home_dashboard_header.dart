@@ -103,7 +103,7 @@ class HomeClubHeader extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.green,
-                            fontSize: 9.0,
+                            fontSize: 10.0,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .10,
                           ),
@@ -340,7 +340,7 @@ class _FinanceStatusCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(icon, color: accent, size: 12),
+                  Icon(icon, color: accent, size: 13),
                   const SizedBox(width: 3),
                   Expanded(
                     child: Text(
@@ -349,7 +349,7 @@ class _FinanceStatusCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: accent,
-                        fontSize: 5.8,
+                        fontSize: 6.8,
                         height: 1,
                         fontWeight: FontWeight.w900,
                       ),

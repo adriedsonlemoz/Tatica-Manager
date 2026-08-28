@@ -14,6 +14,7 @@ import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../../game/career/manager_career_engine.dart';
 import '../../game/cpu/cpu_user_offer_engine.dart';
+import '../../game/lineup/lineup_engine.dart';
 import '../../game/season/season_engine.dart';
 import '../calendar/calendar_screen.dart';
 import '../clubs/club_profile_screen.dart';
@@ -95,7 +96,45 @@ class HomeScreen extends ConsumerWidget {
         return b.stats.assists.compareTo(a.stats.assists);
       });
     final topScorers = scorers.take(3).toList(growable: false);
-    final recentNews = career.news.reversed.take(3).toList(growable: false);
+    final recentNews = career.news.reversed.take(4).toList(growable: false);
+    final lineupCompetitionId = fixture?.competitionId ?? career.primaryCompetitionId;
+    final lineupNeedsAttention = !LineupEngine.validate(
+      club.squad,
+      career.starterIds,
+      career.formation,
+      competitionSuspendedPlayerIds:
+          career.suspendedPlayerIdsForCompetition(lineupCompetitionId),
+    ).isValid;
+    final financeNeedsAttention = career.clubAdministration.sponsorshipProposals.any(
+      (proposal) =>
+          proposal.canRespond && !proposal.isExpiredAt(career.currentDate),
+    );
+    final medicalNeedsAttention = club.squad.any((player) => player.injury != null);
+    final recentUserMatches = <HomeRecentMatchEntry>[];
+    for (final result in career.matchHistory.reversed) {
+      if (result.homeClubId != club.id && result.awayClubId != club.id) continue;
+      final opponentId =
+          result.homeClubId == club.id ? result.awayClubId : result.homeClubId;
+      final recentOpponent = career.clubs
+          .where((candidate) => candidate.id == opponentId)
+          .firstOrNull;
+      if (recentOpponent == null) continue;
+      final relatedFixture = career.fixtures
+          .where((candidate) => candidate.id == result.fixtureId)
+          .firstOrNull;
+      recentUserMatches.add(
+        HomeRecentMatchEntry(
+          result: result,
+          opponent: recentOpponent,
+          userClubId: club.id,
+          date: relatedFixture?.date,
+        ),
+      );
+      if (recentUserMatches.length == 5) break;
+    }
+    final showRecentMatches =
+        recentUserMatches.isNotEmpty && MediaQuery.sizeOf(context).height >= 700;
+
     final nextMatchLabel = fixture == null
         ? 'Temporada concluída'
         : career.isMatchDay
@@ -223,6 +262,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.sports_soccer_rounded,
                         label: 'Táticas',
                         accent: const Color(0xFF7B35E8),
+                        showDot: lineupNeedsAttention,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const TacticsScreen()),
                         ),
@@ -231,6 +271,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.calendar_month_rounded,
                         label: 'Calendário',
                         accent: const Color(0xFFE28A1B),
+                        showDot: career.isMatchDay,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const CalendarScreen()),
                         ),
@@ -239,6 +280,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.account_balance_wallet_rounded,
                         label: 'Finanças',
                         accent: const Color(0xFF1ABEA1),
+                        showDot: financeNeedsAttention,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const FinancesScreen()),
                         ),
@@ -255,6 +297,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.medical_services_rounded,
                         label: 'Departamento\nMédico',
                         accent: const Color(0xFFE24F87),
+                        showDot: medicalNeedsAttention,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
                         ),
@@ -344,6 +387,19 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                   ),
+                  if (showRecentMatches) ...[
+                    const SizedBox(height: 6),
+                    HomeRecentMatches(
+                      entries: recentUserMatches,
+                      onTap: (entry) => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CalendarScreen(
+                            initialFixtureId: entry.result.fixtureId,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

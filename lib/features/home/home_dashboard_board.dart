@@ -18,7 +18,7 @@ class HomeBoardConfidenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 92,
+        height: 96,
         padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -78,7 +78,7 @@ class _StadiumSummary extends StatelessWidget {
                       'ESTÁDIO',
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: 6.3,
+                        fontSize: 7.0,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -91,7 +91,7 @@ class _StadiumSummary extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 9.2,
+                    fontSize: 10.2,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -147,7 +147,7 @@ class _StadiumMetric extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: AppColors.textSecondary, size: 8),
+          Icon(icon, color: AppColors.textSecondary, size: 9),
           const SizedBox(width: 2),
           Expanded(
             child: Column(
@@ -160,7 +160,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 4.2,
+                    fontSize: 5.1,
                     fontWeight: FontWeight.w900,
                     height: 1,
                   ),
@@ -172,7 +172,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 5.7,
+                    fontSize: 6.5,
                     fontWeight: FontWeight.w800,
                     height: 1,
                   ),
