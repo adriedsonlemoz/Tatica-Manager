@@ -13,14 +13,16 @@ void main() {
     expect(lineup, contains('this.showBackButton = false'));
     expect(lineup, contains('Navigator.of(context).pop()'));
   });
+
   test('pré-jogo usa apenas dados existentes do domínio e importa formação', () {
     final preMatch =
         File('lib/features/match/pre_match_screen.dart').readAsStringSync();
+    final hero = File('lib/features/match/pre_match_hero_card.dart').readAsStringSync();
 
     expect(preMatch, contains("import '../../domain/formation/formation.dart';"));
-    expect(preMatch, contains('career.formation.label'));
-    expect(preMatch, contains('home.stadium.name'));
-    expect(preMatch, isNot(contains('home.city')));
+    expect(preMatch, contains('final FormationType formation = career.formation'));
+    expect(preMatch, contains('formationLabel: formation.label'));
+    expect(hero, contains('home.stadium.name'));
+    expect('$preMatch\n$hero', isNot(contains('home.city')));
   });
-
 }

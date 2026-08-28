@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.89`
-**Android versionCode:** `91`
+**Release atual:** `0.1.1.90`
+**Android versionCode:** `92`
 
 ## Fonte oficial de versão
 
@@ -14,14 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.89`);
+- `VERSION` — versão visível simples (`0.1.1.90`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+91`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.89` e `versionCode 91`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+92`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.90` e `versionCode 92`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.89` é representada internamente como `0.1.1+91`. A versão visível do aplicativo/Android continua sendo `0.1.1.89`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.90` é representada internamente como `0.1.1+92`. A versão visível do aplicativo/Android continua sendo `0.1.1.90`.
+
+## Preparação da partida premium — 0.1.1.90
+
+- remodela o pré-jogo usando apenas os dados e funções já existentes da carreira;
+- destaca o confronto com escudos, VS, competição, data, horário, estádio, mando e status do dia de jogo;
+- mantém o seletor real de duração de 1/2/3 min por tempo em apresentação mais integrada;
+- reorganiza Plano de jogo com formação, titulares, força, Escalação, Tática e autoescalação;
+- substitui a grade de titulares por um campo tático somente leitura alimentado por `LineupValidation.assignments`;
+- reutiliza `assets/images/home/match_stadium.webp` já presente no projeto; nenhuma imagem nova foi criada;
+- preserva Match Engine, Flame, saves, IDs, calendário e fundação multi-competição.
 
 ## Ajustes finos da Home — 0.1.1.89
 
@@ -56,7 +66,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.90`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.91`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
