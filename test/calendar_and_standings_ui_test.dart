@@ -34,21 +34,29 @@ void main() {
     expect(source, contains('Rebaixamento'));
   });
 
-  test('home mostra classificação compacta completa e avanço diário contextual', () {
+  test('home premium mantém classificação, avanço contextual e dados reais', () {
     final home = File('lib/features/home/home_screen.dart').readAsStringSync();
-    final widgets = File('lib/features/home/home_overview_widgets.dart')
+    final overview = File('lib/features/home/home_overview_widgets.dart')
+        .readAsStringSync();
+    final rankings = File('lib/features/home/home_dashboard_rankings.dart')
+        .readAsStringSync();
+    final dashboard = File('lib/features/home/home_dashboard_match.dart')
         .readAsStringSync();
 
-    expect(home, contains('HomeCompactStandings'));
-    expect(widgets, contains("_StandingCell('J'"));
-    expect(widgets, contains("_StandingCell('V'"));
-    expect(widgets, contains("_StandingCell('E'"));
-    expect(widgets, contains("_StandingCell('D'"));
-    expect(widgets, contains("_StandingCell('SG'"));
-    expect(widgets, contains("_StandingCell('PTS'"));
-    expect(home, contains('HomeDailyAdvancePanel'));
-    expect(widgets, contains('PREPARAÇÃO DIÁRIA'));
-    expect(widgets, contains('recuperação, contratos, mercado, notícias'));
+    expect(home, contains('HomeClubHeader'));
+    expect(home, contains('HomeStatusGrid'));
+    expect(home, contains('HomeMainOverview'));
+    expect(home, contains('HomeAdvanceStrip'));
+    expect(home, contains('HomeNewsHighlights'));
+    expect(home, contains('HomeLeagueAndScorers'));
+    expect(rankings, contains('HomeCompactStandings'));
+    expect(overview, contains("_StandingCell('J'"));
+    expect(overview, contains("_StandingCell('V'"));
+    expect(overview, contains("_StandingCell('E'"));
+    expect(overview, contains("_StandingCell('D'"));
+    expect(overview, contains("_StandingCell('SG'"));
+    expect(overview, contains("_StandingCell('PTS'"));
+    expect(dashboard, contains('PREPARAÇÃO EM ANDAMENTO'));
     expect(home, contains('final totalRounds = career.fixtures.fold<int>'));
     expect(home, isNot(contains(r'Rodada ${career.currentRound}/38')));
   });

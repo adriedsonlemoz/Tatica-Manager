@@ -6,17 +6,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/manager_avatar.dart';
-import '../../app/widgets/player_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
+import '../../data/competition_catalog.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
+import '../../game/career/manager_career_engine.dart';
 import '../../game/cpu/cpu_user_offer_engine.dart';
 import '../../game/season/season_engine.dart';
 import '../calendar/calendar_screen.dart';
 import '../clubs/club_profile_screen.dart';
 import '../career/manager_job_market_screen.dart';
+import '../career/manager_profile_screen.dart';
 import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../market/incoming_transfer_offer_dialog.dart';
@@ -25,9 +27,10 @@ import '../medical/medical_department_screen.dart';
 import '../player/player_profile_screen.dart';
 import '../season/season_history_screen.dart';
 import '../standings/standings_screen.dart';
+import '../statistics/statistics_screen.dart';
 import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
-import 'home_overview_widgets.dart';
+import 'home_dashboard_widgets.dart';
 import 'match_day_presentation_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -53,438 +56,281 @@ class HomeScreen extends ConsumerWidget {
       (highest, item) => item.round > highest ? item.round : highest,
     );
 
+    final primarySeries = CompetitionCatalog.primarySeriesForClub(club.id);
+    final competitionName = fixture == null
+        ? CompetitionCatalog.displayNameFor(primarySeries)
+        : CompetitionCatalog.displayNameForId(fixture.competitionId);
+    final standing = career.standings.where((row) => row.clubId == club.id).firstOrNull;
+    final points = standing?.points ?? 0;
+    final unreadMessages = career.inbox
+        .where((message) => !message.read && !message.archived && !message.deleted)
+        .length;
+    final boardConfidence = ManagerCareerEngine.reputationFor(career);
+    final performance = _performanceFor(club.recentForm);
+    final scorers = <HomeScorerEntry>[
+      for (final team in career.clubs)
+        for (final player in team.squad)
+          HomeScorerEntry(player: player, club: team),
+    ]
+      ..sort((a, b) {
+        final goals = b.player.stats.goals.compareTo(a.player.stats.goals);
+        if (goals != 0) return goals;
+        return b.player.stats.assists.compareTo(a.player.stats.assists);
+      });
+    final topScorers = scorers.take(3).toList(growable: false);
+    final recentNews = career.news.reversed.take(5).toList(growable: false);
+    final nextMatchLabel = fixture == null
+        ? 'Temporada concluída'
+        : career.isMatchDay
+            ? 'Próximo jogo • Hoje, ${fixture.kickoffLabel}'
+            : daysUntilMatch == 1
+                ? 'Próximo jogo • Amanhã, ${fixture.kickoffLabel}'
+                : 'Próximo jogo • ${shortDate(fixture.date)}, ${fixture.kickoffLabel}';
+
     return PremiumScaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
-              child: Row(
-                children: [
-                  ClubBadge(club: club, size: 58),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          club.name,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        Text(
-                          'Temporada ${career.season} • Rodada ${career.currentRound}/$totalRounds',
-                          style: TextStyle(color: AppColors.muted),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          calendarDate(career.currentDate),
-                          style: const TextStyle(color: AppColors.green, fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                  ),
-                  OverallShield(value: club.reputation),
-                ],
+      body: Container(
+        color: const Color(0xFF030708),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: HomeClubHeader(
+                club: club,
+                manager: career.manager,
+                season: career.season,
+                competitionName: competitionName,
+                nextMatchLabel: nextMatchLabel,
+                unreadMessages: unreadMessages,
+                onNotificationsTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const InboxScreen()),
+                ),
+                onInboxTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const InboxScreen()),
+                ),
+                onManagerTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ManagerProfileScreen()),
+                ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(14, 8, 14, 110),
-            sliver: SliverList.list(
-              children: [
-                SectionCard(
-                  child: Row(
-                    children: [
-                      Metric(label: 'Orçamento', value: compactMoney(club.transferBudget), icon: Icons.account_balance_wallet_outlined),
-                      const SizedBox(width: 12),
-                      Metric(label: 'Folha/mês', value: compactMoney(club.payroll), icon: Icons.payments_outlined),
-                      const SizedBox(width: 12),
-                      Metric(label: 'Posição', value: position > 0 ? '$positionº' : '—', icon: Icons.emoji_events_outlined),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                if (fixture != null && opponent != null)
-                  SectionCard(
-                    borderColor: career.isMatchDay ? AppColors.green : null,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'PRÓXIMA PARTIDA',
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
-                            ),
-                            Text(
-                              career.isMatchDay
-                                  ? 'HOJE • R${fixture.round}'
-                                  : daysUntilMatch == 1
-                                      ? 'AMANHÃ • R${fixture.round}'
-                                      : 'EM ${daysUntilMatch ?? 0} DIAS • R${fixture.round}',
-                              style: TextStyle(
-                                color: career.isMatchDay ? AppColors.green : AppColors.muted,
-                                fontWeight: FontWeight.w800,
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 110),
+              sliver: SliverList.list(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: HomeStatusGrid(
+                      position: position,
+                      points: points,
+                      nextFixture: fixture,
+                      competitionLabel: primarySeries.name,
+                      performanceLabel: performance.label,
+                      performanceProgress: performance.progress,
+                      onPositionTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                      ),
+                      onNextMatchTap: fixture == null
+                          ? null
+                          : () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ClubBadge(club: club, size: 64),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 22),
-                              child: Text('VS', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-                            ),
-                            ClubBadge(club: opponent, size: 64),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Center(
-                          child: Text(
-                            '${calendarDate(fixture.date)} • ${fixture.homeClubId == club.id ? club.stadium.name : opponent.stadium.name}',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: AppColors.muted),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        if (career.isMatchDay)
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: () => Navigator.of(context).push(
+                      onCompetitionTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                      ),
+                      onPerformanceTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  HomeMainOverview(
+                    club: club,
+                    opponent: opponent,
+                    fixture: fixture,
+                    competitionName: competitionName,
+                    boardConfidence: boardConfidence,
+                    recentForm: club.recentForm,
+                    position: position,
+                    totalRounds: totalRounds,
+                    currentRound: career.currentRound,
+                    onMatchTap: fixture == null
+                        ? null
+                        : () {
+                            if (career.isMatchDay) {
+                              Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => const MatchDayPresentationScreen(),
                                 ),
+                              );
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
                               ),
-                              icon: const Icon(Icons.sports_soccer_rounded),
-                              label: const Text('Entrar no dia de jogo'),
-                            ),
-                          )
-                        else
-                          HomeDailyAdvancePanel(
-                            currentDate: career.currentDate,
-                            daysUntilMatch: daysUntilMatch ?? 0,
-                            onAdvance: () => _advanceDayWithTransition(
-                              context,
-                              ref,
-                              career.currentDate,
-                            ),
-                          ),
-                      ],
-                    ),
-                  )
-                else
-                  SectionCard(
-                    child: Column(
-                      children: [
-                        const Icon(Icons.emoji_events_rounded, color: AppColors.green, size: 48),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Temporada concluída',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Finalize a virada de temporada para continuar sua carreira.',
-                          style: TextStyle(color: AppColors.muted),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 14),
-                        FilledButton.icon(
-                          onPressed: () => _showSeasonEndDialog(
-                            context,
-                            ref,
-                            career,
-                          ),
-                          icon: const Icon(Icons.fact_check_outlined),
-                          label: const Text('Revisar temporada'),
-                        ),
-                      ],
-                    ),
+                            );
+                          },
                   ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                  const SizedBox(height: 8),
+                  if (fixture != null)
+                    HomeAdvanceStrip(
+                      isMatchDay: career.isMatchDay,
+                      currentDate: career.currentDate,
+                      daysUntilMatch: daysUntilMatch ?? 0,
+                      onAdvance: () => _advanceDayWithTransition(
+                        context,
+                        ref,
+                        career.currentDate,
+                      ),
+                      onMatchDay: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MatchDayPresentationScreen(),
+                        ),
+                      ),
+                    )
+                  else
+                    SectionCard(
+                      borderColor: AppColors.green.withValues(alpha: .45),
+                      child: Row(
                         children: [
-                          const Icon(Icons.newspaper_rounded, color: AppColors.green),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'NOTÍCIAS E EVENTOS',
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+                          const Icon(Icons.emoji_events_rounded, color: AppColors.green, size: 32),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontWeight: FontWeight.w900)),
+                                SizedBox(height: 2),
+                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                              ],
                             ),
+                          ),
+                          FilledButton(
+                            onPressed: () => _showSeasonEndDialog(context, ref, career),
+                            child: const Text('Revisar'),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      if (career.news.isEmpty)
-                        Text(
-                          'Avance os dias para acompanhar treinos, contratos, mercado e preparação das partidas.',
-                          style: TextStyle(color: AppColors.muted),
-                        )
-                      else
-                        ...career.news.reversed.take(4).map((event) {
-                          final transferActionable = CpuUserOfferEngine.isOfferActive(
-                            state: career,
-                            event: event,
-                          );
-                          final managerActionable = event.type == CareerEventType.managerOffer;
-                          final actionable = transferActionable ||
-                              managerActionable ||
-                              event.negotiationId != null ||
-                              event.fixtureId != null ||
-                              event.playerId != null ||
-                              event.clubId != null;
-                          final eventPlayer = _playerForEvent(career, event.playerId);
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: actionable
-                                ? () => _openCareerEvent(
-                                      context,
-                                      ref,
-                                      career,
-                                      event,
-                                      transferActionable: transferActionable,
-                                    )
-                                : null,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (eventPlayer != null)
-                                    PlayerAvatar(
-                                      player: eventPlayer,
-                                      size: 34,
-                                      accentColor: _playerAccent(career, eventPlayer),
-                                    )
-                                  else
-                                    Container(
-                                      width: 34,
-                                      height: 34,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.green.withValues(
-                                          alpha: .10,
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Icon(
-                                        _newsIcon(event.type),
-                                        size: 18,
-                                        color: _newsColor(event.type),
-                                      ),
-                                    ),
-                                  const SizedBox(width: 9),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          event.title,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          event.message,
-                                          style: TextStyle(
-                                            color: AppColors.muted,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              shortDate(event.date),
-                                              style: const TextStyle(
-                                                color: AppColors.green,
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                            if (actionable) ...[
-                                              const SizedBox(width: 8),
-                                              const Text(
-                                                'ABRIR',
-                                                style: TextStyle(
-                                                  color: AppColors.green,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w900,
-                                                ),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'CLASSIFICAÇÃO',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 10),
-                      HomeCompactStandings(
-                        standings: career.standings,
-                        clubs: career.clubs,
-                        userClubId: career.userClubId,
-                        onClubTap: (clubId) => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ClubProfileScreen(clubId: clubId),
-                          ),
+                    ),
+                  const SizedBox(height: 8),
+                  HomeQuickAccess(
+                    items: [
+                      HomeQuickAccessItem(
+                        icon: Icons.sports_soccer_rounded,
+                        label: 'Táticas',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const TacticsScreen()),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const StandingsScreen(),
-                          ),
-                        ),
-                        child: const Text('Ver tabela completa'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('FORMA RECENTE', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900)),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: List.generate(5, (index) {
-                          final value = index < club.recentForm.length ? club.recentForm[index] : '—';
-                          final isWin = value == 'V';
-                          final isDraw = value == 'E';
-                          return Container(
-                            width: 38,
-                            height: 38,
-                            margin: const EdgeInsets.only(right: 9),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: isWin
-                                  ? AppColors.greenDark
-                                  : isDraw
-                                      ? AppColors.surfaceRaised
-                                      : value == 'D'
-                                          ? AppColors.danger.withValues(alpha: .5)
-                                          : AppColors.surfaceRaised,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('AÇÕES RÁPIDAS', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900)),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          _Quick(
-                            icon: Icons.sports_soccer_rounded,
-                            label: 'Táticas',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TacticsScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.calendar_month_rounded,
-                            label: 'Calendário',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CalendarScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.leaderboard_rounded,
-                            label: 'Tabela',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StandingsScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.account_balance_wallet_rounded,
-                            label: 'Finanças',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FinancesScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.mail_rounded,
-                            label: 'E-mail',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const InboxScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.school_rounded,
-                            label: 'Base',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const YouthAcademyScreen())),
-                          ),
-                          _Quick(
-                            icon: Icons.medical_services_rounded,
-                            label: 'Médico',
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen())),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.shield_outlined, color: AppColors.green),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Situação financeira', style: TextStyle(fontWeight: FontWeight.w800)),
-                            Text(
-                              club.money > club.payroll * 4 ? 'Segura' : 'Exige atenção',
-                              style: TextStyle(
-                                color: club.money > club.payroll * 4 ? AppColors.green : AppColors.warning,
-                              ),
-                            ),
-                          ],
+                      HomeQuickAccessItem(
+                        icon: Icons.calendar_month_rounded,
+                        label: 'Calendário',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CalendarScreen()),
                         ),
                       ),
-                      Text(formatMoney(club.money), style: const TextStyle(fontWeight: FontWeight.w900)),
+                      HomeQuickAccessItem(
+                        icon: Icons.account_balance_wallet_rounded,
+                        label: 'Finanças',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const FinancesScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.school_rounded,
+                        label: 'Base',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const YouthAcademyScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.medical_services_rounded,
+                        label: 'Médico',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  HomeNewsHighlights(
+                    events: recentNews,
+                    playerForEvent: (playerId) => _playerForEvent(career, playerId),
+                    playerAccent: (player) => _playerAccent(career, player),
+                    onEventTap: (event) => _openCareerEvent(
+                      context,
+                      ref,
+                      career,
+                      event,
+                      transferActionable: CpuUserOfferEngine.isOfferActive(
+                        state: career,
+                        event: event,
+                      ),
+                    ),
+                    onViewAll: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const InboxScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  HomeLeagueAndScorers(
+                    standings: career.standings,
+                    clubs: career.clubs,
+                    userClubId: career.userClubId,
+                    scorers: topScorers,
+                    competitionName: primarySeries.name,
+                    onClubTap: (clubId) => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
+                    ),
+                    onPlayerTap: (entry) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PlayerProfileScreen(
+                          playerId: entry.player.id,
+                          clubId: entry.club.id,
+                        ),
+                      ),
+                    ),
+                    onStandingsTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                    ),
+                    onScorersTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  static ({String label, double progress}) _performanceFor(List<String> form) {
+    if (form.isEmpty) return (label: 'SEM DADOS', progress: .15);
+    final recent = form.take(5);
+    var points = 0;
+    var matches = 0;
+    for (final result in recent) {
+      if (result == 'V') {
+        points += 3;
+        matches++;
+      } else if (result == 'E') {
+        points += 1;
+        matches++;
+      } else if (result == 'D') {
+        matches++;
+      }
+    }
+    if (matches == 0) return (label: 'SEM DADOS', progress: .15);
+    final progress = points / (matches * 3);
+    final label = progress >= .8
+        ? 'ÓTIMA'
+        : progress >= .55
+            ? 'BOA'
+            : progress >= .3
+                ? 'REGULAR'
+                : 'ALERTA';
+    return (label: label, progress: progress);
   }
 
   static Future<void> _advanceDayWithTransition(
@@ -620,26 +466,6 @@ class HomeScreen extends ConsumerWidget {
     return AppColors.green;
   }
 
-  static IconData _newsIcon(CareerEventType type) => switch (type) {
-        CareerEventType.playerRecovered || CareerEventType.injuryEnded => Icons.healing_rounded,
-        CareerEventType.suspensionEnded => Icons.gavel_rounded,
-        CareerEventType.contractExpiring => Icons.description_rounded,
-        CareerEventType.transferOffer => Icons.swap_horiz_rounded,
-        CareerEventType.managerOffer => Icons.business_center_rounded,
-        CareerEventType.nextMatch => Icons.sports_soccer_rounded,
-        CareerEventType.training => Icons.fitness_center_rounded,
-        CareerEventType.seasonStarted => Icons.emoji_events_rounded,
-        CareerEventType.info => Icons.info_outline_rounded,
-      };
-
-  static Color _newsColor(CareerEventType type) => switch (type) {
-        CareerEventType.contractExpiring => AppColors.warning,
-        CareerEventType.transferOffer ||
-        CareerEventType.managerOffer ||
-        CareerEventType.nextMatch => AppColors.green,
-        _ => AppColors.muted,
-      };
-
   static Future<void> _showSeasonEndDialog(
     BuildContext context,
     WidgetRef ref,
@@ -748,36 +574,6 @@ class HomeScreen extends ConsumerWidget {
   }
 
 }
-
-class _Quick extends StatelessWidget {
-  const _Quick({required this.icon, required this.label, required this.onTap});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          width: 76,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceRaised,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: AppColors.green),
-              const SizedBox(height: 6),
-              Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-            ],
-          ),
-        ),
-      );
-}
-
 
 class _DayAdvanceTransition extends StatelessWidget {
   const _DayAdvanceTransition({required this.from, required this.to});

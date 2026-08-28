@@ -77,10 +77,23 @@ class _GameShellState extends ConsumerState<GameShell> {
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: NavigationBar(
-            selectedIndex: index,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF07100D),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x55000000),
+                blurRadius: 22,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: NavigationBar(
+              selectedIndex: index,
             onDestinationSelected: (value) {
               final career = ref.read(gameControllerProvider).career;
               if (career?.managerUnemployed == true && value >= 1 && value <= 3) {
@@ -98,7 +111,8 @@ class _GameShellState extends ConsumerState<GameShell> {
               NavigationDestination(icon: Icon(Icons.sports_soccer_outlined), selectedIcon: Icon(Icons.sports_soccer_rounded), label: 'Escalação'),
               NavigationDestination(icon: Icon(Icons.search_rounded), selectedIcon: Icon(Icons.manage_search_rounded), label: 'Mercado'),
               NavigationDestination(icon: Icon(Icons.grid_view_rounded), label: 'Mais'),
-            ],
+              ],
+            ),
           ),
         ),
       ),
