@@ -21,54 +21,91 @@ class LiveRoundTicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 7),
-        height: 36,
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+        height: 43,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF111D23), Color(0xFF17252B), Color(0xFF111D23)],
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(13),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(
           children: [
-            const SizedBox(width: 10),
-            const Icon(Icons.campaign_rounded, size: 16, color: AppColors.green),
-            const SizedBox(width: 6),
-            Text(
-              'Rodada $round',
-              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900),
+            SizedBox(
+              width: 104,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.volume_up_rounded, size: 18, color: AppColors.green),
+                  const SizedBox(width: 7),
+                  Text(
+                    'Rodada $round',
+                    style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(width: 8),
-            Container(width: 1, height: 18, color: AppColors.border),
-            const SizedBox(width: 8),
+            Container(width: 1, height: 24, color: AppColors.border),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: Text(
-                  alert ?? venue,
-                  key: ValueKey(alert ?? venue),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: alert == null ? AppColors.textSecondary : AppColors.white,
-                    fontSize: 9.5,
-                    fontWeight: alert == null ? FontWeight.w700 : FontWeight.w900,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  child: Row(
+                    key: ValueKey(alert ?? venue),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (alert == null) ...[
+                        const Icon(Icons.stadium_outlined, size: 14, color: AppColors.textSecondary),
+                        const SizedBox(width: 5),
+                      ],
+                      Flexible(
+                        child: Text(
+                          alert ?? venue,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: alert == null ? AppColors.textSecondary : AppColors.white,
+                            fontSize: 10.5,
+                            fontWeight: alert == null ? FontWeight.w700 : FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 6),
-            TextButton.icon(
-              onPressed: onOpenRound,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.green,
-                visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+            Container(width: 1, height: 24, color: AppColors.border),
+            InkWell(
+              onTap: onOpenRound,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 98,
+                height: 34,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.green.withValues(alpha: .10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.grid_view_rounded, size: 16, color: AppColors.green),
+                    SizedBox(width: 6),
+                    Text(
+                      'Rodada',
+                      style: TextStyle(
+                        color: AppColors.green,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              icon: const Icon(Icons.grid_view_rounded, size: 14),
-              label: const Text('Rodada', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900)),
             ),
           ],
         ),

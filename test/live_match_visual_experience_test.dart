@@ -104,8 +104,15 @@ void main() {
     );
     expect(pitchPanel, isNot(contains('LiveMatchMomentCard(')));
     expect(pitchPanel, contains('AspectRatio('));
-    expect(pitchPanel, contains('aspectRatio: 2.20'));
+    expect(pitchPanel, contains('aspectRatio: 2.48'));
     expect(narrationPanel, contains('NARRAÇÃO AO VIVO'));
+    final controls = File(
+      'lib/features/match/widgets/live_match_controls.dart',
+    ).readAsStringSync();
+    expect(controls, contains('POSSE DE BOLA'));
+    expect(controls, contains('CircularProgressIndicator'));
+    expect(controls, contains('CHUTES NO GOL'));
+    expect(controls, contains('_CardsStat'));
     expect(pitchPanel, contains('LiveMatchBroadcastOverlay('));
     expect(pitchPanel, contains('LiveMatchPhaseTransitionOverlay('));
     expect(screen, contains('LiveMatchNarrationPanel('));
@@ -173,6 +180,8 @@ void main() {
     expect(visuals, contains('drawGoal'));
     expect(visuals, contains('projectDisplayPoint'));
     expect(visuals, contains('pitchPath'));
+    expect(visuals, contains('field.width * .018'));
+    expect(renderer, contains('perspectiveScale(display.y) * .72'));
     expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
     expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));

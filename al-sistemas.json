@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.93",
+  "version": "0.1.1.94",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+95"
+    "pubspecVersion": "0.1.1+96"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.93",
-    "versionCode": 95
+    "versionName": "0.1.1.94",
+    "versionCode": 96
   },
   "release": {
-    "version": "0.1.1.93",
-    "revision": 93,
-    "androidVersionCode": 95
+    "version": "0.1.1.94",
+    "revision": 94,
+    "androidVersionCode": 96
   },
   "changelog": [
+    "Aproxima novamente a tela da partida do mockup aprovado: reduz a perspectiva exagerada do campo, diminui os jogadores para melhorar leitura e espaçamento, amplia placar/rodada/timeline/controles, e redesenha posse, chutes, chutes no gol e cartões em formato de transmissão; mantém a torcida WebP como fundo, não revela eventos futuros e preserva Match Engine, CareerState schema 13, saves e IDs.",
     "Integra a torcida noturna criada para a partida como asset WebP otimizado carregado pelo renderer Flame, atrás do campo em perspectiva, mantendo arquibancada/torcida desenhadas por Canvas como fallback; corrige o único undefined_identifier do GitHub Actions da 0.1.1.92 no teste live_match_visual_experience_test.dart, sem alterar Match Engine, timeline, resultados, saves, IDs ou multi-competição.",
     "Reformula a apresentação da partida ao vivo sem alterar o Match Engine: o campo Flame passa a usar projeção em perspectiva, arquibancadas e torcida desenhadas por Canvas, gols em profundidade e jogadores maiores com padrões dos uniformes reais dos clubes; o HUD ganha placar e faixa de rodada mais próximos de transmissão, timeline apenas de eventos já apresentados e controles reforçados; a Passagem do Tempo também recebe apresentação ampliada com datas e processos reais da carreira, sem adicionar imagens ou alterar saves.",
     "Aumenta a tipografia da Home em +3 px/lp de base com ajustes de encaixe responsivo sem ampliar os cards; mostra nomes completos na tabela, renomeia o avanço para AVANÇAR DIA/JOGAR PARTIDA, reduz o nome da competição para Brasileiro Série A, aumenta em 10 px os escudos da Próxima Partida e adiciona RODADA ao histórico recente; corrige também os quatro problemas de analyzer da 0.1.1.90 no pré-jogo, preservando CareerState schema 13, IDs, saves, multi-competição e Match Engine.",
@@ -40,10 +41,9 @@
     "Corrige as quatro falhas de testes reveladas pelo GitHub Actions da 0.1.1.77: a conclusão da temporada passa a ser derivada dos fixtures efetivamente disputados de cada competição carregada, evitando bloqueio por flag CompetitionSeasonState.completed desatualizado em fluxos legados; atualiza o teste de fadiga para validar a responsabilidade extraída em MatchCareerImpactEngine, preservando schema 13, IDs, saves, calendário multi-competição e Match Engine.",
     "Corrige os dois erros de tipagem revelados pelo GitHub Actions da 0.1.1.76 em competition_state_engine.dart: o ramo de competições sem tabela passa a usar List<Standing> explicitamente, evitando inferência List<dynamic>; adiciona regressão para competição sem classificação e preserva integralmente CareerState schema 13, calendário multi-competição, IDs, saves e Match Engine.",
     "Cria a fundação multi-competição do CareerState schema 13: cada competitionId passa a ter progresso, classificação, estatísticas e disciplina próprios, mantendo fixtures como calendário global para conciliar clubes em torneios simultâneos; adiciona metadados de fase/grupo/confronto aos fixtures, resolução cronológica de jogos CPU por competição, preservação dos IDs históricos da Série A, migração compatível do schema 12, suporte de catálogo para futuras competições internacionais fora de um país e correção do erro de analyzer em league_selection_step.dart. O Match Engine permanece único e sem lógica de tabela/save; Flame continua somente visual.",
-    "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes.",
-    "Substitui integralmente a música padrão anterior por 11 faixas OGG otimizadas, remove football.mp3 e menu_01–05.m4a, mantém um único AudioManager e adiciona faixa atual, seleção manual e avanço de música na tela de Áudio; reorganiza a apresentação da primeira entrada da carreira para eliminar o grande vazio vertical e integrar melhor a matéria ao visual azul-grafite, preservando playlist personalizada, saves, CareerState schema 11, SQLite v2, IDs e Match Engine."
+    "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Integra a torcida noturna criada para a partida como asset WebP otimizado carregado pelo renderer Flame, atrás do campo em perspectiva, mantendo arquibancada/torcida desenhadas por Canvas como fallback; corrige o único undefined_identifier do GitHub Actions da 0.1.1.92 no teste live_match_visual_experience_test.dart, sem alterar Match Engine, timeline, resultados, saves, IDs ou multi-competição."
+    "Aproxima novamente a tela da partida do mockup aprovado: reduz a perspectiva exagerada do campo, diminui os jogadores para melhorar leitura e espaçamento, amplia placar/rodada/timeline/controles, e redesenha posse, chutes, chutes no gol e cartões em formato de transmissão; mantém a torcida WebP como fundo, não revela eventos futuros e preserva Match Engine, CareerState schema 13, saves e IDs."
   ]
 }

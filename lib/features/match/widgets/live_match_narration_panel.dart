@@ -48,7 +48,7 @@ class _LiveMatchNarrationPanelState extends State<LiveMatchNarrationPanel> {
       userClubId: widget.userClubId,
     );
     return SectionCard(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,7 +59,7 @@ class _LiveMatchNarrationPanelState extends State<LiveMatchNarrationPanel> {
               Text(
                 'NARRAÇÃO AO VIVO',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .45,
                 ),
@@ -69,22 +69,34 @@ class _LiveMatchNarrationPanelState extends State<LiveMatchNarrationPanel> {
                 'LANCES DA TRANSMISSÃO',
                 style: TextStyle(
                   color: AppColors.muted,
-                  fontSize: 8.5,
+                  fontSize: 9.5,
                   fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 for (final filter in MatchNarrationFilter.values) ...[
                   ChoiceChip(
-                    label: Text(filter.label),
+                    label: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      child: Text(
+                        filter.label,
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                    ),
                     selected: _filter == filter,
                     visualDensity: VisualDensity.compact,
+                    selectedColor: AppColors.green.withValues(alpha: .18),
+                    side: BorderSide(
+                      color: _filter == filter
+                          ? AppColors.green.withValues(alpha: .58)
+                          : AppColors.border,
+                    ),
                     onSelected: (_) => setState(() => _filter = filter),
                   ),
                   if (filter != MatchNarrationFilter.values.last)

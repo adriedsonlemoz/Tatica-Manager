@@ -20,12 +20,12 @@ class LiveMatchTimelineBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final visible = events.where(_isVisible).toList(growable: false);
     return SizedBox(
-      height: 28,
+      height: 34,
       child: Row(
         children: [
           Container(
-            width: 46,
-            height: 25,
+            width: 52,
+            height: 30,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: AppColors.green,
@@ -38,7 +38,7 @@ class LiveMatchTimelineBar extends StatelessWidget {
               "$minute'",
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 10.5,
+                fontSize: 11.5,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -52,7 +52,7 @@ class LiveMatchTimelineBar extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   children: [
                     Container(
-                      height: 3,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: AppColors.border,
                         borderRadius: BorderRadius.circular(99),
@@ -61,7 +61,7 @@ class LiveMatchTimelineBar extends StatelessWidget {
                     FractionallySizedBox(
                       widthFactor: progress,
                       child: Container(
-                        height: 3,
+                        height: 4,
                         decoration: BoxDecoration(
                           color: AppColors.green.withValues(alpha: .68),
                           borderRadius: BorderRadius.circular(99),
@@ -74,8 +74,8 @@ class LiveMatchTimelineBar extends StatelessWidget {
                                 (constraints.maxWidth - 7))
                             .toDouble(),
                         child: Container(
-                          width: MatchEventPresentation.isMajor(event.type) ? 7 : 5,
-                          height: MatchEventPresentation.isMajor(event.type) ? 7 : 5,
+                          width: MatchEventPresentation.isMajor(event.type) ? 9 : 6,
+                          height: MatchEventPresentation.isMajor(event.type) ? 9 : 6,
                           decoration: BoxDecoration(
                             color: _eventColor(event.type),
                             shape: BoxShape.circle,

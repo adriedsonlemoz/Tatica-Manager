@@ -440,7 +440,7 @@ class MatchPitchGame extends FlameGame {
         pulse: _pulse,
         replay: _replayActive,
         goalkeeper: index == 0,
-        scale: MatchPitchVisuals.perspectiveScale(display.y),
+        scale: MatchPitchVisuals.perspectiveScale(display.y) * .72,
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),

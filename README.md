@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.93`
-**Android versionCode:** `95`
+**Release atual:** `0.1.1.94`
+**Android versionCode:** `96`
 
 ## Fonte oficial de versão
 
@@ -14,16 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.93`);
+- `VERSION` — versão visível simples (`0.1.1.94`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+95`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.93` e `versionCode 95`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+96`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.94` e `versionCode 96`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.93` é representada internamente como `0.1.1+95`. A versão visível do aplicativo/Android continua sendo `0.1.1.93`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.94` é representada internamente como `0.1.1+96`. A versão visível do aplicativo/Android continua sendo `0.1.1.94`.
 
 
+
+## Transmissão ao vivo refinada — 0.1.1.94
+
+- suaviza a perspectiva do campo para ficar mais próxima do mockup de transmissão, mantendo o estádio/torcida existente ao fundo;
+- reduz o tamanho visual dos jogadores para melhorar leitura das linhas, espaçamento e proporção dentro do gramado;
+- amplia placar, faixa da rodada, timeline e controles sem alterar a lógica da partida;
+- redesenha posse, chutes, chutes no gol e cartões com indicadores gráficos e contagens derivadas apenas dos eventos já apresentados;
+- preserva Match Engine, timeline, `CareerState` schema 13, saves, IDs e multi-competição.
 
 ## Torcida integrada à partida — 0.1.1.93
 
@@ -94,7 +102,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.94`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.95`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

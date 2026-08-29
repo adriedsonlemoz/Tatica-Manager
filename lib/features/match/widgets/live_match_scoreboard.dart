@@ -41,14 +41,14 @@ class LiveMatchScoreboard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF101B22), Color(0xFF0A1218), Color(0xFF121D22)],
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border.withValues(alpha: .88)),
         boxShadow: const [
           BoxShadow(color: Color(0x44000000), blurRadius: 18, offset: Offset(0, 7)),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(19),
         child: Stack(
           children: [
             Positioned(
@@ -66,7 +66,7 @@ class LiveMatchScoreboard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(11, 8, 11, 10),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -78,7 +78,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                         '$phaseLabel  •',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 9.5,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w900,
                           letterSpacing: .3,
                         ),
@@ -94,13 +94,13 @@ class LiveMatchScoreboard extends StatelessWidget {
                                 ? AppColors.warning
                                 : AppColors.green,
                             fontWeight: FontWeight.w900,
-                            fontSize: 12.5,
+                            fontSize: 14,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -112,7 +112,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        constraints: const BoxConstraints(minWidth: 84),
+                        constraints: const BoxConstraints(minWidth: 96),
                         margin: const EdgeInsets.symmetric(horizontal: 7),
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 240),
@@ -125,7 +125,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                             key: ValueKey(score.display),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontSize: 38,
+                              fontSize: 44,
                               height: .95,
                               fontWeight: FontWeight.w900,
                               letterSpacing: -1.2,
@@ -191,7 +191,7 @@ class _LiveStatus extends StatelessWidget {
             paused ? 'PAUSADO' : 'AO VIVO',
             style: TextStyle(
               color: paused ? AppColors.warning : AppColors.green,
-              fontSize: 10.5,
+              fontSize: 11.5,
               fontWeight: FontWeight.w900,
               letterSpacing: .55,
             ),
@@ -215,7 +215,7 @@ class _ClubSide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badge = ClubBadge(club: club, size: 48);
+    final badge = ClubBadge(club: club, size: 58);
     final info = Expanded(
       child: Column(
         crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -226,7 +226,7 @@ class _ClubSide extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: alignEnd ? TextAlign.right : TextAlign.left,
-            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, height: 1),
+            style: const TextStyle(fontSize: 13.2, fontWeight: FontWeight.w900, height: 1),
           ),
           const SizedBox(height: 5),
           Row(
@@ -237,7 +237,7 @@ class _ClubSide extends StatelessWidget {
                   club.shortName.toUpperCase(),
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 8,
+                    fontSize: 9.2,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

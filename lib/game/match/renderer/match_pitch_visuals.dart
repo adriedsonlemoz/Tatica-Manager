@@ -6,15 +6,15 @@ import '../../../domain/match/match_models.dart';
 
 abstract final class MatchPitchVisuals {
   static Rect fieldRect(double width, double height) => Rect.fromLTRB(
-        12,
-        height * .17,
-        width - 12,
-        height * .93,
+        9,
+        height * .13,
+        width - 9,
+        height * .965,
       );
 
   static Path pitchPath(double width, double height) {
     final field = fieldRect(width, height);
-    final topInset = math.min(field.width * .055, 28.0);
+    final topInset = math.min(field.width * .018, 12.0);
     return Path()
       ..moveTo(field.left + topInset, field.top)
       ..lineTo(field.right - topInset, field.top)
@@ -30,8 +30,8 @@ abstract final class MatchPitchVisuals {
   ) {
     final field = fieldRect(width, height);
     final y = point.dy.clamp(0.0, 1.0);
-    final perspectiveY = math.pow(y, .93).toDouble();
-    final topInset = math.min(field.width * .055, 28.0);
+    final perspectiveY = math.pow(y, .985).toDouble();
+    final topInset = math.min(field.width * .018, 12.0);
     final left = _lerp(field.left + topInset, field.left, perspectiveY);
     final right = _lerp(field.right - topInset, field.right, perspectiveY);
     return Offset(
@@ -41,7 +41,7 @@ abstract final class MatchPitchVisuals {
   }
 
   static double perspectiveScale(double displayY) =>
-      _lerp(.82, 1.13, displayY.clamp(0.0, 1.0));
+      _lerp(.92, 1.04, displayY.clamp(0.0, 1.0));
 
   static void drawPitch(Canvas canvas, double width, double height) {
     final field = fieldRect(width, height);
@@ -194,7 +194,7 @@ abstract final class MatchPitchVisuals {
   }) {
     final top = projectDisplayPoint(Offset(left ? .018 : .982, .39), width, height);
     final bottom = projectDisplayPoint(Offset(left ? .018 : .982, .61), width, height);
-    final depth = math.min(18.0, width * .028);
+    final depth = math.min(13.0, width * .022);
     final direction = left ? -1.0 : 1.0;
     final farTop = top.translate(direction * depth, 3.5);
     final farBottom = bottom.translate(direction * depth, -3.5);

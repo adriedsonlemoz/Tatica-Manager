@@ -30,11 +30,16 @@ class LiveMatchControlBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF101B22), Color(0xFF152329), Color(0xFF101B22)],
+          ),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border),
+          boxShadow: const [
+            BoxShadow(color: Color(0x28000000), blurRadius: 12, offset: Offset(0, 5)),
+          ],
         ),
         child: Row(
           children: [
@@ -55,7 +60,7 @@ class LiveMatchControlBar extends StatelessWidget {
               onTap: enabled ? onTactic : null,
             ),
             _MatchActionButton(
-              icon: Icons.swap_vert_rounded,
+              icon: Icons.swap_horiz_rounded,
               label: 'TROCAR',
               onTap: enabled ? onSubstitution : null,
             ),
@@ -103,30 +108,48 @@ class LiveMatchStatsCard extends StatelessWidget {
       awayGoals + _count(MatchEventType.save, homeId),
     );
     final possession = _visiblePossession();
-    final homeCards = _count(MatchEventType.yellow, homeId) +
-        _count(MatchEventType.red, homeId);
-    final awayCards = _count(MatchEventType.yellow, awayId) +
-        _count(MatchEventType.red, awayId);
+    final yellowCards = _totalCount(MatchEventType.yellow);
+    final redCards = _totalCount(MatchEventType.red);
 
     return SectionCard(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _MiniStat(
-            label: 'POSSE DE BOLA',
-            home: '${possession.$1}%',
-            away: '${possession.$2}%',
+          Expanded(
+            flex: 13,
+            child: _PossessionStat(
+              home: possession.$1,
+              away: possession.$2,
+            ),
           ),
           const _MiniDivider(),
-          _MiniStat(label: 'CHUTES', home: '$homeShots', away: '$awayShots'),
-          const _MiniDivider(),
-          _MiniStat(
-            label: 'CHUTES NO GOL',
-            home: '$homeOnTarget',
-            away: '$awayOnTarget',
+          Expanded(
+            flex: 10,
+            child: _VersusStat(
+              label: 'CHUTES',
+              home: homeShots,
+              away: awayShots,
+            ),
           ),
           const _MiniDivider(),
-          _MiniStat(label: 'CARTÕES', home: '$homeCards', away: '$awayCards'),
+          Expanded(
+            flex: 12,
+            child: _VersusStat(
+              label: 'CHUTES NO GOL',
+              home: homeOnTarget,
+              away: awayOnTarget,
+              dotColor: const Color(0xFF49A9DD),
+            ),
+          ),
+          const _MiniDivider(),
+          Expanded(
+            flex: 10,
+            child: _CardsStat(
+              yellow: yellowCards,
+              red: redCards,
+            ),
+          ),
         ],
       ),
     );
@@ -140,6 +163,9 @@ class LiveMatchStatsCard extends StatelessWidget {
             event.type == type,
       )
       .length;
+
+  int _totalCount(MatchEventType type) =>
+      events.where((event) => _isVisible(event) && event.type == type).length;
 
   int _goals(String teamId) => events
       .where(
@@ -202,25 +228,35 @@ class _MatchActionButton extends StatelessWidget {
           child: OutlinedButton(
             onPressed: onTap,
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              minimumSize: const Size(0, 56),
-              foregroundColor: selected ? AppColors.green : null,
-              backgroundColor:
-                  selected ? AppColors.green.withValues(alpha: .10) : null,
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              minimumSize: const Size(0, 66),
+              foregroundColor: AppColors.green,
+              backgroundColor: selected
+                  ? AppColors.green.withValues(alpha: .10)
+                  : const Color(0xFF142128),
+              side: BorderSide(
+                color: selected
+                    ? AppColors.green.withValues(alpha: .55)
+                    : AppColors.border,
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(15),
               ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 20),
-                const SizedBox(height: 1),
+                Icon(icon, size: 24),
+                const SizedBox(height: 4),
                 Text(
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 8.8, fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 9.8,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ],
             ),
@@ -229,37 +265,181 @@ class _MatchActionButton extends StatelessWidget {
       );
 }
 
-class _MiniStat extends StatelessWidget {
-  const _MiniStat({
+class _PossessionStat extends StatelessWidget {
+  const _PossessionStat({required this.home, required this.away});
+
+  final int home;
+  final int away;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'POSSE DE BOLA',
+            maxLines: 1,
+            style: TextStyle(
+              color: AppColors.muted,
+              fontSize: 8.8,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .3,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$home%',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(width: 6),
+              SizedBox(
+                width: 36,
+                height: 36,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox.expand(
+                      child: CircularProgressIndicator(
+                        value: home / 100,
+                        strokeWidth: 7,
+                        backgroundColor: const Color(0xFF278CC2),
+                        color: AppColors.green,
+                      ),
+                    ),
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF101A20),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '$away%',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+        ],
+      );
+}
+
+class _VersusStat extends StatelessWidget {
+  const _VersusStat({
     required this.label,
     required this.home,
     required this.away,
+    this.dotColor,
   });
 
   final String label;
-  final String home;
-  final String away;
+  final int home;
+  final int away;
+  final Color? dotColor;
 
   @override
-  Widget build(BuildContext context) => Expanded(
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.muted,
-                fontSize: 8,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .3,
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.muted,
+              fontSize: 8.5,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .25,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$home', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
+              const SizedBox(width: 7),
+              Container(
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: dotColor ?? AppColors.textSecondary,
+                  shape: BoxShape.circle,
+                ),
               ),
+              const SizedBox(width: 7),
+              Text('$away', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
+            ],
+          ),
+        ],
+      );
+}
+
+class _CardsStat extends StatelessWidget {
+  const _CardsStat({required this.yellow, required this.red});
+
+  final int yellow;
+  final int red;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'CARTÕES',
+            style: TextStyle(
+              color: AppColors.muted,
+              fontSize: 8.8,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .3,
             ),
-            const SizedBox(height: 3),
-            Text(
-              '$home  •  $away',
-              style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _CardCount(color: AppColors.warning, value: yellow),
+              const SizedBox(width: 8),
+              _CardCount(color: AppColors.danger, value: red),
+            ],
+          ),
+        ],
+      );
+}
+
+class _CardCount extends StatelessWidget {
+  const _CardCount({required this.color, required this.value});
+
+  final Color color;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 10,
+            height: 18,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+              boxShadow: [
+                BoxShadow(color: color.withValues(alpha: .28), blurRadius: 5),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '$value',
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+          ),
+        ],
       );
 }
 
@@ -269,7 +449,7 @@ class _MiniDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         width: 1,
-        height: 24,
+        height: 48,
         color: AppColors.border,
       );
 }

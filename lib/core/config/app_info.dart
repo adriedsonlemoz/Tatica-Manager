@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.93';
+  static const String version = '0.1.1.94';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.94',
+      title: 'Transmissão ao vivo refinada',
+      changes: [
+        'Aproxima o campo do enquadramento do mockup, com perspectiva mais suave e jogadores menores e melhor espaçados.',
+        'Redesenha posse, chutes, chutes no gol e cartões com leitura de transmissão e reforça timeline, controles, rodada e placar.',
+        'Mantém a torcida existente como fundo e preserva integralmente o Match Engine e os eventos já calculados.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.93',
       title: 'Torcida integrada à partida',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Reformula o campo Flame com perspectiva, estádio desenhado em Canvas e jogadores maiores usando os padrões reais dos uniformes dos clubes.',
         'Aproxima placar, rodada, timeline e controles da linguagem de transmissão sem revelar eventos futuros nem alterar o Match Engine.',
         'Remodela a Passagem do Tempo com datas e processos reais da carreira, sem adicionar imagens ou alterar saves.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.91',
-      title: 'Home com tipografia ampliada',
-      changes: [
-        'Aumenta em 3 px/lp a base tipográfica da Home com encaixe responsivo, mantendo as dimensões atuais dos cards.',
-        'Mostra nomes completos na tabela, usa Brasileiro Série A, AVANÇAR DIA/JOGAR PARTIDA e amplia os escudos do confronto em 10 px.',
-        'Corrige os erros de analyzer do pré-jogo da 0.1.1.90 sem alterar o design ou as regras da partida.',
       ],
     ),
   ];
