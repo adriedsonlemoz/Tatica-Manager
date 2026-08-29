@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.117`
-**Android versionCode:** `118`
+**Release atual:** `0.1.1.118`
+**Android versionCode:** `119`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,26 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.117`);
+- `VERSION` — versão visível simples (`0.1.1.118`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+118`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.117` e `versionCode 118`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+119`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.118` e `versionCode 119`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.117` é representada internamente como `0.1.1+118`. A versão visível do aplicativo/Android continua sendo `0.1.1.117`. a próxima entrega normalmente será `0.1.1.118`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.118` é representada internamente como `0.1.1+119`. A versão visível do aplicativo/Android continua sendo `0.1.1.118`. a próxima entrega normalmente será `0.1.1.119`.
 
+
+
+## Elenco e Classificação conforme os mockups — 0.1.1.118
+
+- substitui os cards grandes do Elenco por uma tabela compacta com número, avatar, jogador, posição, geral e moral;
+- adiciona cabeçalho do clube com escudo, temporada, reputação, caixa e orçamento, além de busca e filtro discretos;
+- mantém as abas Jogadores, Funções e Status funcionais e apresenta o resumo de jogadores brasileiros e estrangeiros;
+- substitui a `DataTable` horizontal da Classificação por uma tabela responsiva com Time, J, V, E, D, GP e PTS;
+- adiciona abas funcionais para Tabela, Jogos e Artilheiros, além de Sobre o campeonato e Critérios de desempate;
+- usa exclusivamente `AppColors` e o tema global para reproduzir as duas referências nos modos claro e escuro;
+- preserva dados reais da carreira, competição selecionada, navegação, Match Engine, `CareerState` schema 13, saves e IDs.
 
 
 ## Refinamento da Home compacta — 0.1.1.117

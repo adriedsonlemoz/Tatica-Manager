@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite), libGDX como renderer Android do campo e Flame como fallback visual.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.117
-Android versionCode: 118
-pubspec: 0.1.1+118
+Release visível: 0.1.1.118
+Android versionCode: 119
+pubspec: 0.1.1+119
 
-Novidade desta base: mantém libGDX 1.14.2 como renderer do campo no Android, Hybrid Composition real, SurfaceView contido em 105/68 e FitViewport 1050x680. A 0.1.1.113 porta para o libGDX as melhorias de movimentação da versão Work 0.1.1.107: velocidade/aceleração individuais, curvas e atrasos determinísticos, pênalti sem aglomeração, retorno escalonado e nomes mais estáveis. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame preserva o mesmo refinamento como fallback.
+Novidade desta base: Elenco e Classificação seguem os mockups aprovados com tabelas compactas e responsivas, abas funcionais e adaptação integral ao tema claro/escuro. Mantém libGDX 1.14.2 como renderer do campo no Android, Hybrid Composition real, SurfaceView contido em 105/68 e FitViewport 1050x680. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame preserva o mesmo refinamento como fallback.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.118 com versionCode > 118.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.119 com versionCode > 119.
 
 
 Depois de editar al-sistemas.json, execute:

@@ -136,7 +136,7 @@ void main() {
     final homeClean = File('lib/features/home/home_clean_content.dart')
         .readAsStringSync();
 
-    expect(squad, contains('PlayerCard('));
+    expect(squad, contains('PlayerAvatar(player: player'));
     expect(playerCard, contains('PlayerAvatar('));
     expect(playerCard, contains('this.showStatus = true'));
     expect(profile, contains('PlayerAvatar('));

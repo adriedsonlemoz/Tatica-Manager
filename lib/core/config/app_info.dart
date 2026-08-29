@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.117';
+  static const String version = '0.1.1.118';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.118',
+      title: 'Elenco e Classificação conforme mockups',
+      changes: [
+        'Reformula o Elenco com cabeçalho do clube, abas, tabela compacta, moral e resumo de nacionalidades.',
+        'Reformula a Classificação sem rolagem horizontal e adiciona abas funcionais, informações do campeonato e critérios de desempate.',
+        'Adapta integralmente as duas telas aos modos claro e escuro sem alterar dados, Match Engine, saves ou IDs.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.117',
       title: 'Refinamento da Home compacta',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Atualiza a regressão da paleta para as cores atuais do tema claro/escuro.',
         'Faz o teste de avatares validar a nova HomeCleanRankings em vez da ligação removida da Home antiga.',
         'Preserva Home, tema, libGDX, movimentação, Match Engine, saves e IDs.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.115',
-      title: 'Correção do tema claro no analyzer',
-      changes: [
-        'Corrige o import de AppColors e dois const incompatíveis com a paleta adaptativa no pré-jogo/partida.',
-        'Corrige as seis expectativas literais do teste de calendário/Home que impediam o flutter analyze.',
-        'Preserva Home clara, modo escuro, libGDX, movimentação, Match Engine, saves e IDs.',
       ],
     ),
   ];

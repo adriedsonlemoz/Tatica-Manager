@@ -14,24 +14,28 @@ void main() {
     expect(source, contains('showDialog<void>'));
   });
 
-  test('classificação coloca PTS após o clube e mostra zonas', () {
+  test('classificação compacta cabe na largura e mantém dados e zonas', () {
     final source =
         File('lib/features/standings/standings_screen.dart').readAsStringSync();
     final catalog =
         File('lib/data/competition_catalog.dart').readAsStringSync();
 
-    final club = source.indexOf("Text('Clube')");
-    final points = source.indexOf("Text('PTS')");
-    final played = source.indexOf("Text('J')");
-    expect(club, greaterThanOrEqualTo(0));
-    expect(points, greaterThan(club));
-    expect(played, greaterThan(points));
-    expect(source, contains('Libertadores'));
-    expect(source, contains('Sul-Americana'));
+    final team = source.indexOf("_TableLabel('TIME')");
+    final played = source.indexOf("_StatLabel('J')");
+    final wins = source.indexOf("_StatLabel('V')");
+    final points = source.indexOf("_StatLabel('PTS')");
+    expect(team, greaterThanOrEqualTo(0));
+    expect(played, greaterThan(team));
+    expect(wins, greaterThan(played));
+    expect(points, greaterThan(wins));
     expect(catalog, contains('Campeonato Brasileiro Série A'));
-    expect(source, contains('_MovementIndicator'));
+    expect(source, contains('_StandingsTable'));
     expect(source, contains('positionMovement'));
-    expect(source, contains('Rebaixamento'));
+    expect(source, contains('SOBRE O CAMPEONATO'));
+    expect(source, contains('Critérios de desempate'));
+    expect(source, contains("_CompetitionView.matches => 'Jogos'"));
+    expect(source, contains("_CompetitionView.scorers => 'Artilheiros'"));
+    expect(source, isNot(contains('DataTable(')));
   });
 
   test('home clara usa composição simples, responsiva e somente dados reais', () {

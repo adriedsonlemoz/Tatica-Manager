@@ -8,13 +8,24 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.117`
-- **Android versionCode:** `118`
+- **Release deste handoff:** `0.1.1.118`
+- **Android versionCode:** `119`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
+
+
+## Estado funcional da release 0.1.1.118
+
+- aplica os mockups aprovados ao Elenco e à Classificação com tabelas compactas que cabem na largura da tela;
+- Elenco passa a exibir cabeçalho do clube, abas funcionais, busca/filtro, posição, geral, moral e resumo de nacionalidades;
+- Classificação passa a exibir Tabela, Jogos e Artilheiros, informações reais do campeonato e critérios de desempate;
+- todos os fundos, textos, bordas e destaques usam a paleta adaptativa já alternada em Configurações;
+- preserva dados, controllers, navegação, Match Engine, renderer libGDX/Flame, `CareerState` schema 13, saves e IDs.
+
+Consulte `docs/RELEASE_0.1.1.118.md`.
 
 
 ## Estado funcional da release 0.1.1.117
@@ -836,11 +847,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.116
-versionCode:         118
-pubspec:             0.1.1+118
+release/versionName: 0.1.1.118
+versionCode:         119
+pubspec:             0.1.1+119
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.118` e usar um `versionCode` maior que 118.
+A próxima alteração/entrega normalmente deve virar `0.1.1.119` e usar um `versionCode` maior que 119.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
