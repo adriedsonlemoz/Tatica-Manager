@@ -8,11 +8,21 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.111`
-- **Android versionCode:** `112`
+- **Release deste handoff:** `0.1.1.112`
+- **Android versionCode:** `113`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+
+## Estado funcional da release 0.1.1.112
+
+- corrige a falha `compileReleaseKotlin` da 0.1.1.111 em `LibGdxPitchPainter.kt`, onde `drawCrowd()` usava `crowdPulse` sem recebê-lo no próprio escopo;
+- propaga o parâmetro visual explicitamente por `draw()` → `drawStadiumBase()` → `drawCrowd()` e adiciona regressão estrutural para o contrato;
+- o log anterior confirmou `flutter analyze` sem problemas e 282 testes aprovados antes dessa falha Kotlin;
+- preserva Match Engine, renderer visual, Hybrid Composition, `SurfaceView` 105:68, `FitViewport`, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.112.md`.
 
 
 ## Estado funcional da release 0.1.1.111
@@ -773,10 +783,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.111
-versionCode:         112
-pubspec:             0.1.1+112
+versionCode:         113
+pubspec:             0.1.1+113
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.112` e usar um `versionCode` maior que 112.
+A próxima alteração/entrega normalmente deve virar `0.1.1.113` e usar um `versionCode` maior que 113.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

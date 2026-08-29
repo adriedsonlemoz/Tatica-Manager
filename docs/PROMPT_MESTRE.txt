@@ -2,6 +2,11 @@ PROMPT MESTRE — NOVO TÁTICA MANAGER EM FLUTTER
 Versão inicial consolidada
 
 
+ATUALIZAÇÃO DE COMPILAÇÃO DO RENDERER — 0.1.1.112
+
+O pulso visual da torcida `crowdPulse` é estado exclusivamente visual do renderer Android. `LibGdxMatchRenderer` o envia para `LibGdxPitchPainter.draw()`, que deve propagá-lo explicitamente por `drawStadiumBase()` até `drawCrowd()`. Preserve a regressão estrutural desse encadeamento. Não mover esse estado para o Match Engine nem duplicar regras/eventos no Kotlin.
+
+
 ATUALIZAÇÃO DE REGRESSÃO DO RENDERER — 0.1.1.111
 
 Os testes estruturais da partida devem validar a implementação atual do retângulo nativo: proporção 105/68, altura explícita calculada pelo Flutter, SizedBox limitado e clipping. Não reintroduzir AspectRatio apenas para satisfazer testes antigos. O SurfaceView libGDX continua usando Hybrid Composition real e FitViewport; Match Engine e coordenadas permanecem em Dart.

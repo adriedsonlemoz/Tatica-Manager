@@ -113,6 +113,11 @@ void main() {
     expect(painter, contains('drawGoals('));
     expect(painter, contains('homeGoalkeeperKit'));
     expect(painter, contains('GdxPitchGeometry.PLAYER_RADIUS'));
+    expect(
+      RegExp(r'crowdPulse: Float').allMatches(painter).length,
+      greaterThanOrEqualTo(3),
+    );
+    expect(painter, contains('crowdPulse = crowdPulse'));
     expect(labels, contains('buildPlacements('));
     expect(labels, contains('occupied.none { it.overlaps(candidate) }'));
     expect(labels, contains('shapes.rect('));

@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.111`
-**Android versionCode:** `112`
+**Release atual:** `0.1.1.112`
+**Android versionCode:** `113`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.111`);
+- `VERSION` — versão visível simples (`0.1.1.112`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+112`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.111` e `versionCode 112`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+113`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.112` e `versionCode 113`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.111` é representada internamente como `0.1.1+112`. A versão visível do aplicativo/Android continua sendo `0.1.1.111`. a próxima entrega normalmente será `0.1.1.112`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.112` é representada internamente como `0.1.1+113`. A versão visível do aplicativo/Android continua sendo `0.1.1.112`. a próxima entrega normalmente será `0.1.1.113`.
 
+
+
+## Correção da compilação Kotlin do renderer libGDX — 0.1.1.112
+
+- o GitHub Actions da 0.1.1.111 confirmou `flutter analyze` sem problemas e **282 testes aprovados** antes de chegar ao build Android;
+- corrige `LibGdxPitchPainter.kt:126: Unresolved reference 'crowdPulse'`, causado pela refatoração visual da 0.1.1.110 não ter propagado o parâmetro recebido por `draw()` até `drawCrowd()`;
+- `crowdPulse` agora é passado explicitamente por `drawStadiumBase` até a torcida, sem criar estado duplicado nem alterar eventos;
+- adiciona regressão estrutural para validar o encadeamento do parâmetro em futuras refatorações;
+- preserva Match Engine, Hybrid Composition, `SurfaceView` 105:68, `FitViewport`, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
 
 
 ## Correção da regressão de layout da partida — 0.1.1.111

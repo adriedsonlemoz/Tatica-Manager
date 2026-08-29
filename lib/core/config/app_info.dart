@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.111';
+  static const String version = '0.1.1.112';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.112',
+      title: 'Correção Kotlin do renderer libGDX',
+      changes: [
+        'Encadeia crowdPulse do painter principal até a pintura da torcida, eliminando o unresolved reference do compileReleaseKotlin.',
+        'Adiciona regressão estrutural para impedir que esse parâmetro visual se perca em futuras refatorações.',
+        'Preserva Match Engine, SurfaceView 105:68, Hybrid Composition, FitViewport, saves, IDs e CareerState schema 13.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.111',
       title: 'Correção do teste do campo libGDX',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Prende o SurfaceView libGDX ao retângulo do campo usando Hybrid Composition real e tamanho 105:68 controlado pelo Flutter.',
         'Estabiliza a escala com FitViewport e melhora jogadores, goleiros, bola, redes, gramado, sombras e nomes.',
         'Preserva Match Engine, Flame fallback, saves, IDs e CareerState schema 13.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.109',
-      title: 'Compatibilidade libGDX com AGP 9',
-      changes: [
-        'Corrige o build Android que falhava ao registrar os natives do libGDX no sourceSets com um Provider.',
-        'Passa a usar a Variant Sources API oficial e liga a tarefa de extração dos natives diretamente ao diretório JNI gerado.',
-        'Não altera Match Engine, renderer, saves, IDs ou CareerState schema 13.',
       ],
     ),
   ];

@@ -55,7 +55,14 @@ internal class LibGdxPitchPainter(
         val fieldHeight = GdxPitchGeometry.WORLD_HEIGHT - GdxPitchGeometry.FIELD_MARGIN_Y * 2f
         shapes.projectionMatrix = camera.combined
 
-        drawStadiumBase(camera, left, bottom, fieldWidth, fieldHeight)
+        drawStadiumBase(
+            camera = camera,
+            left = left,
+            bottom = bottom,
+            fieldWidth = fieldWidth,
+            fieldHeight = fieldHeight,
+            crowdPulse = crowdPulse,
+        )
         drawGrass(left, bottom, fieldWidth, fieldHeight)
         drawPitchLines(left, bottom, fieldWidth, fieldHeight)
         drawGoals(left, bottom, fieldWidth, fieldHeight)
@@ -83,6 +90,7 @@ internal class LibGdxPitchPainter(
         bottom: Float,
         fieldWidth: Float,
         fieldHeight: Float,
+        crowdPulse: Float,
     ) {
         shapes.begin(ShapeRenderer.ShapeType.Filled)
         shapes.color = Color(.025f, .060f, .050f, 1f)
@@ -90,7 +98,14 @@ internal class LibGdxPitchPainter(
         shapes.color = Color(0f, 0f, 0f, .32f)
         shapes.rect(left - 8f, bottom - 8f, fieldWidth + 16f, fieldHeight + 16f)
         shapes.end()
-        drawCrowd(camera, left, bottom, fieldWidth, fieldHeight)
+        drawCrowd(
+            camera = camera,
+            left = left,
+            bottom = bottom,
+            fieldWidth = fieldWidth,
+            fieldHeight = fieldHeight,
+            crowdPulse = crowdPulse,
+        )
     }
 
     private fun drawGrass(left: Float, bottom: Float, fieldWidth: Float, fieldHeight: Float) {
@@ -122,6 +137,7 @@ internal class LibGdxPitchPainter(
         bottom: Float,
         fieldWidth: Float,
         fieldHeight: Float,
+        crowdPulse: Float,
     ) {
         val pulse = .50f + crowdPulse * .45f
         shapes.projectionMatrix = camera.combined

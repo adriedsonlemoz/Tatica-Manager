@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.111",
+  "version": "0.1.1.112",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+112"
+    "pubspecVersion": "0.1.1+113"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.111",
-    "versionCode": 112
+    "versionName": "0.1.1.112",
+    "versionCode": 113
   },
   "release": {
-    "version": "0.1.1.111",
-    "revision": 111,
-    "androidVersionCode": 112
+    "version": "0.1.1.112",
+    "revision": 112,
+    "androidVersionCode": 113
   },
   "changelog": [
+    "Corrige a falha de compilação Kotlin revelada pelo GitHub Actions da 0.1.1.111: o pulso visual da torcida (crowdPulse), já recebido pelo LibGdxPitchPainter, passa a ser encadeado explicitamente por drawStadiumBase até drawCrowd; adiciona regressão estrutural para esse contrato e preserva renderer, Match Engine, SurfaceView 105:68, Hybrid Composition, FitViewport, CareerState schema 13, saves, IDs e multi-competição.",
     "Corrige a única falha de teste revelada pelo GitHub Actions da 0.1.1.110: atualiza a regressão visual da partida para validar o retângulo explícito 105:68 com SizedBox/clipping usado pelo SurfaceView libGDX, removendo a expectativa obsoleta de AspectRatio sem alterar renderer, Match Engine, saves, IDs ou multi-competição.",
     "Corrige o encaixe visual do libGDX na partida Android: força Hybrid Composition real para o SurfaceView adicionado pelo Fragment, limita a View nativa ao retângulo 105:68 definido pelo Flutter, sincroniza o glViewport com FitViewport e refina jogadores, goleiros, bola, gols/redes, gramado, sombras e rótulos de nomes com maior escala e redução de colisões; preserva Match Engine, Flame fallback, CareerState schema 13, saves, IDs e multi-competição.",
     "Corrige a falha de build Android da 0.1.1.108 com AGP 9.1: substitui o uso de Provider no AndroidSourceSet de jniLibs pela Variant Sources API oficial com addGeneratedSourceDirectory, mantendo a extração dos natives libGDX ligada ao grafo de tarefas; atualiza a regressão estrutural e preserva Match Engine, renderer, CareerState schema 13, saves, IDs e multi-competição.",
@@ -60,6 +61,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Corrige o encaixe visual do libGDX na partida Android: força Hybrid Composition real para o SurfaceView adicionado pelo Fragment, limita a View nativa ao retângulo 105:68 definido pelo Flutter, sincroniza o glViewport com FitViewport e refina jogadores, goleiros, bola, gols/redes, gramado, sombras e rótulos de nomes com maior escala e redução de colisões; preserva Match Engine, Flame fallback, CareerState schema 13, saves, IDs e multi-competição."
+    "Corrige a falha de compilação Kotlin revelada pelo GitHub Actions da 0.1.1.111: o pulso visual da torcida (crowdPulse), já recebido pelo LibGdxPitchPainter, passa a ser encadeado explicitamente por drawStadiumBase até drawCrowd; adiciona regressão estrutural para esse contrato e preserva renderer, Match Engine, SurfaceView 105:68, Hybrid Composition, FitViewport, CareerState schema 13, saves, IDs e multi-competição."
   ]
 }
