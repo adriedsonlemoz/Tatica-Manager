@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.104",
+  "version": "0.1.1.105",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+105"
+    "pubspecVersion": "0.1.1+106"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.104",
-    "versionCode": 105
+    "versionName": "0.1.1.105",
+    "versionCode": 106
   },
   "release": {
-    "version": "0.1.1.104",
-    "revision": 104,
-    "androidVersionCode": 105
+    "version": "0.1.1.105",
+    "revision": 105,
+    "androidVersionCode": 106
   },
   "changelog": [
+    "Adiciona apresentação visual 2.5D sobre o campo restaurado da 0.1.1.91: jogadores passam a variar de escala por profundidade, são ordenados pelo eixo visual, usam uniforme real com volume, sombra e animação de passada; goleiros recebem visual próprio, a bola ganha arco/altura e sombra separados e a rede reage ao gol; preserva Match Engine, CareerState schema 13, saves, IDs e multi-competição.",
     "Restaura somente a apresentação visual da partida ao padrão da 0.1.1.91: painel volta à proporção 105/68, campo retangular, estádio Canvas, jogadores e mapeamento linear anteriores; mantém HUD, replay, eventos, substituições, Match Engine, CareerState schema 13, saves, IDs e multi-competição atuais.",
     "Corrige o único problema apontado pelo flutter analyze da 0.1.1.102 removendo um import redundante de dart:ui no teste visual da partida; não altera o novo campo em imagem, renderer, Match Engine, saves, IDs ou multi-competição.",
     "Integra o novo campo noturno como asset WebP 1550x625 na partida ao vivo: o cenário completo de estádio/gramado passa a ser o fundo principal do Flame, enquanto jogadores, bola, destaques e animações continuam desenhados por cima usando as mesmas coordenadas do Match Engine; calibra a projeção ao trapézio real da imagem, mantém o campo procedural antigo como fallback e preserva CareerState schema 13, saves, IDs e multi-competição.",
@@ -53,6 +54,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Restaura somente a apresentação visual da partida ao padrão da 0.1.1.91: painel volta à proporção 105/68, campo retangular, estádio Canvas, jogadores e mapeamento linear anteriores; mantém HUD, replay, eventos, substituições, Match Engine, CareerState schema 13, saves, IDs e multi-competição atuais."
+    "Adiciona apresentação visual 2.5D sobre o campo restaurado da 0.1.1.91: jogadores passam a variar de escala por profundidade, são ordenados pelo eixo visual, usam uniforme real com volume, sombra e animação de passada; goleiros recebem visual próprio, a bola ganha arco/altura e sombra separados e a rede reage ao gol; preserva Match Engine, CareerState schema 13, saves, IDs e multi-competição."
   ]
 }

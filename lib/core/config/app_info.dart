@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.104';
+  static const String version = '0.1.1.105';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.105',
+      title: 'Partida visual 2.5D',
+      changes: [
+        'Mantém o campo restaurado da 0.1.1.91 e adiciona escala/ordem por profundidade aos jogadores.',
+        'Jogadores ganham uniforme real com volume, sombra, passada animada e goleiros visualmente diferenciados.',
+        'Bola ganha altura e sombra próprias nos lances, e a rede reage visualmente ao gol sem alterar o Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.104',
       title: 'Campo visual restaurado',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Remove o único import redundante apontado pelo analyzer no teste visual da partida.',
         'Mantém integralmente o novo campo em imagem, jogadores, bola e projeção da 0.1.1.102.',
         'Não altera Match Engine, saves, IDs ou multi-competição.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.102',
-      title: 'Campo real como cenário da partida',
-      changes: [
-        'Usa o novo estádio/gramado em WebP como fundo principal da partida, no mesmo aspecto 2.48 do painel.',
-        'Jogadores, bola, destaques e animações continuam sendo desenhados pelo Flame sobre o cenário e seguem os eventos do Match Engine.',
-        'Calibra a projeção às linhas reais da imagem e mantém o renderer procedural anterior como fallback seguro.',
       ],
     ),
   ];

@@ -17,6 +17,12 @@ abstract final class MatchPitchVisuals {
         const Radius.circular(14),
       );
 
+  static double depthScale(double displayY) =>
+      (.82 + displayY.clamp(0.0, 1.0) * .28).toDouble();
+
+  static double depthShadowScale(double displayY) =>
+      (.76 + displayY.clamp(0.0, 1.0) * .30).toDouble();
+
   static void drawPitch(Canvas canvas, double width, double height) {
     final field = fieldRect(width, height);
     canvas.drawRect(
@@ -53,9 +59,25 @@ abstract final class MatchPitchVisuals {
     canvas.drawRRect(
       clip,
       Paint()
-        ..color = const Color(0x9978D620)
+        ..color = const Color(0x52000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 5.2
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+    );
+    canvas.drawRRect(
+      clip,
+      Paint()
+        ..color = const Color(0xA878D620)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.15,
+    );
+    final rect = clip.outerRect;
+    canvas.drawLine(
+      Offset(rect.left + 14, rect.bottom - .8),
+      Offset(rect.right - 14, rect.bottom - .8),
+      Paint()
+        ..color = const Color(0x4078D620)
+        ..strokeWidth = 2.2,
     );
   }
 
@@ -78,10 +100,39 @@ abstract final class MatchPitchVisuals {
       ..shader = Gradient.linear(
         field.topCenter,
         field.bottomCenter,
-        const [Color(0x18000000), Color(0x00FFFFFF), Color(0x1A000000)],
-        const [0, .48, 1],
+        const [
+          Color(0x25000000),
+          Color(0x04FFFFFF),
+          Color(0x0AFFFFFF),
+          Color(0x26000000),
+        ],
+        const [0, .30, .66, 1],
       );
     canvas.drawRect(field, wash);
+
+    final centerLight = Paint()
+      ..shader = Gradient.radial(
+        Offset(field.center.dx, field.top + field.height * .34),
+        field.width * .55,
+        const [Color(0x15FFFFFF), Color(0x00000000)],
+      );
+    canvas.drawRect(field, centerLight);
+
+    final nearLip = Rect.fromLTWH(
+      field.left,
+      field.bottom - math.max(3.0, field.height * .025).toDouble(),
+      field.width,
+      math.max(3.0, field.height * .025).toDouble(),
+    );
+    canvas.drawRect(
+      nearLip,
+      Paint()
+        ..shader = Gradient.linear(
+          nearLip.topCenter,
+          nearLip.bottomCenter,
+          const [Color(0x00000000), Color(0x24000000)],
+        ),
+    );
   }
 
   static void drawPitchMarkings(Canvas canvas, Rect field) {
@@ -137,18 +188,78 @@ abstract final class MatchPitchVisuals {
 
   static void drawGoal(Canvas canvas, Rect field, {required bool left}) {
     final goalHeight = field.height * .24;
+    final depth = math.min(8.5, field.height * .045).toDouble();
+    final top = field.center.dy - goalHeight / 2;
+    final frontX = left ? field.left + 1.2 : field.right - 1.2;
+    final backX = left ? frontX + depth : frontX - depth;
+    final farShift = 2.4;
+    final frame = Paint()
+      ..color = const Color(0xEFFFFFFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.15;
+    final net = Paint()
+      ..color = const Color(0x82FFFFFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = .62;
+
+    final frontTop = Offset(frontX, top);
+    final frontBottom = Offset(frontX, top + goalHeight);
+    final backTop = Offset(backX, top + farShift);
+    final backBottom = Offset(backX, top + goalHeight - farShift);
+    canvas.drawLine(frontTop, frontBottom, frame);
+    canvas.drawLine(frontTop, backTop, frame);
+    canvas.drawLine(frontBottom, backBottom, frame);
+    canvas.drawLine(backTop, backBottom, net);
+
+    for (var index = 1; index < 5; index++) {
+      final t = index / 5;
+      canvas.drawLine(
+        Offset.lerp(frontTop, frontBottom, t)!,
+        Offset.lerp(backTop, backBottom, t)!,
+        net,
+      );
+    }
+    for (var index = 1; index < 3; index++) {
+      final t = index / 3;
+      canvas.drawLine(
+        Offset.lerp(frontTop, backTop, t)!,
+        Offset.lerp(frontBottom, backBottom, t)!,
+        net,
+      );
+    }
+  }
+
+  static void drawGoalReaction(
+    Canvas canvas,
+    Rect field, {
+    required bool left,
+    required double intensity,
+    required double phase,
+  }) {
+    if (intensity <= 0) return;
+    final goalHeight = field.height * .24;
     final depth = math.min(7.0, field.height * .04);
     final top = field.center.dy - goalHeight / 2;
     final x = left ? field.left + 1 : field.right - depth - 1;
     final rect = Rect.fromLTWH(x, top, depth, goalHeight);
+    final direction = left ? 1.0 : -1.0;
+    final ripple = math.sin(phase * 17) * 2.2 * intensity;
+    final glow = Paint()
+      ..color = const Color(0xFFB8FF68).withValues(alpha: .10 + .18 * intensity)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+    canvas.drawRect(rect.inflate(4 * intensity), glow);
+
     final net = Paint()
-      ..color = const Color(0x99FFFFFF)
+      ..color = const Color(0xDFFFFFFF).withValues(alpha: .35 + .45 * intensity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = .8;
-    canvas.drawRect(rect, net);
     for (var index = 1; index < 5; index++) {
       final y = top + goalHeight * index / 5;
-      canvas.drawLine(Offset(rect.left, y), Offset(rect.right, y), net);
+      canvas.drawLine(
+        Offset(rect.left, y),
+        Offset(rect.right + direction * ripple, y + ripple * .18),
+        net,
+      );
     }
   }
 
@@ -161,14 +272,20 @@ abstract final class MatchPitchVisuals {
     required bool woodwork,
     required int style,
     required MatchEventType? eventType,
+    required double heightLift,
+    required double scale,
   }) {
+    final lift = math.max(0.0, heightLift).toDouble();
+    final raisedBall = ball.translate(0, -lift);
+    final raisedTrail = trailStart.translate(0, -lift * .42);
+
     if (moving) {
       canvas.drawLine(
-        trailStart,
-        ball,
+        raisedTrail,
+        raisedBall,
         Paint()
-          ..color = (replay ? const Color(0xCCFFFFFF) : const Color(0x66FFFFFF))
-          ..strokeWidth = replay ? 1.6 : 1.2
+          ..color = (replay ? const Color(0xCCFFFFFF) : const Color(0x5AFFFFFF))
+          ..strokeWidth = (replay ? 1.6 : 1.1) * scale
           ..strokeCap = StrokeCap.round,
       );
       if (eventType == MatchEventType.pass ||
@@ -178,33 +295,51 @@ abstract final class MatchPitchVisuals {
           eventType == MatchEventType.woodwork) {
         _drawTrajectoryArrow(
           canvas,
-          from: trailStart,
-          to: ball,
+          from: raisedTrail,
+          to: raisedBall,
           emphasized: eventType != MatchEventType.pass,
         );
       }
     }
+
+    final shadowWidth = (8.4 + lift * .32) * scale;
+    final shadowHeight = (3.2 - math.min(1.2, lift * .055)) * scale;
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: ball.translate(1.2 * scale, 2.3 * scale),
+        width: shadowWidth,
+        height: math.max(1.5, shadowHeight).toDouble(),
+      ),
+      Paint()
+        ..color = Color.fromARGB((100 - math.min(55, lift * 5)).round(), 0, 0, 0)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.2 * scale),
+    );
+
     if (woodwork) {
       canvas.drawCircle(
-        ball,
-        8.5,
+        raisedBall,
+        (8.5 + lift * .18) * scale,
         Paint()
           ..color = const Color(0x55E7C14D)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
+          ..strokeWidth = 2 * scale,
       );
     }
-    canvas.drawCircle(
-      Offset(ball.dx + 1.2, ball.dy + 2),
-      4.4,
-      Paint()..color = const Color(0x66000000),
-    );
+
     drawMatchBallGraphic(
       canvas,
-      center: ball,
-      radius: 4.3,
+      center: raisedBall,
+      radius: 4.3 * scale,
       style: style,
     );
+
+    if (lift > 1.5) {
+      canvas.drawCircle(
+        raisedBall.translate(-1.1 * scale, -1.2 * scale),
+        .75 * scale,
+        Paint()..color = const Color(0xBFFFFFFF),
+      );
+    }
   }
 
   static void _drawTrajectoryArrow(

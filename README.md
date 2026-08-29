@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.104`
-**Android versionCode:** `105`
+**Release atual:** `0.1.1.105`
+**Android versionCode:** `106`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,28 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.104`);
+- `VERSION` — versão visível simples (`0.1.1.105`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+105`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.104` e `versionCode 105`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+106`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.105` e `versionCode 106`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.104` é representada internamente como `0.1.1+105`. A versão visível do aplicativo/Android continua sendo `0.1.1.104`. a próxima entrega normalmente será `0.1.1.105`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.105` é representada internamente como `0.1.1+106`. A versão visível do aplicativo/Android continua sendo `0.1.1.105`. a próxima entrega normalmente será `0.1.1.106`.
 
 
 
+
+
+## Partida visual 2.5D — 0.1.1.105
+
+- mantém o campo retangular e a proporção `105 / 68` restaurados na 0.1.1.104;
+- jogadores passam a variar de escala e ordem conforme a profundidade visual, melhorando a leitura de quem está à frente/atrás;
+- uniformes reais recebem volume, shorts, meias, padrões do clube, sombras e animação de corrida;
+- goleiros ficam visualmente diferenciados sem alterar posição ou lógica;
+- bola ganha arco/altura e sombra no gramado em passes, chutes, defesas, trave e gol;
+- rede reage ao gol e o campo ganha profundidade discreta de iluminação/borda;
+- Match Engine, eventos, saves, IDs e multi-competição permanecem intactos.
 
 
 ## Campo visual restaurado — 0.1.1.104
@@ -168,7 +179,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.103`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.106`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

@@ -145,8 +145,6 @@ class MatchPitchGame extends FlameGame {
     if (_cueQueue.isEmpty) {
       _currentCue = null;
       _eventRemaining = 0;
-      if (!_replayPending) {
-          }
       return;
     }
 
@@ -341,7 +339,7 @@ class MatchPitchGame extends FlameGame {
         if (endingReplay) {
           _replayPending = false;
           _setReplayActive(false);
-              }
+        }
         _beginNextCue();
       }
     }
@@ -350,7 +348,7 @@ class MatchPitchGame extends FlameGame {
       _returnDelay -= dt;
       if (_returnDelay <= 0 && _cueQueue.isEmpty && !_replayActive) {
         _resetTargets();
-          }
+      }
     }
   }
 
@@ -378,9 +376,9 @@ class MatchPitchGame extends FlameGame {
     canvas.save();
     canvas.clipRRect(clip);
     MatchPitchVisuals.drawPitch(canvas, width, height);
-    _drawPlayers(canvas, width, height, _homePlayers, homeColor, true);
-    _drawPlayers(canvas, width, height, _awayPlayers, awayColor, false);
+    _drawPlayers(canvas, width, height);
     _drawBall(canvas, width, height);
+    _drawGoalReaction(canvas, width, height);
     canvas.restore();
     MatchPitchVisuals.drawVignette(canvas, fieldRect);
     MatchPitchVisuals.drawPitchBorder(canvas, clip);
@@ -391,22 +389,83 @@ class MatchPitchGame extends FlameGame {
     Canvas canvas,
     double width,
     double height,
-    List<FieldPoint> players,
-    Color color,
-    bool home,
   ) {
-    final dismissed = home ? _dismissedHomeIndexes : _dismissedAwayIndexes;
-    for (var index = 0; index < players.length; index++) {
-      if (dismissed.contains(index)) continue;
-      final center = _toCanvasOffset(players[index], width, height);
+    final entries = <_DepthPlayer>[];
+    for (var index = 0; index < _homePlayers.length; index++) {
+      if (_dismissedHomeIndexes.contains(index)) continue;
+      entries.add(
+        _DepthPlayer(
+          home: true,
+          index: index,
+          point: _homePlayers[index],
+          target: _homeTargets[index],
+        ),
+      );
+    }
+    for (var index = 0; index < _awayPlayers.length; index++) {
+      if (_dismissedAwayIndexes.contains(index)) continue;
+      entries.add(
+        _DepthPlayer(
+          home: false,
+          index: index,
+          point: _awayPlayers[index],
+          target: _awayTargets[index],
+        ),
+      );
+    }
+
+    entries.sort((a, b) {
+      final aDisplay = toHorizontalDisplayPoint(a.point);
+      final bDisplay = toHorizontalDisplayPoint(b.point);
+      final byDepth = aDisplay.y.compareTo(bDisplay.y);
+      if (byDepth != 0) return byDepth;
+      return aDisplay.x.compareTo(bDisplay.x);
+    });
+
+    for (final entry in entries) {
+      final home = entry.home;
+      final index = entry.index;
+      final display = toHorizontalDisplayPoint(entry.point);
+      final targetDisplay = toHorizontalDisplayPoint(entry.target);
+      final depthScale = MatchPitchVisuals.depthScale(display.y);
+      final movementDistance = sqrt(
+        MatchPlayerMotion.distanceSquared(entry.point, entry.target),
+      );
+      final movementAmount = (movementDistance * 9).clamp(0.0, 1.0).toDouble();
+      final horizontalDelta = targetDisplay.x - display.x;
+      final verticalDelta = targetDisplay.y - display.y;
+      final directionMagnitude = sqrt(
+        horizontalDelta * horizontalDelta + verticalDelta * verticalDelta,
+      );
+      final movementDirection = directionMagnitude <= .0001
+          ? 0.0
+          : (horizontalDelta / directionMagnitude).clamp(-1.0, 1.0).toDouble();
+      final baseCenter = _toCanvasOffset(entry.point, width, height);
+      final idleFactor = 1 - movementAmount;
+      final idleSeed = (index + (home ? 3 : 19)) * .73;
+      final ambientOffset = Offset(
+        sin(_elapsed * 1.35 + idleSeed) * .48 * idleFactor * depthScale,
+        cos(_elapsed * 1.05 + idleSeed) * .24 * idleFactor * depthScale,
+      );
+      final center = baseCenter + ambientOffset;
       final active = _activeHome == home && _activePlayerIndex == index;
+      final playerIds = home ? _homePlayerIds : _awayPlayerIds;
+      final playerId = index < playerIds.length
+          ? playerIds[index]
+          : '${home ? 'home' : 'away'}-$index';
+
       MatchPlayerVisuals.draw(
         canvas,
         center: center,
-        color: color,
+        kit: home ? homeKit : awayKit,
+        playerId: playerId,
         active: active,
+        pulseReplay: _replayActive,
         pulse: _pulse,
-        replay: _replayActive,
+        goalkeeper: index == 0,
+        scale: depthScale,
+        movementAmount: movementAmount,
+        movementDirection: movementDirection,
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),
@@ -422,19 +481,55 @@ class MatchPitchGame extends FlameGame {
   }
 
   void _drawBall(Canvas canvas, double width, double height) {
+    final display = toHorizontalDisplayPoint(_ball);
+    final scale = MatchPitchVisuals.depthScale(display.y) * .92;
     final base = _toCanvasOffset(_ball, width, height);
     final idleOffset = _ballMove >= 1 && _currentCue == null
-        ? Offset(sin(_elapsed * 1.45) * 1.8, cos(_elapsed * 1.1) * .9)
+        ? Offset(sin(_elapsed * 1.45) * 1.4, cos(_elapsed * 1.1) * .65)
         : Offset.zero;
+    final eventType = _currentCue?.event?.type;
+    final lift = _ballVisualHeight(eventType);
     MatchPitchVisuals.drawBall(
       canvas,
       ball: base + idleOffset,
       trailStart: _toCanvasOffset(_ballStart, width, height),
       moving: _ballMove < 1,
       replay: _replayActive,
-      woodwork: _currentCue?.event?.type == MatchEventType.woodwork,
+      woodwork: eventType == MatchEventType.woodwork,
       style: ballStyle,
-      eventType: _currentCue?.event?.type,
+      eventType: eventType,
+      heightLift: lift,
+      scale: scale,
+    );
+  }
+
+  double _ballVisualHeight(MatchEventType? type) {
+    if (_ballMove >= 1 || type == null) return 0;
+    final arc = sin(pi * _ballMove.clamp(0.0, 1.0));
+    final baseHeight = switch (type) {
+      MatchEventType.shot ||
+      MatchEventType.goal ||
+      MatchEventType.ownGoal ||
+      MatchEventType.woodwork => 9.0,
+      MatchEventType.save || MatchEventType.penaltySaved => 7.2,
+      MatchEventType.penalty => 6.4,
+      MatchEventType.pass => 3.2,
+      _ => 1.8,
+    };
+    return arc * baseHeight * (_replayActive ? 1.15 : 1.0);
+  }
+
+  void _drawGoalReaction(Canvas canvas, double width, double height) {
+    final type = _currentCue?.event?.type;
+    if (type != MatchEventType.goal && type != MatchEventType.ownGoal) return;
+    final target = toHorizontalDisplayPoint(_ballTarget);
+    final intensity = (_eventRemaining / 1.4).clamp(0.0, 1.0).toDouble();
+    MatchPitchVisuals.drawGoalReaction(
+      canvas,
+      MatchPitchVisuals.fieldRect(width, height),
+      left: target.x < .5,
+      intensity: intensity,
+      phase: _elapsed,
     );
   }
 
@@ -498,4 +593,19 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
 
+}
+
+
+class _DepthPlayer {
+  const _DepthPlayer({
+    required this.home,
+    required this.index,
+    required this.point,
+    required this.target,
+  });
+
+  final bool home;
+  final int index;
+  final FieldPoint point;
+  final FieldPoint target;
 }

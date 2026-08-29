@@ -146,7 +146,7 @@ void main() {
     expect(homeShotTarget.y, closeTo(.50, .0001));
   });
 
-  test('campo ao vivo restaura a geometria visual da 0.1.1.91', () {
+  test('campo 2.5D preserva a geometria da 0.1.1.91 e adiciona profundidade', () {
     final field = MatchPitchVisuals.fieldRect(1000, 400);
     final clip = MatchPitchVisuals.pitchClip(1000, 400);
 
@@ -155,6 +155,12 @@ void main() {
     expect(field.right, 986);
     expect(field.bottom, 382);
     expect(clip.outerRect, field);
+    expect(MatchPitchVisuals.depthScale(0), closeTo(.82, .0001));
+    expect(MatchPitchVisuals.depthScale(1), closeTo(1.10, .0001));
+    expect(
+      MatchPitchVisuals.depthScale(.8),
+      greaterThan(MatchPitchVisuals.depthScale(.2)),
+    );
   });
 
   test('renderer enfileira lances e só representa a timeline do motor', () {
@@ -196,7 +202,15 @@ void main() {
     expect(visuals, contains('field.width * .16'));
     expect(visuals, isNot(contains('drawFieldImage(')));
     expect(renderer, contains('field.left + display.x * field.width'));
-    expect(playerVisuals, contains('required Color color'));
+    expect(playerVisuals, contains('required ClubKit kit'));
+    expect(playerVisuals, contains('required double scale'));
+    expect(playerVisuals, contains('required double movementAmount'));
+    expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
+    expect(renderer, contains('entries.sort'));
+    expect(renderer, contains('MatchPitchVisuals.depthScale'));
+    expect(renderer, contains('_ballVisualHeight'));
+    expect(visuals, contains('drawGoalReaction'));
+    expect(visuals, contains('required double heightLift'));
     expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));
     expect(playerVisuals, contains('celebration'));
