@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.113';
+  static const String version = '0.1.1.114';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.114',
+      title: 'Home clara e tema global',
+      changes: [
+        'Reformula a Home em cards claros e responsivos com ação contextual, seis atalhos, próxima partida, resumo, classificação, artilharia e notícias.',
+        'Torna o modo claro o padrão e adiciona modo escuro persistente nas Configurações e antes da carreira.',
+        'Preserva renderer libGDX, movimentação, Match Engine, saves, IDs e CareerState schema 13.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.113',
       title: 'Movimentação natural integrada ao libGDX',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Encadeia crowdPulse do painter principal até a pintura da torcida, eliminando o unresolved reference do compileReleaseKotlin.',
         'Adiciona regressão estrutural para impedir que esse parâmetro visual se perca em futuras refatorações.',
         'Preserva Match Engine, SurfaceView 105:68, Hybrid Composition, FitViewport, saves, IDs e CareerState schema 13.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.111',
-      title: 'Correção do teste do campo libGDX',
-      changes: [
-        'Atualiza a regressão visual que ainda exigia o antigo AspectRatio mesmo após o campo passar a usar tamanho explícito 105:68.',
-        'Mantém SizedBox, clipping, Hybrid Composition e FitViewport sem alterar o renderer ou o Match Engine.',
-        'Preserva Flame fallback, saves, IDs e CareerState schema 13.',
       ],
     ),
   ];

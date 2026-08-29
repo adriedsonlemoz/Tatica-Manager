@@ -116,7 +116,7 @@ class CareerStyleStep extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                 Text(
                   'Escolha quantos minutos reais cada tempo será apresentado. O Match Engine continua simulando os mesmos 90 minutos.',
                   style: TextStyle(color: AppColors.muted, fontSize: 11, height: 1.35),
                 ),
@@ -200,7 +200,7 @@ class _DurationChoiceCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              const Text(
+               Text(
                 'min/tempo',
                 style: TextStyle(color: AppColors.muted, fontSize: 9),
               ),

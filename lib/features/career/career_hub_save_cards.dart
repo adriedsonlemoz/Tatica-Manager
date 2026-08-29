@@ -65,7 +65,7 @@ class CareerSaveCard extends StatelessWidget {
                       '${save.userClubName} • ${save.managerName}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 12.5),
+                      style:  TextStyle(color: AppColors.muted, fontSize: 12.5),
                     ),
                     const SizedBox(height: 7),
                     Wrap(
@@ -129,7 +129,7 @@ class EmptyCareerState extends StatelessWidget {
                   Text(
                     'Crie seu técnico, escolha um dos 20 clubes e defina a identidade tática inicial.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.muted, height: 1.4),
+                    style:  TextStyle(color: AppColors.muted, height: 1.4),
                   ),
                   const SizedBox(height: 18),
                   FilledButton.icon(
@@ -176,7 +176,7 @@ class CareerDeleteDialog extends StatelessWidget {
             Text(
               '${save.userClubName} • ${save.managerName}\nTemporada ${save.season} • Rodada ${save.currentRound}',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.muted, height: 1.4),
+              style:  TextStyle(color: AppColors.muted, height: 1.4),
             ),
             const SizedBox(height: 14),
             Container(

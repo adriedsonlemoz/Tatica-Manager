@@ -136,7 +136,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   ),
                   const SizedBox(height: 10),
                   if (importantEvents.isEmpty)
-                    const Text(
+                     Text(
                       'Partida sem grandes ocorrências registradas.',
                       style: TextStyle(color: AppColors.muted),
                     )
@@ -331,7 +331,7 @@ class _ResultMomentTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     event.text,
-                    style: const TextStyle(color: AppColors.muted, fontSize: 12, height: 1.3),
+                    style:  TextStyle(color: AppColors.muted, fontSize: 12, height: 1.3),
                   ),
                 ],
               ),
@@ -389,7 +389,7 @@ class _ResultStat extends StatelessWidget {
               child: Text(
                 label,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.muted),
+                style:  TextStyle(color: AppColors.muted),
               ),
             ),
             SizedBox(

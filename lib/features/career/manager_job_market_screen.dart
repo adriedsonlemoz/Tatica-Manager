@@ -64,7 +64,7 @@ class ManagerJobMarketScreen extends ConsumerWidget {
                       const SizedBox(height: 3),
                       Text(
                         'Reputação profissional $reputation/100 • ${vacancies.length} vaga(s) mapeada(s)',
-                        style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                        style:  TextStyle(color: AppColors.muted, fontSize: 11),
                       ),
                     ],
                   ),
@@ -108,7 +108,7 @@ class ManagerJobMarketScreen extends ConsumerWidget {
               ),
               Text(
                 '${vacancies.length}',
-                style: const TextStyle(color: AppColors.muted),
+                style:  TextStyle(color: AppColors.muted),
               ),
             ],
           ),
@@ -133,7 +133,7 @@ class ManagerJobMarketScreen extends ConsumerWidget {
                             const SizedBox(height: 2),
                             Text(
                               vacancy.reason,
-                              style: const TextStyle(
+                              style:  TextStyle(
                                 color: AppColors.muted,
                                 fontSize: 10.5,
                                 height: 1.3,
@@ -265,7 +265,7 @@ class _OfferCard extends ConsumerWidget {
                     const SizedBox(height: 3),
                     Text(
                       offer.reason,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 10.5),
+                      style:  TextStyle(color: AppColors.muted, fontSize: 10.5),
                     ),
                   ],
                 ),
@@ -306,7 +306,7 @@ class _Info extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9)),
+          Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 9)),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11)),
         ],

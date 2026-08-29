@@ -89,7 +89,7 @@ class LiveMatchMomentCard extends StatelessWidget {
                   MatchEventPresentation.narration(event, teamName),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11.5,
                     height: 1.25,
@@ -102,7 +102,7 @@ class LiveMatchMomentCard extends StatelessWidget {
                     'Sai ${secondaryPlayer!.displayName}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       color: AppColors.muted,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -179,7 +179,7 @@ class MatchNarrationTile extends StatelessWidget {
                   MatchEventPresentation.narration(event, teamName),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: AppColors.textSecondary,
                     height: 1.25,
                     fontSize: 11,
@@ -290,7 +290,7 @@ class MatchPhasePanel extends StatelessWidget {
                         message,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:  TextStyle(
                           color: AppColors.muted,
                           fontSize: 10.5,
                         ),
@@ -325,7 +325,7 @@ class MatchStartingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
         ),
-        child: const Row(
+        child:  Row(
           children: [
             Icon(Icons.sports_soccer_rounded, color: AppColors.green),
             SizedBox(width: 9),

@@ -34,7 +34,7 @@ class DashboardSectionHeader extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       color: AppColors.muted,
                       fontSize: 10,
                     ),
@@ -111,7 +111,7 @@ class DashboardStatTile extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:  TextStyle(
                 color: AppColors.muted,
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
@@ -184,13 +184,13 @@ class DashboardProgress extends StatelessWidget {
     super.key,
     required this.value,
     this.color = AppColors.green,
-    this.backgroundColor = AppColors.surfaceSoft,
+    this.backgroundColor,
     this.height = 7,
   });
 
   final double value;
   final Color color;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final double height;
 
   @override

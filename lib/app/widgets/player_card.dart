@@ -154,7 +154,7 @@ class _PlayerCardInfo extends StatelessWidget {
             '${CountryCatalog.flagOf(player.nationality)} ${player.nationality} • ${player.age} anos',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.muted, fontSize: 10),
+            style:  TextStyle(color: AppColors.muted, fontSize: 10),
           ),
           if (showStatus) ...[
             const SizedBox(height: 7),
@@ -230,7 +230,7 @@ class _OverallBadge extends StatelessWidget {
             if (baseValue != null)
               Text(
                 '$baseValue',
-                style: const TextStyle(
+                style:  TextStyle(
                   color: AppColors.muted,
                   fontSize: 7,
                   decoration: TextDecoration.lineThrough,

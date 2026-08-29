@@ -28,14 +28,14 @@ class PreMatchLineupCard extends StatelessWidget {
               children: [
                 const _RoundIcon(icon: Icons.groups_2_rounded),
                 const SizedBox(width: 10),
-                const Expanded(
+                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'QUEM VAI A CAMPO',
                         style: TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 12.5,
                           fontWeight: FontWeight.w900,
                           letterSpacing: .2,
@@ -341,10 +341,10 @@ class _PremiumPanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: padding,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF13232B), Color(0xFF101B22), Color(0xFF0F181E)],
+            colors: AppColors.panelGradient,
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),

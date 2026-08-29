@@ -90,7 +90,7 @@ class ContractsOverviewCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       'Revisão de $total atleta(s) do elenco principal',
-                      style: const TextStyle(
+                      style:  TextStyle(
                         color: AppColors.muted,
                         fontSize: 10.5,
                       ),
@@ -285,7 +285,7 @@ class ContractPlayerCard extends StatelessWidget {
                       '${player.age} anos • ${player.primaryPosition.label} • contrato até ${player.contract.endSeason}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 9.8),
+                      style:  TextStyle(color: AppColors.muted, fontSize: 9.8),
                     ),
                     const SizedBox(height: 7),
                     Row(
@@ -300,7 +300,7 @@ class ContractPlayerCard extends StatelessWidget {
                         const SizedBox(width: 7),
                         Text(
                           'Pede ${compactMoney(ContractEngine.expectedSalary(player))}',
-                          style: const TextStyle(
+                          style:  TextStyle(
                             color: AppColors.muted,
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
@@ -317,7 +317,7 @@ class ContractPlayerCard extends StatelessWidget {
                 onPressed: onRenew,
                 icon: Icon(Icons.edit_note_rounded, color: color),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+               Icon(Icons.chevron_right_rounded, color: AppColors.muted),
             ],
           ),
         ),
@@ -365,11 +365,11 @@ class _OverviewCount extends StatelessWidget {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+                        style:  TextStyle(color: AppColors.muted, fontSize: 9.5),
                       ),
                     ),
                     const SizedBox(width: 2),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 13),
+                     Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 13),
                   ],
                 ),
               ],
@@ -389,7 +389,7 @@ class _MoneyMetric extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9.5)),
+          Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 9.5)),
           const SizedBox(height: 2),
           Text(
             value,

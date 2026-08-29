@@ -58,7 +58,7 @@ class SeasonHistoryScreen extends ConsumerWidget {
                       Text(
                         '${career.manager.ageInSeason(career.season)} anos • '
                         '${career.manager.nationality} • reputação $reputation/100',
-                        style: const TextStyle(color: AppColors.muted),
+                        style:  TextStyle(color: AppColors.muted),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -186,7 +186,7 @@ class SeasonHistoryScreen extends ConsumerWidget {
                   career.managerEmployed
                       ? 'Seu desempenho, reputação e situação dos clubes influenciam as vagas e propostas recebidas.'
                       : 'Você está livre no mercado. Consulte vagas ou avance os dias para receber novos contatos.',
-                  style: const TextStyle(color: AppColors.muted, fontSize: 11, height: 1.35),
+                  style:  TextStyle(color: AppColors.muted, fontSize: 11, height: 1.35),
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
@@ -325,7 +325,7 @@ class _TenureTile extends StatelessWidget {
                     tenure.active
                         ? 'Desde ${shortDate(tenure.startedAt)} • temporada ${tenure.startSeason}'
                         : '${shortDate(tenure.startedAt)} → ${shortDate(tenure.endedAt!)} • ${tenure.endReason}',
-                    style: const TextStyle(color: AppColors.muted, fontSize: 10.5),
+                    style:  TextStyle(color: AppColors.muted, fontSize: 10.5),
                   ),
                 ],
               ),

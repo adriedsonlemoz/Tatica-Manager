@@ -63,7 +63,7 @@ class LiveMatchSimulationSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              const Text(
+               Text(
                 'A simulação percorre a timeline já calculada e não altera o equilíbrio do Match Engine.',
                 style: TextStyle(color: AppColors.muted, fontSize: 11),
               ),

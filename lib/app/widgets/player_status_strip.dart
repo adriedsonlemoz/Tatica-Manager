@@ -60,16 +60,16 @@ class PlayerStatusStrip extends StatelessWidget {
     );
   }
 
-  Widget _chip(IconData icon, String label, [Color color = AppColors.muted]) =>
+  Widget _chip(IconData icon, String label, [Color? color]) =>
       Container(
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 6 : 8,
           vertical: compact ? 3 : 4,
         ),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: .10),
+          color: (color ?? AppColors.muted).withValues(alpha: .10),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: color.withValues(alpha: .22)),
+          border: Border.all(color: (color ?? AppColors.muted).withValues(alpha: .22)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -79,7 +79,7 @@ class PlayerStatusStrip extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: color,
+                color: color ?? AppColors.muted,
                 fontSize: compact ? 8.5 : 10,
                 fontWeight: FontWeight.w800,
               ),

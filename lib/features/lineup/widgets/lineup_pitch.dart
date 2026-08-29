@@ -158,7 +158,7 @@ class _PlayerMarker extends StatelessWidget {
                       children: [
                         Text(
                           assignment.slot.role.label,
-                          style: const TextStyle(
+                          style:  TextStyle(
                             color: AppColors.muted,
                             fontSize: 7.5,
                             fontWeight: FontWeight.w900,

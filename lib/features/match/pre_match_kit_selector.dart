@@ -32,10 +32,10 @@ class PreMatchKitSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF13232B), Color(0xFF101B22), Color(0xFF0F181E)],
+          colors: AppColors.panelGradient,
         ),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border.withValues(alpha: .82)),
@@ -50,7 +50,7 @@ class PreMatchKitSelector extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+           Row(
             children: [
               _KitHeadingIcon(),
               SizedBox(width: 10),
@@ -61,7 +61,7 @@ class PreMatchKitSelector extends StatelessWidget {
                     Text(
                       'UNIFORME DA PARTIDA',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
                         letterSpacing: .25,
@@ -104,7 +104,7 @@ class PreMatchKitSelector extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
             decoration: BoxDecoration(
-              color: const Color(0xFF091116).withValues(alpha: .72),
+              color: AppColors.insetSurface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: AppColors.green.withValues(alpha: .20),
@@ -114,7 +114,7 @@ class PreMatchKitSelector extends StatelessWidget {
               children: [
                 _MiniKit(kit: selectedSlot.kitOf(userClub)),
                 const SizedBox(width: 7),
-                const Icon(
+                 Icon(
                   Icons.compare_arrows_rounded,
                   size: 17,
                   color: AppColors.textSecondary,
@@ -131,8 +131,8 @@ class PreMatchKitSelector extends StatelessWidget {
                         '${opponent.shortName} ${opponentSlot.shortLabel}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.white,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 9.5,
                           fontWeight: FontWeight.w900,
                         ),
@@ -204,7 +204,7 @@ class _KitChoice extends StatelessWidget {
             decoration: BoxDecoration(
               color: selected
                   ? AppColors.green.withValues(alpha: .10)
-                  : const Color(0xFF0B151B),
+                  : AppColors.insetSurface,
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
                 color: selected
@@ -249,7 +249,7 @@ class _KitChoice extends StatelessWidget {
                   slot.roleLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: AppColors.muted,
                     fontSize: 7.2,
                     fontWeight: FontWeight.w600,
@@ -294,7 +294,7 @@ class _MiniKit extends StatelessWidget {
         height: 31,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: const Color(0xFF152229),
+          color: AppColors.surfaceSoft,
           borderRadius: BorderRadius.circular(9),
           border: Border.all(color: AppColors.border),
         ),

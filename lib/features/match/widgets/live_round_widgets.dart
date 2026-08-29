@@ -24,8 +24,8 @@ class LiveRoundTicker extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
         height: 43,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF111D23), Color(0xFF17252B), Color(0xFF111D23)],
+          gradient: LinearGradient(
+            colors: AppColors.panelGradient,
           ),
           borderRadius: BorderRadius.circular(13),
           border: Border.all(color: AppColors.border),
@@ -57,7 +57,7 @@ class LiveRoundTicker extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (alert == null) ...[
-                        const Icon(Icons.stadium_outlined, size: 14, color: AppColors.textSecondary),
+                         Icon(Icons.stadium_outlined, size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 5),
                       ],
                       Flexible(
@@ -67,7 +67,7 @@ class LiveRoundTicker extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: alert == null ? AppColors.textSecondary : AppColors.white,
+                            color: alert == null ? AppColors.textSecondary : AppColors.textPrimary,
                             fontSize: 10.5,
                             fontWeight: alert == null ? FontWeight.w700 : FontWeight.w900,
                           ),
@@ -208,7 +208,7 @@ class LiveRoundSheet extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 5),
-              const Text(
+               Text(
                 'Todos os placares acompanham o mesmo minuto da sua partida.',
                 style: TextStyle(color: AppColors.muted, fontSize: 11),
               ),

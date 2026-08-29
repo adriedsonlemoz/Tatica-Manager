@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/audio/audio_providers.dart';
+import '../../app/state/app_appearance_controller.dart';
 import '../../app/state/providers.dart';
 import '../../app/widgets/common.dart';
 import '../../core/config/app_preferences.dart';
@@ -66,6 +67,7 @@ class _PreCareerSettingsScreenState
     }
 
     final audio = _settings.audio;
+    final darkMode = ref.watch(appAppearanceProvider) == ThemeMode.dark;
     return PremiumScaffold(
       appBar: const GameTopBar(
         title: 'Configurações',
@@ -95,6 +97,19 @@ class _PreCareerSettingsScreenState
           ),
           const SizedBox(height: 10),
           SectionCard(
+            padding: EdgeInsets.zero,
+            child: SwitchListTile.adaptive(
+              value: darkMode,
+              secondary: const Icon(Icons.dark_mode_outlined, color: AppColors.green),
+              title: const Text('Modo escuro', style: TextStyle(fontWeight: FontWeight.w800)),
+              subtitle: const Text('O modo claro é usado por padrão em todo o aplicativo.'),
+              onChanged: (value) => ref
+                  .read(appAppearanceProvider.notifier)
+                  .setDarkMode(value),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SectionCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -103,7 +118,7 @@ class _PreCareerSettingsScreenState
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                 Text(
                   'Duração por tempo',
                   style: TextStyle(
                     color: AppColors.muted,
@@ -130,7 +145,7 @@ class _PreCareerSettingsScreenState
                   ),
                 ),
                 const SizedBox(height: 14),
-                const Text(
+                 Text(
                   'Bola da partida',
                   style: TextStyle(
                     color: AppColors.muted,

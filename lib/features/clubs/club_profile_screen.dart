@@ -56,14 +56,14 @@ class ClubProfileScreen extends ConsumerWidget {
                     children: [
                       Text(club.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 5),
-                      Text('Técnico: ${club.managerName}', style: const TextStyle(color: AppColors.muted)),
-                      Text('${club.stadium.name} • ${club.stadium.capacity} lugares', style: const TextStyle(color: AppColors.muted)),
+                      Text('Técnico: ${club.managerName}', style:  TextStyle(color: AppColors.muted)),
+                      Text('${club.stadium.name} • ${club.stadium.capacity} lugares', style:  TextStyle(color: AppColors.muted)),
                       if (standing != null)
                         Text(
                           '${standingIndex + 1}º lugar • ${standing.points} pts • SG ${standing.goalDifference >= 0 ? '+' : ''}${standing.goalDifference}',
                           style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.w800),
                         ),
-                      Text('Caixa ${formatMoney(club.money)}', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
+                      Text('Caixa ${formatMoney(club.money)}', style:  TextStyle(color: AppColors.muted, fontSize: 12)),
                     ],
                   ),
                 ),

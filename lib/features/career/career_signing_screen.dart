@@ -65,11 +65,11 @@ class _CareerSigningScreenState extends ConsumerState<CareerSigningScreen>
       safeBottom: true,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration:  BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF172831), AppColors.background],
+            colors: [AppColors.surfaceSoft, AppColors.background],
           ),
         ),
         child: Stack(
@@ -119,7 +119,7 @@ class _CareerSigningScreenState extends ConsumerState<CareerSigningScreen>
                     const SizedBox(height: 5),
                     Text(
                       '${widget.managerName} • ${club.name}',
-                      style: const TextStyle(color: AppColors.muted),
+                      style:  TextStyle(color: AppColors.muted),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 18),

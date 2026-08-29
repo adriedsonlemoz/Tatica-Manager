@@ -98,11 +98,11 @@ class _PreMatchScreenState extends ConsumerState<PreMatchScreen> {
       ),
       safeBottom: true,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0C151C), AppColors.background, Color(0xFF0B1419)],
+            colors: AppColors.broadcastGradient,
           ),
         ),
         child: ListView(
@@ -206,10 +206,10 @@ class _UnavailablePanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF13232B), Color(0xFF101B22), Color(0xFF0F181E)],
+            colors: AppColors.panelGradient,
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),
@@ -244,7 +244,7 @@ class _UnavailablePanel extends StatelessWidget {
                   child: Text(
                     'INDISPONÍVEIS',
                     style: TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w900,
                     ),
@@ -252,8 +252,8 @@ class _UnavailablePanel extends StatelessWidget {
                 ),
                 Text(
                   '${unavailable.length}',
-                  style: const TextStyle(
-                    color: AppColors.white,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
                   ),
@@ -270,7 +270,7 @@ class _UnavailablePanel extends StatelessWidget {
                     size: 22,
                   ),
                   const SizedBox(width: 9),
-                  const Expanded(
+                   Expanded(
                     child: Text(
                       'Todo o elenco está disponível para a partida.',
                       style: TextStyle(
@@ -300,8 +300,8 @@ class _UnavailablePanel extends StatelessWidget {
                           children: [
                             Text(
                               player.displayName,
-                              style: const TextStyle(
-                                color: AppColors.white,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -355,8 +355,8 @@ class _StartMatchButton extends StatelessWidget {
                       end: Alignment.bottomRight,
                       colors: [Color(0xFFB6F928), Color(0xFF91E312), Color(0xFF72C90B)],
                     )
-                  : const LinearGradient(
-                      colors: [Color(0xFF263238), Color(0xFF1E292E)],
+                  : LinearGradient(
+                      colors: [AppColors.surfaceSoft, AppColors.surfaceRaised],
                     ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(

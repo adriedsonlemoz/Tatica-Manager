@@ -135,7 +135,7 @@ class _Arrow extends StatelessWidget {
   const _Arrow();
 
   @override
-  Widget build(BuildContext context) => const Padding(
+  Widget build(BuildContext context) =>  Padding(
         padding: EdgeInsets.symmetric(horizontal: 2),
         child: Icon(Icons.chevron_right_rounded, size: 15, color: AppColors.muted),
       );

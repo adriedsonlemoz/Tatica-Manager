@@ -29,7 +29,7 @@ class ManagerChoiceStep extends StatelessWidget {
                 ?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
-          const Text(
+           Text(
             'Você pode assumir a carreira com um técnico existente ou criar seu próprio treinador.',
             style: TextStyle(color: AppColors.muted, height: 1.4),
           ),
@@ -91,7 +91,7 @@ class _ChoiceCard extends StatelessWidget {
                             fontSize: 17, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 5),
                     Text(subtitle,
-                        style: const TextStyle(
+                        style:  TextStyle(
                             color: AppColors.muted, height: 1.35)),
                   ],
                 ),
@@ -138,7 +138,7 @@ class ExistingManagerSelectionStep extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 3),
-                  const Text(
+                   Text(
                     'Escolha diretamente no banco de técnicos disponível para esta carreira.',
                     style: TextStyle(color: AppColors.muted, height: 1.35),
                   ),
@@ -227,7 +227,7 @@ class ExistingManagerSelectionStep extends StatelessWidget {
                             const SizedBox(height: 3),
                             Text(
                               '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
-                              style: const TextStyle(
+                              style:  TextStyle(
                                 color: AppColors.muted,
                                 fontSize: 12,
                               ),

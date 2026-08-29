@@ -8,11 +8,22 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.113`
-- **Android versionCode:** `114`
+- **Release deste handoff:** `0.1.1.114`
+- **Android versionCode:** `115`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+
+## Estado funcional da release 0.1.1.114
+
+- torna o modo claro o padrão global do aplicativo e mantém modo escuro persistente por preferência fora do save;
+- reformula a Home em cards claros e responsivos com cabeçalho, ação contextual, seis atalhos, próxima partida, resumo da temporada, classificação, artilharia e notícias usando dados reais;
+- centraliza superfícies, bordas e textos neutros em uma paleta adaptativa única, preservando identidade verde e estados semânticos;
+- pré-jogo e interface ao redor do campo também acompanham o tema; elementos gráficos do renderer (gramado, jogadores e estádio) mantêm sua paleta de jogo;
+- preserva renderer libGDX, movimentação da 0.1.1.113, Match Engine, CareerState schema 13, saves, IDs e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.114.md`.
 
 
 ## Estado funcional da release 0.1.1.113
@@ -794,10 +805,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.113
-versionCode:         114
-pubspec:             0.1.1+114
+versionCode:         115
+pubspec:             0.1.1+115
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.114` e usar um `versionCode` maior que 114.
+A próxima alteração/entrega normalmente deve virar `0.1.1.115` e usar um `versionCode` maior que 115.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

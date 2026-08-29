@@ -76,7 +76,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                             const SizedBox(height: 2),
                             Text(
                               '${club.squad.length} jogadores • OVR médio ${club.averageOverall.toStringAsFixed(1)} • ${career.starterIds.length}/11 titulares',
-                              style: const TextStyle(color: AppColors.muted),
+                              style:  TextStyle(color: AppColors.muted),
                             ),
                           ],
                         ),
@@ -119,7 +119,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
             sliver: SliverList.list(
               children: [
                 if (groups.every((group) => group.players.isEmpty))
-                  const SectionCard(
+                   SectionCard(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 22),
                       child: Center(
@@ -240,7 +240,7 @@ class _PositionHeader extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               '$count',
-              style: const TextStyle(
+              style:  TextStyle(
                 color: AppColors.muted,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,

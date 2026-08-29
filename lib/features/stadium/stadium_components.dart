@@ -100,7 +100,7 @@ class StadiumRevenueCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   SizedBox(
                     width: 96,
-                    child: Text(item.$2, style: const TextStyle(color: AppColors.muted, fontSize: 9.7)),
+                    child: Text(item.$2, style:  TextStyle(color: AppColors.muted, fontSize: 9.7)),
                   ),
                   Expanded(
                     child: DashboardProgress(
@@ -253,7 +253,7 @@ class StadiumFacilityTile extends StatelessWidget {
             facility.description,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.muted, fontSize: 8.8, height: 1.25),
+            style:  TextStyle(color: AppColors.muted, fontSize: 8.8, height: 1.25),
           ),
           const Spacer(),
           Text(
@@ -264,7 +264,7 @@ class StadiumFacilityTile extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Obra ${compactMoney(cost)}',
-              style: const TextStyle(color: AppColors.muted, fontSize: 8.7),
+              style:  TextStyle(color: AppColors.muted, fontSize: 8.7),
             ),
             const SizedBox(height: 7),
             SizedBox(

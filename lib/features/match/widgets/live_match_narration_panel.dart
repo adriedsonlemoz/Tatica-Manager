@@ -52,7 +52,7 @@ class _LiveMatchNarrationPanelState extends State<LiveMatchNarrationPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+           Row(
             children: [
               Icon(Icons.graphic_eq_rounded, size: 17, color: AppColors.green),
               SizedBox(width: 7),
@@ -107,7 +107,7 @@ class _LiveMatchNarrationPanelState extends State<LiveMatchNarrationPanel> {
           ),
           const SizedBox(height: 5),
           if (narration.isEmpty)
-            const Padding(
+             Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'Nenhum lance deste filtro até agora.',

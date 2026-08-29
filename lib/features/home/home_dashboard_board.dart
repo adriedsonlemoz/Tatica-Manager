@@ -21,7 +21,7 @@ class HomeBoardConfidenceCard extends StatelessWidget {
         height: 96,
         padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient:  LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [Color(0xFF123735), Color(0xFF142B2D), AppColors.surface],
@@ -158,7 +158,7 @@ class _StadiumMetric extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 8.1,
                     fontWeight: FontWeight.w900,

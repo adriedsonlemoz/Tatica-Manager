@@ -31,11 +31,11 @@ class CareerArrivalScreen extends StatelessWidget {
       safeBottom: true,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration:  BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF18303A), AppColors.background],
+            colors: [AppColors.surfaceSoft, AppColors.background],
           ),
         ),
         child: SingleChildScrollView(

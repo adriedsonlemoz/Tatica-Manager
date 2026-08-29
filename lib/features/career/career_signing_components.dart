@@ -61,7 +61,7 @@ class CareerSigningContractDocument extends StatelessWidget {
                         clubName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:  TextStyle(
                           color: AppColors.muted,
                           fontSize: 11,
                         ),
@@ -95,7 +95,7 @@ class CareerSigningContractDocument extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                   Text(
                     'ASSINATURA DO TREINADOR',
                     style: TextStyle(
                       color: AppColors.muted,
@@ -120,7 +120,7 @@ class CareerSigningContractDocument extends StatelessWidget {
                     managerName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       color: AppColors.muted,
                       fontSize: 10,
                     ),
@@ -167,7 +167,7 @@ class _ContractFact extends StatelessWidget {
             width: 82,
             child: Text(
               label,
-              style: const TextStyle(
+              style:  TextStyle(
                 color: AppColors.muted,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,

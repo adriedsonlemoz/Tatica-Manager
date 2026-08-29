@@ -48,7 +48,7 @@ class ManagerProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageInSeason(career.season)} anos',
-                        style: const TextStyle(color: AppColors.muted),
+                        style:  TextStyle(color: AppColors.muted),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -96,7 +96,7 @@ class ManagerProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 if (history.isEmpty)
-                  const Text(
+                   Text(
                     'O histórico da carreira aparecerá aqui conforme as temporadas avançarem.',
                     style: TextStyle(color: AppColors.muted),
                   )
@@ -120,7 +120,7 @@ class ManagerProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const SectionCard(
+           SectionCard(
             child: Row(
               children: [
                 Icon(Icons.emoji_events_outlined, color: AppColors.green),
@@ -159,7 +159,7 @@ class _ProfileData extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+                style:  TextStyle(color: AppColors.muted, fontSize: 10)),
             const SizedBox(height: 3),
             Text(
               value,

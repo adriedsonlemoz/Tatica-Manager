@@ -233,7 +233,7 @@ Future<void> _showPlayerMarketSheet(
                       ),
                       Text(
                         '${entry.club?.name ?? 'Sem clube'} • ${player.primaryPosition.label} • ${player.age} anos',
-                        style: const TextStyle(color: AppColors.muted),
+                        style:  TextStyle(color: AppColors.muted),
                       ),
                     ],
                   ),
@@ -247,7 +247,7 @@ Future<void> _showPlayerMarketSheet(
               report == null
                   ? 'Ainda não observado. Inicie o scouting para revelar avaliação, valor, salário e potencial gradualmente.'
                   : '${report.level.label} • ${report.daysObserved} dia(s) de observação.',
-              style: const TextStyle(color: AppColors.muted, fontSize: 11),
+              style:  TextStyle(color: AppColors.muted, fontSize: 11),
             ),
             if (report?.level == ScoutingLevel.complete) ...[
               const SizedBox(height: 7),
@@ -403,7 +403,7 @@ Future<void> _showNegotiationDialog(
                         ),
               ),
               const SizedBox(height: 9),
-              const Text(
+               Text(
                 'A resposta não é instantânea: o clube e o jogador analisam a proposta ao avançar os dias.',
                 style: TextStyle(color: AppColors.muted, fontSize: 11),
               ),

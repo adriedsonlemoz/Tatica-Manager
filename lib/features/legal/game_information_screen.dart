@@ -56,7 +56,7 @@ class GameInformationScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'Tática Manager ${AppInfo.version}',
-                        style: const TextStyle(
+                        style:  TextStyle(
                           color: AppColors.muted,
                           fontSize: 11,
                         ),
@@ -84,7 +84,7 @@ class GameInformationScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     section.text,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       color: AppColors.textSecondary,
                       height: 1.5,
                       fontSize: 12.5,

@@ -77,7 +77,7 @@ class MenuMusicPlayerCard extends StatelessWidget {
                               current.subtitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style:  TextStyle(
                                 color: AppColors.muted,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -119,7 +119,7 @@ class MenuMusicPlayerCard extends StatelessWidget {
                           state.usingCustomPlaylist
                               ? '${state.tracks.length} faixa(s) da sua playlist'
                               : '${state.tracks.length} músicas do Tática Manager',
-                          style: const TextStyle(
+                          style:  TextStyle(
                             color: AppColors.muted,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
@@ -203,7 +203,7 @@ class _TrackTile extends StatelessWidget {
                     )
                   : Text(
                       '${track.index + 1}'.padLeft(2, '0'),
-                      style: const TextStyle(
+                      style:  TextStyle(
                         color: AppColors.muted,
                         fontWeight: FontWeight.w800,
                       ),
@@ -228,7 +228,7 @@ class _TrackTile extends StatelessWidget {
                 ),
           trailing: selected
               ? const Icon(Icons.check_circle_rounded, color: AppColors.green)
-              : const Icon(Icons.play_arrow_rounded, color: AppColors.muted),
+              :  Icon(Icons.play_arrow_rounded, color: AppColors.muted),
         ),
       );
 }

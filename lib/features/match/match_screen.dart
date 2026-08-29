@@ -293,11 +293,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       canPop: false,
       child: PremiumScaffold(
         body: DecoratedBox(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF091117), Color(0xFF0D171C), Color(0xFF101A20)],
+              colors: AppColors.broadcastGradient,
             ),
           ),
           child: Column(

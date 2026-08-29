@@ -34,7 +34,7 @@ class AppearanceGroupCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
+                style:  TextStyle(
                   color: AppColors.muted,
                   fontSize: 10.5,
                 ),
@@ -71,7 +71,7 @@ class AppearanceChoiceRow extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style:  TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/state/app_appearance_controller.dart';
 import '../../app/state/career_controller.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
@@ -28,6 +29,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
+    final darkMode = ref.watch(appAppearanceProvider) == ThemeMode.dark;
     final settings = career.settings;
     final manager = career.manager;
     final birthSummary = manager.birthPlaceSummary(
@@ -66,17 +68,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 4),
                           Text(
                             '${manager.preferredName} • ${manager.ageInSeason(career.season)} anos',
-                            style: const TextStyle(color: AppColors.muted),
+                            style:  TextStyle(color: AppColors.muted),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${career.userClub.name}',
-                            style: const TextStyle(color: AppColors.muted),
+                            style:  TextStyle(color: AppColors.muted),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'Rep. ${manager.reputation} • ${manager.style} • ${manager.preferredFormation.label}',
-                            style: const TextStyle(color: AppColors.muted, fontSize: 12),
+                            style:  TextStyle(color: AppColors.muted, fontSize: 12),
                           ),
                           if (birthSummary.isNotEmpty) ...[
                             const SizedBox(height: 2),
@@ -122,6 +124,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 10),
           SectionCard(
+            padding: EdgeInsets.zero,
+            child: SwitchListTile.adaptive(
+              value: darkMode,
+              secondary: const Icon(Icons.dark_mode_outlined, color: AppColors.green),
+              title: const Text('Modo escuro', style: TextStyle(fontWeight: FontWeight.w800)),
+              subtitle: const Text('O modo claro é o visual padrão do Tática Manager.'),
+              onChanged: (value) => ref
+                  .read(appAppearanceProvider.notifier)
+                  .setDarkMode(value),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SectionCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -130,7 +145,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                 Text(
                   'Personalização apenas visual; não altera o Match Engine.',
                   style: TextStyle(color: AppColors.muted, fontSize: 12),
                 ),
@@ -181,7 +196,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               children: [
                 const Text('DURAÇÃO PADRÃO DA PARTIDA', style: TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                const Text(
+                 Text(
                   'Cada opção indica minutos reais por tempo e não altera o resultado ou as estatísticas do motor.',
                   style: TextStyle(color: AppColors.muted, fontSize: 11),
                 ),
@@ -261,7 +276,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Expanded(
                   child: Text(
                     'O jogo foi desenhado para retrato e edge-to-edge. A orientação é bloqueada em portrait no runtime e nas plataformas nativas.',
-                    style: const TextStyle(color: AppColors.muted, height: 1.45),
+                    style:  TextStyle(color: AppColors.muted, height: 1.45),
                   ),
                 ),
               ],
@@ -354,7 +369,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               'Tática Manager',
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                             ),
-                            Text('Versão ${AppInfo.version}', style: const TextStyle(color: AppColors.muted)),
+                            Text('Versão ${AppInfo.version}', style:  TextStyle(color: AppColors.muted)),
                           ],
                         ),
                       ),

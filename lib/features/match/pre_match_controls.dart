@@ -79,7 +79,7 @@ class PreMatchPlanCard extends StatelessWidget {
                 child: Text(
                   'PLANO DE JOGO',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
                     letterSpacing: .25,
@@ -220,10 +220,10 @@ class _PremiumPanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF13232B), Color(0xFF101B22), Color(0xFF0F181E)],
+            colors: AppColors.panelGradient,
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),
@@ -258,8 +258,8 @@ class _PanelHeading extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: AppColors.white,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w900,
                     letterSpacing: .2,
@@ -268,7 +268,7 @@ class _PanelHeading extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 8.6,
                     height: 1.2,
@@ -388,7 +388,7 @@ class _PlanMetric extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style:  TextStyle(
               color: AppColors.textSecondary,
               fontSize: 9.2,
               fontWeight: FontWeight.w700,
@@ -397,8 +397,8 @@ class _PlanMetric extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              color: AppColors.white,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w900,
               height: 1,

@@ -192,7 +192,7 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                             filters.summary,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               color: AppColors.muted,
                               fontSize: 11,
                             ),

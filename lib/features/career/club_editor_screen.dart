@@ -219,7 +219,7 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
               const SizedBox(height: 9),
               Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded, size: 15, color: AppColors.muted),
+                   Icon(Icons.info_outline_rounded, size: 15, color: AppColors.muted),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -311,7 +311,7 @@ class _ClubEditorScreenState extends ConsumerState<ClubEditorScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
-              Text('${series.clubIds.length} equipes', style: const TextStyle(color: AppColors.muted)),
+              Text('${series.clubIds.length} equipes', style:  TextStyle(color: AppColors.muted)),
             ],
           ),
           const SizedBox(height: 8),

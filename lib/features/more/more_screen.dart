@@ -52,7 +52,7 @@ class MoreScreen extends ConsumerWidget {
           career.managerEmployed
               ? '${career.userClub.name} • temporada ${career.season}'
               : '${career.manager.preferredName} • sem clube • temporada ${career.season}',
-          style: const TextStyle(color: AppColors.muted),
+          style:  TextStyle(color: AppColors.muted),
         ),
         const SizedBox(height: 14),
         SectionCard(child: Row(children: [

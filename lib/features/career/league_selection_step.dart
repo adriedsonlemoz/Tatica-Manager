@@ -37,7 +37,7 @@ class LeagueSelectionStep extends StatelessWidget {
               ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
-        const Text(
+         Text(
           'Escolha quanto do mundo será acompanhado neste save. A competição de liga do seu clube permanece sempre completa.',
           style: TextStyle(color: AppColors.muted, height: 1.4),
         ),
@@ -91,7 +91,7 @@ class LeagueSelectionStep extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                     Text(
                       'Desempenho estimado',
                       style: TextStyle(
                         color: AppColors.muted,
@@ -112,7 +112,7 @@ class LeagueSelectionStep extends StatelessWidget {
               ),
               Text(
                 '${normalized.fullCompetitionIds.length} completa${normalized.fullCompetitionIds.length == 1 ? '' : 's'}',
-                style: const TextStyle(
+                style:  TextStyle(
                   color: AppColors.muted,
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
@@ -246,7 +246,7 @@ class LeagueSelectionStep extends StatelessWidget {
             ),
           ),
         if (CompetitionCatalog.allCompetitions.length == 1)
-          const Padding(
+           Padding(
             padding: EdgeInsets.only(top: 2),
             child: Text(
               'O banco atual possui somente esta competição. Quando novas competições reais forem adicionadas ao catálogo do jogo, elas aparecerão automaticamente nesta etapa.',
@@ -267,7 +267,7 @@ class _LevelHelp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => RichText(
         text: TextSpan(
-          style: const TextStyle(
+          style:  TextStyle(
             color: AppColors.muted,
             fontSize: 12,
             height: 1.35,
@@ -325,7 +325,7 @@ class _PresetTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       preset.description,
-                      style: const TextStyle(
+                      style:  TextStyle(
                         color: AppColors.muted,
                         fontSize: 12,
                         height: 1.25,

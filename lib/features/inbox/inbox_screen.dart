@@ -73,7 +73,7 @@ class _MessageList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (messages.isEmpty) {
-      return const Center(
+      return  Center(
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Text(
@@ -203,7 +203,7 @@ Future<void> _openMessage(
                         const SizedBox(height: 3),
                         Text(
                           '${message.sender} • ${shortDate(message.date)}',
-                          style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                          style:  TextStyle(color: AppColors.muted, fontSize: 11),
                         ),
                       ],
                     ),

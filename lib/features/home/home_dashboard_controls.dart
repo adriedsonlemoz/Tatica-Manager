@@ -100,7 +100,7 @@ class HomeSeasonCard extends StatelessWidget {
                           '$remaining rodadas restantes • R$currentRound',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 9.5,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w700,
