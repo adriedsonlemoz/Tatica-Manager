@@ -1,3 +1,9 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -20,15 +26,20 @@ dependencies {
     gdxNatives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
 }
 
-val generatedGdxNatives = layout.buildDirectory.dir("generated/gdxNatives")
-val extractGdxNatives by tasks.registering {
-    inputs.files(gdxNatives)
-    outputs.dir(generatedGdxNatives)
-    doLast {
-        val outputRoot = generatedGdxNatives.get().asFile
-        delete(outputRoot)
+abstract class ExtractGdxNativesTask : DefaultTask() {
+    @get:InputFiles
+    abstract val nativeJars: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun extract() {
+        val outputRoot = outputDirectory.get().asFile
+        project.delete(outputRoot)
         outputRoot.mkdirs()
-        gdxNatives.files.forEach { jar ->
+
+        nativeJars.files.forEach { jar ->
             val abi = when {
                 jar.name.contains("natives-arm64-v8a") -> "arm64-v8a"
                 jar.name.contains("natives-armeabi-v7a") -> "armeabi-v7a"
@@ -36,14 +47,20 @@ val extractGdxNatives by tasks.registering {
                 jar.name.contains("natives-x86") -> "x86"
                 else -> null
             } ?: return@forEach
-            copy {
-                from(zipTree(jar))
+
+            project.copy {
+                from(project.zipTree(jar))
                 include("*.so")
                 into(outputRoot.resolve(abi))
                 includeEmptyDirs = false
             }
         }
     }
+}
+
+val extractGdxNatives = tasks.register<ExtractGdxNativesTask>("extractGdxNatives") {
+    nativeJars.from(gdxNatives)
+    outputDirectory.set(layout.buildDirectory.dir("generated/gdxNatives"))
 }
 
 val releaseKeystorePath = System.getenv("TATICA_KEYSTORE_PATH")
@@ -62,7 +79,6 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
-    sourceSets.getByName("main").jniLibs.srcDir(generatedGdxNatives)
 
     packaging {
         resources {
@@ -94,8 +110,8 @@ android {
         applicationId = "com.taticamanager.tatica_manager"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 109
-        versionName = "0.1.1.108"
+        versionCode = 110
+        versionName = "0.1.1.109"
     }
 
     signingConfigs {
@@ -123,14 +139,13 @@ android {
 }
 
 
-tasks.named("preBuild").configure {
-    dependsOn(extractGdxNatives)
-}
-
-tasks.matching {
-    it.name.contains("merge") && it.name.contains("JniLibFolders")
-}.configureEach {
-    dependsOn(extractGdxNatives)
+androidComponents {
+    onVariants { variant ->
+        variant.sources.jniLibs?.addGeneratedSourceDirectory(
+            extractGdxNatives,
+            ExtractGdxNativesTask::outputDirectory,
+        )
+    }
 }
 
 flutter {

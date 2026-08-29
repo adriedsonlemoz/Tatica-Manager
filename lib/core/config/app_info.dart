@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.108';
+  static const String version = '0.1.1.109';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.109',
+      title: 'Compatibilidade libGDX com AGP 9',
+      changes: [
+        'Corrige o build Android que falhava ao registrar os natives do libGDX no sourceSets com um Provider.',
+        'Passa a usar a Variant Sources API oficial e liga a tarefa de extração dos natives diretamente ao diretório JNI gerado.',
+        'Não altera Match Engine, renderer, saves, IDs ou CareerState schema 13.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.108',
       title: 'Correção do analyzer do libGDX',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Integra libGDX 1.14.2 no retângulo do campo da partida no Android, mantendo HUD e controles em Flutter.',
         'O Match Engine continua em Dart e envia ao renderer apenas eventos, coordenadas, escalações, nomes e uniformes já resolvidos.',
         'Preserva o Flame como fallback fora do Android e mantém saves, IDs, CareerState schema 13 e multi-competição intactos.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.106',
-      title: 'Campo mais legível e uniformes',
-      changes: [
-        'Exibe nomes responsivos junto aos jogadores, priorizando o atleta da jogada e evitando sobreposições no campo.',
-        'Permite escolher entre três uniformes antes da partida e resolve conflitos de cores automaticamente, com goleiros em kits próprios.',
-        'Refina redes, traves, gramado, marcações, bola, sombras e movimentos sem alterar o Match Engine.',
       ],
     ),
   ];

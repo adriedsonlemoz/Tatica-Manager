@@ -58,5 +58,12 @@ void main() {
     expect(gradle, contains('natives-arm64-v8a'));
     expect(gradle, contains('natives-armeabi-v7a'));
     expect(gradle, contains('natives-x86_64'));
+    expect(
+      gradle,
+      contains('variant.sources.jniLibs?.addGeneratedSourceDirectory('),
+    );
+    expect(gradle, contains('ExtractGdxNativesTask::outputDirectory'));
+    expect(gradle, isNot(contains('jniLibs.srcDir(generatedGdxNatives)')));
+    expect(gradle, isNot(contains('android.sourceset.disallowProvider=false')));
   });
 }

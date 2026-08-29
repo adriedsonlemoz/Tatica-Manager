@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.108",
+  "version": "0.1.1.109",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+109"
+    "pubspecVersion": "0.1.1+110"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.108",
-    "versionCode": 109
+    "versionName": "0.1.1.109",
+    "versionCode": 110
   },
   "release": {
-    "version": "0.1.1.108",
-    "revision": 108,
-    "androidVersionCode": 109
+    "version": "0.1.1.109",
+    "revision": 109,
+    "androidVersionCode": 110
   },
   "changelog": [
+    "Corrige a falha de build Android da 0.1.1.108 com AGP 9.1: substitui o uso de Provider no AndroidSourceSet de jniLibs pela Variant Sources API oficial com addGeneratedSourceDirectory, mantendo a extração dos natives libGDX ligada ao grafo de tarefas; atualiza a regressão estrutural e preserva Match Engine, renderer, CareerState schema 13, saves, IDs e multi-competição.",
     "Corrige a falha de análise estática da 0.1.1.107 que interrompia o GitHub Actions antes da compilação Android: remove o import redundante no bridge libGDX e explicita @override nos membros de MatchPitchGame que implementam MatchPitchController; não altera Match Engine, renderer libGDX, dependências, CareerState schema 13, saves, IDs ou multi-competição.",
     "Integra libGDX 1.14.2 como renderer do campo no Android através de Hybrid Composition + AndroidFragmentApplication/PlatformView, mantendo placar, controles e regras em Flutter/Dart; eventos e coordenadas continuam vindo do Match Engine, o libGDX apenas interpola e desenha campo, jogadores, bola, redes, nomes e uniformes; Flame permanece como fallback fora do Android e CareerState schema 13, saves, IDs e multi-competição são preservados.",
     "Aprimora visualmente o campo sem alterar o Match Engine: adiciona nomes responsivos dos jogadores com controle de sobreposição, seleção dos três uniformes antes da partida, resolução automática de conflito de cores e fallback visual seguro; diferencia goleiros com kits exclusivos, mangas e luvas, refina redes/traves, gramado, marcações, sombras, bola e interpolação dos movimentos; preserva CareerState schema 13, saves, IDs e multi-competição e não adiciona imagens.",
@@ -57,6 +58,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Corrige a falha de análise estática da 0.1.1.107 que interrompia o GitHub Actions antes da compilação Android: remove o import redundante no bridge libGDX e explicita @override nos membros de MatchPitchGame que implementam MatchPitchController; não altera Match Engine, renderer libGDX, dependências, CareerState schema 13, saves, IDs ou multi-competição."
+    "Corrige a falha de build Android da 0.1.1.108 com AGP 9.1: substitui o uso de Provider no AndroidSourceSet de jniLibs pela Variant Sources API oficial com addGeneratedSourceDirectory, mantendo a extração dos natives libGDX ligada ao grafo de tarefas; atualiza a regressão estrutural e preserva Match Engine, renderer, CareerState schema 13, saves, IDs e multi-competição."
   ]
 }

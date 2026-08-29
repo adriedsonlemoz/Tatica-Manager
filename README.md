@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.108`
-**Android versionCode:** `109`
+**Release atual:** `0.1.1.109`
+**Android versionCode:** `110`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.108`);
+- `VERSION` — versão visível simples (`0.1.1.109`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+109`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.108` e `versionCode 109`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+110`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.109` e `versionCode 110`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.108` é representada internamente como `0.1.1+109`. A versão visível do aplicativo/Android continua sendo `0.1.1.108`. a próxima entrega normalmente será `0.1.1.109`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.109` é representada internamente como `0.1.1+110`. A versão visível do aplicativo/Android continua sendo `0.1.1.109`. a próxima entrega normalmente será `0.1.1.110`.
 
 
 
+## Compatibilidade dos natives libGDX com AGP 9 — 0.1.1.109
+
+- corrige a falha de `flutter build apk --release` da 0.1.1.108 em `android/app/build.gradle.kts`, causada pelo bloqueio do AGP 9 a `Provider` no `AndroidSourceSet`;
+- substitui `sourceSets.main.jniLibs.srcDir(Provider)` pela Variant Sources API oficial com `variant.sources.jniLibs?.addGeneratedSourceDirectory(...)`;
+- transforma a extração dos natives em uma tarefa tipada com `DirectoryProperty`, permitindo que o Android Gradle Plugin conecte automaticamente o diretório gerado ao grafo do build;
+- não usa `android.sourceset.disallowProvider=false`, não altera o Match Engine, o renderer libGDX, saves, IDs ou `CareerState` schema 13.
 
 
 ## Correção do analyzer da integração libGDX — 0.1.1.108
@@ -205,7 +211,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.108`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.110`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
