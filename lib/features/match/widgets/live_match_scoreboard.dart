@@ -35,94 +35,119 @@ class LiveMatchScoreboard extends StatelessWidget {
     final awayRed = _count(MatchEventType.red, away.id);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF101B22), Color(0xFF0A1218), Color(0xFF121D22)],
+        ),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withValues(alpha: .88)),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x40000000),
-            blurRadius: 18,
-            offset: Offset(0, 7),
-          ),
+          BoxShadow(color: Color(0x44000000), blurRadius: 18, offset: Offset(0, 7)),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              _LiveStatus(paused: paused, phaseLabel: phaseLabel),
-              const Spacer(),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, -.25),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                ),
-                child: Text(
-                  "$minute'",
-                  key: ValueKey(minute),
-                  style: TextStyle(
-                    color: minute == 45 || minute == 90
-                        ? AppColors.warning
-                        : AppColors.green,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -28,
+              top: -42,
+              child: Transform.rotate(
+                angle: -.28,
+                child: Container(
+                  width: 150,
+                  height: 82,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white.withValues(alpha: .035), width: 10),
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Row(
-            children: [
-              Expanded(
-                child: _ClubCompact(
-                  club: home,
-                  alignEnd: false,
-                  yellow: homeYellow,
-                  red: homeRed,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 240),
-                  transitionBuilder: (child, animation) => ScaleTransition(
-                    scale: animation,
-                    child: FadeTransition(opacity: animation, child: child),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(11, 8, 11, 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      _LiveStatus(paused: paused),
+                      const Spacer(),
+                      Text(
+                        '$phaseLabel  •',
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: .3,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 180),
+                        child: Text(
+                          _clockLabel(minute),
+                          key: ValueKey(minute),
+                          style: TextStyle(
+                            color: minute == 45 || minute == 90
+                                ? AppColors.warning
+                                : AppColors.green,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 12.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    score.display,
-                    key: ValueKey(score.display),
-                    style: const TextStyle(
-                      fontSize: 30,
-                      height: 1,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -.8,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ClubSide(
+                          club: home,
+                          alignEnd: false,
+                          yellow: homeYellow,
+                          red: homeRed,
+                        ),
+                      ),
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 84),
+                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 240),
+                          transitionBuilder: (child, animation) => ScaleTransition(
+                            scale: animation,
+                            child: FadeTransition(opacity: animation, child: child),
+                          ),
+                          child: Text(
+                            score.display,
+                            key: ValueKey(score.display),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 38,
+                              height: .95,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: _ClubSide(
+                          club: away,
+                          alignEnd: true,
+                          yellow: awayYellow,
+                          red: awayRed,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
-              Expanded(
-                child: _ClubCompact(
-                  club: away,
-                  alignEnd: true,
-                  yellow: awayYellow,
-                  red: awayRed,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -140,55 +165,43 @@ class LiveMatchScoreboard extends StatelessWidget {
       event.minute < minute ||
       (event.minute == minute &&
           (throughSequence == null || event.sequence <= throughSequence!));
+
+  static String _clockLabel(int minute) {
+    final padded = minute.toString().padLeft(2, '0');
+    return '$padded:00';
+  }
 }
 
 class _LiveStatus extends StatelessWidget {
-  const _LiveStatus({required this.paused, required this.phaseLabel});
+  const _LiveStatus({required this.paused});
 
   final bool paused;
-  final String phaseLabel;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        decoration: BoxDecoration(
-          color: paused
-              ? AppColors.surfaceRaised
-              : AppColors.green.withValues(alpha: .10),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: paused
-                ? AppColors.border
-                : AppColors.green.withValues(alpha: .35),
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            paused ? Icons.pause_rounded : Icons.circle,
+            color: paused ? AppColors.warning : AppColors.green,
+            size: paused ? 14 : 8,
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: paused ? AppColors.warning : AppColors.green,
-                shape: BoxShape.circle,
-              ),
+          const SizedBox(width: 6),
+          Text(
+            paused ? 'PAUSADO' : 'AO VIVO',
+            style: TextStyle(
+              color: paused ? AppColors.warning : AppColors.green,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .55,
             ),
-            const SizedBox(width: 6),
-            Text(
-              paused ? 'PAUSADO • $phaseLabel' : 'AO VIVO • $phaseLabel',
-              style: const TextStyle(
-                fontSize: 9.5,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .35,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
 }
 
-class _ClubCompact extends StatelessWidget {
-  const _ClubCompact({
+class _ClubSide extends StatelessWidget {
+  const _ClubSide({
     required this.club,
     required this.alignEnd,
     required this.yellow,
@@ -202,39 +215,45 @@ class _ClubCompact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badge = ClubBadge(club: club, size: 34);
+    final badge = ClubBadge(club: club, size: 48);
     final info = Expanded(
       child: Column(
-        crossAxisAlignment:
-            alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            club.name,
+            club.name.toUpperCase(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: alignEnd ? TextAlign.right : TextAlign.left,
-            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900),
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, height: 1),
           ),
-          if (yellow > 0 || red > 0) ...[
-            const SizedBox(height: 3),
-            Row(
-              mainAxisAlignment:
-                  alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
-              children: [
-                if (yellow > 0) _CardCount(value: yellow, red: false),
-                if (yellow > 0 && red > 0) const SizedBox(width: 5),
-                if (red > 0) _CardCount(value: red, red: true),
-              ],
-            ),
-          ],
+          const SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              if (yellow == 0 && red == 0)
+                Text(
+                  club.shortName.toUpperCase(),
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              if (yellow > 0) _CardCount(value: yellow, red: false),
+              if (yellow > 0 && red > 0) const SizedBox(width: 5),
+              if (red > 0) _CardCount(value: red, red: true),
+            ],
+          ),
         ],
       ),
     );
 
     return Row(
       children: alignEnd
-          ? [info, const SizedBox(width: 6), badge]
-          : [badge, const SizedBox(width: 6), info],
+          ? [info, const SizedBox(width: 7), badge]
+          : [badge, const SizedBox(width: 7), info],
     );
   }
 }
@@ -250,24 +269,20 @@ class _CardCount extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 7,
-            height: 10,
+            width: 8,
+            height: 11,
             decoration: BoxDecoration(
               color: red ? AppColors.danger : AppColors.warning,
               borderRadius: BorderRadius.circular(1.5),
             ),
           ),
           const SizedBox(width: 3),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 180),
-            child: Text(
-              '$value',
-              key: ValueKey('$red-$value'),
-              style: const TextStyle(
-                color: AppColors.muted,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-              ),
+          Text(
+            '$value',
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],

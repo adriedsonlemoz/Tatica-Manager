@@ -95,7 +95,8 @@ void main() {
     ).readAsStringSync();
 
     expect(screen, contains('child: LiveMatchScoreboard('));
-    expect(screen, contains('body: Column('));
+    expect(screen, contains('body: DecoratedBox('));
+    expect(screen, contains('child: Column('));
     expect(screen, contains('LiveMatchPitchPanel('));
     expect(
       screen,
@@ -103,7 +104,7 @@ void main() {
     );
     expect(pitchPanel, isNot(contains('LiveMatchMomentCard(')));
     expect(pitchPanel, contains('AspectRatio('));
-    expect(pitchPanel, contains('aspectRatio: 105 / 68'));
+    expect(pitchPanel, contains('aspectRatio: 2.20'));
     expect(narrationPanel, contains('NARRAÇÃO AO VIVO'));
     expect(pitchPanel, contains('LiveMatchBroadcastOverlay('));
     expect(pitchPanel, contains('LiveMatchPhaseTransitionOverlay('));
@@ -169,9 +170,13 @@ void main() {
       'lib/game/match/renderer/match_stadium_visuals.dart',
     ).readAsStringSync();
     expect(visuals, contains('drawGoal'));
+    expect(visuals, contains('projectDisplayPoint'));
+    expect(visuals, contains('pitchPath'));
+    expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
+    expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));
     expect(playerVisuals, contains('celebration'));
-    expect(stadiumVisuals, contains('_crowd('));
-    expect(stadiumVisuals, contains('_floodlights('));
+    expect(stadiumVisuals, contains('_drawCrowd('));
+    expect(stadiumVisuals, contains('_drawFloodlights('));
   });
 }

@@ -25,6 +25,7 @@ import 'widgets/live_match_pitch_panel.dart';
 import 'widgets/live_match_phase_transition_overlay.dart';
 import 'widgets/live_match_scoreboard.dart';
 import 'widgets/live_match_simulation_sheet.dart';
+import 'widgets/live_match_timeline_bar.dart';
 import 'widgets/live_round_widgets.dart';
 import 'widgets/live_substitution_sheet.dart';
 import 'widgets/live_tactic_sheet.dart';
@@ -70,6 +71,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     pitchGame = MatchPitchGame(
       homeColor: Color(home.colors.primaryHex),
       awayColor: Color(away.colors.primaryHex),
+      homeKit: home.homeKit,
+      awayKit: away.awayKit,
       homeClubId: home.id,
       awayClubId: away.id,
       homePlayerIds: live.homeStarterIds,
@@ -244,8 +247,16 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     return PopScope(
       canPop: false,
       child: PremiumScaffold(
-        body: Column(
-          children: [
+        body: DecoratedBox(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF091117), Color(0xFF0D171C), Color(0xFF101A20)],
+            ),
+          ),
+          child: Column(
+            children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 7),
               child: LiveMatchScoreboard(
@@ -262,6 +273,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
             LiveRoundTicker(
               round: live.fixture.round,
               alert: _roundAlertText(career),
+              venue: home.stadium.name,
               onOpenRound: () => _showRound(context, career, live),
             ),
             Expanded(
@@ -315,7 +327,13 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                             ? LiveMatchPhaseTransition.halftime
                             : null,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
+                  LiveMatchTimelineBar(
+                    events: result.events,
+                    minute: minute,
+                    throughSequence: currentSequence,
+                  ),
+                  const SizedBox(height: 7),
                   LiveMatchControlBar(
                     paused: paused,
                     enabled: !fullTime,
@@ -368,6 +386,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
               ),
             ),
           ],
+          ),
         ),
       ),
     );

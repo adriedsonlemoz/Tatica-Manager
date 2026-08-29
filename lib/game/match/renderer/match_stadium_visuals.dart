@@ -18,153 +18,284 @@ abstract final class MatchStadiumVisuals {
         ..shader = Gradient.linear(
           const Offset(0, 0),
           Offset(0, height),
-          const [Color(0xFF050A08), Color(0xFF111A15)],
+          const [
+            Color(0xFF04080B),
+            Color(0xFF0B1216),
+            Color(0xFF111A18),
+          ],
+          const [0, .42, 1],
         ),
     );
 
-    _stand(canvas, width, fieldRect.top, top: true);
-    _stand(canvas, width, height - fieldRect.bottom, top: false, y: fieldRect.bottom);
-    _sideStand(canvas, fieldRect, left: true);
-    _sideStand(canvas, fieldRect, left: false);
-    _crowd(
+    _drawBowl(canvas, width, height, fieldRect);
+    _drawCrowd(
       canvas,
       width,
+      height,
       fieldRect,
       homeColor,
       awayColor,
       elapsed,
       crowdIntensity,
     );
-    _ledBoards(canvas, fieldRect, homeColor, awayColor, elapsed);
-    _dugouts(canvas, fieldRect);
-    _floodlights(canvas, width, height, crowdIntensity);
+    _drawLedBoards(canvas, width, fieldRect, homeColor, awayColor, elapsed);
+    _drawFloodlights(canvas, width, crowdIntensity);
+    _drawAtmosphere(canvas, width, height, crowdIntensity);
   }
 
-  static void _stand(
+  static void _drawBowl(
     Canvas canvas,
     double width,
-    double depth, {
-    required bool top,
-    double y = 0,
-  }) {
-    if (depth <= 2) return;
-    final rect = Rect.fromLTWH(8, top ? 2 : y, width - 16, math.max(4.0, depth - 3).toDouble());
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, const Radius.circular(5)),
-      Paint()..color = const Color(0xFF171D1A),
+    double height,
+    Rect fieldRect,
+  ) {
+    final topStand = Path()
+      ..moveTo(0, 0)
+      ..lineTo(width, 0)
+      ..lineTo(width, fieldRect.top + 7)
+      ..quadraticBezierTo(
+        width * .5,
+        fieldRect.top - 18,
+        0,
+        fieldRect.top + 7,
+      )
+      ..close();
+    canvas.drawPath(
+      topStand,
+      Paint()
+        ..shader = Gradient.linear(
+          const Offset(0, 0),
+          Offset(0, fieldRect.top + 8),
+          const [Color(0xFF05090D), Color(0xFF202A2A)],
+        ),
     );
-    for (var row = 1; row < 3; row++) {
-      final yy = top
-          ? rect.top + rect.height * row / 3
-          : rect.bottom - rect.height * row / 3;
-      canvas.drawLine(
-        Offset(rect.left + 4, yy),
-        Offset(rect.right - 4, yy),
-        Paint()
-          ..color = const Color(0xFF2A322E)
-          ..strokeWidth = 1,
+
+    final bottomStand = Path()
+      ..moveTo(0, fieldRect.bottom - 3)
+      ..quadraticBezierTo(
+        width * .5,
+        fieldRect.bottom + 22,
+        width,
+        fieldRect.bottom - 3,
+      )
+      ..lineTo(width, height)
+      ..lineTo(0, height)
+      ..close();
+    canvas.drawPath(
+      bottomStand,
+      Paint()
+        ..shader = Gradient.linear(
+          Offset(0, fieldRect.bottom),
+          Offset(0, height),
+          const [Color(0xFF1A2421), Color(0xFF060A0C)],
+        ),
+    );
+
+    final sidePaint = Paint()
+      ..shader = Gradient.linear(
+        Offset(fieldRect.left, fieldRect.center.dy),
+        Offset(0, fieldRect.center.dy),
+        const [Color(0xFF1D2824), Color(0xFF080D0E)],
       );
+    final left = Path()
+      ..moveTo(0, fieldRect.top + 4)
+      ..lineTo(fieldRect.left + 22, fieldRect.top)
+      ..lineTo(fieldRect.left, fieldRect.bottom)
+      ..lineTo(0, fieldRect.bottom - 3)
+      ..close();
+    canvas.drawPath(left, sidePaint);
+
+    final rightPaint = Paint()
+      ..shader = Gradient.linear(
+        Offset(fieldRect.right, fieldRect.center.dy),
+        Offset(width, fieldRect.center.dy),
+        const [Color(0xFF1D2824), Color(0xFF080D0E)],
+      );
+    final right = Path()
+      ..moveTo(width, fieldRect.top + 4)
+      ..lineTo(fieldRect.right - 22, fieldRect.top)
+      ..lineTo(fieldRect.right, fieldRect.bottom)
+      ..lineTo(width, fieldRect.bottom - 3)
+      ..close();
+    canvas.drawPath(right, rightPaint);
+
+    final rail = Paint()
+      ..color = const Color(0xAA68756E)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = .75;
+    for (var row = 0; row < 4; row++) {
+      final y = fieldRect.top * (.32 + row * .16);
+      canvas.drawLine(Offset(12, y), Offset(width - 12, y), rail);
     }
   }
 
-  static void _sideStand(Canvas canvas, Rect fieldRect, {required bool left}) {
-    final x = left ? 2.0 : fieldRect.right + 2;
-    final width = math.max(4.0, left ? fieldRect.left - 4 : 12.0).toDouble();
-    final rect = Rect.fromLTWH(x, fieldRect.top + 14, width, fieldRect.height - 28);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, const Radius.circular(4)),
-      Paint()..color = const Color(0xFF141A17),
-    );
-  }
-
-  static void _crowd(
+  static void _drawCrowd(
     Canvas canvas,
     double width,
+    double height,
     Rect fieldRect,
     Color homeColor,
     Color awayColor,
     double elapsed,
     double crowdIntensity,
   ) {
-    final pulse = .55 + math.sin(elapsed * 7) * .10 * crowdIntensity;
-    for (var index = 0; index < 44; index++) {
-      final x = 10 + (width - 20) * index / 43;
-      final teamColor = index.isEven ? homeColor : awayColor;
-      final paint = Paint()
-        ..color = Color.lerp(
-          const Color(0xAAFFFFFF),
-          teamColor,
-          .55,
-        )!.withValues(
-          alpha: (.30 + pulse * .32).clamp(.25, .82).toDouble(),
+    final energy = (.48 + crowdIntensity * .42).clamp(.42, .92).toDouble();
+    final topRows = 6;
+    for (var row = 0; row < topRows; row++) {
+      final y = 10 + row * ((fieldRect.top - 16) / topRows);
+      final count = 54 + row * 7;
+      for (var index = 0; index < count; index++) {
+        final x = 6 + (width - 12) * index / math.max(1, count - 1);
+        _drawFanDot(
+          canvas,
+          x,
+          y + math.sin(elapsed * 4.2 + index * .71 + row) * .65 * crowdIntensity,
+          index + row,
+          homeColor,
+          awayColor,
+          energy,
+          radius: .8 + row * .08,
         );
-      final wave = math.sin(elapsed * (4 + (index % 4)) + index * .7);
-      final radius = 1.0 + crowdIntensity * .45 + wave.abs() * .18;
-      canvas.drawCircle(Offset(x, fieldRect.top * .48 + wave * .7), radius, paint);
-      canvas.drawCircle(
-        Offset(x, fieldRect.bottom + (fieldRect.top * .50) - wave * .65),
-        radius,
-        paint,
-      );
+      }
+    }
+
+    final bottomDepth = math.max(0.0, height - fieldRect.bottom).toDouble();
+    if (bottomDepth > 5) {
+      for (var row = 0; row < 3; row++) {
+        final y = fieldRect.bottom + 6 + row * (bottomDepth / 3);
+        final count = 58 + row * 8;
+        for (var index = 0; index < count; index++) {
+          final x = 5 + (width - 10) * index / math.max(1, count - 1);
+          _drawFanDot(
+            canvas,
+            x,
+            y + math.sin(elapsed * 4.7 + index * .63 + row) * .55 * crowdIntensity,
+            index + row * 3,
+            homeColor,
+            awayColor,
+            energy,
+            radius: .9 + row * .08,
+          );
+        }
+      }
+    }
+
+    for (var side = 0; side < 2; side++) {
+      final xBase = side == 0 ? 4.0 : width - 4.0;
+      for (var index = 0; index < 22; index++) {
+        final t = index / 21;
+        final y = fieldRect.top + 12 + t * math.max(4.0, fieldRect.height - 24);
+        final x = xBase + (side == 0 ? 1 : -1) * (index % 3) * 2.2;
+        _drawFanDot(
+          canvas,
+          x,
+          y,
+          index + side,
+          homeColor,
+          awayColor,
+          energy,
+          radius: .85,
+        );
+      }
     }
   }
 
-  static void _ledBoards(
+  static void _drawFanDot(
     Canvas canvas,
+    double x,
+    double y,
+    int index,
+    Color homeColor,
+    Color awayColor,
+    double energy, {
+    required double radius,
+  }) {
+    final base = index % 5 == 0
+        ? const Color(0xFFE8ECE7)
+        : index.isEven
+            ? homeColor
+            : awayColor;
+    final color = Color.lerp(const Color(0xFF53605A), base, .62)!;
+    canvas.drawCircle(
+      Offset(x, y),
+      radius,
+      Paint()..color = color.withValues(alpha: energy),
+    );
+  }
+
+  static void _drawLedBoards(
+    Canvas canvas,
+    double width,
     Rect fieldRect,
     Color homeColor,
     Color awayColor,
     double elapsed,
   ) {
-    final progress = (elapsed * 42) % fieldRect.width;
-    final y = fieldRect.top - 3;
+    final boardY = fieldRect.top - 3.5;
+    final board = Rect.fromLTWH(18, boardY, width - 36, 3.2);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(board, const Radius.circular(2)),
+      Paint()..color = const Color(0xFF1B2421),
+    );
+    final color = Color.lerp(
+      homeColor,
+      awayColor,
+      .5 + math.sin(elapsed * .75) * .28,
+    )!;
+    final segmentWidth = math.max(28.0, width * .08);
+    final progress = (elapsed * 35) % (width + segmentWidth);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromLTWH(fieldRect.left + 8, y, fieldRect.width - 16, 2.5),
+        Rect.fromLTWH(progress - segmentWidth, boardY, segmentWidth, 3.2),
         const Radius.circular(2),
       ),
-      Paint()..color = const Color(0xFF202824),
-    );
-    final color = Color.lerp(homeColor, awayColor, .5 + math.sin(elapsed) * .25)!;
-    canvas.drawRect(
-      Rect.fromLTWH(fieldRect.left + progress, y, 26, 2.5),
-      Paint()..color = color.withValues(alpha: .72),
+      Paint()..color = color.withValues(alpha: .88),
     );
   }
 
-  static void _dugouts(Canvas canvas, Rect fieldRect) {
-    final benchPaint = Paint()..color = const Color(0xCC9DB3A8);
-    for (final centerX in [fieldRect.center.dx - 38, fieldRect.center.dx + 38]) {
-      final rect = Rect.fromCenter(
-        center: Offset(centerX, fieldRect.bottom + 7),
-        width: 42,
-        height: 7,
-      );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(3)),
-        Paint()..color = const Color(0x9927352F),
-      );
-      canvas.drawLine(rect.bottomLeft, rect.bottomRight, benchPaint..strokeWidth = .8);
+  static void _drawFloodlights(
+    Canvas canvas,
+    double width,
+    double crowdIntensity,
+  ) {
+    final points = <Offset>[
+      Offset(width * .08, 4),
+      Offset(width * .24, 2),
+      Offset(width * .76, 2),
+      Offset(width * .92, 4),
+    ];
+    for (final point in points) {
+      final glow = Paint()
+        ..color = const Color(0xFFFFFFFF).withValues(
+          alpha: .09 + crowdIntensity * .045,
+        )
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 11);
+      canvas.drawCircle(point, 10, glow);
+      for (var lamp = -2; lamp <= 2; lamp++) {
+        canvas.drawCircle(
+          point.translate(lamp * 3.2, 0),
+          1.25,
+          Paint()..color = const Color(0xE8FFFFFF),
+        );
+      }
     }
   }
 
-  static void _floodlights(
+  static void _drawAtmosphere(
     Canvas canvas,
     double width,
     double height,
     double crowdIntensity,
   ) {
-    final glow = Paint()
-      ..color = const Color(0xFFFFFFFF).withValues(alpha: .08 + crowdIntensity * .05)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-    for (final point in [
-      const Offset(7, 7),
-      Offset(width - 7, 7),
-      Offset(7, height - 7),
-      Offset(width - 7, height - 7),
-    ]) {
-      canvas.drawCircle(point, 8, glow);
-      canvas.drawCircle(point, 1.8, Paint()..color = const Color(0xCCFFFFFF));
-    }
+    final haze = Paint()
+      ..shader = Gradient.radial(
+        Offset(width * .5, height * .38),
+        width * .55,
+        [
+          const Color(0xFFFFFFFF).withValues(alpha: .025 + crowdIntensity * .02),
+          const Color(0x00000000),
+        ],
+      );
+    canvas.drawRect(Rect.fromLTWH(0, 0, width, height), haze);
   }
 }

@@ -33,7 +33,7 @@ class LiveMatchPitchPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AspectRatio(
-            aspectRatio: 105 / 68,
+            aspectRatio: 2.20,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: Stack(

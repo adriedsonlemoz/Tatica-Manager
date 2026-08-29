@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.91",
+  "version": "0.1.1.92",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+93"
+    "pubspecVersion": "0.1.1+94"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.91",
-    "versionCode": 93
+    "versionName": "0.1.1.92",
+    "versionCode": 94
   },
   "release": {
-    "version": "0.1.1.91",
-    "revision": 91,
-    "androidVersionCode": 93
+    "version": "0.1.1.92",
+    "revision": 92,
+    "androidVersionCode": 94
   },
   "changelog": [
+    "Reformula a apresentação da partida ao vivo sem alterar o Match Engine: o campo Flame passa a usar projeção em perspectiva, arquibancadas e torcida desenhadas por Canvas, gols em profundidade e jogadores maiores com padrões dos uniformes reais dos clubes; o HUD ganha placar e faixa de rodada mais próximos de transmissão, timeline apenas de eventos já apresentados e controles reforçados; a Passagem do Tempo também recebe apresentação ampliada com datas e processos reais da carreira, sem adicionar imagens ou alterar saves.",
     "Aumenta a tipografia da Home em +3 px/lp de base com ajustes de encaixe responsivo sem ampliar os cards; mostra nomes completos na tabela, renomeia o avanço para AVANÇAR DIA/JOGAR PARTIDA, reduz o nome da competição para Brasileiro Série A, aumenta em 10 px os escudos da Próxima Partida e adiciona RODADA ao histórico recente; corrige também os quatro problemas de analyzer da 0.1.1.90 no pré-jogo, preservando CareerState schema 13, IDs, saves, multi-competição e Match Engine.",
     "Reformula visualmente a Preparação da Partida com hero do confronto, duração da transmissão, plano de jogo e titulares desenhados em campo tático somente leitura, reutilizando o fundo de estádio já existente e todos os dados reais da carreira; preserva Match Engine, Flame, CareerState schema 13, saves, IDs e fundação multi-competição.",
     "Refina a legibilidade da Home sem recuperar o layout esticado: amplia fontes de finanças, próxima partida, estádio, notícias, classificação, artilheiros e atalhos; aumenta escudos e presença do confronto, remove os rodapés redundantes Ver tabela/Ver ranking e torna os cards correspondentes acionáveis; mostra até quatro notícias, adiciona uma faixa compacta de últimas partidas usando matchHistory quando há espaço de tela e adiciona pontos de atenção aos atalhos somente para estados reais já existentes (escalação inválida, dia de jogo, proposta financeira pendente e lesão), preservando CareerState schema 13, saves, IDs, multi-competição e Match Engine.",
@@ -53,6 +54,6 @@
     "Refina a Home com resumo financeiro, estádio, preparação integrada ao próximo jogo, classificação/artilharia compactas e módulo próprio de Notícias; torna a importação de pacote completo explícita para clubes, jogadores, técnicos e escudos por IDs permanentes; e encerra efeitos/ambiente de áudio no fim da partida para evitar chiado pós-jogo, preservando saves, schema 11 e Match Engine."
   ],
   "changes": [
-    "Aumenta a tipografia da Home em +3 px/lp de base com ajustes de encaixe responsivo sem ampliar os cards; mostra nomes completos na tabela, renomeia o avanço para AVANÇAR DIA/JOGAR PARTIDA, reduz o nome da competição para Brasileiro Série A, aumenta em 10 px os escudos da Próxima Partida e adiciona RODADA ao histórico recente; corrige também os quatro problemas de analyzer da 0.1.1.90 no pré-jogo, preservando CareerState schema 13, IDs, saves, multi-competição e Match Engine."
+    "Reformula a apresentação da partida ao vivo sem alterar o Match Engine: o campo Flame passa a usar projeção em perspectiva, arquibancadas e torcida desenhadas por Canvas, gols em profundidade e jogadores maiores com padrões dos uniformes reais dos clubes; o HUD ganha placar e faixa de rodada mais próximos de transmissão, timeline apenas de eventos já apresentados e controles reforçados; a Passagem do Tempo também recebe apresentação ampliada com datas e processos reais da carreira, sem adicionar imagens ou alterar saves."
   ]
 }

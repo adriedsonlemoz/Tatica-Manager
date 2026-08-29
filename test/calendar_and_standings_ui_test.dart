@@ -60,6 +60,9 @@ void main() {
       home,
       contains('      );\n}\n\nclass _DayAdvanceTransition extends StatelessWidget'),
     );
+    expect(home, contains('_AdvanceDateCard'));
+    expect(home, contains('PROCESSANDO O DIA'));
+    expect(home, contains('Condição física e fadiga do elenco'));
     expect(home, contains('HomeFinanceGrid'));
     expect(home, contains('monthIncome'));
     expect(home, contains('monthExpenses'));

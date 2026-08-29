@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/game.dart';
 
+import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
 import 'match_pitch_moment_state.dart';
 import 'match_pitch_visuals.dart';
@@ -15,6 +16,8 @@ class MatchPitchGame extends FlameGame {
   MatchPitchGame({
     required this.homeColor,
     required this.awayColor,
+    required this.homeKit,
+    required this.awayKit,
     required this.homeClubId,
     required this.awayClubId,
     required List<String> homePlayerIds,
@@ -31,6 +34,8 @@ class MatchPitchGame extends FlameGame {
 
   final Color homeColor;
   final Color awayColor;
+  final ClubKit homeKit;
+  final ClubKit awayKit;
   final String homeClubId;
   final String awayClubId;
   final int ballStyle;
@@ -371,16 +376,17 @@ class MatchPitchGame extends FlameGame {
       elapsed: _elapsed,
       crowdIntensity: _momentState.crowdIntensity,
     );
-    final clip = MatchPitchVisuals.pitchClip(width, height);
+    final pitch = MatchPitchVisuals.pitchPath(width, height);
     canvas.save();
-    canvas.clipRRect(clip);
+    canvas.clipPath(pitch);
     MatchPitchVisuals.drawPitch(canvas, width, height);
-    _drawPlayers(canvas, width, height, _homePlayers, homeColor, true);
-    _drawPlayers(canvas, width, height, _awayPlayers, awayColor, false);
+    _drawPlayers(canvas, width, height, _homePlayers, true);
+    _drawPlayers(canvas, width, height, _awayPlayers, false);
     _drawBall(canvas, width, height);
     canvas.restore();
+    MatchPitchVisuals.drawGoals(canvas, width, height);
     MatchPitchVisuals.drawVignette(canvas, fieldRect);
-    MatchPitchVisuals.drawPitchBorder(canvas, clip);
+    MatchPitchVisuals.drawPitchBorder(canvas, pitch);
     super.render(canvas);
   }
 
@@ -389,21 +395,30 @@ class MatchPitchGame extends FlameGame {
     double width,
     double height,
     List<FieldPoint> players,
-    Color color,
     bool home,
   ) {
     final dismissed = home ? _dismissedHomeIndexes : _dismissedAwayIndexes;
     for (var index = 0; index < players.length; index++) {
       if (dismissed.contains(index)) continue;
-      final center = _toCanvasOffset(players[index], width, height);
+      final display = toHorizontalDisplayPoint(players[index]);
+      final center = MatchPitchVisuals.projectDisplayPoint(
+        Offset(display.x, display.y),
+        width,
+        height,
+      );
       final active = _activeHome == home && _activePlayerIndex == index;
+      final playerIds = home ? _homePlayerIds : _awayPlayerIds;
+      final playerId = index < playerIds.length ? playerIds[index] : '${home ? 'home' : 'away'}-$index';
       MatchPlayerVisuals.draw(
         canvas,
         center: center,
-        color: color,
+        kit: home ? homeKit : awayKit,
+        playerId: playerId,
         active: active,
         pulse: _pulse,
         replay: _replayActive,
+        goalkeeper: index == 0,
+        scale: MatchPitchVisuals.perspectiveScale(display.y),
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),
@@ -469,10 +484,10 @@ class MatchPitchGame extends FlameGame {
 
   static Offset _toCanvasOffset(FieldPoint point, double width, double height) {
     final display = toHorizontalDisplayPoint(point);
-    final field = MatchPitchVisuals.fieldRect(width, height);
-    return Offset(
-      field.left + display.x * field.width,
-      field.top + display.y * field.height,
+    return MatchPitchVisuals.projectDisplayPoint(
+      Offset(display.x, display.y),
+      width,
+      height,
     );
   }
 

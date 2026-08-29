@@ -430,15 +430,21 @@ class HomeScreen extends ConsumerWidget {
       currentDate.month,
       currentDate.day,
     ).add(const Duration(days: 1));
+    final career = ref.read(gameControllerProvider).career!;
+    final injuredPlayers = career.userClub.squad
+        .where((player) => player.injury != null)
+        .length;
     unawaited(
       showGeneralDialog<void>(
         context: context,
         barrierDismissible: false,
-        barrierColor: Colors.black.withValues(alpha: .72),
-        transitionDuration: const Duration(milliseconds: 160),
+        barrierColor: Colors.black.withValues(alpha: .82),
+        transitionDuration: const Duration(milliseconds: 180),
         pageBuilder: (dialogContext, _, _) => _DayAdvanceTransition(
           from: currentDate,
           to: nextDate,
+          daysUntilMatch: career.daysUntilNextMatch,
+          injuredPlayers: injuredPlayers,
         ),
         transitionBuilder: (context, animation, _, child) => FadeTransition(
           opacity: animation,
@@ -446,9 +452,9 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
-    await Future<void>.delayed(const Duration(milliseconds: 180));
+    await Future<void>.delayed(const Duration(milliseconds: 340));
     await ref.read(gameControllerProvider.notifier).advanceDay();
-    await Future<void>.delayed(const Duration(milliseconds: 260));
+    await Future<void>.delayed(const Duration(milliseconds: 420));
     if (!context.mounted) return;
     Navigator.of(context, rootNavigator: true).pop();
     final next = ref.read(gameControllerProvider).career;
@@ -729,60 +735,274 @@ class _HomeBackdrop extends StatelessWidget {
 }
 
 class _DayAdvanceTransition extends StatelessWidget {
-  const _DayAdvanceTransition({required this.from, required this.to});
+  const _DayAdvanceTransition({
+    required this.from,
+    required this.to,
+    required this.daysUntilMatch,
+    required this.injuredPlayers,
+  });
 
   final DateTime from;
   final DateTime to;
+  final int? daysUntilMatch;
+  final int injuredPlayers;
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Material(
-          color: Colors.transparent,
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: .92, end: 1),
-            duration: const Duration(milliseconds: 360),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) => Transform.scale(
-              scale: value,
-              child: child,
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final width = screenWidth > 430 ? 390.0 : screenWidth - 28;
+    final afterAdvance = daysUntilMatch == null
+        ? null
+        : (daysUntilMatch! - 1).clamp(0, 999).toInt();
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: .94, end: 1),
+          duration: const Duration(milliseconds: 340),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) => Transform.scale(
+            scale: value,
+            child: child,
+          ),
+          child: Container(
+            width: width,
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF17272E), Color(0xFF101B22), Color(0xFF0D171C)],
+              ),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: AppColors.green.withValues(alpha: .52)),
+              boxShadow: const [
+                BoxShadow(color: Color(0x77000000), blurRadius: 34, offset: Offset(0, 14)),
+              ],
             ),
-            child: Container(
-              width: 250,
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.green.withValues(alpha: .4)),
-                boxShadow: const [
-                  BoxShadow(color: Color(0x66000000), blurRadius: 28, offset: Offset(0, 12)),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.calendar_month_rounded, color: AppColors.green, size: 38),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'PASSAGEM DO TEMPO',
-                    style: TextStyle(
-                      color: AppColors.green,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: .8,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 68,
+                  height: 68,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.green.withValues(alpha: .08),
+                    border: Border.all(color: AppColors.green.withValues(alpha: .28)),
+                  ),
+                  child: const Icon(Icons.calendar_month_rounded, color: AppColors.green, size: 37),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'PASSAGEM DO TEMPO',
+                  style: TextStyle(
+                    color: AppColors.green,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: .7,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                const Text(
+                  'Avançando para o próximo dia da carreira.',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _AdvanceDateCard(
+                        label: 'HOJE',
+                        date: from,
+                      ),
                     ),
+                    Container(
+                      width: 42,
+                      height: 42,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.surfaceRaised,
+                        border: Border.all(color: AppColors.green.withValues(alpha: .26)),
+                      ),
+                      child: const Icon(Icons.arrow_forward_rounded, color: AppColors.white, size: 23),
+                    ),
+                    Expanded(
+                      child: _AdvanceDateCard(
+                        label: 'AMANHÃ',
+                        date: to,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceRaised.withValues(alpha: .82),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
                   ),
-                  const SizedBox(height: 9),
-                  Text(
-                    '${shortDate(from)}  →  ${shortDate(to)}',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: _AdvanceMetric(
+                          icon: Icons.schedule_rounded,
+                          title: '1 DIA',
+                          subtitle: 'Calendário',
+                        ),
+                      ),
+                      Container(width: 1, height: 32, color: AppColors.border),
+                      Expanded(
+                        child: _AdvanceMetric(
+                          icon: Icons.sports_soccer_rounded,
+                          title: afterAdvance == null
+                              ? 'AGENDA'
+                              : afterAdvance == 0
+                                  ? 'JOGO'
+                                  : '$afterAdvance DIAS',
+                          subtitle: 'Próxima partida',
+                        ),
+                      ),
+                      Container(width: 1, height: 32, color: AppColors.border),
+                      Expanded(
+                        child: _AdvanceMetric(
+                          icon: Icons.bolt_rounded,
+                          title: injuredPlayers > 0 ? '$injuredPlayers MÉD.' : 'ENERGIA',
+                          subtitle: 'Recuperação',
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  const LinearProgressIndicator(minHeight: 3),
-                ],
-              ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101B20),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.green.withValues(alpha: .22)),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PROCESSANDO O DIA',
+                        style: TextStyle(color: AppColors.green, fontSize: 9, fontWeight: FontWeight.w900),
+                      ),
+                      SizedBox(height: 7),
+                      _AdvanceProcessRow(icon: Icons.favorite_rounded, text: 'Condição física e fadiga do elenco'),
+                      SizedBox(height: 5),
+                      _AdvanceProcessRow(icon: Icons.description_rounded, text: 'Contratos, mercado e administração'),
+                      SizedBox(height: 5),
+                      _AdvanceProcessRow(icon: Icons.newspaper_rounded, text: 'Calendário, notícias e eventos da carreira'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: const LinearProgressIndicator(
+                    minHeight: 6,
+                    backgroundColor: AppColors.surfaceRaised,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AdvanceDateCard extends StatelessWidget {
+  const _AdvanceDateCard({required this.label, required this.date});
+
+  final String label;
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
+        decoration: BoxDecoration(
+          color: AppColors.surface.withValues(alpha: .82),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(color: AppColors.green, fontSize: 9, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              shortDate(date),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, height: 1),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              weekdayLabel(date),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 9),
+            ),
+          ],
+        ),
+      );
+}
+
+class _AdvanceMetric extends StatelessWidget {
+  const _AdvanceMetric({required this.icon, required this.title, required this.subtitle});
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        children: [
+          Icon(icon, color: AppColors.green, size: 17),
+          const SizedBox(height: 3),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppColors.green, fontSize: 8.5, fontWeight: FontWeight.w900),
+          ),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 7.5),
+          ),
+        ],
+      );
+}
+
+class _AdvanceProcessRow extends StatelessWidget {
+  const _AdvanceProcessRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        children: [
+          Icon(icon, size: 15, color: AppColors.warning),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 9.2, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
       );
 }
 

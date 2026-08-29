@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.91`
-**Android versionCode:** `93`
+**Release atual:** `0.1.1.92`
+**Android versionCode:** `94`
 
 ## Fonte oficial de versão
 
@@ -14,14 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.91`);
+- `VERSION` — versão visível simples (`0.1.1.92`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+93`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.91` e `versionCode 93`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+94`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.92` e `versionCode 94`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.91` é representada internamente como `0.1.1+93`. A versão visível do aplicativo/Android continua sendo `0.1.1.91`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.92` é representada internamente como `0.1.1+94`. A versão visível do aplicativo/Android continua sendo `0.1.1.92`.
+
+
+## Partida ao vivo em perspectiva — 0.1.1.92
+
+- reformula apenas a apresentação da partida: o Match Engine continua sendo a única fonte de eventos, placar, cartões e resultado;
+- campo Flame passa a usar projeção trapezoidal/perspectivada, gols com profundidade, arquibancadas, público e iluminação desenhados em Canvas, sem novo asset de imagem;
+- jogadores de campo ficam maiores e passam a usar `ClubKit` real do mandante/visitante, incluindo padrões de listras, faixa, metades e degradê; goleiros recebem contraste visual próprio somente no renderer;
+- placar, faixa da rodada, timeline já apresentada e controles aproximam a tela da referência de transmissão sem antecipar eventos futuros;
+- Passagem do Tempo ganha datas Hoje/Amanhã e informa processos que já existem no avanço diário: condição/fadiga, contratos/mercado e calendário/notícias;
+- preserva `CareerState` schema 13, saves, IDs, multi-competição, CPU e Match Engine.
 
 ## Tipografia responsiva da Home e correção de analyzer — 0.1.1.91
 
@@ -75,7 +85,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.92`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.93`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

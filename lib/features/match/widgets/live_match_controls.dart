@@ -40,30 +40,30 @@ class LiveMatchControlBar extends StatelessWidget {
           children: [
             _MatchActionButton(
               icon: paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-              label: paused ? 'Continuar' : 'Pausar',
+              label: paused ? 'CONTINUAR' : 'PAUSAR',
               selected: paused,
               onTap: enabled ? onPauseToggle : null,
             ),
             _MatchActionButton(
               icon: Icons.fast_forward_rounded,
-              label: 'Simular',
+              label: 'SIMULAR',
               onTap: enabled ? onSimulate : null,
             ),
             _MatchActionButton(
               icon: Icons.tune_rounded,
-              label: 'Tática',
+              label: 'TÁTICA',
               onTap: enabled ? onTactic : null,
             ),
             _MatchActionButton(
               icon: Icons.swap_vert_rounded,
-              label: 'Trocar',
+              label: 'TROCAR',
               onTap: enabled ? onSubstitution : null,
             ),
             _MatchActionButton(
               icon: soundEnabled
                   ? Icons.volume_up_rounded
                   : Icons.volume_off_rounded,
-              label: soundEnabled ? 'Áudio' : 'Mudo',
+              label: soundEnabled ? 'ÁUDIO' : 'MUDO',
               selected: !soundEnabled,
               onTap: onSoundToggle,
             ),
@@ -113,7 +113,7 @@ class LiveMatchStatsCard extends StatelessWidget {
       child: Row(
         children: [
           _MiniStat(
-            label: 'POSSE',
+            label: 'POSSE DE BOLA',
             home: '${possession.$1}%',
             away: '${possession.$2}%',
           ),
@@ -121,7 +121,7 @@ class LiveMatchStatsCard extends StatelessWidget {
           _MiniStat(label: 'CHUTES', home: '$homeShots', away: '$awayShots'),
           const _MiniDivider(),
           _MiniStat(
-            label: 'NO GOL',
+            label: 'CHUTES NO GOL',
             home: '$homeOnTarget',
             away: '$awayOnTarget',
           ),
@@ -203,7 +203,7 @@ class _MatchActionButton extends StatelessWidget {
             onPressed: onTap,
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              minimumSize: const Size(0, 48),
+              minimumSize: const Size(0, 56),
               foregroundColor: selected ? AppColors.green : null,
               backgroundColor:
                   selected ? AppColors.green.withValues(alpha: .10) : null,
@@ -214,13 +214,13 @@ class _MatchActionButton extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 17),
+                Icon(icon, size: 20),
                 const SizedBox(height: 1),
                 Text(
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 8),
+                  style: const TextStyle(fontSize: 8.8, fontWeight: FontWeight.w900),
                 ),
               ],
             ),

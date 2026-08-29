@@ -8,12 +8,23 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.91`
-- **Android versionCode:** `93`
+- **Release deste handoff:** `0.1.1.92`
+- **Android versionCode:** `94`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.92
+
+- reformula o renderer Flame da partida para uma apresentação horizontal em perspectiva sem tocar no Match Engine;
+- desenha gramado trapezoidal, linhas projetadas, gols com profundidade, arquibancadas, torcida e iluminação diretamente por Canvas, sem criar imagem nova;
+- jogadores ficam maiores, recebem variações visuais determinísticas e usam os padrões reais de `homeKit`/`awayKit` já persistidos nos clubes;
+- placar, faixa da rodada, controles e timeline de eventos já apresentados passam a seguir uma linguagem de transmissão mais próxima da referência;
+- remodela a Passagem do Tempo com Hoje/Amanhã e processos reais do avanço diário, mantendo o mesmo `advanceDay()`;
+- preserva `CareerState` schema 13, IDs, saves, calendário multi-competição, CPU, mercado, contratos e Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.92.md`.
 
 ## Estado funcional da release 0.1.1.91
 
@@ -600,10 +611,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.87
-versionCode:         93
-pubspec:             0.1.1+93
+versionCode:         94
+pubspec:             0.1.1+94
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.92` e usar um `versionCode` maior que 93.
+A próxima alteração/entrega normalmente deve virar `0.1.1.93` e usar um `versionCode` maior que 94.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
