@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/game.dart';
+import 'package:flutter/services.dart';
 
 import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
@@ -96,6 +97,26 @@ class MatchPitchGame extends FlameGame {
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
+  Image? _stadiumCrowdImage;
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    try {
+      final data = await rootBundle.load(
+        'assets/images/match/stadium_crowd.webp',
+      );
+      final bytes = data.buffer.asUint8List(
+        data.offsetInBytes,
+        data.lengthInBytes,
+      );
+      final codec = await instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      _stadiumCrowdImage = frame.image;
+    } catch (_) {
+      _stadiumCrowdImage = null;
+    }
+  }
 
   bool get isReplayActive => _replayActive;
 
@@ -375,6 +396,7 @@ class MatchPitchGame extends FlameGame {
       awayColor: awayColor,
       elapsed: _elapsed,
       crowdIntensity: _momentState.crowdIntensity,
+      crowdImage: _stadiumCrowdImage,
     );
     final pitch = MatchPitchVisuals.pitchPath(width, height);
     canvas.save();

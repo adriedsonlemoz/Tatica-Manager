@@ -140,6 +140,7 @@ void main() {
   });
 
   test('renderer enfileira lances e só representa a timeline do motor', () {
+    final screen = File('lib/features/match/match_screen.dart').readAsStringSync();
     final renderer = File(
       'lib/game/match/renderer/match_pitch_game.dart',
     ).readAsStringSync();
@@ -178,5 +179,8 @@ void main() {
     expect(playerVisuals, contains('celebration'));
     expect(stadiumVisuals, contains('_drawCrowd('));
     expect(stadiumVisuals, contains('_drawFloodlights('));
+    expect(stadiumVisuals, contains('_drawCrowdImage('));
+    expect(renderer, contains('assets/images/match/stadium_crowd.webp'));
+    expect(File('assets/images/match/stadium_crowd.webp').existsSync(), isTrue);
   });
 }

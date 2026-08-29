@@ -11,6 +11,7 @@ abstract final class MatchStadiumVisuals {
     required Color awayColor,
     required double elapsed,
     required double crowdIntensity,
+    Image? crowdImage,
   }) {
     canvas.drawRect(
       Rect.fromLTWH(0, 0, width, height),
@@ -27,20 +28,65 @@ abstract final class MatchStadiumVisuals {
         ),
     );
 
-    _drawBowl(canvas, width, height, fieldRect);
-    _drawCrowd(
-      canvas,
-      width,
-      height,
-      fieldRect,
-      homeColor,
-      awayColor,
-      elapsed,
-      crowdIntensity,
-    );
+    if (crowdImage != null) {
+      _drawCrowdImage(canvas, width, height, crowdImage);
+    } else {
+      _drawBowl(canvas, width, height, fieldRect);
+      _drawCrowd(
+        canvas,
+        width,
+        height,
+        fieldRect,
+        homeColor,
+        awayColor,
+        elapsed,
+        crowdIntensity,
+      );
+      _drawFloodlights(canvas, width, crowdIntensity);
+    }
     _drawLedBoards(canvas, width, fieldRect, homeColor, awayColor, elapsed);
-    _drawFloodlights(canvas, width, crowdIntensity);
     _drawAtmosphere(canvas, width, height, crowdIntensity);
+  }
+
+  static void _drawCrowdImage(
+    Canvas canvas,
+    double width,
+    double height,
+    Image image,
+  ) {
+    final sourceAspect = image.width / image.height;
+    final targetAspect = width / height;
+    Rect source;
+    if (sourceAspect > targetAspect) {
+      final sourceWidth = image.height * targetAspect;
+      final left = (image.width - sourceWidth) / 2;
+      source = Rect.fromLTWH(left, 0, sourceWidth, image.height.toDouble());
+    } else {
+      final sourceHeight = image.width / targetAspect;
+      final top = (image.height - sourceHeight) / 2;
+      source = Rect.fromLTWH(0, top, image.width.toDouble(), sourceHeight);
+    }
+    final destination = Rect.fromLTWH(0, 0, width, height);
+    canvas.drawImageRect(
+      image,
+      source,
+      destination,
+      Paint()..filterQuality = FilterQuality.medium,
+    );
+    canvas.drawRect(
+      destination,
+      Paint()
+        ..shader = Gradient.linear(
+          const Offset(0, 0),
+          Offset(0, height),
+          const [
+            Color(0x16000000),
+            Color(0x22030A08),
+            Color(0x70020808),
+          ],
+          const [0, .48, 1],
+        ),
+    );
   }
 
   static void _drawBowl(
