@@ -10,6 +10,12 @@ enum MatchPlayerPose {
   penaltyReady,
 }
 
+/// Renders players as bold, high-contrast "tokens" (a broadcast-style top
+/// down chip: body blob + jersey pattern + small head) rather than a
+/// finely detailed stick figure. At the small on-screen scale used during
+/// live match rendering, fine detail (separate limbs, hair strands, socks)
+/// just turns into visual noise — a simplified, bigger-contrast shape reads
+/// far better and looks closer to a real match-manager broadcast camera.
 abstract final class MatchPlayerVisuals {
   static const _skinTones = <Color>[
     Color(0xFFF1C7A2),
@@ -34,24 +40,26 @@ abstract final class MatchPlayerVisuals {
     double animationPhase = 0,
     double diveDirection = 0,
   }) {
+    // Tokens read better a bit bigger than the old anatomical figure did,
+    // since there's no separate limb geometry adding perceived size.
+    final s = scale * 1.28;
+
     final bounce = pose == MatchPlayerPose.celebration
-        ? math.sin(animationPhase * math.pi * 4).abs() * 2.4 * scale
+        ? math.sin(animationPhase * math.pi * 4).abs() * 2.6 * s
         : 0.0;
     final crouch = pose == MatchPlayerPose.penaltyReady
-        ? math.sin(animationPhase * math.pi * 2).abs() * 1.1 * scale
+        ? math.sin(animationPhase * math.pi * 2).abs() * 1.1 * s
         : 0.0;
     final translated = center.translate(0, -bounce + crouch);
     final dive = pose == MatchPlayerPose.goalkeeperDive;
     final angle = dive ? diveDirection.sign * .82 : 0.0;
     final hash = playerId.hashCode.abs();
     final skin = _skinTones[hash % _skinTones.length];
-    final hair = _hairColor(hash);
-    final primary = goalkeeper ? _goalkeeperColor(kit.primaryHex, hash) : Color(kit.primaryHex);
+    final primary =
+        goalkeeper ? _goalkeeperColor(kit.primaryHex, hash) : Color(kit.primaryHex);
     final secondary = goalkeeper
-        ? Color.lerp(primary, const Color(0xFFFFFFFF), .18)!
+        ? Color.lerp(primary, const Color(0xFF10151A), .55)!
         : Color(kit.secondaryHex);
-    final shorts = goalkeeper ? Color.lerp(primary, const Color(0xFF000000), .18)! : Color(kit.shortsHex);
-    final socks = goalkeeper ? primary : Color(kit.socksHex);
 
     canvas.save();
     if (dive) {
@@ -60,162 +68,138 @@ abstract final class MatchPlayerVisuals {
       canvas.translate(-translated.dx, -translated.dy);
     }
 
+    // Ground shadow first, anchored slightly ahead of the body so the
+    // token feels grounded on the pitch rather than floating.
     canvas.drawOval(
       Rect.fromCenter(
-        center: Offset(translated.dx + 1.3 * scale, translated.dy + 8.8 * scale),
-        width: (dive ? 20 : 17) * scale,
-        height: 5.3 * scale,
+        center: Offset(translated.dx, translated.dy + 8.4 * s),
+        width: (dive ? 19 : 15.5) * s,
+        height: 4.6 * s,
       ),
-      Paint()..color = const Color(0x5C000000),
-    );
-
-    final limbPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 2.15 * scale;
-    final armLift = pose == MatchPlayerPose.celebration ? 6.3 : 2.4;
-    limbPaint.color = skin;
-    canvas.drawLine(
-      Offset(translated.dx - 5.2 * scale, translated.dy - 1.2 * scale),
-      Offset(translated.dx - 8.3 * scale, translated.dy - armLift * scale),
-      limbPaint,
-    );
-    canvas.drawLine(
-      Offset(translated.dx + 5.2 * scale, translated.dy - 1.2 * scale),
-      Offset(translated.dx + 8.3 * scale, translated.dy - armLift * scale),
-      limbPaint,
-    );
-
-    final legPaint = Paint()
-      ..color = socks
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 2.55 * scale;
-    canvas.drawLine(
-      Offset(translated.dx - 2.2 * scale, translated.dy + 5.5 * scale),
-      Offset(translated.dx - 4.1 * scale, translated.dy + 10.8 * scale),
-      legPaint,
-    );
-    canvas.drawLine(
-      Offset(translated.dx + 2.2 * scale, translated.dy + 5.5 * scale),
-      Offset(translated.dx + 4.1 * scale, translated.dy + 10.8 * scale),
-      legPaint,
-    );
-
-    final shortsRect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-        center: Offset(translated.dx, translated.dy + 4.2 * scale),
-        width: 11.6 * scale,
-        height: 5.8 * scale,
-      ),
-      Radius.circular(2.2 * scale),
-    );
-    canvas.drawRRect(shortsRect, Paint()..color = shorts);
-
-    final torso = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-        center: Offset(translated.dx, translated.dy - .8 * scale),
-        width: 13.8 * scale,
-        height: 13.0 * scale,
-      ),
-      Radius.circular(3.6 * scale),
-    );
-    _drawKit(canvas, torso, primary, secondary, kit.pattern, scale);
-    canvas.drawRRect(
-      torso,
       Paint()
-        ..color = const Color(0xB8FFFFFF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .85 * scale,
+        ..color = const Color(0x55000000)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.1),
     );
-
-    final neck = Rect.fromCenter(
-      center: Offset(translated.dx, translated.dy - 7.1 * scale),
-      width: 3.1 * scale,
-      height: 3.4 * scale,
-    );
-    canvas.drawRect(neck, Paint()..color = skin);
-    final headCenter = Offset(translated.dx, translated.dy - 10.4 * scale);
-    canvas.drawCircle(headCenter, 4.35 * scale, Paint()..color = skin);
-    canvas.drawArc(
-      Rect.fromCircle(center: headCenter.translate(0, -.6 * scale), radius: 4.35 * scale),
-      math.pi,
-      math.pi,
-      true,
-      Paint()..color = hair,
-    );
-    if (hash % 4 == 0) {
-      canvas.drawLine(
-        headCenter.translate(-2.2 * scale, 3.0 * scale),
-        headCenter.translate(2.2 * scale, 3.0 * scale),
-        Paint()
-          ..color = hair.withValues(alpha: .82)
-          ..strokeWidth = 1.05 * scale
-          ..strokeCap = StrokeCap.round,
-      );
-    }
 
     if (active) {
       final ringColor = replay ? const Color(0xFFFFFFFF) : const Color(0xFF9AF12A);
       canvas.drawCircle(
         translated,
-        (16 + pulse * 4) * scale,
-        Paint()..color = ringColor.withValues(alpha: .08 + .10 * pulse),
+        (15 + pulse * 4) * s,
+        Paint()..color = ringColor.withValues(alpha: .10 + .12 * pulse),
       );
       canvas.drawCircle(
         translated,
-        (13 + pulse * 3) * scale,
+        (12.2 + pulse * 3) * s,
         Paint()
-          ..color = ringColor.withValues(alpha: .26 + .18 * pulse)
+          ..color = ringColor.withValues(alpha: .34 + .2 * pulse)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = replay ? 1.8 : 1.45,
+          ..strokeWidth = replay ? 1.9 : 1.55,
       );
     }
+
+    // Body: one bold rounded-capsule silhouette carries the jersey. Arms
+    // are suggested with two short stub caps instead of full limb lines,
+    // which keeps the token crisp instead of turning to mush at 6-9px.
+    final bodyCenter = Offset(translated.dx, translated.dy + 2.6 * s);
+    final body = RRect.fromRectAndRadius(
+      Rect.fromCenter(center: bodyCenter, width: 12.6 * s, height: 12.0 * s),
+      Radius.circular(5.4 * s),
+    );
+
+    final armLift = pose == MatchPlayerPose.celebration ? 5.6 : 1.6;
+    final armPaint = Paint()..color = primary;
+    canvas.drawCircle(
+      Offset(translated.dx - 7.0 * s, translated.dy - .4 * s - armLift * s * .3),
+      2.5 * s,
+      armPaint,
+    );
+    canvas.drawCircle(
+      Offset(translated.dx + 7.0 * s, translated.dy - .4 * s - armLift * s * .3),
+      2.5 * s,
+      armPaint,
+    );
+
+    _drawKit(canvas, body, primary, secondary, kit.pattern, s);
+    canvas.drawRRect(
+      body,
+      Paint()
+        ..color = const Color(0xC4FFFFFF)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .9 * s,
+    );
+    // Soft top-down light sheen so the token doesn't read as flat.
+    canvas.save();
+    canvas.clipRRect(body);
+    canvas.drawRect(
+      body.outerRect,
+      Paint()
+        ..shader = Gradient.linear(
+          body.outerRect.topCenter,
+          body.outerRect.bottomCenter,
+          const [Color(0x3AFFFFFF), Color(0x00FFFFFF), Color(0x22000000)],
+          const [0, .5, 1],
+        ),
+    );
+    canvas.restore();
+
+    // Head: simple flat disc, no hair/neck strokes — reads as a clean dot
+    // at this size and avoids the "bald mannequin" look from fine strokes.
+    final headCenter = Offset(translated.dx, translated.dy - 6.6 * s);
+    canvas.drawCircle(headCenter, 4.0 * s, Paint()..color = skin);
+    canvas.drawCircle(
+      headCenter,
+      4.0 * s,
+      Paint()
+        ..color = const Color(0x2A000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .55 * s,
+    );
+
     canvas.restore();
   }
 
   static void _drawKit(
     Canvas canvas,
-    RRect torso,
+    RRect body,
     Color primary,
     Color secondary,
     ClubKitPattern pattern,
     double scale,
   ) {
     canvas.save();
-    canvas.clipRRect(torso);
-    canvas.drawRRect(torso, Paint()..color = primary);
-    final rect = torso.outerRect;
-    final accent = Paint()..color = secondary.withValues(alpha: .94);
+    canvas.clipRRect(body);
+    canvas.drawRRect(body, Paint()..color = primary);
+    final rect = body.outerRect;
+    final accent = Paint()..color = secondary;
     switch (pattern) {
       case ClubKitPattern.solid:
         canvas.drawRect(
-          Rect.fromLTWH(rect.left, rect.top, rect.width, 2.0 * scale),
-          accent..color = secondary.withValues(alpha: .36),
+          Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height * .22),
+          accent..color = secondary.withValues(alpha: .55),
         );
         break;
       case ClubKitPattern.verticalStripes:
-        final stripe = rect.width / 5;
-        for (var index = 0; index < 5; index += 2) {
-          canvas.drawRect(
-            Rect.fromLTWH(rect.left + stripe * index, rect.top, stripe, rect.height),
-            accent,
-          );
-        }
+        // Two bold stripes instead of five thin ones — legible at 8px.
+        final stripe = rect.width / 3;
+        canvas.drawRect(
+          Rect.fromLTWH(rect.left + stripe * .5, rect.top, stripe, rect.height),
+          accent,
+        );
         break;
       case ClubKitPattern.horizontalStripes:
-        final stripe = rect.height / 5;
-        for (var index = 0; index < 5; index += 2) {
-          canvas.drawRect(
-            Rect.fromLTWH(rect.left, rect.top + stripe * index, rect.width, stripe),
-            accent,
-          );
-        }
+        final stripe = rect.height / 3;
+        canvas.drawRect(
+          Rect.fromLTWH(rect.left, rect.top + stripe, rect.width, stripe),
+          accent,
+        );
         break;
       case ClubKitPattern.sash:
         final path = Path()
-          ..moveTo(rect.left - 2 * scale, rect.top)
-          ..lineTo(rect.left + 2 * scale, rect.top)
-          ..lineTo(rect.right + 2 * scale, rect.bottom)
-          ..lineTo(rect.right - 2 * scale, rect.bottom)
+          ..moveTo(rect.left - 2 * scale, rect.top + rect.height * .18)
+          ..lineTo(rect.left + 2 * scale, rect.top - 2 * scale)
+          ..lineTo(rect.right + 2 * scale, rect.bottom + 2 * scale)
+          ..lineTo(rect.right - 2 * scale, rect.bottom - rect.height * .18)
           ..close();
         canvas.drawPath(path, accent);
         break;
@@ -253,16 +237,5 @@ abstract final class MatchPlayerVisuals {
       selected = options[(hash + 1) % options.length];
     }
     return selected;
-  }
-
-  static Color _hairColor(int hash) {
-    const hairs = [
-      Color(0xFF171311),
-      Color(0xFF2B1B13),
-      Color(0xFF4A3022),
-      Color(0xFF8B673C),
-      Color(0xFFD0B47A),
-    ];
-    return hairs[(hash ~/ 7) % hairs.length];
   }
 }

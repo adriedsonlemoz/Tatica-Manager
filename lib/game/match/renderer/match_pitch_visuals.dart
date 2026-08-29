@@ -79,9 +79,9 @@ abstract final class MatchPitchVisuals {
         field.topCenter,
         field.bottomCenter,
         const [
-          Color(0xFF3A8D38),
-          Color(0xFF2F7A31),
-          Color(0xFF235C25),
+          Color(0xFF4CAE3F),
+          Color(0xFF3B9A38),
+          Color(0xFF267229),
         ],
         const [0, .48, 1],
       );
@@ -95,8 +95,8 @@ abstract final class MatchPitchVisuals {
         stripe,
         Paint()
           ..color = index.isEven
-              ? const Color(0x14FFFFFF)
-              : const Color(0x09000000),
+              ? const Color(0x22FFFFFF)
+              : const Color(0x1D000000),
       );
     }
 
@@ -162,7 +162,7 @@ abstract final class MatchPitchVisuals {
       ..shader = Gradient.radial(
         Offset(field.center.dx, field.top + field.height * .32),
         field.width * .58,
-        const [Color(0x22FFFFFF), Color(0x00000000)],
+        const [Color(0x2EFFFFFF), Color(0x00000000)],
       );
     canvas.drawRect(field, spotlight);
   }
@@ -173,9 +173,9 @@ abstract final class MatchPitchVisuals {
     double height,
   ) {
     final line = Paint()
-      ..color = const Color(0xEFFFFFFF)
+      ..color = const Color(0xFAFFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
+      ..strokeWidth = 1.6;
 
     _drawPolygon(
       canvas,
@@ -491,7 +491,7 @@ abstract final class MatchPitchVisuals {
   }
 
   static double _perspectiveInset(Rect field, double y) =>
-      _lerp(field.width * .04, field.width * .015, y.clamp(0.0, 1.0));
+      _lerp(field.width * .085, field.width * .01, y.clamp(0.0, 1.0));
 
   static double _lerp(double start, double end, double t) =>
       start + (end - start) * t;
