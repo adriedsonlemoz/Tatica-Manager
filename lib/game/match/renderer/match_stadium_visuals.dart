@@ -13,16 +13,17 @@ abstract final class MatchStadiumVisuals {
     required double crowdIntensity,
     Image? crowdImage,
   }) {
+    final background = Rect.fromLTWH(0, 0, width, height);
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, width, height),
+      background,
       Paint()
         ..shader = Gradient.linear(
           const Offset(0, 0),
           Offset(0, height),
           const [
-            Color(0xFF04080B),
-            Color(0xFF0B1216),
-            Color(0xFF111A18),
+            Color(0xFF081015),
+            Color(0xFF0C141B),
+            Color(0xFF0E181D),
           ],
           const [0, .42, 1],
         ),
@@ -42,9 +43,11 @@ abstract final class MatchStadiumVisuals {
         elapsed,
         crowdIntensity,
       );
-      _drawFloodlights(canvas, width, crowdIntensity);
     }
+
+    _drawPitchSurround(canvas, fieldRect);
     _drawLedBoards(canvas, width, fieldRect, homeColor, awayColor, elapsed);
+    _drawFloodlights(canvas, width, fieldRect, crowdIntensity);
     _drawAtmosphere(canvas, width, height, crowdIntensity);
   }
 
@@ -71,7 +74,7 @@ abstract final class MatchStadiumVisuals {
       image,
       source,
       destination,
-      Paint()..filterQuality = FilterQuality.medium,
+      Paint()..filterQuality = FilterQuality.high,
     );
     canvas.drawRect(
       destination,
@@ -80,12 +83,42 @@ abstract final class MatchStadiumVisuals {
           const Offset(0, 0),
           Offset(0, height),
           const [
-            Color(0x16000000),
-            Color(0x22030A08),
-            Color(0x70020808),
+            Color(0x08000000),
+            Color(0x20010608),
+            Color(0x70010608),
           ],
-          const [0, .48, 1],
+          const [0, .45, 1],
         ),
+    );
+  }
+
+  static void _drawPitchSurround(Canvas canvas, Rect fieldRect) {
+    final surround = fieldRect.inflate(12);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(surround, const Radius.circular(20)),
+      Paint()..color = const Color(0x26000000),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(surround, const Radius.circular(20)),
+      Paint()
+        ..color = const Color(0x8CFFFFFF)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .7,
+    );
+
+    final edge = Paint()
+      ..shader = Gradient.linear(
+        surround.topLeft,
+        surround.bottomLeft,
+        const [Color(0xFF1B2227), Color(0xFF090E12)],
+      );
+    canvas.drawRect(
+      Rect.fromLTWH(surround.left, surround.top, surround.width, 9),
+      edge,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(surround.left, surround.bottom - 12, surround.width, 12),
+      Paint()..color = const Color(0xD10C1014),
     );
   }
 
@@ -98,32 +131,22 @@ abstract final class MatchStadiumVisuals {
     final topStand = Path()
       ..moveTo(0, 0)
       ..lineTo(width, 0)
-      ..lineTo(width, fieldRect.top + 7)
-      ..quadraticBezierTo(
-        width * .5,
-        fieldRect.top - 18,
-        0,
-        fieldRect.top + 7,
-      )
+      ..lineTo(width, fieldRect.top - 8)
+      ..quadraticBezierTo(width * .5, fieldRect.top - 32, 0, fieldRect.top - 8)
       ..close();
     canvas.drawPath(
       topStand,
       Paint()
         ..shader = Gradient.linear(
           const Offset(0, 0),
-          Offset(0, fieldRect.top + 8),
-          const [Color(0xFF05090D), Color(0xFF202A2A)],
+          Offset(0, fieldRect.top),
+          const [Color(0xFF05090D), Color(0xFF1E262A)],
         ),
     );
 
     final bottomStand = Path()
-      ..moveTo(0, fieldRect.bottom - 3)
-      ..quadraticBezierTo(
-        width * .5,
-        fieldRect.bottom + 22,
-        width,
-        fieldRect.bottom - 3,
-      )
+      ..moveTo(0, fieldRect.bottom + 2)
+      ..quadraticBezierTo(width * .5, fieldRect.bottom + 30, width, fieldRect.bottom + 2)
       ..lineTo(width, height)
       ..lineTo(0, height)
       ..close();
@@ -133,46 +156,41 @@ abstract final class MatchStadiumVisuals {
         ..shader = Gradient.linear(
           Offset(0, fieldRect.bottom),
           Offset(0, height),
-          const [Color(0xFF1A2421), Color(0xFF060A0C)],
+          const [Color(0xFF1E2626), Color(0xFF070B0E)],
         ),
     );
 
-    final sidePaint = Paint()
-      ..shader = Gradient.linear(
-        Offset(fieldRect.left, fieldRect.center.dy),
-        Offset(0, fieldRect.center.dy),
-        const [Color(0xFF1D2824), Color(0xFF080D0E)],
-      );
-    final left = Path()
-      ..moveTo(0, fieldRect.top + 4)
-      ..lineTo(fieldRect.left + 22, fieldRect.top)
-      ..lineTo(fieldRect.left, fieldRect.bottom)
-      ..lineTo(0, fieldRect.bottom - 3)
+    final sideLeft = Path()
+      ..moveTo(0, fieldRect.top - 8)
+      ..lineTo(fieldRect.left + 18, fieldRect.top + 10)
+      ..lineTo(fieldRect.left - 4, fieldRect.bottom - 10)
+      ..lineTo(0, fieldRect.bottom + 4)
       ..close();
-    canvas.drawPath(left, sidePaint);
+    canvas.drawPath(
+      sideLeft,
+      Paint()
+        ..shader = Gradient.linear(
+          Offset(fieldRect.left, fieldRect.top),
+          const Offset(0, 0),
+          const [Color(0xFF1B252A), Color(0xFF070A0E)],
+        ),
+    );
 
-    final rightPaint = Paint()
-      ..shader = Gradient.linear(
-        Offset(fieldRect.right, fieldRect.center.dy),
-        Offset(width, fieldRect.center.dy),
-        const [Color(0xFF1D2824), Color(0xFF080D0E)],
-      );
-    final right = Path()
-      ..moveTo(width, fieldRect.top + 4)
-      ..lineTo(fieldRect.right - 22, fieldRect.top)
-      ..lineTo(fieldRect.right, fieldRect.bottom)
-      ..lineTo(width, fieldRect.bottom - 3)
+    final sideRight = Path()
+      ..moveTo(width, fieldRect.top - 8)
+      ..lineTo(fieldRect.right - 18, fieldRect.top + 10)
+      ..lineTo(fieldRect.right + 4, fieldRect.bottom - 10)
+      ..lineTo(width, fieldRect.bottom + 4)
       ..close();
-    canvas.drawPath(right, rightPaint);
-
-    final rail = Paint()
-      ..color = const Color(0xAA68756E)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .75;
-    for (var row = 0; row < 4; row++) {
-      final y = fieldRect.top * (.32 + row * .16);
-      canvas.drawLine(Offset(12, y), Offset(width - 12, y), rail);
-    }
+    canvas.drawPath(
+      sideRight,
+      Paint()
+        ..shader = Gradient.linear(
+          Offset(fieldRect.right, fieldRect.top),
+          Offset(width, 0),
+          const [Color(0xFF1B252A), Color(0xFF070A0E)],
+        ),
+    );
   }
 
   static void _drawCrowd(
@@ -185,62 +203,41 @@ abstract final class MatchStadiumVisuals {
     double elapsed,
     double crowdIntensity,
   ) {
-    final energy = (.48 + crowdIntensity * .42).clamp(.42, .92).toDouble();
-    final topRows = 6;
+    final energy = (.5 + crowdIntensity * .38).clamp(.42, .9).toDouble();
+    final topRows = 7;
     for (var row = 0; row < topRows; row++) {
-      final y = 10 + row * ((fieldRect.top - 16) / topRows);
-      final count = 54 + row * 7;
+      final y = 10 + row * ((fieldRect.top - 18) / topRows);
+      final count = 62 + row * 8;
       for (var index = 0; index < count; index++) {
         final x = 6 + (width - 12) * index / math.max(1, count - 1);
         _drawFanDot(
           canvas,
           x,
-          y + math.sin(elapsed * 4.2 + index * .71 + row) * .65 * crowdIntensity,
+          y + math.sin(elapsed * 4.1 + index * .62 + row) * .7 * crowdIntensity,
           index + row,
           homeColor,
           awayColor,
           energy,
-          radius: .8 + row * .08,
+          radius: .85 + row * .08,
         );
       }
     }
 
     final bottomDepth = math.max(0.0, height - fieldRect.bottom).toDouble();
-    if (bottomDepth > 5) {
-      for (var row = 0; row < 3; row++) {
-        final y = fieldRect.bottom + 6 + row * (bottomDepth / 3);
-        final count = 58 + row * 8;
-        for (var index = 0; index < count; index++) {
-          final x = 5 + (width - 10) * index / math.max(1, count - 1);
-          _drawFanDot(
-            canvas,
-            x,
-            y + math.sin(elapsed * 4.7 + index * .63 + row) * .55 * crowdIntensity,
-            index + row * 3,
-            homeColor,
-            awayColor,
-            energy,
-            radius: .9 + row * .08,
-          );
-        }
-      }
-    }
-
-    for (var side = 0; side < 2; side++) {
-      final xBase = side == 0 ? 4.0 : width - 4.0;
-      for (var index = 0; index < 22; index++) {
-        final t = index / 21;
-        final y = fieldRect.top + 12 + t * math.max(4.0, fieldRect.height - 24);
-        final x = xBase + (side == 0 ? 1 : -1) * (index % 3) * 2.2;
+    for (var row = 0; row < 3; row++) {
+      final y = fieldRect.bottom + 6 + row * (bottomDepth / 3);
+      final count = 66 + row * 6;
+      for (var index = 0; index < count; index++) {
+        final x = 5 + (width - 10) * index / math.max(1, count - 1);
         _drawFanDot(
           canvas,
           x,
-          y,
-          index + side,
+          y + math.sin(elapsed * 4.5 + index * .58 + row) * .55 * crowdIntensity,
+          index + row * 4,
           homeColor,
           awayColor,
           energy,
-          radius: .85,
+          radius: .9 + row * .08,
         );
       }
     }
@@ -261,7 +258,7 @@ abstract final class MatchStadiumVisuals {
         : index.isEven
             ? homeColor
             : awayColor;
-    final color = Color.lerp(const Color(0xFF53605A), base, .62)!;
+    final color = Color.lerp(const Color(0xFF4A5755), base, .6)!;
     canvas.drawCircle(
       Offset(x, y),
       radius,
@@ -277,23 +274,19 @@ abstract final class MatchStadiumVisuals {
     Color awayColor,
     double elapsed,
   ) {
-    final boardY = fieldRect.top - 3.5;
-    final board = Rect.fromLTWH(18, boardY, width - 36, 3.2);
+    final boardY = fieldRect.top - 4.5;
+    final board = Rect.fromLTWH(22, boardY, width - 44, 4.0);
     canvas.drawRRect(
-      RRect.fromRectAndRadius(board, const Radius.circular(2)),
-      Paint()..color = const Color(0xFF1B2421),
+      RRect.fromRectAndRadius(board, const Radius.circular(2.5)),
+      Paint()..color = const Color(0xFF1A2326),
     );
-    final color = Color.lerp(
-      homeColor,
-      awayColor,
-      .5 + math.sin(elapsed * .75) * .28,
-    )!;
-    final segmentWidth = math.max(28.0, width * .08);
-    final progress = (elapsed * 35) % (width + segmentWidth);
+    final color = Color.lerp(homeColor, awayColor, .5 + math.sin(elapsed * .7) * .28)!;
+    final segmentWidth = math.max(36.0, width * .085);
+    final progress = (elapsed * 38) % (width + segmentWidth);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromLTWH(progress - segmentWidth, boardY, segmentWidth, 3.2),
-        const Radius.circular(2),
+        Rect.fromLTWH(progress - segmentWidth, boardY, segmentWidth, 4.0),
+        const Radius.circular(2.5),
       ),
       Paint()..color = color.withValues(alpha: .88),
     );
@@ -302,28 +295,41 @@ abstract final class MatchStadiumVisuals {
   static void _drawFloodlights(
     Canvas canvas,
     double width,
+    Rect fieldRect,
     double crowdIntensity,
   ) {
-    final points = <Offset>[
-      Offset(width * .08, 4),
-      Offset(width * .24, 2),
-      Offset(width * .76, 2),
-      Offset(width * .92, 4),
+    final anchors = <Offset>[
+      Offset(width * .08, 8),
+      Offset(width * .25, 5),
+      Offset(width * .75, 5),
+      Offset(width * .92, 8),
     ];
-    for (final point in points) {
-      final glow = Paint()
-        ..color = const Color(0xFFFFFFFF).withValues(
-          alpha: .09 + crowdIntensity * .045,
-        )
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 11);
-      canvas.drawCircle(point, 10, glow);
-      for (var lamp = -2; lamp <= 2; lamp++) {
+    for (final point in anchors) {
+      canvas.drawCircle(
+        point,
+        12,
+        Paint()
+          ..color = const Color(0xFFFFFFFF).withValues(alpha: .06 + crowdIntensity * .05)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14),
+      );
+      for (var lamp = -3; lamp <= 3; lamp++) {
         canvas.drawCircle(
-          point.translate(lamp * 3.2, 0),
-          1.25,
-          Paint()..color = const Color(0xE8FFFFFF),
+          point.translate(lamp * 3.4, 0),
+          1.2,
+          Paint()..color = const Color(0xF2FFFFFF),
         );
       }
+      canvas.drawPath(
+        Path()
+          ..moveTo(point.dx - 10, fieldRect.top - 8)
+          ..quadraticBezierTo(point.dx, fieldRect.top + 10, point.dx + 10, fieldRect.top - 8),
+        Paint()
+          ..shader = Gradient.linear(
+            point,
+            Offset(point.dx, fieldRect.top + fieldRect.height * .32),
+            const [Color(0x26FFFFFF), Color(0x00FFFFFF)],
+          ),
+      );
     }
   }
 
@@ -335,10 +341,10 @@ abstract final class MatchStadiumVisuals {
   ) {
     final haze = Paint()
       ..shader = Gradient.radial(
-        Offset(width * .5, height * .38),
-        width * .55,
+        Offset(width * .5, height * .34),
+        width * .62,
         [
-          const Color(0xFFFFFFFF).withValues(alpha: .025 + crowdIntensity * .02),
+          const Color(0xFFFFFFFF).withValues(alpha: .028 + crowdIntensity * .018),
           const Color(0x00000000),
         ],
       );

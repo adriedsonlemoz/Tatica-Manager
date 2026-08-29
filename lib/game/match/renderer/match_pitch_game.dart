@@ -402,8 +402,7 @@ class MatchPitchGame extends FlameGame {
     canvas.save();
     canvas.clipPath(pitch);
     MatchPitchVisuals.drawPitch(canvas, width, height);
-    _drawPlayers(canvas, width, height, _homePlayers, true);
-    _drawPlayers(canvas, width, height, _awayPlayers, false);
+    _drawPlayers(canvas, width, height);
     _drawBall(canvas, width, height);
     canvas.restore();
     MatchPitchVisuals.drawGoals(canvas, width, height);
@@ -416,18 +415,31 @@ class MatchPitchGame extends FlameGame {
     Canvas canvas,
     double width,
     double height,
-    List<FieldPoint> players,
-    bool home,
   ) {
-    final dismissed = home ? _dismissedHomeIndexes : _dismissedAwayIndexes;
-    for (var index = 0; index < players.length; index++) {
-      if (dismissed.contains(index)) continue;
-      final display = toHorizontalDisplayPoint(players[index]);
+    final entries = <_RenderedPlayer>[];
+    for (var index = 0; index < _homePlayers.length; index++) {
+      if (_dismissedHomeIndexes.contains(index)) continue;
+      entries.add(_RenderedPlayer(home: true, index: index, point: _homePlayers[index]));
+    }
+    for (var index = 0; index < _awayPlayers.length; index++) {
+      if (_dismissedAwayIndexes.contains(index)) continue;
+      entries.add(_RenderedPlayer(home: false, index: index, point: _awayPlayers[index]));
+    }
+    entries.sort((a, b) {
+      final ay = toHorizontalDisplayPoint(a.point).y;
+      final by = toHorizontalDisplayPoint(b.point).y;
+      return ay.compareTo(by);
+    });
+
+    for (final entry in entries) {
+      final display = toHorizontalDisplayPoint(entry.point);
       final center = MatchPitchVisuals.projectDisplayPoint(
         Offset(display.x, display.y),
         width,
         height,
       );
+      final home = entry.home;
+      final index = entry.index;
       final active = _activeHome == home && _activePlayerIndex == index;
       final playerIds = home ? _homePlayerIds : _awayPlayerIds;
       final playerId = index < playerIds.length ? playerIds[index] : '${home ? 'home' : 'away'}-$index';
@@ -440,7 +452,7 @@ class MatchPitchGame extends FlameGame {
         pulse: _pulse,
         replay: _replayActive,
         goalkeeper: index == 0,
-        scale: MatchPitchVisuals.perspectiveScale(display.y) * .72,
+        scale: MatchPitchVisuals.perspectiveScale(display.y) * .58,
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),
@@ -532,4 +544,17 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
 
+}
+
+
+class _RenderedPlayer {
+  const _RenderedPlayer({
+    required this.home,
+    required this.index,
+    required this.point,
+  });
+
+  final bool home;
+  final int index;
+  final FieldPoint point;
 }

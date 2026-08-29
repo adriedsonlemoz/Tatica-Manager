@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.94';
+  static const String version = '0.1.1.95';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.95',
+      title: 'Campo da partida redesenhado',
+      changes: [
+        'Refaz o gramado da partida com perspectiva mais equilibrada, moldura de estádio e marcações/gols redesenhados do zero.',
+        'Reordena o desenho dos jogadores por profundidade e reduz novamente a escala visual para aproximar o enquadramento do mockup.',
+        'Mantém torcida, Match Engine, eventos, placar, saves, IDs e fundação multi-competição intactos.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.94',
       title: 'Transmissão ao vivo refinada',

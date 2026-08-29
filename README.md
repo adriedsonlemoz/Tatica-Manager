@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.94`
-**Android versionCode:** `96`
+**Release atual:** `0.1.1.95`
+**Android versionCode:** `97`
 
 ## Fonte oficial de versão
 
@@ -14,16 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.94`);
+- `VERSION` — versão visível simples (`0.1.1.95`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+96`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.94` e `versionCode 96`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+97`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.95` e `versionCode 97`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.94` é representada internamente como `0.1.1+96`. A versão visível do aplicativo/Android continua sendo `0.1.1.94`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.95` é representada internamente como `0.1.1+97`. A versão visível do aplicativo/Android continua sendo `0.1.1.95`. a próxima entrega normalmente será `0.1.1.96`.
 
 
+
+## Campo da partida redesenhado — 0.1.1.95
+
+- redesenha o gramado da partida praticamente do zero, com perspectiva mais equilibrada e enquadramento mais próximo do mockup aprovado;
+- refaz a moldura do estádio, o entorno do campo, as luzes, a sensação de profundidade, as marcações e os gols;
+- reordena os jogadores por profundidade para evitar sobreposição visual ruim e reduz novamente a escala deles dentro do gramado;
+- preserva a torcida existente ao fundo, sem tocar em Match Engine, timeline, placar, saves, IDs ou multi-competição.
 
 ## Transmissão ao vivo refinada — 0.1.1.94
 
