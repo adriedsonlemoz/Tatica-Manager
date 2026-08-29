@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import '../../../core/theme/match_ball_styles.dart';
 import '../../../domain/match/match_models.dart';
+import 'match_goal_visuals.dart';
 
 abstract final class MatchPitchVisuals {
   static Rect fieldRect(double width, double height) => Rect.fromLTWH(
@@ -22,6 +23,9 @@ abstract final class MatchPitchVisuals {
 
   static double depthShadowScale(double displayY) =>
       (.76 + displayY.clamp(0.0, 1.0) * .30).toDouble();
+
+  static double interfaceScale(double fieldWidth) =>
+      (fieldWidth / 360).clamp(.82, 1.35).toDouble();
 
   static void drawPitch(Canvas canvas, double width, double height) {
     final field = fieldRect(width, height);
@@ -49,6 +53,7 @@ abstract final class MatchPitchVisuals {
         );
       }
     }
+    _drawGrassTexture(canvas, field);
     drawPitchMarkings(canvas, field);
     drawGoal(canvas, field, left: true);
     drawGoal(canvas, field, left: false);
@@ -136,10 +141,11 @@ abstract final class MatchPitchVisuals {
   }
 
   static void drawPitchMarkings(Canvas canvas, Rect field) {
+    final lineWidth = (field.width / 360 * 1.12).clamp(.95, 1.55).toDouble();
     final line = Paint()
       ..color = const Color(0xB8FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15;
+      ..strokeWidth = lineWidth;
     final bounds = field.deflate(7);
     canvas.drawRect(bounds, line);
     canvas.drawLine(
@@ -184,49 +190,75 @@ abstract final class MatchPitchVisuals {
       1.7,
       Paint()..color = const Color(0xDFFFFFFF),
     );
+    final arcRadius = field.height * .105;
+    final leftSpot = Offset(bounds.left + boxWidth * .70, field.center.dy);
+    final rightSpot = Offset(bounds.right - boxWidth * .70, field.center.dy);
+    canvas.drawArc(
+      Rect.fromCircle(center: leftSpot, radius: arcRadius),
+      -math.pi / 2,
+      math.pi,
+      false,
+      line,
+    );
+    canvas.drawArc(
+      Rect.fromCircle(center: rightSpot, radius: arcRadius),
+      math.pi / 2,
+      math.pi,
+      false,
+      line,
+    );
+    final cornerRadius = (field.height * .027).clamp(4.2, 7.0).toDouble();
+    final cornerBounds = <(Offset, double)>[
+      (bounds.topLeft, 0),
+      (bounds.topRight, math.pi / 2),
+      (bounds.bottomLeft, -math.pi / 2),
+      (bounds.bottomRight, math.pi),
+    ];
+    for (final corner in cornerBounds) {
+      canvas.drawArc(
+        Rect.fromCircle(center: corner.$1, radius: cornerRadius),
+        corner.$2,
+        math.pi / 2,
+        false,
+        line,
+      );
+    }
+  }
+
+  static void _drawGrassTexture(Canvas canvas, Rect field) {
+    final crossStripe = Paint()..color = const Color(0x09000000);
+    for (var row = 0; row < 7; row++) {
+      if (row.isOdd) {
+        canvas.drawRect(
+          Rect.fromLTWH(
+            field.left,
+            field.top + field.height * row / 7,
+            field.width,
+            field.height / 7,
+          ),
+          crossStripe,
+        );
+      }
+    }
+    final blade = Paint()
+      ..color = const Color(0x14FFFFFF)
+      ..strokeWidth = .45
+      ..strokeCap = StrokeCap.round;
+    for (var index = 0; index < 46; index++) {
+      final x = field.left + 5 + ((index * 47) % 347) / 347 * (field.width - 10);
+      final y = field.top + 4 + ((index * 83) % 211) / 211 * (field.height - 8);
+      final length = 1.2 + (index % 4) * .38;
+      canvas.drawLine(Offset(x, y), Offset(x + length, y - .35), blade);
+    }
   }
 
   static void drawGoal(Canvas canvas, Rect field, {required bool left}) {
-    final goalHeight = field.height * .24;
-    final depth = math.min(8.5, field.height * .045).toDouble();
-    final top = field.center.dy - goalHeight / 2;
-    final frontX = left ? field.left + 1.2 : field.right - 1.2;
-    final backX = left ? frontX + depth : frontX - depth;
-    final farShift = 2.4;
-    final frame = Paint()
-      ..color = const Color(0xEFFFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15;
-    final net = Paint()
-      ..color = const Color(0x82FFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .62;
+    MatchGoalVisuals.drawNet(canvas, field, left: left);
+  }
 
-    final frontTop = Offset(frontX, top);
-    final frontBottom = Offset(frontX, top + goalHeight);
-    final backTop = Offset(backX, top + farShift);
-    final backBottom = Offset(backX, top + goalHeight - farShift);
-    canvas.drawLine(frontTop, frontBottom, frame);
-    canvas.drawLine(frontTop, backTop, frame);
-    canvas.drawLine(frontBottom, backBottom, frame);
-    canvas.drawLine(backTop, backBottom, net);
-
-    for (var index = 1; index < 5; index++) {
-      final t = index / 5;
-      canvas.drawLine(
-        Offset.lerp(frontTop, frontBottom, t)!,
-        Offset.lerp(backTop, backBottom, t)!,
-        net,
-      );
-    }
-    for (var index = 1; index < 3; index++) {
-      final t = index / 3;
-      canvas.drawLine(
-        Offset.lerp(frontTop, backTop, t)!,
-        Offset.lerp(frontBottom, backBottom, t)!,
-        net,
-      );
-    }
+  static void drawGoalFrames(Canvas canvas, Rect field) {
+    MatchGoalVisuals.drawForegroundFrame(canvas, field, left: true);
+    MatchGoalVisuals.drawForegroundFrame(canvas, field, left: false);
   }
 
   static void drawGoalReaction(
@@ -236,31 +268,13 @@ abstract final class MatchPitchVisuals {
     required double intensity,
     required double phase,
   }) {
-    if (intensity <= 0) return;
-    final goalHeight = field.height * .24;
-    final depth = math.min(7.0, field.height * .04);
-    final top = field.center.dy - goalHeight / 2;
-    final x = left ? field.left + 1 : field.right - depth - 1;
-    final rect = Rect.fromLTWH(x, top, depth, goalHeight);
-    final direction = left ? 1.0 : -1.0;
-    final ripple = math.sin(phase * 17) * 2.2 * intensity;
-    final glow = Paint()
-      ..color = const Color(0xFFB8FF68).withValues(alpha: .10 + .18 * intensity)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-    canvas.drawRect(rect.inflate(4 * intensity), glow);
-
-    final net = Paint()
-      ..color = const Color(0xDFFFFFFF).withValues(alpha: .35 + .45 * intensity)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .8;
-    for (var index = 1; index < 5; index++) {
-      final y = top + goalHeight * index / 5;
-      canvas.drawLine(
-        Offset(rect.left, y),
-        Offset(rect.right + direction * ripple, y + ripple * .18),
-        net,
-      );
-    }
+    MatchGoalVisuals.drawReaction(
+      canvas,
+      field,
+      left: left,
+      intensity: intensity,
+      phase: phase,
+    );
   }
 
   static void drawBall(
@@ -278,10 +292,15 @@ abstract final class MatchPitchVisuals {
     final lift = math.max(0.0, heightLift).toDouble();
     final raisedBall = ball.translate(0, -lift);
     final raisedTrail = trailStart.translate(0, -lift * .42);
+    final trailDelta = raisedBall - raisedTrail;
+    final maximumTrail = 30.0 * scale;
+    final visibleTrail = trailDelta.distance > maximumTrail
+        ? raisedBall - trailDelta / trailDelta.distance * maximumTrail
+        : raisedTrail;
 
     if (moving) {
       canvas.drawLine(
-        raisedTrail,
+        visibleTrail,
         raisedBall,
         Paint()
           ..color = (replay ? const Color(0xCCFFFFFF) : const Color(0x5AFFFFFF))
@@ -295,7 +314,7 @@ abstract final class MatchPitchVisuals {
           eventType == MatchEventType.woodwork) {
         _drawTrajectoryArrow(
           canvas,
-          from: raisedTrail,
+          from: visibleTrail,
           to: raisedBall,
           emphasized: eventType != MatchEventType.pass,
         );

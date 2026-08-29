@@ -11,16 +11,36 @@ import '../../data/competition_catalog.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/player/player.dart';
 import '../../game/lineup/lineup_engine.dart';
+import '../../game/match/renderer/match_kit_resolver.dart';
 import '../lineup/lineup_screen.dart';
 import '../tactics/tactics_screen.dart';
 import 'match_screen.dart';
 import 'pre_match_visual_components.dart';
 
-class PreMatchScreen extends ConsumerWidget {
+class PreMatchScreen extends ConsumerStatefulWidget {
   const PreMatchScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PreMatchScreen> createState() => _PreMatchScreenState();
+
+  static String _availabilityText(Player player) =>
+      switch (player.availabilityStatus) {
+        PlayerAvailabilityStatus.injured =>
+          '${player.injury?.name ?? 'Lesão'} • ${player.injury?.roundsRemaining ?? 1} rodada(s)',
+        PlayerAvailabilityStatus.suspended =>
+          'Suspenso • ${player.discipline.suspendedRounds} rodada(s)',
+        PlayerAvailabilityStatus.lowCondition =>
+          'Afastado • condição física ${player.condition}%',
+        PlayerAvailabilityStatus.available => 'Disponível',
+      };
+}
+
+class _PreMatchScreenState extends ConsumerState<PreMatchScreen> {
+  MatchKitSlot? _selectedKitSlot;
+  String? _selectionClubId;
+
+  @override
+  Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final fixture = career.nextUserFixture;
     if (fixture == null) {
@@ -58,6 +78,18 @@ class PreMatchScreen extends ConsumerWidget {
     final competitionName = CompetitionCatalog.displayNameForId(fixture.competitionId);
     final ready = career.isMatchDay && validation.valid;
     final accent = AppColors.readableAccent(Color(career.userClub.colors.primaryHex));
+    final defaultKitSlot = home.id == career.userClubId
+        ? MatchKitSlot.primary
+        : MatchKitSlot.away;
+    final selectedKitSlot = _selectionClubId == career.userClubId
+        ? (_selectedKitSlot ?? defaultKitSlot)
+        : defaultKitSlot;
+    final kitSelection = MatchKitResolver.resolve(
+      home: home,
+      away: away,
+      userClubId: career.userClubId,
+      userSlot: selectedKitSlot,
+    );
 
     return PremiumScaffold(
       appBar: GameTopBar(
@@ -84,6 +116,18 @@ class PreMatchScreen extends ConsumerWidget {
               userClubId: career.userClubId,
               isMatchDay: career.isMatchDay,
               ready: ready,
+            ),
+            const SizedBox(height: 10),
+            PreMatchKitSelector(
+              home: home,
+              away: away,
+              userClubId: career.userClubId,
+              selectedSlot: selectedKitSlot,
+              selection: kitSelection,
+              onChanged: (slot) => setState(() {
+                _selectionClubId = career.userClubId;
+                _selectedKitSlot = slot;
+              }),
             ),
             const SizedBox(height: 10),
             PreMatchDurationCard(
@@ -132,7 +176,11 @@ class PreMatchScreen extends ConsumerWidget {
                     .prepareMatch();
                 if (live != null && context.mounted) {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const MatchScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => MatchScreen(
+                        kitSelection: kitSelection,
+                      ),
+                    ),
                   );
                 }
               },
@@ -143,15 +191,6 @@ class PreMatchScreen extends ConsumerWidget {
     );
   }
 
-  static String _availabilityText(Player player) => switch (player.availabilityStatus) {
-        PlayerAvailabilityStatus.injured =>
-          '${player.injury?.name ?? 'Lesão'} • ${player.injury?.roundsRemaining ?? 1} rodada(s)',
-        PlayerAvailabilityStatus.suspended =>
-          'Suspenso • ${player.discipline.suspendedRounds} rodada(s)',
-        PlayerAvailabilityStatus.lowCondition =>
-          'Afastado • condição física ${player.condition}%',
-        PlayerAvailabilityStatus.available => 'Disponível',
-      };
 }
 
 class _UnavailablePanel extends StatelessWidget {

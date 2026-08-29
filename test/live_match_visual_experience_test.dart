@@ -4,6 +4,7 @@ import 'package:tatica_manager/domain/match/match_models.dart';
 import 'package:tatica_manager/features/match/match_event_presentation.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_game.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_visuals.dart';
+import 'package:tatica_manager/game/match/renderer/match_player_labels.dart';
 
 void main() {
   test('apresentação ao vivo cobre todos os tipos de evento', () {
@@ -161,6 +162,16 @@ void main() {
       MatchPitchVisuals.depthScale(.8),
       greaterThan(MatchPitchVisuals.depthScale(.2)),
     );
+    expect(MatchPitchVisuals.interfaceScale(360), closeTo(1, .0001));
+  });
+
+  test('nomes dos jogadores são compactados sem inventar identificação', () {
+    expect(MatchPlayerLabels.compactName('Rafael S.'), 'Rafael S.');
+    expect(MatchPlayerLabels.compactName('João Pedro Silva'), 'Silva');
+    expect(
+      MatchPlayerLabels.compactName('NomeExtremamenteComprido'),
+      endsWith('…'),
+    );
   });
 
   test('renderer enfileira lances e só representa a timeline do motor', () {
@@ -191,6 +202,9 @@ void main() {
     final playerVisuals = File(
       'lib/game/match/renderer/match_player_visuals.dart',
     ).readAsStringSync();
+    final goalVisuals = File(
+      'lib/game/match/renderer/match_goal_visuals.dart',
+    ).readAsStringSync();
     final stadiumVisuals = File(
       'lib/game/match/renderer/match_stadium_visuals.dart',
     ).readAsStringSync();
@@ -208,8 +222,17 @@ void main() {
     expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
     expect(renderer, contains('entries.sort'));
     expect(renderer, contains('MatchPitchVisuals.depthScale'));
+    expect(renderer, contains('MatchPitchVisuals.interfaceScale'));
+    expect(renderer, contains('MatchPlayerLabels.draw'));
+    expect(renderer, contains('_playerNames'));
+    expect(renderer, contains('homeGoalkeeperKit'));
+    expect(renderer, contains('awayGoalkeeperKit'));
     expect(renderer, contains('_ballVisualHeight'));
     expect(visuals, contains('drawGoalReaction'));
+    expect(visuals, contains('drawGoalFrames'));
+    expect(goalVisuals, contains('drawForegroundFrame'));
+    expect(goalVisuals, contains('drawReaction'));
+    expect(goalVisuals, contains('for (var row = 1; row < 8; row++)'));
     expect(visuals, contains('required double heightLift'));
     expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));

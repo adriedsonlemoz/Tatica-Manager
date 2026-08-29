@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../../domain/match/match_models.dart';
 
 abstract final class MatchPlayerMotion {
@@ -169,8 +171,10 @@ abstract final class MatchPlayerMotion {
     double dt, {
     required bool replay,
   }) {
-    final factor = (dt * (replay ? 2.6 : 4.2)).clamp(0, 1).toDouble();
     for (var index = 0; index < current.length; index++) {
+      final distance = math.sqrt(distanceSquared(current[index], targets[index]));
+      final rate = (replay ? 2.8 : 4.4) + math.min(2.2, distance * 7.5);
+      final factor = (1 - math.exp(-rate * dt)).clamp(0, 1).toDouble();
       current[index] = FieldPoint(
         current[index].x + (targets[index].x - current[index].x) * factor,
         current[index].y + (targets[index].y - current[index].y) * factor,

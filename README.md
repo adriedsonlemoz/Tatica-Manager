@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.105`
-**Android versionCode:** `106`
+**Release atual:** `0.1.1.106`
+**Android versionCode:** `107`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,27 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.105`);
+- `VERSION` — versão visível simples (`0.1.1.106`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+106`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.105` e `versionCode 106`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+107`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.106` e `versionCode 107`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.105` é representada internamente como `0.1.1+106`. A versão visível do aplicativo/Android continua sendo `0.1.1.105`. a próxima entrega normalmente será `0.1.1.106`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.106` é representada internamente como `0.1.1+107`. A versão visível do aplicativo/Android continua sendo `0.1.1.106`. a próxima entrega normalmente será `0.1.1.107`.
 
 
 
+
+
+## Campo legível e uniformes seguros — 0.1.1.106
+
+- adiciona nomes compactos e responsivos junto aos jogadores, com prioridade para o atleta da jogada e posicionamento alternativo para evitar sobreposição;
+- permite ao usuário escolher o uniforme principal, reserva ou terceiro antes da partida, mostrando a combinação que será usada;
+- mede o contraste entre os uniformes e troca automaticamente o kit adversário quando necessário, com fallback visual seguro se todos forem semelhantes;
+- dá aos goleiros uniformes próprios e contrastantes, com mangas, luvas e detalhes específicos;
+- refina redes com profundidade, traves, gramado, marcações, bola, sombras e interpolação visual dos movimentos;
+- não adiciona imagens e preserva integralmente resultados, eventos, coordenadas e regras do Match Engine.
 
 
 ## Partida visual 2.5D — 0.1.1.105
@@ -179,7 +189,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.106`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.107`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

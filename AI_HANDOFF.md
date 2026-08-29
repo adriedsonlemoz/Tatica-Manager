@@ -8,12 +8,22 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.105`
-- **Android versionCode:** `106`
+- **Release deste handoff:** `0.1.1.106`
+- **Android versionCode:** `107`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.106
+
+- adiciona seleção pré-jogo entre os três uniformes cadastrados do clube do usuário e resolve automaticamente a combinação adversária com maior contraste;
+- exibe nomes compactos e responsivos junto aos jogadores, com posicionamento adaptativo para reduzir colisões e prioridade para goleiro/atleta da jogada;
+- diferencia goleiros com kits calculados especificamente para a partida, mangas longas, luvas e detalhes próprios;
+- refina redes e traves em profundidade, marcações, textura procedural do gramado, bola, sombras e suavização visual dos movimentos;
+- preserva integralmente o Match Engine, seus resultados/eventos/coordenadas, `CareerState` schema 13, IDs, saves e multi-competição; nenhuma imagem foi adicionada.
+
+Consulte `docs/RELEASE_0.1.1.106.md`.
 
 ## Estado funcional da release 0.1.1.105
 
@@ -715,11 +725,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.101
-versionCode:         106
-pubspec:             0.1.1+106
+release/versionName: 0.1.1.106
+versionCode:         107
+pubspec:             0.1.1+107
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.106` e usar um `versionCode` maior que 106.
+A próxima alteração/entrega normalmente deve virar `0.1.1.107` e usar um `versionCode` maior que 107.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

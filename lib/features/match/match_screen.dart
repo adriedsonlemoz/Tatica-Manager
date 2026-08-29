@@ -14,6 +14,7 @@ import '../../domain/player/player.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/match/live_substitution_rules.dart';
+import '../../game/match/renderer/match_kit_resolver.dart';
 import '../../game/match/renderer/match_pitch_game.dart';
 import 'live_match_playback.dart';
 import 'live_round_feed.dart';
@@ -31,7 +32,9 @@ import 'widgets/live_substitution_sheet.dart';
 import 'widgets/live_tactic_sheet.dart';
 
 class MatchScreen extends ConsumerStatefulWidget {
-  const MatchScreen({super.key});
+  const MatchScreen({super.key, this.kitSelection});
+
+  final MatchVisualKitSelection? kitSelection;
 
   @override
   ConsumerState<MatchScreen> createState() => _MatchScreenState();
@@ -66,17 +69,33 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     final away = career.clubs.firstWhere(
       (club) => club.id == live.fixture.awayClubId,
     );
+    final kits = widget.kitSelection ??
+        MatchKitResolver.resolve(
+          home: home,
+          away: away,
+          userClubId: career.userClubId,
+          userSlot: home.id == career.userClubId
+              ? MatchKitSlot.primary
+              : MatchKitSlot.away,
+        );
+    final playerNames = <String, String>{
+      for (final player in home.squad) player.id: player.displayName,
+      for (final player in away.squad) player.id: player.displayName,
+    };
     _audioManager = ref.read(audioManagerProvider);
     unawaited(_audioManager.enterMatch(homeName: home.name, awayName: away.name));
     pitchGame = MatchPitchGame(
       homeColor: Color(home.colors.primaryHex),
       awayColor: Color(away.colors.primaryHex),
-      homeKit: home.homeKit,
-      awayKit: away.awayKit,
+      homeKit: kits.homeKit,
+      awayKit: kits.awayKit,
+      homeGoalkeeperKit: kits.homeGoalkeeperKit,
+      awayGoalkeeperKit: kits.awayGoalkeeperKit,
       homeClubId: home.id,
       awayClubId: away.id,
       homePlayerIds: live.homeStarterIds,
       awayPlayerIds: live.awayStarterIds,
+      playerNames: playerNames,
       ballStyle: career.settings.matchBallStyle,
       onEventStarted: (event) {
         if (!mounted) return;

@@ -6,6 +6,7 @@ import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
 import 'match_pitch_moment_state.dart';
 import 'match_pitch_visuals.dart';
+import 'match_player_labels.dart';
 import 'match_player_motion.dart';
 import 'match_player_visuals.dart';
 import 'match_presentation_director.dart';
@@ -17,15 +18,19 @@ class MatchPitchGame extends FlameGame {
     required this.awayColor,
     required this.homeKit,
     required this.awayKit,
+    required this.homeGoalkeeperKit,
+    required this.awayGoalkeeperKit,
     required this.homeClubId,
     required this.awayClubId,
     required List<String> homePlayerIds,
     required List<String> awayPlayerIds,
+    required Map<String, String> playerNames,
     this.ballStyle = 0,
     this.onReplayChanged,
     this.onEventStarted,
   })  : _homePlayerIds = [...homePlayerIds],
         _awayPlayerIds = [...awayPlayerIds],
+        _playerNames = Map<String, String>.unmodifiable(playerNames),
         _homePlayers = _homeBase.map(_copyPoint).toList(),
         _awayPlayers = _awayBase.map(_copyPoint).toList(),
         _homeTargets = _homeBase.map(_copyPoint).toList(),
@@ -35,6 +40,8 @@ class MatchPitchGame extends FlameGame {
   final Color awayColor;
   final ClubKit homeKit;
   final ClubKit awayKit;
+  final ClubKit homeGoalkeeperKit;
+  final ClubKit awayGoalkeeperKit;
   final String homeClubId;
   final String awayClubId;
   final int ballStyle;
@@ -42,6 +49,7 @@ class MatchPitchGame extends FlameGame {
   final void Function(MatchEvent event)? onEventStarted;
   List<String> _homePlayerIds;
   List<String> _awayPlayerIds;
+  final Map<String, String> _playerNames;
 
   static const _homeBase = <FieldPoint>[
     FieldPoint(.50, .90),
@@ -311,7 +319,7 @@ class MatchPitchGame extends FlameGame {
       _ballDelay = max(0.0, _ballDelay - dt);
     } else if (_ballMove < 1) {
       _ballMove = (_ballMove + dt * _ballMoveRate).clamp(0, 1).toDouble();
-      final eased = 1 - pow(1 - _ballMove, 3).toDouble();
+      final eased = _ballMove * _ballMove * (3 - 2 * _ballMove);
       _ball = FieldPoint(
         _ballStart.x + (_ballTarget.x - _ballStart.x) * eased,
         _ballStart.y + (_ballTarget.y - _ballStart.y) * eased,
@@ -379,6 +387,7 @@ class MatchPitchGame extends FlameGame {
     _drawPlayers(canvas, width, height);
     _drawBall(canvas, width, height);
     _drawGoalReaction(canvas, width, height);
+    MatchPitchVisuals.drawGoalFrames(canvas, fieldRect);
     canvas.restore();
     MatchPitchVisuals.drawVignette(canvas, fieldRect);
     MatchPitchVisuals.drawPitchBorder(canvas, clip);
@@ -390,7 +399,10 @@ class MatchPitchGame extends FlameGame {
     double width,
     double height,
   ) {
+    final field = MatchPitchVisuals.fieldRect(width, height);
+    final interfaceScale = MatchPitchVisuals.interfaceScale(field.width);
     final entries = <_DepthPlayer>[];
+    final labels = <MatchPlayerLabelCandidate>[];
     for (var index = 0; index < _homePlayers.length; index++) {
       if (_dismissedHomeIndexes.contains(index)) continue;
       entries.add(
@@ -428,6 +440,7 @@ class MatchPitchGame extends FlameGame {
       final display = toHorizontalDisplayPoint(entry.point);
       final targetDisplay = toHorizontalDisplayPoint(entry.target);
       final depthScale = MatchPitchVisuals.depthScale(display.y);
+      final playerScale = depthScale * interfaceScale;
       final movementDistance = sqrt(
         MatchPlayerMotion.distanceSquared(entry.point, entry.target),
       );
@@ -444,8 +457,8 @@ class MatchPitchGame extends FlameGame {
       final idleFactor = 1 - movementAmount;
       final idleSeed = (index + (home ? 3 : 19)) * .73;
       final ambientOffset = Offset(
-        sin(_elapsed * 1.35 + idleSeed) * .48 * idleFactor * depthScale,
-        cos(_elapsed * 1.05 + idleSeed) * .24 * idleFactor * depthScale,
+        sin(_elapsed * 1.35 + idleSeed) * .48 * idleFactor * playerScale,
+        cos(_elapsed * 1.05 + idleSeed) * .24 * idleFactor * playerScale,
       );
       final center = baseCenter + ambientOffset;
       final active = _activeHome == home && _activePlayerIndex == index;
@@ -457,20 +470,44 @@ class MatchPitchGame extends FlameGame {
       MatchPlayerVisuals.draw(
         canvas,
         center: center,
-        kit: home ? homeKit : awayKit,
+        kit: index == 0
+            ? (home ? homeGoalkeeperKit : awayGoalkeeperKit)
+            : (home ? homeKit : awayKit),
         playerId: playerId,
         active: active,
         pulseReplay: _replayActive,
         pulse: _pulse,
         goalkeeper: index == 0,
-        scale: depthScale,
+        scale: playerScale,
         movementAmount: movementAmount,
         movementDirection: movementDirection,
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),
       );
+      final playerName = _playerNames[playerId]?.trim() ?? '';
+      if (playerName.isNotEmpty) {
+        labels.add(
+          MatchPlayerLabelCandidate(
+            center: center,
+            playerId: playerId,
+            name: playerName,
+            teamColor: Color(
+              (home ? homeKit : awayKit).primaryHex,
+            ),
+            scale: playerScale,
+            active: active,
+            goalkeeper: index == 0,
+          ),
+        );
+      }
     }
+    MatchPlayerLabels.draw(
+      canvas,
+      field: field,
+      candidates: labels,
+      interfaceScale: interfaceScale,
+    );
   }
 
   static int _firstVisibleIndex(int count, Set<int> dismissed) {
@@ -482,7 +519,10 @@ class MatchPitchGame extends FlameGame {
 
   void _drawBall(Canvas canvas, double width, double height) {
     final display = toHorizontalDisplayPoint(_ball);
-    final scale = MatchPitchVisuals.depthScale(display.y) * .92;
+    final field = MatchPitchVisuals.fieldRect(width, height);
+    final scale = MatchPitchVisuals.depthScale(display.y) *
+        MatchPitchVisuals.interfaceScale(field.width) *
+        .92;
     final base = _toCanvasOffset(_ball, width, height);
     final idleOffset = _ballMove >= 1 && _currentCue == null
         ? Offset(sin(_elapsed * 1.45) * 1.4, cos(_elapsed * 1.1) * .65)

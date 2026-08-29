@@ -39,16 +39,10 @@ abstract final class MatchPlayerVisuals {
     final seed = _stableSeed(playerId);
     final skin = _skinTones[seed % _skinTones.length];
     final hair = _hairColor(seed);
-    final primary = goalkeeper
-        ? _goalkeeperColor(kit.primaryHex, seed)
-        : Color(kit.primaryHex);
-    final secondary = goalkeeper
-        ? Color.lerp(primary, const Color(0xFFFFFFFF), .22)!
-        : Color(kit.secondaryHex);
-    final shorts = goalkeeper
-        ? Color.lerp(primary, const Color(0xFF000000), .24)!
-        : Color(kit.shortsHex);
-    final socks = goalkeeper ? primary : Color(kit.socksHex);
+    final primary = Color(kit.primaryHex);
+    final secondary = Color(kit.secondaryHex);
+    final shorts = Color(kit.shortsHex);
+    final socks = Color(kit.socksHex);
 
     final run = movementAmount.clamp(0.0, 1.0);
     final gait = math.sin(animationPhase * (8.2 + run * 5.0) + seed * .017) * run;
@@ -110,6 +104,8 @@ abstract final class MatchPlayerVisuals {
       lift: armLift,
       skin: skin,
       sleeve: primary,
+      glove: secondary,
+      goalkeeper: goalkeeper,
       scale: scale,
       mirror: false,
     );
@@ -120,6 +116,8 @@ abstract final class MatchPlayerVisuals {
       lift: armLift,
       skin: skin,
       sleeve: primary,
+      glove: secondary,
+      goalkeeper: goalkeeper,
       scale: scale,
       mirror: true,
     );
@@ -141,6 +139,22 @@ abstract final class MatchPlayerVisuals {
       pattern: kit.pattern,
       scale: scale,
     );
+    if (goalkeeper) {
+      final keeperDetail = Paint()
+        ..color = secondary.withValues(alpha: .90)
+        ..strokeWidth = 1.15 * scale
+        ..strokeCap = StrokeCap.round;
+      canvas.drawLine(
+        torsoRect.topLeft.translate(2.0 * scale, 2.2 * scale),
+        torsoRect.center.translate(0, 1.3 * scale),
+        keeperDetail,
+      );
+      canvas.drawLine(
+        torsoRect.topRight.translate(-2.0 * scale, 2.2 * scale),
+        torsoRect.center.translate(0, 1.3 * scale),
+        keeperDetail,
+      );
+    }
 
     final neck = Rect.fromCenter(
       center: bodyCenter.translate(0, -7.4 * scale),
@@ -224,6 +238,14 @@ abstract final class MatchPlayerVisuals {
         ..color = const Color(0x56000000)
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.5 * scale),
     );
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: center + shift.translate(0, -.45 * scale),
+        width: 10.5 * scale * stretch,
+        height: 2.35 * scale,
+      ),
+      Paint()..color = const Color(0x46000000),
+    );
   }
 
   static void _drawLeg(
@@ -270,6 +292,8 @@ abstract final class MatchPlayerVisuals {
     required double lift,
     required Color skin,
     required Color sleeve,
+    required Color glove,
+    required bool goalkeeper,
     required double scale,
     required bool mirror,
   }) {
@@ -294,10 +318,27 @@ abstract final class MatchPlayerVisuals {
       elbow,
       hand,
       Paint()
-        ..color = skin
-        ..strokeWidth = 2.0 * scale
+        ..color = goalkeeper
+            ? Color.lerp(sleeve, const Color(0xFF000000), .14)!
+            : skin
+        ..strokeWidth = (goalkeeper ? 2.35 : 2.0) * scale
         ..strokeCap = StrokeCap.round,
     );
+    if (goalkeeper) {
+      canvas.drawCircle(
+        hand,
+        1.55 * scale,
+        Paint()..color = glove,
+      );
+      canvas.drawCircle(
+        hand,
+        1.55 * scale,
+        Paint()
+          ..color = const Color(0xAFFFFFFF)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = .45 * scale,
+      );
+    }
   }
 
   static void _drawTorso(
@@ -393,22 +434,6 @@ abstract final class MatchPlayerVisuals {
         ..style = PaintingStyle.stroke
         ..strokeWidth = .72 * scale,
     );
-  }
-
-  static Color _goalkeeperColor(int primaryHex, int seed) {
-    final primary = Color(primaryHex);
-    const options = <Color>[
-      Color(0xFFE0BC28),
-      Color(0xFF3AB96E),
-      Color(0xFFEF7B32),
-      Color(0xFF7D69E7),
-      Color(0xFF49A6D8),
-    ];
-    var selected = options[seed % options.length];
-    if ((selected.computeLuminance() - primary.computeLuminance()).abs() < .18) {
-      selected = options[(seed + 1) % options.length];
-    }
-    return selected;
   }
 
   static Color _hairColor(int seed) {

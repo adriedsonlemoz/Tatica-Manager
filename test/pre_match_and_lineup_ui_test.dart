@@ -7,8 +7,9 @@ void main() {
     final screen = File('lib/features/match/pre_match_screen.dart').readAsStringSync();
     final hero = File('lib/features/match/pre_match_hero_card.dart').readAsStringSync();
     final controls = File('lib/features/match/pre_match_controls.dart').readAsStringSync();
+    final kits = File('lib/features/match/pre_match_kit_selector.dart').readAsStringSync();
     final lineupCard = File('lib/features/match/pre_match_lineup_card.dart').readAsStringSync();
-    final combined = '$screen\n$hero\n$controls\n$lineupCard';
+    final combined = '$screen\n$hero\n$controls\n$kits\n$lineupCard';
 
     expect(combined, contains('QUEM VAI A CAMPO'));
     expect(combined, contains('Aplicar melhor escalação disponível'));
@@ -21,10 +22,15 @@ void main() {
     final screen = File('lib/features/match/pre_match_screen.dart').readAsStringSync();
     final hero = File('lib/features/match/pre_match_hero_card.dart').readAsStringSync();
     final controls = File('lib/features/match/pre_match_controls.dart').readAsStringSync();
+    final kits = File('lib/features/match/pre_match_kit_selector.dart').readAsStringSync();
+    final kitPreview = File(
+      'lib/features/match/widgets/match_kit_preview.dart',
+    ).readAsStringSync();
     final lineupCard = File('lib/features/match/pre_match_lineup_card.dart').readAsStringSync();
 
     expect(screen, contains('PreMatchHeroCard'));
     expect(screen, contains('PreMatchDurationCard'));
+    expect(screen, contains('PreMatchKitSelector'));
     expect(screen, contains('PreMatchPlanCard'));
     expect(screen, contains('PreMatchLineupCard'));
     expect(hero, contains('assets/images/home/match_stadium.webp'));
@@ -35,6 +41,11 @@ void main() {
     expect(lineupCard, contains(r'OVR ${assignment.effectiveOverall}'));
     expect(hero, contains('HOJE É DIA DE JOGO'));
     expect(controls, contains('DURAÇÃO DA TRANSMISSÃO'));
+    expect(kits, contains('UNIFORME DA PARTIDA'));
+    expect(kits, contains('MatchKitSlot.values'));
+    expect(kits, contains('Combinação automática sem conflito de cores'));
+    expect(kitPreview, contains('CustomPaint('));
+    expect('$kits\n$kitPreview', isNot(contains('Image.')));
     expect('$hero\n$controls\n$lineupCard', isNot(contains('Image.network')));
   });
 
