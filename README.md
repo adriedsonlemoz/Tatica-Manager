@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.109`
-**Android versionCode:** `110`
+**Release atual:** `0.1.1.110`
+**Android versionCode:** `111`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,25 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.109`);
+- `VERSION` — versão visível simples (`0.1.1.110`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+110`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.109` e `versionCode 110`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+111`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.110` e `versionCode 111`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.109` é representada internamente como `0.1.1+110`. A versão visível do aplicativo/Android continua sendo `0.1.1.109`. a próxima entrega normalmente será `0.1.1.110`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.110` é representada internamente como `0.1.1+111`. A versão visível do aplicativo/Android continua sendo `0.1.1.110`. a próxima entrega normalmente será `0.1.1.111`.
 
+
+
+## Campo libGDX contido e visual refinado — 0.1.1.110
+
+- força Hybrid Composition real para o `SurfaceView` do libGDX e evita que a superfície nativa escape do retângulo reservado pelo Flutter;
+- o painel da partida recebe tamanho explícito na proporção `105 / 68`, clipping no Flutter e `MATCH_PARENT` no host/Fragment Android;
+- o renderer passa a usar mundo virtual `1050 x 680` com `FitViewport`, mantendo o `glViewport` sincronizado com o tamanho real da View;
+- aumenta e refina jogadores, goleiros, bola, sombras, redes, traves, marcações e gramado;
+- nomes ficam maiores, com placa de contraste e reposicionamento automático entre quatro âncoras para reduzir colisões;
+- divide o renderer visual em módulos menores e preserva integralmente Match Engine, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
 
 
 ## Compatibilidade dos natives libGDX com AGP 9 — 0.1.1.109
@@ -211,7 +221,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.110`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.111`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

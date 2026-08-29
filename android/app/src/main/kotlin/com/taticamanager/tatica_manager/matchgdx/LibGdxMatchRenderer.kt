@@ -5,35 +5,26 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.viewport.Viewport
 import org.json.JSONObject
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Presentation-only renderer for the Android match pitch.
+ *
+ * Match rules, results, statistics and event coordinates stay in Dart. This
+ * class only consumes those presentation commands, interpolates them and asks
+ * the visual painters to draw the current state.
+ */
 class LibGdxMatchRenderer(
     config: JSONObject,
     private val commands: ConcurrentLinkedQueue<RendererCommand>,
 ) : ApplicationAdapter() {
-    private data class Kit(
-        val primary: Color,
-        val secondary: Color,
-        val shorts: Color,
-        val socks: Color,
-        val accent: Color,
-        val pattern: String,
-    )
-
-    private data class PlayerState(
-        val position: Vector2,
-        val target: Vector2,
-    )
-
     private val homeClubId = config.optString("homeClubId")
     private val awayClubId = config.optString("awayClubId")
     private val homeKit = kitFromJson(config.optJSONObject("homeKit"))
@@ -59,20 +50,18 @@ class LibGdxMatchRenderer(
         Vector2(.50f, .46f), Vector2(.73f, .42f), Vector2(.18f, .65f),
         Vector2(.50f, .71f), Vector2(.82f, .65f),
     )
-    private val homePlayers = homeBase.map { PlayerState(Vector2(it), Vector2(it)) }
-    private val awayPlayers = awayBase.map { PlayerState(Vector2(it), Vector2(it)) }
+    private val homePlayers = homeBase.map { GdxPlayerState(Vector2(it), Vector2(it)) }
+    private val awayPlayers = awayBase.map { GdxPlayerState(Vector2(it), Vector2(it)) }
     private val dismissedHome = mutableSetOf<Int>()
     private val dismissedAway = mutableSetOf<Int>()
 
     private lateinit var camera: OrthographicCamera
-    private lateinit var shapes: ShapeRenderer
-    private lateinit var batch: SpriteBatch
-    private lateinit var font: BitmapFont
-    private val layout = GlyphLayout()
+    private lateinit var viewport: Viewport
+    private lateinit var painter: LibGdxPitchPainter
 
-    private var ball = Vector2(.5f, .5f)
-    private var ballStart = Vector2(.5f, .5f)
-    private var ballTarget = Vector2(.5f, .5f)
+    private val ball = Vector2(.5f, .5f)
+    private val ballStart = Vector2(.5f, .5f)
+    private val ballTarget = Vector2(.5f, .5f)
     private var ballProgress = 1f
     private var ballDuration = .3f
     private var eventRemaining = 0f
@@ -96,33 +85,70 @@ class LibGdxMatchRenderer(
 
     override fun create() {
         camera = OrthographicCamera()
-        shapes = ShapeRenderer()
-        batch = SpriteBatch()
-        font = BitmapFont().apply {
-            color = Color.WHITE
-            data.setScale(.78f)
-        }
+        viewport = FitViewport(
+            GdxPitchGeometry.WORLD_WIDTH,
+            GdxPitchGeometry.WORLD_HEIGHT,
+            camera,
+        )
+        painter = LibGdxPitchPainter(
+            homeKit = homeKit,
+            awayKit = awayKit,
+            homeGoalkeeperKit = homeGoalkeeperKit,
+            awayGoalkeeperKit = awayGoalkeeperKit,
+            homeTeamColor = homeTeamColor,
+            awayTeamColor = awayTeamColor,
+            ballStyle = ballStyle,
+            names = names,
+        ).also { it.create() }
         resize(Gdx.graphics.width, Gdx.graphics.height)
     }
 
     override fun resize(width: Int, height: Int) {
-        camera.setToOrtho(false, width.toFloat(), height.toFloat())
-        camera.update()
+        if (width <= 0 || height <= 0) return
+        viewport.update(width, height, true)
     }
 
     override fun render() {
         drainCommands()
         val dt = min(Gdx.graphics.deltaTime, .05f)
         update(dt)
+
+        // PlatformViews can be resized by Flutter after the GL surface exists.
+        // Applying the viewport every frame keeps glViewport synchronized.
+        viewport.apply(true)
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST)
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         Gdx.gl.glClearColor(.025f, .055f, .045f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        drawScene()
+        painter.draw(
+            camera = camera,
+            homePlayers = homePlayers,
+            awayPlayers = awayPlayers,
+            dismissedHome = dismissedHome,
+            dismissedAway = dismissedAway,
+            homeIds = homeIds,
+            awayIds = awayIds,
+            ball = ball,
+            ballStart = ballStart,
+            ballProgress = ballProgress,
+            elapsed = elapsed,
+            crowdPulse = crowdPulse,
+            activeHome = activeHome,
+            activeIndex = activeIndex,
+        )
     }
 
     private fun update(dt: Float) {
         elapsed += dt
         crowdPulse = max(.12f, crowdPulse - dt * .22f)
-        val movementAlpha = min(1f, dt * if (replayActive) 3.2f else 5.2f)
+
+        // Presentation smoothing only. Targets still come from Match Engine
+        // coordinates delivered by Dart.
+        val response = if (replayActive) 4.4f else 7.4f
+        val movementAlpha = (1f - exp((-response * dt).toDouble()))
+            .toFloat()
+            .coerceIn(0f, 1f)
         homePlayers.forEach { it.position.lerp(it.target, movementAlpha) }
         awayPlayers.forEach { it.position.lerp(it.target, movementAlpha) }
 
@@ -172,7 +198,7 @@ class LibGdxMatchRenderer(
         }
         if (endsReplay) replayActive = false
         val duration = (payload["duration"] as? Number)?.toFloat() ?: .3f
-        ballDuration = max(.16f, duration)
+        ballDuration = (duration * .68f).coerceIn(.18f, 1.1f)
         eventRemaining = duration
         resetDelay = 0f
         val event = asMap(payload["event"])
@@ -248,192 +274,6 @@ class LibGdxMatchRenderer(
         eventRemaining = duration
     }
 
-    private fun drawScene() {
-        val width = Gdx.graphics.width.toFloat()
-        val height = Gdx.graphics.height.toFloat()
-        val marginX = max(12f, width * .018f)
-        val marginY = max(10f, height * .045f)
-        val fieldLeft = marginX
-        val fieldBottom = marginY
-        val fieldWidth = width - marginX * 2f
-        val fieldHeight = height - marginY * 2f
-
-        shapes.projectionMatrix = camera.combined
-        shapes.begin(ShapeRenderer.ShapeType.Filled)
-        shapes.color = Color(.035f, .09f, .07f, 1f)
-        shapes.rect(0f, 0f, width, height)
-        drawCrowd(width, height, fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        shapes.color = Color(.055f, .31f, .16f, 1f)
-        shapes.rect(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        val stripeWidth = fieldWidth / 10f
-        for (i in 0 until 10) {
-            shapes.color = if (i % 2 == 0) Color(.06f, .35f, .18f, 1f) else Color(.05f, .30f, .15f, 1f)
-            shapes.rect(fieldLeft + stripeWidth * i, fieldBottom, stripeWidth, fieldHeight)
-        }
-        shapes.end()
-
-        drawPitchLines(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        drawGoals(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        drawPlayers(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        drawBall(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-        drawLabels(fieldLeft, fieldBottom, fieldWidth, fieldHeight)
-    }
-
-    private fun drawCrowd(width: Float, height: Float, left: Float, bottom: Float, fw: Float, fh: Float) {
-        val pulse = .55f + crowdPulse * .45f
-        for (i in 0 until 42) {
-            val x = (i * 37f + 11f) % width
-            val topY = bottom + fh + 3f + (i % 4) * 2.2f
-            val bottomY = bottom - 3f - (i % 3) * 2.4f
-            shapes.color = if (i % 2 == 0) Color(homeTeamColor).mul(pulse) else Color(awayTeamColor).mul(pulse)
-            shapes.circle(x, topY, 1.2f + (i % 3) * .3f)
-            shapes.circle(width - x, bottomY, 1.1f + (i % 2) * .35f)
-        }
-    }
-
-    private fun drawPitchLines(left: Float, bottom: Float, fw: Float, fh: Float) {
-        Gdx.gl.glLineWidth(1.4f)
-        shapes.begin(ShapeRenderer.ShapeType.Line)
-        shapes.color = Color(1f, 1f, 1f, .88f)
-        shapes.rect(left, bottom, fw, fh)
-        shapes.line(left + fw / 2f, bottom, left + fw / 2f, bottom + fh)
-        shapes.circle(left + fw / 2f, bottom + fh / 2f, fh * .16f, 40)
-        val boxW = fw * .16f
-        val boxH = fh * .58f
-        val boxY = bottom + (fh - boxH) / 2f
-        shapes.rect(left, boxY, boxW, boxH)
-        shapes.rect(left + fw - boxW, boxY, boxW, boxH)
-        val sixW = fw * .065f
-        val sixH = fh * .30f
-        val sixY = bottom + (fh - sixH) / 2f
-        shapes.rect(left, sixY, sixW, sixH)
-        shapes.rect(left + fw - sixW, sixY, sixW, sixH)
-        shapes.end()
-    }
-
-    private fun drawGoals(left: Float, bottom: Float, fw: Float, fh: Float) {
-        val goalH = fh * .26f
-        val goalY = bottom + (fh - goalH) / 2f
-        val depth = max(8f, fw * .018f)
-        shapes.begin(ShapeRenderer.ShapeType.Line)
-        shapes.color = Color(1f, 1f, 1f, .92f)
-        shapes.rect(left - depth, goalY, depth, goalH)
-        shapes.rect(left + fw, goalY, depth, goalH)
-        for (row in 1 until 6) {
-            val y = goalY + goalH * row / 6f
-            shapes.line(left - depth, y, left, y)
-            shapes.line(left + fw, y, left + fw + depth, y)
-        }
-        for (col in 1 until 4) {
-            val x = depth * col / 4f
-            shapes.line(left - x, goalY, left - x, goalY + goalH)
-            shapes.line(left + fw + x, goalY, left + fw + x, goalY + goalH)
-        }
-        shapes.end()
-    }
-
-    private fun drawPlayers(left: Float, bottom: Float, fw: Float, fh: Float) {
-        val entries = mutableListOf<Triple<Boolean, Int, PlayerState>>()
-        homePlayers.forEachIndexed { index, player -> if (index !in dismissedHome) entries += Triple(true, index, player) }
-        awayPlayers.forEachIndexed { index, player -> if (index !in dismissedAway) entries += Triple(false, index, player) }
-        entries.sortBy { displayPoint(it.third.position).y }
-
-        shapes.begin(ShapeRenderer.ShapeType.Filled)
-        entries.forEach { (home, index, player) ->
-            val p = canvasPoint(player.position, left, bottom, fw, fh)
-            val depthScale = .82f + displayPoint(player.position).y * .28f
-            val radius = max(4.2f, fh * .018f) * depthScale
-            val active = activeHome == home && activeIndex == index
-            shapes.color = Color(0f, 0f, 0f, .28f)
-            shapes.ellipse(p.x - radius * .95f, p.y - radius * 1.35f, radius * 1.9f, radius * .72f)
-            val kit = if (index == 0) {
-                if (home) homeGoalkeeperKit else awayGoalkeeperKit
-            } else {
-                if (home) homeKit else awayKit
-            }
-            shapes.color = kit.primary
-            shapes.circle(p.x, p.y, radius, 18)
-            when (kit.pattern) {
-                "verticalStripes" -> {
-                    shapes.color = kit.secondary
-                    shapes.rect(p.x - radius * .2f, p.y - radius, radius * .4f, radius * 2f)
-                }
-                "horizontalStripes" -> {
-                    shapes.color = kit.secondary
-                    shapes.rect(p.x - radius, p.y - radius * .2f, radius * 2f, radius * .4f)
-                }
-                "halves" -> {
-                    shapes.color = kit.secondary
-                    shapes.rect(p.x, p.y - radius, radius, radius * 2f)
-                }
-                else -> Unit
-            }
-            shapes.color = kit.shorts
-            shapes.rect(p.x - radius * .62f, p.y - radius * 1.05f, radius * 1.24f, radius * .48f)
-            shapes.color = Color(.86f, .69f, .55f, 1f)
-            shapes.circle(p.x, p.y + radius * .88f, radius * .42f, 14)
-            if (index == 0) {
-                shapes.color = kit.accent
-                shapes.rect(p.x - radius * 1.15f, p.y - radius * .12f, radius * .34f, radius * .24f)
-                shapes.rect(p.x + radius * .81f, p.y - radius * .12f, radius * .34f, radius * .24f)
-            }
-            if (active) {
-                shapes.color = Color(1f, .84f, .20f, .78f)
-                shapes.circle(p.x, p.y, radius * (1.35f + .08f * MathUtils.sin(elapsed * 8f)), 24)
-                shapes.color = kit.primary
-                shapes.circle(p.x, p.y, radius, 18)
-            }
-        }
-        shapes.end()
-    }
-
-    private fun drawBall(left: Float, bottom: Float, fw: Float, fh: Float) {
-        val p = canvasPoint(ball, left, bottom, fw, fh)
-        val lift = if (ballProgress < 1f) MathUtils.sin(MathUtils.PI * ballProgress) * max(2.5f, fh * .025f) else 0f
-        val radius = max(2.5f, fh * .011f)
-        shapes.begin(ShapeRenderer.ShapeType.Filled)
-        shapes.color = Color(0f, 0f, 0f, .28f)
-        shapes.ellipse(p.x - radius, p.y - radius * 1.25f, radius * 2f, radius * .8f)
-        shapes.color = when (ballStyle % 3) {
-            1 -> Color(.95f, .90f, .12f, 1f)
-            2 -> Color(.92f, .18f, .12f, 1f)
-            else -> Color.WHITE
-        }
-        shapes.circle(p.x, p.y + lift, radius, 18)
-        shapes.end()
-    }
-
-    private fun drawLabels(left: Float, bottom: Float, fw: Float, fh: Float) {
-        batch.projectionMatrix = camera.combined
-        batch.begin()
-        drawTeamLabels(batch, homePlayers, homeIds, dismissedHome, left, bottom, fw, fh)
-        drawTeamLabels(batch, awayPlayers, awayIds, dismissedAway, left, bottom, fw, fh)
-        batch.end()
-    }
-
-    private fun drawTeamLabels(
-        spriteBatch: SpriteBatch,
-        players: List<PlayerState>,
-        ids: List<String>,
-        dismissed: Set<Int>,
-        left: Float,
-        bottom: Float,
-        fw: Float,
-        fh: Float,
-    ) {
-        players.forEachIndexed { index, player ->
-            if (index in dismissed) return@forEachIndexed
-            val id = ids.getOrNull(index) ?: return@forEachIndexed
-            val raw = names[id].orEmpty().trim()
-            if (raw.isEmpty()) return@forEachIndexed
-            val name = compactName(raw)
-            val p = canvasPoint(player.position, left, bottom, fw, fh)
-            layout.setText(font, name)
-            font.color = Color(1f, 1f, 1f, .92f)
-            font.draw(spriteBatch, layout, p.x - layout.width / 2f, p.y - max(8f, fh * .035f))
-        }
-    }
-
     private fun updateLineups(payload: Map<String, Any?>) {
         homeIds = stringList(payload["homePlayerIds"])
         awayIds = stringList(payload["awayPlayerIds"])
@@ -446,8 +286,13 @@ class LibGdxMatchRenderer(
         activeIndex = null
     }
 
-    private fun spreadSupport(players: List<PlayerState>, target: Vector2, excluded: Set<Int>, attackingHome: Boolean) {
-        players.indices.filter { it !in excluded }.take(3).forEachIndexed { order, index ->
+    private fun spreadSupport(
+        players: List<GdxPlayerState>,
+        target: Vector2,
+        excluded: Set<Int>,
+        attackingHome: Boolean,
+    ) {
+        players.indices.filter { it !in excluded && it != 0 }.take(3).forEachIndexed { order, index ->
             val lane = (order - 1) * .08f
             players[index].target.set(
                 (target.x + lane).coerceIn(.08f, .92f),
@@ -456,9 +301,14 @@ class LibGdxMatchRenderer(
         }
     }
 
-    private fun attackBox(players: List<PlayerState>, target: Vector2, excluded: Set<Int>, attackingHome: Boolean) {
+    private fun attackBox(
+        players: List<GdxPlayerState>,
+        target: Vector2,
+        excluded: Set<Int>,
+        attackingHome: Boolean,
+    ) {
         val direction = if (attackingHome) -1f else 1f
-        players.indices.filter { it !in excluded }.takeLast(3).forEachIndexed { order, index ->
+        players.indices.filter { it !in excluded && it != 0 }.takeLast(3).forEachIndexed { order, index ->
             players[index].target.set(
                 (target.x + (order - 1) * .07f).coerceIn(.08f, .92f),
                 (target.y - direction * .06f).coerceIn(.04f, .96f),
@@ -466,19 +316,23 @@ class LibGdxMatchRenderer(
         }
     }
 
-    private fun defendBox(players: List<PlayerState>, target: Vector2, defendingHome: Boolean) {
+    private fun defendBox(
+        players: List<GdxPlayerState>,
+        target: Vector2,
+        defendingHome: Boolean,
+    ) {
         val direction = if (defendingHome) 1f else -1f
-        players.indices.take(5).forEachIndexed { order, index ->
+        players.indices.filter { it != 0 }.take(4).forEachIndexed { order, index ->
             players[index].target.set(
-                (target.x + (order - 2) * .055f).coerceIn(.06f, .94f),
+                (target.x + (order - 1.5f) * .055f).coerceIn(.06f, .94f),
                 (target.y + direction * .07f).coerceIn(.04f, .96f),
             )
         }
     }
 
     private fun penaltySetup(
-        attackers: List<PlayerState>,
-        defenders: List<PlayerState>,
+        attackers: List<GdxPlayerState>,
+        defenders: List<GdxPlayerState>,
         takerIndex: Int,
         spot: Vector2,
         attackingHome: Boolean,
@@ -488,7 +342,11 @@ class LibGdxMatchRenderer(
         defendingKeeper.target.set(.5f, if (attackingHome) .055f else .945f)
     }
 
-    private fun nearestIndex(players: List<PlayerState>, target: Vector2, excluded: Collection<Int>): Int {
+    private fun nearestIndex(
+        players: List<GdxPlayerState>,
+        target: Vector2,
+        excluded: Collection<Int>,
+    ): Int {
         var best = firstVisibleIndex(players.size, excluded.toSet())
         var bestDistance = Float.MAX_VALUE
         players.forEachIndexed { index, player ->
@@ -507,30 +365,14 @@ class LibGdxMatchRenderer(
     private fun firstVisibleIndex(count: Int, dismissed: Set<Int>): Int =
         (0 until count).firstOrNull { it !in dismissed } ?: 0
 
-    private fun displayPoint(point: Vector2) = Vector2(1f - point.y, point.x)
-
-    private fun canvasPoint(point: Vector2, left: Float, bottom: Float, fw: Float, fh: Float): Vector2 {
-        val display = displayPoint(point)
-        return Vector2(left + display.x * fw, bottom + display.y * fh)
-    }
-
-    private fun compactName(value: String): String {
-        if (value.length <= 13) return value
-        val parts = value.split(' ').filter { it.isNotBlank() }
-        val last = parts.lastOrNull().orEmpty()
-        return if (last.length in 3..13) last else value.take(12) + "…"
-    }
-
     override fun dispose() {
-        shapes.dispose()
-        batch.dispose()
-        font.dispose()
+        painter.dispose()
     }
 
     companion object {
-        private fun kitFromJson(json: JSONObject?): Kit {
+        private fun kitFromJson(json: JSONObject?): GdxKit {
             val source = json ?: JSONObject()
-            return Kit(
+            return GdxKit(
                 primary = argbToColor(source.optLong("primaryHex", 0xFF1E7A2BL)),
                 secondary = argbToColor(source.optLong("secondaryHex", 0xFFFFFFFFL)),
                 shorts = argbToColor(source.optLong("shortsHex", 0xFF1E7A2BL)),

@@ -34,31 +34,45 @@ class LiveMatchPitchPanel extends StatelessWidget {
   final Player? secondaryPlayer;
   final Player? assistPlayer;
 
+  static const double pitchAspectRatio = 105 / 68;
+
   @override
-  Widget build(BuildContext context) => AspectRatio(
-        aspectRatio: 105 / 68,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _renderer(),
-              LiveMatchBroadcastOverlay(
-                event: event,
-                teamName: teamName,
-                player: player,
-                secondaryPlayer: secondaryPlayer,
-                assistPlayer: assistPlayer,
-                replayActive: replayActive,
-                onSkipReplay: game.skipReplay,
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          // Give the native SurfaceView an explicit, bounded rectangle. This
+          // is intentionally calculated by Flutter instead of depending on
+          // native intrinsic sizing.
+          final width = constraints.maxWidth;
+          final height = width / pitchAspectRatio;
+          return SizedBox(
+            width: width,
+            height: height,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              clipBehavior: Clip.hardEdge,
+              child: Stack(
+                fit: StackFit.expand,
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Positioned.fill(child: _renderer()),
+                  LiveMatchBroadcastOverlay(
+                    event: event,
+                    teamName: teamName,
+                    player: player,
+                    secondaryPlayer: secondaryPlayer,
+                    assistPlayer: assistPlayer,
+                    replayActive: replayActive,
+                    onSkipReplay: game.skipReplay,
+                  ),
+                  LiveMatchPhaseTransitionOverlay(
+                    phase: phaseTransition,
+                    score: score,
+                  ),
+                ],
               ),
-              LiveMatchPhaseTransitionOverlay(
-                phase: phaseTransition,
-                score: score,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
 
   Widget _renderer() {

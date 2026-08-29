@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite), libGDX como renderer Android do campo e Flame como fallback visual.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.109
-Android versionCode: 110
-pubspec: 0.1.1+110
+Release visível: 0.1.1.110
+Android versionCode: 111
+pubspec: 0.1.1+111
 
-Novidade desta base: mantém libGDX 1.14.2 como renderer do campo no Android e corrige sua integração de natives para AGP 9 usando a Variant Sources API oficial. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Kotlin/libGDX recebe somente dados de apresentação. Flame permanece como fallback visual fora do Android.
+Novidade desta base: mantém libGDX 1.14.2 como renderer do campo no Android, força Hybrid Composition real para conter corretamente o SurfaceView no painel Flutter e usa FitViewport 1050x680 para estabilizar escala e glViewport. Jogadores, goleiros, bola, redes, gramado e nomes foram refinados apenas na camada visual. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame permanece como fallback fora do Android.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.110 com versionCode > 110.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.111 com versionCode > 111.
 
 
 Depois de editar al-sistemas.json, execute:

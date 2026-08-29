@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.109';
+  static const String version = '0.1.1.110';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.110',
+      title: 'Campo libGDX contido e refinado',
+      changes: [
+        'Prende o SurfaceView libGDX ao retângulo do campo usando Hybrid Composition real e tamanho 105:68 controlado pelo Flutter.',
+        'Estabiliza a escala com FitViewport e melhora jogadores, goleiros, bola, redes, gramado, sombras e nomes.',
+        'Preserva Match Engine, Flame fallback, saves, IDs e CareerState schema 13.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.109',
       title: 'Compatibilidade libGDX com AGP 9',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige os oito lints que faziam o GitHub Actions parar no flutter analyze antes da compilação Android.',
         'Remove o import redundante do bridge libGDX e marca explicitamente os membros que implementam MatchPitchController.',
         'Não altera o Match Engine, o renderer libGDX, saves, IDs ou CareerState schema 13.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.107',
-      title: 'Campo Android com libGDX',
-      changes: [
-        'Integra libGDX 1.14.2 no retângulo do campo da partida no Android, mantendo HUD e controles em Flutter.',
-        'O Match Engine continua em Dart e envia ao renderer apenas eventos, coordenadas, escalações, nomes e uniformes já resolvidos.',
-        'Preserva o Flame como fallback fora do Android e mantém saves, IDs, CareerState schema 13 e multi-competição intactos.',
       ],
     ),
   ];

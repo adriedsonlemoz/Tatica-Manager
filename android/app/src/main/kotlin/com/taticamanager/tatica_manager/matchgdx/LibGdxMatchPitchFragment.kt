@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.backends.android.AndroidFragmentApplication
 import org.json.JSONObject
@@ -30,7 +31,23 @@ class LibGdxMatchPitchFragment : AndroidFragmentApplication() {
             useGL30 = false
             numSamples = 0
         }
-        return initializeForView(game, config)
+
+        val gameView = initializeForView(game, config).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+        }
+
+        // The extra native host is deliberate: the GLSurfaceView must always
+        // be measured and clipped to the exact bounds Flutter assigned to the
+        // PlatformView, never to the Activity/window size.
+        return FrameLayout(requireContext()).apply {
+            setBackgroundColor(android.graphics.Color.rgb(6, 18, 14))
+            clipChildren = true
+            clipToPadding = true
+            addView(gameView)
+        }
     }
 
     fun enqueueCommand(method: String, arguments: Any?) {

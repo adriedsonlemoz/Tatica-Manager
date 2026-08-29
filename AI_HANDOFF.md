@@ -8,11 +8,22 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.109`
-- **Android versionCode:** `110`
+- **Release deste handoff:** `0.1.1.110`
+- **Android versionCode:** `111`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
+
+
+## Estado funcional da release 0.1.1.110
+
+- corrige o `SurfaceView` libGDX que podia ocupar uma área maior que o campo ao forçar Hybrid Composition real com `initExpensiveAndroidView`;
+- limita o renderer ao retângulo `105 / 68` calculado pelo Flutter, adiciona clipping no host nativo e usa `FitViewport` `1050 x 680` com atualização explícita do `glViewport`;
+- refina jogadores, goleiros, bola, gols/redes, gramado, sombras e nomes, incluindo placas de contraste e redução de colisões;
+- separa pintura do campo e rótulos do orquestrador nativo, sem mover nenhuma regra do Match Engine para Kotlin/libGDX;
+- preserva Flame fallback, `CareerState` schema 13, IDs, saves e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.110.md`.
 
 
 ## Estado funcional da release 0.1.1.109
@@ -752,11 +763,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.106
-versionCode:         110
-pubspec:             0.1.1+110
+release/versionName: 0.1.1.110
+versionCode:         111
+pubspec:             0.1.1+111
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.110` e usar um `versionCode` maior que 110.
+A próxima alteração/entrega normalmente deve virar `0.1.1.111` e usar um `versionCode` maior que 111.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

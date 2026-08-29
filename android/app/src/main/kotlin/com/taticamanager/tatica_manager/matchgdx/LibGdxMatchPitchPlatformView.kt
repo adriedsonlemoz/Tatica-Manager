@@ -17,6 +17,9 @@ class LibGdxMatchPitchPlatformView(
     private val container = FrameLayout(activity).apply {
         id = View.generateViewId()
         setBackgroundColor(android.graphics.Color.rgb(6, 18, 14))
+        clipChildren = true
+        clipToPadding = true
+        isSaveEnabled = false
     }
     private val fragment = LibGdxMatchPitchFragment.newInstance(
         viewId = viewId,

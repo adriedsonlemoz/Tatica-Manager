@@ -25,33 +25,52 @@ void main() {
     expect(panel, contains('LibGdxMatchPitchView('));
     expect(panel, contains('GameWidget(game: renderer)'));
     expect(controller, contains('MatchPresentationDirector.buildCues'));
-    expect(controller, contains("'event': event == null ? null : _eventPayload(event)"));
+    expect(
+      controller,
+      contains("'event': event == null ? null : _eventPayload(event)"),
+    );
     expect(controller, isNot(contains('MatchEngine')));
     expect(nativeRenderer, isNot(contains('MatchEngine')));
     expect(nativeRenderer, isNot(contains('Random(')));
   });
 
-  test('Android hospeda libGDX como fragmento dentro do PlatformView', () {
+  test('SurfaceView do libGDX fica preso ao retângulo Flutter', () {
     final activity = File(
       'android/app/src/main/kotlin/com/taticamanager/tatica_manager/MainActivity.kt',
     ).readAsStringSync();
     final view = File(
       'lib/features/match/widgets/libgdx_match_pitch_view.dart',
     ).readAsStringSync();
+    final panel = File(
+      'lib/features/match/widgets/live_match_pitch_panel.dart',
+    ).readAsStringSync();
     final fragment = File(
       'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
       'LibGdxMatchPitchFragment.kt',
+    ).readAsStringSync();
+    final platformView = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxMatchPitchPlatformView.kt',
     ).readAsStringSync();
     final gradle = File('android/app/build.gradle.kts').readAsStringSync();
 
     expect(view, contains('PlatformViewLink('));
     expect(view, contains('AndroidViewSurface('));
-    expect(view, contains('PlatformViewsService.initSurfaceAndroidView('));
+    expect(view, contains('PlatformViewsService.initExpensiveAndroidView('));
+    expect(view, isNot(contains('PlatformViewsService.initSurfaceAndroidView(')));
+    expect(view, contains('ClipRect('));
+    expect(panel, contains('final height = width / pitchAspectRatio;'));
+    expect(panel, contains('SizedBox('));
+    expect(panel, contains('clipBehavior: Clip.hardEdge'));
     expect(activity, contains('FlutterFragmentActivity()'));
     expect(activity, contains('AndroidFragmentApplication.Callbacks'));
     expect(activity, contains('registerViewFactory('));
     expect(fragment, contains('AndroidFragmentApplication()'));
     expect(fragment, contains('initializeForView(game, config)'));
+    expect(fragment, contains('ViewGroup.LayoutParams.MATCH_PARENT'));
+    expect(fragment, contains('clipChildren = true'));
+    expect(platformView, contains('clipChildren = true'));
+    expect(platformView, contains('clipToPadding = true'));
     expect(fragment, contains('useGL30 = false'));
     expect(gradle, contains('gdxVersion = "1.14.2"'));
     expect(gradle, contains('gdx-backend-android'));
@@ -65,5 +84,42 @@ void main() {
     expect(gradle, contains('ExtractGdxNativesTask::outputDirectory'));
     expect(gradle, isNot(contains('jniLibs.srcDir(generatedGdxNatives)')));
     expect(gradle, isNot(contains('android.sourceset.disallowProvider=false')));
+  });
+
+  test('renderer usa viewport estável e nomes legíveis sem tocar no motor', () {
+    final renderer = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxMatchRenderer.kt',
+    ).readAsStringSync();
+    final painter = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxPitchPainter.kt',
+    ).readAsStringSync();
+    final labels = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxPlayerLabelPainter.kt',
+    ).readAsStringSync();
+    final geometry = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxMatchVisualModels.kt',
+    ).readAsStringSync();
+
+    expect(renderer, contains('FitViewport('));
+    expect(renderer, contains('viewport.update(width, height, true)'));
+    expect(renderer, contains('viewport.apply(true)'));
+    expect(renderer, contains('GdxPitchGeometry.WORLD_WIDTH'));
+    expect(geometry, contains('const val WORLD_WIDTH = 1050f'));
+    expect(geometry, contains('const val WORLD_HEIGHT = 680f'));
+    expect(painter, contains('drawGoals('));
+    expect(painter, contains('homeGoalkeeperKit'));
+    expect(painter, contains('GdxPitchGeometry.PLAYER_RADIUS'));
+    expect(labels, contains('buildPlacements('));
+    expect(labels, contains('occupied.none { it.overlaps(candidate) }'));
+    expect(labels, contains('shapes.rect('));
+    expect(labels, contains('supportedName(compactName(raw))'));
+    expect(labels, contains('Normalizer.normalize'));
+    expect(renderer, isNot(contains('MatchEngine')));
+    expect(painter, isNot(contains('MatchEngine')));
+    expect(labels, isNot(contains('MatchEngine')));
   });
 }

@@ -6,6 +6,12 @@ import 'package:flutter/services.dart';
 
 import '../../../game/match/renderer/libgdx_match_pitch_controller.dart';
 
+/// Hosts the libGDX SurfaceView inside the exact rectangle reserved by Flutter.
+///
+/// libGDX inserts its GLSurfaceView after the PlatformView itself is created.
+/// Forcing Hybrid Composition avoids Flutter selecting TLHC before that
+/// SurfaceView exists, which can otherwise make the native surface escape the
+/// widget bounds or use an incorrect size/z-order.
 class LibGdxMatchPitchView extends StatelessWidget {
   const LibGdxMatchPitchView({
     super.key,
@@ -15,31 +21,31 @@ class LibGdxMatchPitchView extends StatelessWidget {
   final LibGdxMatchPitchController controller;
 
   @override
-  Widget build(BuildContext context) => PlatformViewLink(
-        viewType: LibGdxMatchPitchController.viewType,
-        surfaceFactory: (context, platformController) => AndroidViewSurface(
-          controller: platformController as AndroidViewController,
-          gestureRecognizers:
-              const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+  Widget build(BuildContext context) => ClipRect(
+        child: PlatformViewLink(
+          viewType: LibGdxMatchPitchController.viewType,
+          surfaceFactory: (context, platformController) => AndroidViewSurface(
+            controller: platformController as AndroidViewController,
+            gestureRecognizers:
+                const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          ),
+          onCreatePlatformView: (params) {
+            // Always use real Hybrid Composition. The libGDX SurfaceView is
+            // attached later by the Fragment, so the adaptive surface path can
+            // choose TLHC too early and render the SurfaceView out of bounds.
+            return PlatformViewsService.initExpensiveAndroidView(
+              id: params.id,
+              viewType: LibGdxMatchPitchController.viewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: controller.creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () => params.onFocusChanged(true),
+            )
+              ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+              ..addOnPlatformViewCreatedListener(controller.attachView)
+              ..create();
+          },
         ),
-        onCreatePlatformView: (params) {
-          final platformController = PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: LibGdxMatchPitchController.viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: controller.creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () => params.onFocusChanged(true),
-          );
-          platformController.addOnPlatformViewCreatedListener(
-            params.onPlatformViewCreated,
-          );
-          platformController.addOnPlatformViewCreatedListener(
-            controller.attachView,
-          );
-          platformController.create();
-          return platformController;
-        },
       );
 }

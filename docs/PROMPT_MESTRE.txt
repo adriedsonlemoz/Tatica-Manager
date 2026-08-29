@@ -2,6 +2,11 @@ PROMPT MESTRE — NOVO TÁTICA MANAGER EM FLUTTER
 Versão inicial consolidada
 
 
+ATUALIZAÇÃO DO RENDERER ANDROID — 0.1.1.110
+
+No Android, o SurfaceView do libGDX deve permanecer estritamente contido no retângulo do campo definido pelo Flutter. A integração usa Hybrid Composition real, tamanho 105/68 explícito no widget, host nativo com clipping/MATCH_PARENT e FitViewport 1050x680 no renderer. Não substituir isso por composição por textura enquanto o GLSurfaceView for adicionado pelo Fragment após a criação do PlatformView. Nomes, jogadores, bola, gols e demais refinamentos pertencem somente à camada visual; Match Engine e coordenadas permanecem em Dart.
+
+
 ATUALIZAÇÃO ARQUITETURAL — 0.1.1.107
 
 A partir da 0.1.1.107, o Android pode usar libGDX exclusivamente como renderer visual do campo da partida. O Match Engine permanece integralmente em Dart e continua sendo a única fonte de regras, resultados, eventos e coordenadas. Flame permanece como fallback visual e nenhuma lógica de partida deve ser duplicada no renderer nativo. Esta atualização substitui somente a escolha original de Flame como renderer obrigatório do campo; as demais restrições arquiteturais continuam válidas.
