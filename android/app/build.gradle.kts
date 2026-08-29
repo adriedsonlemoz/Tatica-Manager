@@ -6,6 +6,46 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val gdxVersion = "1.14.2"
+val gdxNatives by configurations.creating
+
+dependencies {
+    implementation("com.badlogicgames.gdx:gdx:$gdxVersion")
+    implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+    implementation("androidx.fragment:fragment-ktx:1.9.0")
+
+    gdxNatives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
+    gdxNatives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
+    gdxNatives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
+    gdxNatives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
+}
+
+val generatedGdxNatives = layout.buildDirectory.dir("generated/gdxNatives")
+val extractGdxNatives by tasks.registering {
+    inputs.files(gdxNatives)
+    outputs.dir(generatedGdxNatives)
+    doLast {
+        val outputRoot = generatedGdxNatives.get().asFile
+        delete(outputRoot)
+        outputRoot.mkdirs()
+        gdxNatives.files.forEach { jar ->
+            val abi = when {
+                jar.name.contains("natives-arm64-v8a") -> "arm64-v8a"
+                jar.name.contains("natives-armeabi-v7a") -> "armeabi-v7a"
+                jar.name.contains("natives-x86_64") -> "x86_64"
+                jar.name.contains("natives-x86") -> "x86"
+                else -> null
+            } ?: return@forEach
+            copy {
+                from(zipTree(jar))
+                include("*.so")
+                into(outputRoot.resolve(abi))
+                includeEmptyDirs = false
+            }
+        }
+    }
+}
+
 val releaseKeystorePath = System.getenv("TATICA_KEYSTORE_PATH")
 val releaseKeystorePassword = System.getenv("TATICA_KEYSTORE_PASSWORD")
 val releaseKeyAlias = System.getenv("TATICA_KEY_ALIAS")
@@ -22,6 +62,29 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    sourceSets.getByName("main").jniLibs.srcDir(generatedGdxNatives)
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/robovm/ios/robovm.xml",
+                "META-INF/DEPENDENCIES.txt",
+                "META-INF/DEPENDENCIES",
+                "META-INF/dependencies.txt",
+                "**/*.gwt.xml",
+            )
+            pickFirsts += setOf(
+                "META-INF/LICENSE.txt",
+                "META-INF/LICENSE",
+                "META-INF/license.txt",
+                "META-INF/LGPL2.1",
+                "META-INF/NOTICE.txt",
+                "META-INF/NOTICE",
+                "META-INF/notice.txt",
+            )
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -31,8 +94,8 @@ android {
         applicationId = "com.taticamanager.tatica_manager"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 107
-        versionName = "0.1.1.106"
+        versionCode = 108
+        versionName = "0.1.1.107"
     }
 
     signingConfigs {
@@ -59,6 +122,16 @@ android {
     }
 }
 
+
+tasks.named("preBuild").configure {
+    dependsOn(extractGdxNatives)
+}
+
+tasks.matching {
+    it.name.contains("merge") && it.name.contains("JniLibFolders")
+}.configureEach {
+    dependsOn(extractGdxNatives)
+}
 
 flutter {
     source = "../.."

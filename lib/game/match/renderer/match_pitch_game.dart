@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
+import 'match_pitch_controller.dart';
 import 'match_pitch_moment_state.dart';
 import 'match_pitch_visuals.dart';
 import 'match_player_labels.dart';
@@ -12,7 +13,7 @@ import 'match_player_visuals.dart';
 import 'match_presentation_director.dart';
 import 'match_stadium_visuals.dart';
 
-class MatchPitchGame extends FlameGame {
+class MatchPitchGame extends FlameGame implements MatchPitchController {
   MatchPitchGame({
     required this.homeColor,
     required this.awayColor,
@@ -621,6 +622,9 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.woodwork ||
       type == MatchEventType.goal ||
       type == MatchEventType.ownGoal;
+
+  @override
+  void disposeController() {}
 
   static bool _isMajor(MatchEventType type) =>
       type == MatchEventType.goal ||

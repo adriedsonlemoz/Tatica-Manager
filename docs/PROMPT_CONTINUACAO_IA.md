@@ -9,14 +9,14 @@ REPOSITÓRIO OFICIAL
 https://github.com/adriedsonlemoz/Tatica-Manager
 
 STACK
-Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
+Flutter + Dart, Riverpod, SQLite (sqflite), libGDX como renderer Android do campo e Flame como fallback visual.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.106
-Android versionCode: 107
-pubspec: 0.1.1+107
+Release visível: 0.1.1.107
+Android versionCode: 108
+pubspec: 0.1.1+108
 
-Novidade desta base: aprimora somente a apresentação da partida. O pré-jogo permite escolher um dos três uniformes do clube, o adversário é combinado automaticamente por contraste, goleiros recebem kits próprios e o renderer exibe nomes responsivos com controle de colisões. Redes, traves, gramado, marcações, bola, sombras e movimentos também foram refinados. O Match Engine permanece intacto e continua sendo a única fonte de resultados, eventos e coordenadas.
+Novidade desta base: integra libGDX 1.14.2 como renderer do campo no Android dentro da tela Flutter existente. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Kotlin/libGDX recebe somente dados de apresentação. Flame permanece como fallback visual fora do Android.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -36,7 +36,7 @@ Mantenha domínio, engines, persistência, estado e UI separados.
 - lib/features: telas e widgets por funcionalidade.
 - lib/app/state: controladores Riverpod.
 - lib/core: banco, save, tema, plataforma e utilitários.
-- Flame deve representar a partida, não decidir o resultado.
+- libGDX/Flame devem apenas representar a partida, nunca decidir o resultado.
 
 CONTROLADORES ATUAIS
 - CareerController: múltiplos saves, criar/abrir/listar/excluir carreira.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.107 com versionCode > 107.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.108 com versionCode > 108.
 
 
 Depois de editar al-sistemas.json, execute:

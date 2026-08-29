@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.106",
+  "version": "0.1.1.107",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+107"
+    "pubspecVersion": "0.1.1+108"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.106",
-    "versionCode": 107
+    "versionName": "0.1.1.107",
+    "versionCode": 108
   },
   "release": {
-    "version": "0.1.1.106",
-    "revision": 106,
-    "androidVersionCode": 107
+    "version": "0.1.1.107",
+    "revision": 107,
+    "androidVersionCode": 108
   },
   "changelog": [
+    "Integra libGDX 1.14.2 como renderer do campo no Android através de Hybrid Composition + AndroidFragmentApplication/PlatformView, mantendo placar, controles e regras em Flutter/Dart; eventos e coordenadas continuam vindo do Match Engine, o libGDX apenas interpola e desenha campo, jogadores, bola, redes, nomes e uniformes; Flame permanece como fallback fora do Android e CareerState schema 13, saves, IDs e multi-competição são preservados.",
     "Aprimora visualmente o campo sem alterar o Match Engine: adiciona nomes responsivos dos jogadores com controle de sobreposição, seleção dos três uniformes antes da partida, resolução automática de conflito de cores e fallback visual seguro; diferencia goleiros com kits exclusivos, mangas e luvas, refina redes/traves, gramado, marcações, sombras, bola e interpolação dos movimentos; preserva CareerState schema 13, saves, IDs e multi-competição e não adiciona imagens.",
     "Adiciona apresentação visual 2.5D sobre o campo restaurado da 0.1.1.91: jogadores passam a variar de escala por profundidade, são ordenados pelo eixo visual, usam uniforme real com volume, sombra e animação de passada; goleiros recebem visual próprio, a bola ganha arco/altura e sombra separados e a rede reage ao gol; preserva Match Engine, CareerState schema 13, saves, IDs e multi-competição.",
     "Restaura somente a apresentação visual da partida ao padrão da 0.1.1.91: painel volta à proporção 105/68, campo retangular, estádio Canvas, jogadores e mapeamento linear anteriores; mantém HUD, replay, eventos, substituições, Match Engine, CareerState schema 13, saves, IDs e multi-competição atuais.",
