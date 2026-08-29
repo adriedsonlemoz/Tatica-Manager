@@ -8,18 +8,29 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.101`
-- **Android versionCode:** `102`
+- **Release deste handoff:** `0.1.1.102`
+- **Android versionCode:** `103`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
+## Estado funcional da release 0.1.1.102
+
+- integra `assets/images/match/match_field.webp` como cenário completo principal da partida ao vivo, com gramado, linhas, gols, arquibancada e iluminação já incorporados na imagem;
+- o Flame deixa de redesenhar o campo procedural no caminho normal e passa a sobrepor apenas jogadores, bola, destaques e animações;
+- calibra a projeção dos `FieldPoint` ao trapézio real do novo asset, preservando a rotação horizontal já existente e sem modificar coordenadas/eventos do Match Engine;
+- mantém `stadium_crowd.webp` e o renderer procedural anterior como fallback caso o novo asset falhe ao decodificar;
+- preserva `CareerState` schema 13, IDs, saves, multi-competição e Match Engine.
+
+Consulte `docs/RELEASE_0.1.1.102.md`.
+
 ## Estado funcional da release 0.1.1.101
 
-- refaz o token do jogador da partida ao vivo como um disco chapado único, sem cabeça separada acima do corpo, eliminando o efeito "bobblehead" da versão anterior;
-- mantém padrão do uniforme, cor de goleiro, sombra, brilho e anéis de destaque no novo token;
-- não altera Match Engine, gramado, eventos, placar, `CareerState` schema 13, saves, IDs ou multi-competição.
+- restaura `.github/workflows/flutter-ci.yml`, removido do pacote 0.1.1.100 porque o ZIP não continha arquivos ocultos;
+- o workflow restaurado mantém `push`, `pull_request` e `workflow_dispatch`, usa Flutter estável versionado e publica somente `tatica-manager-<versão>.apk` como Artifact;
+- restaura também `.gitignore` e `android/.gitignore` da última base válida;
+- preserva integralmente as alterações de código da 0.1.1.100, `CareerState` schema 13, saves, IDs, multi-competição e Match Engine.
 
 Consulte `docs/RELEASE_0.1.1.101.md`.
 
@@ -680,10 +691,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.101
-versionCode:         102
-pubspec:             0.1.1+102
+versionCode:         103
+pubspec:             0.1.1+103
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.102` e usar um `versionCode` maior que 102.
+A próxima alteração/entrega normalmente deve virar `0.1.1.103` e usar um `versionCode` maior que 103.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

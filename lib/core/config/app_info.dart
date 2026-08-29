@@ -7,27 +7,27 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.101';
+  static const String version = '0.1.1.102';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
     ReleaseNote(
-      version: '0.1.1.101',
-      title: 'Token do jogador refeito do zero',
+      version: '0.1.1.102',
+      title: 'Campo real como cenário da partida',
       changes: [
-        'Refaz o token do jogador como um disco chapado único, sem cabeça separada acima do corpo.',
-        'Elimina o efeito "bobblehead" da versão anterior, mantendo padrão do uniforme e cor de goleiro.',
-        'Não altera Match Engine, gramado, saves, IDs ou multi-competição.',
+        'Usa o novo estádio/gramado em WebP como fundo principal da partida, no mesmo aspecto 2.48 do painel.',
+        'Jogadores, bola, destaques e animações continuam sendo desenhados pelo Flame sobre o cenário e seguem os eventos do Match Engine.',
+        'Calibra a projeção às linhas reais da imagem e mantém o renderer procedural anterior como fallback seguro.',
       ],
     ),
     ReleaseNote(
-      version: '0.1.1.100',
-      title: 'Sincronização de versão',
+      version: '0.1.1.101',
+      title: 'Workflow do GitHub restaurado',
       changes: [
-        'Sincroniza a versão da release para 0.1.1.100 (versionCode 101, pubspec 0.1.1+101).',
-        'Não há alterações de código nesta release.',
-        'Não altera campo, jogadores, Match Engine, saves, IDs ou multi-competição.',
+        'Restaura .github/workflows/flutter-ci.yml removido do pacote anterior ao compactar arquivos ocultos.',
+        'O workflow volta a responder a push e workflow_dispatch e continua publicando somente o APK versionado.',
+        'Restaura também os .gitignore do projeto/Android sem alterar código, Match Engine, saves ou IDs.',
       ],
     ),
     ReleaseNote(

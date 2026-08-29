@@ -2,27 +2,28 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.101",
+  "version": "0.1.1.102",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+102"
+    "pubspecVersion": "0.1.1+103"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.101",
-    "versionCode": 102
+    "versionName": "0.1.1.102",
+    "versionCode": 103
   },
   "release": {
-    "version": "0.1.1.101",
-    "revision": 101,
-    "androidVersionCode": 102
+    "version": "0.1.1.102",
+    "revision": 102,
+    "androidVersionCode": 103
   },
   "changelog": [
-    "Refaz o token do jogador da partida ao vivo do zero como um disco chapado único (sem cabeça separada acima do corpo): elimina o efeito \"bobblehead\" causado pela cabeça grande destacada da versão anterior, mantendo padrão do uniforme, cor de goleiro, sombra, brilho e anéis de destaque; não altera Match Engine, gramado, saves, IDs ou multi-competição.",
+    "Integra o novo campo noturno como asset WebP 1550x625 na partida ao vivo: o cenário completo de estádio/gramado passa a ser o fundo principal do Flame, enquanto jogadores, bola, destaques e animações continuam desenhados por cima usando as mesmas coordenadas do Match Engine; calibra a projeção ao trapézio real da imagem, mantém o campo procedural antigo como fallback e preserva CareerState schema 13, saves, IDs e multi-competição.",
+    "Restaura os arquivos ocultos de infraestrutura removidos do pacote 0.1.1.100, incluindo `.github/workflows/flutter-ci.yml` com gatilhos `push` e `workflow_dispatch`, além dos `.gitignore` do projeto e Android; preserva integralmente as alterações de código da base 0.1.1.100 e mantém o GitHub Actions publicando somente o APK versionado.",
     "Sincroniza a versão da release para 0.1.1.100 (versionCode 101, pubspec 0.1.1+101) sem alterações de código; não altera campo, jogadores, Match Engine, saves, IDs ou multi-competição.",
     "Redesenha os jogadores da partida ao vivo como tokens sólidos e de alto contraste (corpo em cápsula única com padrão do uniforme, cabeça simples, sombra e brilho sutis) no lugar da figura anatômica fina que virava mancha na escala real da tela; deixa o gramado mais verde/saturado com listras de corte mais contrastantes, linhas do campo mais grossas e acentua a inclinação de perspectiva para o efeito de câmera de transmissão; não altera Match Engine, saves, IDs ou multi-competição.",
     "Corrige as duas falhas restantes do GitHub Actions da 0.1.1.96: atualiza a regressão visual da partida para a nova perspectiva/escala do campo redesenhado e restaura AppInfo.recentReleases para exatamente três entradas na tela Sobre/Novidades; não altera campo, Match Engine, saves, IDs ou multi-competição.",
@@ -50,6 +51,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Refaz o token do jogador da partida ao vivo do zero como um disco chapado único (sem cabeça separada acima do corpo): elimina o efeito \"bobblehead\" causado pela cabeça grande destacada da versão anterior, mantendo padrão do uniforme, cor de goleiro, sombra, brilho e anéis de destaque; não altera Match Engine, gramado, saves, IDs ou multi-competição."
+    "Integra o novo campo noturno como asset WebP 1550x625 na partida ao vivo: o cenário completo de estádio/gramado passa a ser o fundo principal do Flame, enquanto jogadores, bola, destaques e animações continuam desenhados por cima usando as mesmas coordenadas do Match Engine; calibra a projeção ao trapézio real da imagem, mantém o campo procedural antigo como fallback e preserva CareerState schema 13, saves, IDs e multi-competição."
   ]
 }

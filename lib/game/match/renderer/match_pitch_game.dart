@@ -97,24 +97,35 @@ class MatchPitchGame extends FlameGame {
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
+  Image? _matchFieldImage;
   Image? _stadiumCrowdImage;
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    try {
-      final data = await rootBundle.load(
+    _matchFieldImage = await _loadAssetImage(
+      'assets/images/match/match_field.webp',
+    );
+    if (_matchFieldImage == null) {
+      _stadiumCrowdImage = await _loadAssetImage(
         'assets/images/match/stadium_crowd.webp',
       );
+    }
+  }
+
+  Future<Image?> _loadAssetImage(String assetPath) async {
+    try {
+      final data = await rootBundle.load(assetPath);
       final bytes = data.buffer.asUint8List(
         data.offsetInBytes,
         data.lengthInBytes,
       );
       final codec = await instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
-      _stadiumCrowdImage = frame.image;
+      codec.dispose();
+      return frame.image;
     } catch (_) {
-      _stadiumCrowdImage = null;
+      return null;
     }
   }
 
@@ -387,27 +398,46 @@ class MatchPitchGame extends FlameGame {
     }
 
     final fieldRect = MatchPitchVisuals.fieldRect(width, height);
-    MatchStadiumVisuals.draw(
-      canvas,
-      width,
-      height,
-      fieldRect: fieldRect,
-      homeColor: homeColor,
-      awayColor: awayColor,
-      elapsed: _elapsed,
-      crowdIntensity: _momentState.crowdIntensity,
-      crowdImage: _stadiumCrowdImage,
-    );
     final pitch = MatchPitchVisuals.pitchPath(width, height);
-    canvas.save();
-    canvas.clipPath(pitch);
-    MatchPitchVisuals.drawPitch(canvas, width, height);
-    _drawPlayers(canvas, width, height);
-    _drawBall(canvas, width, height);
-    canvas.restore();
-    MatchPitchVisuals.drawGoals(canvas, width, height);
-    MatchPitchVisuals.drawVignette(canvas, fieldRect);
-    MatchPitchVisuals.drawPitchBorder(canvas, pitch);
+    final fieldImage = _matchFieldImage;
+
+    if (fieldImage != null) {
+      MatchPitchVisuals.drawFieldImage(
+        canvas,
+        width,
+        height,
+        fieldImage,
+      );
+      canvas.save();
+      canvas.clipPath(pitch);
+      _drawPlayers(canvas, width, height);
+      _drawBall(canvas, width, height);
+      canvas.restore();
+    } else {
+      // Safe fallback for devices/assets that fail to decode the photographic
+      // field. The previous Canvas renderer remains available, but it is no
+      // longer the normal presentation path.
+      MatchStadiumVisuals.draw(
+        canvas,
+        width,
+        height,
+        fieldRect: fieldRect,
+        homeColor: homeColor,
+        awayColor: awayColor,
+        elapsed: _elapsed,
+        crowdIntensity: _momentState.crowdIntensity,
+        crowdImage: _stadiumCrowdImage,
+      );
+      canvas.save();
+      canvas.clipPath(pitch);
+      MatchPitchVisuals.drawPitch(canvas, width, height);
+      _drawPlayers(canvas, width, height);
+      _drawBall(canvas, width, height);
+      canvas.restore();
+      MatchPitchVisuals.drawGoals(canvas, width, height);
+      MatchPitchVisuals.drawVignette(canvas, fieldRect);
+      MatchPitchVisuals.drawPitchBorder(canvas, pitch);
+    }
     super.render(canvas);
   }
 

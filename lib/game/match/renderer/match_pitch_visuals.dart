@@ -5,11 +5,14 @@ import '../../../core/theme/match_ball_styles.dart';
 import '../../../domain/match/match_models.dart';
 
 abstract final class MatchPitchVisuals {
+  // Calibrated to assets/images/match/match_field.webp (1550x625).
+  // The image is rendered 1:1 into the 2.48 pitch panel, so these normalized
+  // values keep the Flame coordinates aligned with the photographed pitch.
   static Rect fieldRect(double width, double height) => Rect.fromLTRB(
-        8,
-        height * .115,
-        width - 8,
-        height * .955,
+        0,
+        height * .194,
+        width,
+        height * .947,
       );
 
   static Path pitchPath(double width, double height) {
@@ -69,7 +72,45 @@ abstract final class MatchPitchVisuals {
   }
 
   static double perspectiveScale(double displayY) =>
-      _lerp(.84, 1.03, displayY.clamp(0.0, 1.0));
+      _lerp(.72, 1.02, displayY.clamp(0.0, 1.0));
+
+  static void drawFieldImage(
+    Canvas canvas,
+    double width,
+    double height,
+    Image image,
+  ) {
+    final source = Rect.fromLTWH(
+      0,
+      0,
+      image.width.toDouble(),
+      image.height.toDouble(),
+    );
+    final destination = Rect.fromLTWH(0, 0, width, height);
+    canvas.drawImageRect(
+      image,
+      source,
+      destination,
+      Paint()..filterQuality = FilterQuality.high,
+    );
+
+    // A very light broadcast wash keeps the animated tokens readable without
+    // flattening the photographic grass/stadium asset.
+    canvas.drawRect(
+      destination,
+      Paint()
+        ..shader = Gradient.linear(
+          destination.topCenter,
+          destination.bottomCenter,
+          const [
+            Color(0x08000000),
+            Color(0x00000000),
+            Color(0x17000000),
+          ],
+          const [0, .55, 1],
+        ),
+    );
+  }
 
   static void drawPitch(Canvas canvas, double width, double height) {
     final field = fieldRect(width, height);
@@ -491,7 +532,7 @@ abstract final class MatchPitchVisuals {
   }
 
   static double _perspectiveInset(Rect field, double y) =>
-      _lerp(field.width * .085, field.width * .01, y.clamp(0.0, 1.0));
+      _lerp(field.width * .202, field.width * .006, y.clamp(0.0, 1.0));
 
   static double _lerp(double start, double end, double t) =>
       start + (end - start) * t;

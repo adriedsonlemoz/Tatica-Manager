@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.101`
-**Android versionCode:** `102`
+**Release atual:** `0.1.1.102`
+**Android versionCode:** `103`
 
 ## Fonte oficial de versão
 
@@ -14,23 +14,36 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.101`);
+- `VERSION` — versão visível simples (`0.1.1.102`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+102`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.101` e `versionCode 102`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+103`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.102` e `versionCode 103`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.101` é representada internamente como `0.1.1+102`. A versão visível do aplicativo/Android continua sendo `0.1.1.101`. a próxima entrega normalmente será `0.1.1.102`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.102` é representada internamente como `0.1.1+103`. A versão visível do aplicativo/Android continua sendo `0.1.1.102`. a próxima entrega normalmente será `0.1.1.103`.
 
 
 
 
-## Token do jogador refeito do zero — 0.1.1.101
+## Campo real como cenário da partida — 0.1.1.102
 
-- refaz o token do jogador da partida ao vivo como um disco chapado único, sem cabeça separada acima do corpo;
-- elimina o efeito "bobblehead" (cabeça grande destacada) da versão anterior, mantendo padrão do uniforme, cor de goleiro, sombra, brilho e anéis de destaque;
-- não altera Match Engine, gramado, saves, IDs ou multi-competição.
+- adiciona `assets/images/match/match_field.webp`, otimizado em 1550x625 para casar exatamente com o painel 2.48:1 da partida;
+- o Flame passa a desenhar esse cenário completo de estádio/gramado como fundo principal, sem redesenhar grama, linhas, gols ou arquibancada quando o asset está disponível;
+- jogadores, bola, destaques, replay e animações continuam sobrepostos pelo renderer existente e continuam recebendo somente os eventos/coordernadas do Match Engine;
+- recalibra `projectDisplayPoint` ao trapézio real da imagem para manter atletas e bola dentro das linhas do campo;
+- mantém `stadium_crowd.webp` e o campo procedural anterior somente como fallback de segurança;
+- preserva `CareerState` schema 13, saves, IDs, multi-competição e Match Engine.
+
+
+## Workflow do GitHub restaurado — 0.1.1.101
+
+- restaura `.github/workflows/flutter-ci.yml`, que havia desaparecido do ZIP `0.1.1.100` junto com os arquivos ocultos;
+- mantém os gatilhos automáticos por `push` e manual por `workflow_dispatch`, permitindo que o GitHub Manager volte a localizar/iniciar a build;
+- restaura também `.gitignore` e `android/.gitignore` da última base válida;
+- o workflow continua executando análise, testes e build release e publica **somente o APK versionado** como Artifact;
+- nenhuma alteração funcional da base `0.1.1.100` foi removida ou refeita.
+
 
 ## Sincronização de versão — 0.1.1.100
 
@@ -141,7 +154,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.95`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.103`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
