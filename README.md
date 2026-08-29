@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.98`
-**Android versionCode:** `100`
+**Release atual:** `0.1.1.100`
+**Android versionCode:** `101`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.98`);
+- `VERSION` — versão visível simples (`0.1.1.100`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+100`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.98` e `versionCode 100`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+101`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.100` e `versionCode 101`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.98` é representada internamente como `0.1.1+100`. A versão visível do aplicativo/Android continua sendo `0.1.1.98`. a próxima entrega normalmente será `0.1.1.99`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.100` é representada internamente como `0.1.1+101`. A versão visível do aplicativo/Android continua sendo `0.1.1.100`. a próxima entrega normalmente será `0.1.1.101`.
 
 
 
+
+## Sincronização de versão — 0.1.1.100
+
+- atualiza a release visível para `0.1.1.100` (versionCode `101`, pubspec `0.1.1+101`);
+- não há alterações de código nesta entrega, apenas metadados de versão/documentação;
+- não altera campo, jogadores, Match Engine, saves, IDs ou multi-competição.
 
 ## Jogadores e gramado mais nítidos — 0.1.1.98
 

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.98';
+  static const String version = '0.1.1.100';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.100',
+      title: 'Sincronização de versão',
+      changes: [
+        'Sincroniza a versão da release para 0.1.1.100 (versionCode 101, pubspec 0.1.1+101).',
+        'Não há alterações de código nesta release.',
+        'Não altera campo, jogadores, Match Engine, saves, IDs ou multi-competição.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.98',
       title: 'Jogadores e gramado mais nítidos',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Atualiza a regressão visual da partida para a nova perspectiva e escala do campo redesenhado.',
         'Restaura a tela Sobre/Novidades para manter exatamente as três releases mais recentes.',
         'Não altera campo, Match Engine, eventos, saves, IDs ou multi-competição.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.96',
-      title: 'Correção do renderer da bola',
-      changes: [
-        'Corrige o único erro de analyzer da 0.1.1.95 no campo redesenhado.',
-        'Usa a API real drawMatchBallGraphic do sistema de estilos da bola e elimina o warning de import não utilizado.',
-        'Não altera o novo campo, Match Engine, eventos, saves, IDs ou multi-competição.',
       ],
     ),
   ];
