@@ -75,7 +75,7 @@ class PreMatchPlanCard extends StatelessWidget {
             children: [
               const _RoundIcon(icon: Icons.assignment_turned_in_outlined),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'PLANO DE JOGO',
                   style: TextStyle(

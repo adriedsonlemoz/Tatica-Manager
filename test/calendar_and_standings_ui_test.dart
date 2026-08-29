@@ -80,12 +80,12 @@ void main() {
     expect(content, contains("title: 'CLASSIFICAÇÃO'"));
     expect(content, contains("title: 'ARTILHARIA'"));
     expect(content, contains("title: 'NOTÍCIAS E DESTAQUES'"));
-    expect(content, contains("value: '${s?.played ?? 0}'"));
-    expect(content, contains("value: '${s?.wins ?? 0}'"));
-    expect(content, contains("value: '${s?.draws ?? 0}'"));
-    expect(content, contains("value: '${s?.losses ?? 0}'"));
-    expect(content, contains("value: '${s?.goalsFor ?? 0}'"));
-    expect(content, contains("value: '${s?.goalsAgainst ?? 0}'"));
+    expect(content, contains(r"value: '${s?.played ?? 0}'"));
+    expect(content, contains(r"value: '${s?.wins ?? 0}'"));
+    expect(content, contains(r"value: '${s?.draws ?? 0}'"));
+    expect(content, contains(r"value: '${s?.losses ?? 0}'"));
+    expect(content, contains(r"value: '${s?.goalsFor ?? 0}'"));
+    expect(content, contains(r"value: '${s?.goalsAgainst ?? 0}'"));
 
     expect(home, contains('_homeCompetitionLabel'));
     expect(home, contains(r"'Brasileiro ${value.substring(prefix.length)}'"));

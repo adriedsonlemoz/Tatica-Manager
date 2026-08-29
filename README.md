@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.114`
-**Android versionCode:** `115`
+**Release atual:** `0.1.1.115`
+**Android versionCode:** `116`
 
 ## Fonte oficial de versão
 
@@ -14,14 +14,14 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.114`);
+- `VERSION` — versão visível simples (`0.1.1.115`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+115`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.114` e `versionCode 115`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+116`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.115` e `versionCode 116`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.114` é representada internamente como `0.1.1+115`. A versão visível do aplicativo/Android continua sendo `0.1.1.114`. a próxima entrega normalmente será `0.1.1.115`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.115` é representada internamente como `0.1.1+116`. A versão visível do aplicativo/Android continua sendo `0.1.1.115`. a próxima entrega normalmente será `0.1.1.116`.
 
 
 
@@ -248,7 +248,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.115`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.116`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

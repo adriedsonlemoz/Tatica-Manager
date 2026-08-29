@@ -240,7 +240,7 @@ class _UnavailablePanel extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'INDISPONÍVEIS',
                     style: TextStyle(
