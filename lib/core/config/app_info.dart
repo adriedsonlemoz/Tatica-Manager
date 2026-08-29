@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.102';
+  static const String version = '0.1.1.103';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.103',
+      title: 'Correção do analyzer do campo',
+      changes: [
+        'Remove o único import redundante apontado pelo analyzer no teste visual da partida.',
+        'Mantém integralmente o novo campo em imagem, jogadores, bola e projeção da 0.1.1.102.',
+        'Não altera Match Engine, saves, IDs ou multi-competição.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.102',
       title: 'Campo real como cenário da partida',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Restaura .github/workflows/flutter-ci.yml removido do pacote anterior ao compactar arquivos ocultos.',
         'O workflow volta a responder a push e workflow_dispatch e continua publicando somente o APK versionado.',
         'Restaura também os .gitignore do projeto/Android sem alterar código, Match Engine, saves ou IDs.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.98',
-      title: 'Jogadores e gramado mais nítidos',
-      changes: [
-        'Redesenha os jogadores como tokens sólidos de alto contraste no lugar da figura anatômica fina que virava mancha na escala real da tela.',
-        'Deixa o gramado mais verde/saturado, com listras de corte mais contrastantes, linhas mais grossas e perspectiva mais acentuada.',
-        'Não altera Match Engine, eventos, placar, saves, IDs ou multi-competição.',
       ],
     ),
   ];

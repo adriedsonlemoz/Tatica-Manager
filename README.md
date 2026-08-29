@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.102`
-**Android versionCode:** `103`
+**Release atual:** `0.1.1.103`
+**Android versionCode:** `104`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,22 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.102`);
+- `VERSION` — versão visível simples (`0.1.1.103`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+103`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.102` e `versionCode 103`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+104`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.103` e `versionCode 104`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.102` é representada internamente como `0.1.1+103`. A versão visível do aplicativo/Android continua sendo `0.1.1.102`. a próxima entrega normalmente será `0.1.1.103`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.103` é representada internamente como `0.1.1+104`. A versão visível do aplicativo/Android continua sendo `0.1.1.103`. a próxima entrega normalmente será `0.1.1.104`.
 
 
 
+
+## Correção do analyzer do campo em imagem — 0.1.1.103
+
+- remove o import redundante `dart:ui` de `test/live_match_visual_experience_test.dart`, único problema apontado pelo `flutter analyze` da 0.1.1.102;
+- não altera o campo em imagem, projeção, jogadores, bola, HUD, Match Engine, saves, IDs ou multi-competição.
 
 ## Campo real como cenário da partida — 0.1.1.102
 
