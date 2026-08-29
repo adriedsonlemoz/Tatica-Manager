@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.96`
-**Android versionCode:** `98`
+**Release atual:** `0.1.1.97`
+**Android versionCode:** `99`
 
 ## Fonte oficial de versão
 
@@ -14,16 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.96`);
+- `VERSION` — versão visível simples (`0.1.1.97`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+98`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.96` e `versionCode 98`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+99`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.97` e `versionCode 99`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.96` é representada internamente como `0.1.1+98`. A versão visível do aplicativo/Android continua sendo `0.1.1.96`. a próxima entrega normalmente será `0.1.1.97`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.97` é representada internamente como `0.1.1+99`. A versão visível do aplicativo/Android continua sendo `0.1.1.97`. a próxima entrega normalmente será `0.1.1.98`.
 
 
+
+
+## Correção dos testes da transmissão — 0.1.1.97
+
+- corrige a regressão estrutural da partida para validar a perspectiva `_perspectiveInset(...)` e a escala atual `0.58` do campo redesenhado;
+- mantém `AppInfo.recentReleases` limitado às três releases mais recentes, como a tela Sobre/Novidades e o teste já esperam;
+- não altera o campo, a torcida, Match Engine, saves, IDs ou multi-competição.
 
 ## Correção do renderer da bola — 0.1.1.96
 

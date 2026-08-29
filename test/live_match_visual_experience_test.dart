@@ -180,8 +180,8 @@ void main() {
     expect(visuals, contains('drawGoal'));
     expect(visuals, contains('projectDisplayPoint'));
     expect(visuals, contains('pitchPath'));
-    expect(visuals, contains('field.width * .018'));
-    expect(renderer, contains('perspectiveScale(display.y) * .72'));
+    expect(visuals, contains('_perspectiveInset(field, perspectiveY)'));
+    expect(renderer, contains('perspectiveScale(display.y) * .58'));
     expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
     expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));

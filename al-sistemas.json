@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.96",
+  "version": "0.1.1.97",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+98"
+    "pubspecVersion": "0.1.1+99"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.96",
-    "versionCode": 98
+    "versionName": "0.1.1.97",
+    "versionCode": 99
   },
   "release": {
-    "version": "0.1.1.96",
-    "revision": 96,
-    "androidVersionCode": 98
+    "version": "0.1.1.97",
+    "revision": 97,
+    "androidVersionCode": 99
   },
   "changelog": [
+    "Corrige as duas falhas restantes do GitHub Actions da 0.1.1.96: atualiza a regressão visual da partida para a nova perspectiva/escala do campo redesenhado e restaura AppInfo.recentReleases para exatamente três entradas na tela Sobre/Novidades; não altera campo, Match Engine, saves, IDs ou multi-competição.",
     "Corrige o único erro de análise estática da 0.1.1.95 no renderer do campo: a bola passa a chamar a API real drawMatchBallGraphic de match_ball_styles.dart, eliminando também o warning de import não utilizado; preserva integralmente o novo campo, a torcida, o Match Engine, CareerState schema 13, saves, IDs e multi-competição.",
     "Redesenha o campo da partida praticamente do zero para ficar mais próximo do mockup: novo gramado com perspectiva mais equilibrada, moldura de estádio, gols e marcações refeitos, melhor profundidade visual e ordem de desenho dos jogadores por distância; reduz novamente a escala dos atletas para deixar o gramado respirar e preserva Match Engine, CareerState schema 13, saves, IDs e multi-competição.",
     "Aproxima novamente a tela da partida do mockup aprovado: reduz a perspectiva exagerada do campo, diminui os jogadores para melhorar leitura e espaçamento, amplia placar/rodada/timeline/controles, e redesenha posse, chutes, chutes no gol e cartões em formato de transmissão; mantém a torcida WebP como fundo, não revela eventos futuros e preserva Match Engine, CareerState schema 13, saves e IDs.",
@@ -46,6 +47,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Corrige o único erro de análise estática da 0.1.1.95 no renderer do campo: a bola passa a chamar a API real drawMatchBallGraphic de match_ball_styles.dart, eliminando também o warning de import não utilizado; preserva integralmente o novo campo, a torcida, o Match Engine, CareerState schema 13, saves, IDs e multi-competição."
+    "Corrige as duas falhas restantes do GitHub Actions da 0.1.1.96: atualiza a regressão visual da partida para a nova perspectiva/escala do campo redesenhado e restaura AppInfo.recentReleases para exatamente três entradas na tela Sobre/Novidades; não altera campo, Match Engine, saves, IDs ou multi-competição."
   ]
 }
