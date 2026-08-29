@@ -148,7 +148,7 @@ class HomeScreen extends ConsumerWidget {
             child: HomeCleanTopBar(
               unreadMessages: unreadMessages,
               onMenuTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const MoreScreen()),
+                MaterialPageRoute(builder: (_) => const MoreScreen(showBackButton: true)),
               ),
               onNotificationsTap: openNews,
               onInboxTap: () => Navigator.of(context).push(
@@ -238,7 +238,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 9),
+                const SizedBox(height: 10),
                 HomeCleanNextMatch(
                   club: club,
                   opponent: opponent,
@@ -265,9 +265,9 @@ class HomeScreen extends ConsumerWidget {
                           );
                         },
                 ),
-                const SizedBox(height: 9),
+                const SizedBox(height: 10),
                 HomeCleanSeasonSummary(standing: userStanding),
-                const SizedBox(height: 9),
+                const SizedBox(height: 12),
                 HomeCleanRankings(
                   standings: career.standings,
                   clubs: career.clubs,
@@ -293,7 +293,7 @@ class HomeScreen extends ConsumerWidget {
                     MaterialPageRoute(builder: (_) => const StatisticsScreen()),
                   ),
                 ),
-                const SizedBox(height: 9),
+                const SizedBox(height: 12),
                 HomeCleanNews(
                   events: recentNews,
                   onEventTap: (event) => _openCareerEvent(

@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.116`
-**Android versionCode:** `117`
+**Release atual:** `0.1.1.117`
+**Android versionCode:** `118`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,26 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.116`);
+- `VERSION` — versão visível simples (`0.1.1.117`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+117`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.116` e `versionCode 117`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+118`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.117` e `versionCode 118`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.116` é representada internamente como `0.1.1+117`. A versão visível do aplicativo/Android continua sendo `0.1.1.116`. a próxima entrega normalmente será `0.1.1.117`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.117` é representada internamente como `0.1.1+118`. A versão visível do aplicativo/Android continua sendo `0.1.1.117`. a próxima entrega normalmente será `0.1.1.118`.
 
+
+
+## Refinamento da Home compacta — 0.1.1.117
+
+- distribui os seis indicadores do Resumo da Temporada em uma única faixa horizontal, com divisores e tipografia compacta;
+- reduz altura e ícones dos seis atalhos, mantendo toda a largura disponível e fazendo `TRANSFERÊNCIAS` caber sem quebra irregular;
+- mantém o texto da ação centralizado e move o ícone de `AVANÇAR DIA`/`JOGAR PARTIDA` para o extremo direito em escala menor;
+- aumenta discretamente o espaçamento entre competição, data e estádio na Próxima Partida e normaliza os escudos desse card para 58 px;
+- aumenta a separação visual entre Resumo da Temporada, Classificação e Artilharia sem voltar a aumentar os cards;
+- quando `Mais` é aberto pelo menu superior da Home, exibe AppBar com botão `Voltar`; como aba inferior, continua sem botão de retorno indevido;
+- preserva tema claro/escuro, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves e IDs.
 
 
 ## Correção das regressões de teste da Home/tema — 0.1.1.116

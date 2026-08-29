@@ -60,6 +60,7 @@ void main() {
     expect(home, contains('MarketScreen(showBackButton: true)'));
     expect(home, contains('FinancesScreen()'));
     expect(home, contains('YouthAcademyScreen()'));
+    expect(home, contains('const MoreScreen(showBackButton: true)'));
 
     expect(home, contains("? 'REVISAR TEMPORADA'"));
     expect(home, contains("? 'JOGAR PARTIDA'"));

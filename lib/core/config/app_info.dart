@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.116';
+  static const String version = '0.1.1.117';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.117',
+      title: 'Refinamento da Home compacta',
+      changes: [
+        'Distribui os seis indicadores do Resumo da Temporada em uma única faixa e compacta os atalhos.',
+        'Move o ícone de Avançar/Jogar para a direita, melhora espaçamentos e normaliza os escudos da Próxima Partida.',
+        'Adiciona retorno explícito ao menu Mais quando aberto pela barra superior, sem alterar a aba raiz.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.116',
       title: 'Correção dos testes da Home e tema',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige o import de AppColors e dois const incompatíveis com a paleta adaptativa no pré-jogo/partida.',
         'Corrige as seis expectativas literais do teste de calendário/Home que impediam o flutter analyze.',
         'Preserva Home clara, modo escuro, libGDX, movimentação, Match Engine, saves e IDs.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.114',
-      title: 'Home clara e tema global',
-      changes: [
-        'Reformula a Home em cards claros e responsivos com ação contextual, seis atalhos, próxima partida, resumo, classificação, artilharia e notícias.',
-        'Torna o modo claro o padrão e adiciona modo escuro persistente nas Configurações e antes da carreira.',
-        'Preserva renderer libGDX, movimentação, Match Engine, saves, IDs e CareerState schema 13.',
       ],
     ),
   ];

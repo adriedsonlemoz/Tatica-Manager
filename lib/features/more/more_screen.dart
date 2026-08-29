@@ -19,7 +19,9 @@ import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
-  const MoreScreen({super.key});
+  const MoreScreen({super.key, this.showBackButton = false});
+
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,15 +47,27 @@ class MoreScreen extends ConsumerWidget {
       (icon: Icons.history_rounded, label: 'Carreira do técnico', subtitle: 'Trajetória, clubes, vagas e propostas', page: const SeasonHistoryScreen()),
       (icon: Icons.settings_rounded, label: 'Configurações', subtitle: 'Save e preferências', page: const SettingsScreen()),
     ];
+    final subtitle = career.managerEmployed
+        ? '${career.userClub.name} • temporada ${career.season}'
+        : '${career.manager.preferredName} • sem clube • temporada ${career.season}';
     return PremiumScaffold(
+      appBar: showBackButton
+          ? AppBar(
+              leading: IconButton(
+                tooltip: 'Voltar',
+                onPressed: () => Navigator.of(context).maybePop(),
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+              title: const Text('Mais'),
+              backgroundColor: AppColors.background,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+            )
+          : null,
       body: ListView(padding: const EdgeInsets.fromLTRB(14, 18, 14, 110), children: [
-        Text('MAIS', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
-        Text(
-          career.managerEmployed
-              ? '${career.userClub.name} • temporada ${career.season}'
-              : '${career.manager.preferredName} • sem clube • temporada ${career.season}',
-          style:  TextStyle(color: AppColors.muted),
-        ),
+        if (!showBackButton)
+          Text('MAIS', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(subtitle, style: TextStyle(color: AppColors.muted)),
         const SizedBox(height: 14),
         SectionCard(child: Row(children: [
           Image.asset('assets/brand/tatica-manager-icon.png', width: 52, height: 52),

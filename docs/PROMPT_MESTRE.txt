@@ -2,6 +2,11 @@ PROMPT MESTRE — NOVO TÁTICA MANAGER EM FLUTTER
 Versão inicial consolidada
 
 
+ATUALIZAÇÃO VISUAL DA HOME — 0.1.1.117
+
+A Home clara deve preservar a composição compacta aprovada: seis atalhos distribuídos na mesma faixa em larguras normais de telefone, Resumo da Temporada com os seis indicadores em uma única linha, ação principal com texto centralizado e ícone menor alinhado ao extremo direito, espaçamento claro entre Resumo/Classificação/Artilharia e escudos proporcionais na Próxima Partida. `MoreScreen` deve mostrar retorno explícito quando aberto por push a partir da barra superior, sem inserir esse botão na aba raiz `Mais`. Não alterar Match Engine ou renderer da partida por ajustes desta Home.
+
+
 ATUALIZAÇÃO DE COMPILAÇÃO DO RENDERER — 0.1.1.112
 
 O pulso visual da torcida `crowdPulse` é estado exclusivamente visual do renderer Android. `LibGdxMatchRenderer` o envia para `LibGdxPitchPainter.draw()`, que deve propagá-lo explicitamente por `drawStadiumBase()` até `drawCrowd()`. Preserve a regressão estrutural desse encadeamento. Não mover esse estado para o Match Engine nem duplicar regras/eventos no Kotlin.

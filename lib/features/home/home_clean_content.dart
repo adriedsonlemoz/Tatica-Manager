@@ -50,9 +50,9 @@ class HomeCleanNextMatch extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _InfoLine(icon: Icons.emoji_events_outlined, text: competitionName),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 11),
                         _InfoLine(icon: Icons.calendar_month_outlined, text: '${shortDate(fixture!.date)} • ${fixture!.kickoffLabel}'),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 11),
                         _InfoLine(icon: Icons.stadium_outlined, text: club.stadium.name),
                       ],
                     ),
@@ -79,37 +79,50 @@ class HomeCleanSeasonSummary extends StatelessWidget {
     ];
     return _CleanSectionCard(
       title: 'RESUMO DA TEMPORADA',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < 520;
-          final columns = compact ? 3 : 6;
-          final width = (constraints.maxWidth - (columns - 1)) / columns;
-          return Wrap(
-            children: [
-              for (var i = 0; i < values.length; i++)
-                SizedBox(
-                  width: width,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        right: i % columns == columns - 1 ? BorderSide.none : BorderSide(color: AppColors.border),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < values.length; i++) ...[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 1),
+                child: Column(
+                  children: [
+                    Icon(
+                      values[i].icon,
+                      color: values[i].color ?? AppColors.muted,
+                      size: 20,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      values[i].value,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 1),
+                    SizedBox(
+                      height: 24,
+                      child: Center(
+                        child: Text(
+                          values[i].label,
+                          maxLines: 2,
+                          overflow: TextOverflow.fade,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 8.4,
+                            height: 1.05,
+                            color: AppColors.muted,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Icon(values[i].icon, color: values[i].color ?? AppColors.muted, size: 23),
-                        const SizedBox(height: 4),
-                        Text(values[i].value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                        const SizedBox(height: 1),
-                        Text(values[i].label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, color: AppColors.muted)),
-                      ],
-                    ),
-                  ),
+                  ],
                 ),
-            ],
-          );
-        },
+              ),
+            ),
+            if (i < values.length - 1)
+              Container(width: 1, height: 70, color: AppColors.border),
+          ],
+        ],
       ),
     );
   }
@@ -175,13 +188,13 @@ class HomeCleanRankings extends StatelessWidget {
                     ],
                   ),
           );
-          if (!split) return Column(children: [table, const SizedBox(height: 8), scorer]);
+          if (!split) return Column(children: [table, const SizedBox(height: 12), scorer]);
           return IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(child: table),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(child: scorer),
               ],
             ),
@@ -308,7 +321,7 @@ class _ClubSide extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: [
-          ClubBadge(club: club, size: 64),
+          ClubBadge(club: club, size: 58),
           const SizedBox(height: 6),
           Text(
             club.shortName,

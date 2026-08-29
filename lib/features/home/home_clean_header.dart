@@ -172,37 +172,43 @@ class HomeCleanPrimaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 54,
+        height: 50,
         width: double.infinity,
         child: FilledButton(
           onPressed: onPressed,
           style: FilledButton.styleFrom(
             backgroundColor: AppColors.green,
             foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .88),
-                  borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: double.infinity,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w900),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppColors.greenDark,
-                  size: 25,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .88),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: AppColors.greenDark,
+                      size: 19,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -218,7 +224,7 @@ class HomeCleanModules extends StatelessWidget {
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           final columns = width >= 330 ? 6 : 3;
-          final gap = 7.0;
+          final gap = 6.0;
           final itemWidth = (width - gap * (columns - 1)) / columns;
           return Wrap(
             spacing: gap,
@@ -257,7 +263,7 @@ class _ModuleTile extends StatelessWidget {
           onTap: item.onTap,
           borderRadius: BorderRadius.circular(12),
           child: Ink(
-            height: 88,
+            height: 72,
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
@@ -276,16 +282,26 @@ class _ModuleTile extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(item.icon, color: AppColors.greenDark, size: 25),
-                      const SizedBox(height: 8),
+                      Icon(item.icon, color: AppColors.greenDark, size: 22),
+                      const SizedBox(height: 6),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          item.label.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 8.4, fontWeight: FontWeight.w900, height: 1.05),
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 15,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              item.label.toUpperCase(),
+                              maxLines: 1,
+                              softWrap: false,
+                              style: const TextStyle(
+                                fontSize: 8.2,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -.15,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -293,9 +309,9 @@ class _ModuleTile extends StatelessWidget {
                 ),
                 if (item.showDot)
                   const Positioned(
-                    right: 8,
-                    top: 8,
-                    child: CircleAvatar(radius: 4, backgroundColor: AppColors.danger),
+                    right: 7,
+                    top: 7,
+                    child: CircleAvatar(radius: 3.5, backgroundColor: AppColors.danger),
                   ),
               ],
             ),

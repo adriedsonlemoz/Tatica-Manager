@@ -2,26 +2,27 @@
   "product": "Tática Manager",
   "name": "tatica_manager",
   "displayName": "Tática Manager",
-  "version": "0.1.1.116",
+  "version": "0.1.1.117",
   "packageFormat": 2,
   "projectType": "flutter",
   "framework": "Flutter",
   "language": "Dart",
   "repository": "https://github.com/adriedsonlemoz/Tatica-Manager",
   "flutter": {
-    "pubspecVersion": "0.1.1+117"
+    "pubspecVersion": "0.1.1+118"
   },
   "android": {
     "applicationId": "com.taticamanager.tatica_manager",
-    "versionName": "0.1.1.116",
-    "versionCode": 117
+    "versionName": "0.1.1.117",
+    "versionCode": 118
   },
   "release": {
-    "version": "0.1.1.116",
-    "revision": 116,
-    "androidVersionCode": 117
+    "version": "0.1.1.117",
+    "revision": 117,
+    "androidVersionCode": 118
   },
   "changelog": [
+    "Refina a Home clara para aproximá-la do mockup aprovado: mantém os seis atalhos em uma faixa mais compacta, faz Transferências caber sem quebra irregular, reposiciona o ícone de Avançar/Jogar no extremo direito em escala menor, distribui os seis indicadores do Resumo da Temporada em uma única linha, aumenta o respiro dos dados da próxima partida, normaliza o escudo desse card, amplia a separação entre Resumo/Classificação/Artilharia e adiciona botão Voltar ao menu Mais quando aberto pela barra superior; preserva tema claro/escuro, libGDX, movimentação, Match Engine, saves e IDs.",
     "Corrige as duas regressões de teste reveladas pelo GitHub Actions da 0.1.1.115: atualiza a expectativa da paleta para o verde/amarelo atuais do tema claro/escuro e faz o teste de avatares validar a nova HomeCleanRankings em vez da ligação removida da Home antiga; não altera Home, tema, renderer libGDX, movimentação, Match Engine, saves ou IDs.",
     "Corrige os nove erros de análise estática revelados pelo GitHub Actions da 0.1.1.114: restaura o import de AppColors na tela da partida, remove dois const incompatíveis com a paleta adaptativa do tema e torna literais seis expectativas de interpolação no teste de calendário/Home; preserva integralmente a Home clara, modo escuro persistente, renderer libGDX, movimentação, Match Engine, saves e IDs.",
     "Reformula a Home para uma composição clara, simples e responsiva inspirada na referência aprovada, com cabeçalho do clube, ação contextual, seis atalhos, próxima partida, resumo da temporada, classificação, artilharia e notícias usando somente dados reais; torna o modo claro o padrão global e adiciona modo escuro persistente por preferência do aplicativo, adaptando fundos, cards, bordas e textos sem alterar Match Engine, renderer libGDX, CareerState schema 13, saves ou IDs.",
@@ -65,6 +66,6 @@
     "Adiciona seleção de ligas por carreira com presets Rápido, Equilibrado, Mundo amplo e Personalizado; persiste níveis completa/segundo plano/não carregada no CareerState schema 12, força a competição do clube do usuário como completa e prepara filtragem de clubes para expansões reais; mantém o Match Engine nas ligas completas e adiciona resolução estatística leve somente para partidas CPU de competições em segundo plano; elimina releitura do pacote de clubes na confirmação da carreira, remove suposições fixas de 38 rodadas e migra o SQLite para v3 com resumo leve dos saves, evitando desserializar o payload completo na Central de Carreiras, preservando IDs e saves existentes."
   ],
   "changes": [
-    "Corrige as duas regressões de teste reveladas pelo GitHub Actions da 0.1.1.115: atualiza a expectativa da paleta para o verde/amarelo atuais do tema claro/escuro e faz o teste de avatares validar a nova HomeCleanRankings em vez da ligação removida da Home antiga; não altera Home, tema, renderer libGDX, movimentação, Match Engine, saves ou IDs."
+    "Refina a Home clara para aproximá-la do mockup aprovado: mantém os seis atalhos em uma faixa mais compacta, faz Transferências caber sem quebra irregular, reposiciona o ícone de Avançar/Jogar no extremo direito em escala menor, distribui os seis indicadores do Resumo da Temporada em uma única linha, aumenta o respiro dos dados da próxima partida, normaliza o escudo desse card, amplia a separação entre Resumo/Classificação/Artilharia e adiciona botão Voltar ao menu Mais quando aberto pela barra superior; preserva tema claro/escuro, libGDX, movimentação, Match Engine, saves e IDs."
   ]
 }
