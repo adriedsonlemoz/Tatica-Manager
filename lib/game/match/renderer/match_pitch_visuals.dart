@@ -5,171 +5,57 @@ import '../../../core/theme/match_ball_styles.dart';
 import '../../../domain/match/match_models.dart';
 
 abstract final class MatchPitchVisuals {
-  // Calibrated to assets/images/match/match_field.webp (1550x625).
-  // The image is rendered 1:1 into the 2.48 pitch panel, so these normalized
-  // values keep the Flame coordinates aligned with the photographed pitch.
-  static Rect fieldRect(double width, double height) => Rect.fromLTRB(
-        0,
-        height * .194,
-        width,
-        height * .947,
+  static Rect fieldRect(double width, double height) => Rect.fromLTWH(
+        14,
+        18,
+        width - 28,
+        height - 36,
       );
 
-  static Path pitchPath(double width, double height) {
-    final field = fieldRect(width, height);
-    final topInset = _perspectiveInset(field, 0);
-    final bottomInset = _perspectiveInset(field, 1);
-    final radius = math.min(10.0, field.width * .028);
-    return Path()
-      ..moveTo(field.left + topInset + radius, field.top)
-      ..lineTo(field.right - topInset - radius, field.top)
-      ..quadraticBezierTo(
-        field.right - topInset,
-        field.top,
-        field.right - topInset + 2,
-        field.top + radius,
-      )
-      ..lineTo(field.right - bottomInset, field.bottom - radius)
-      ..quadraticBezierTo(
-        field.right - bottomInset,
-        field.bottom,
-        field.right - bottomInset - radius,
-        field.bottom,
-      )
-      ..lineTo(field.left + bottomInset + radius, field.bottom)
-      ..quadraticBezierTo(
-        field.left + bottomInset,
-        field.bottom,
-        field.left + bottomInset,
-        field.bottom - radius,
-      )
-      ..lineTo(field.left + topInset - 2, field.top + radius)
-      ..quadraticBezierTo(
-        field.left + topInset,
-        field.top,
-        field.left + topInset + radius,
-        field.top,
-      )
-      ..close();
-  }
-
-  static Offset projectDisplayPoint(
-    Offset point,
-    double width,
-    double height,
-  ) {
-    final field = fieldRect(width, height);
-    final normalizedY = point.dy.clamp(0.0, 1.0);
-    final perspectiveY = math.pow(normalizedY, .94).toDouble();
-    final leftInset = _perspectiveInset(field, perspectiveY);
-    final rightInset = leftInset;
-    final left = field.left + leftInset;
-    final right = field.right - rightInset;
-    return Offset(
-      _lerp(left, right, point.dx.clamp(0.0, 1.0)),
-      _lerp(field.top, field.bottom, perspectiveY),
-    );
-  }
-
-  static double perspectiveScale(double displayY) =>
-      _lerp(.72, 1.02, displayY.clamp(0.0, 1.0));
-
-  static void drawFieldImage(
-    Canvas canvas,
-    double width,
-    double height,
-    Image image,
-  ) {
-    final source = Rect.fromLTWH(
-      0,
-      0,
-      image.width.toDouble(),
-      image.height.toDouble(),
-    );
-    final destination = Rect.fromLTWH(0, 0, width, height);
-    canvas.drawImageRect(
-      image,
-      source,
-      destination,
-      Paint()..filterQuality = FilterQuality.high,
-    );
-
-    // A very light broadcast wash keeps the animated tokens readable without
-    // flattening the photographic grass/stadium asset.
-    canvas.drawRect(
-      destination,
-      Paint()
-        ..shader = Gradient.linear(
-          destination.topCenter,
-          destination.bottomCenter,
-          const [
-            Color(0x08000000),
-            Color(0x00000000),
-            Color(0x17000000),
-          ],
-          const [0, .55, 1],
-        ),
-    );
-  }
+  static RRect pitchClip(double width, double height) => RRect.fromRectAndRadius(
+        fieldRect(width, height),
+        const Radius.circular(14),
+      );
 
   static void drawPitch(Canvas canvas, double width, double height) {
     final field = fieldRect(width, height);
-    final pitch = pitchPath(width, height);
-    final basePaint = Paint()
-      ..shader = Gradient.linear(
-        field.topCenter,
-        field.bottomCenter,
-        const [
-          Color(0xFF4CAE3F),
-          Color(0xFF3B9A38),
-          Color(0xFF267229),
-        ],
-        const [0, .48, 1],
-      );
-    canvas.drawPath(pitch, basePaint);
+    canvas.drawRect(
+      field,
+      Paint()
+        ..shader = Gradient.linear(
+          field.topLeft,
+          field.bottomRight,
+          const [Color(0xFF286326), Color(0xFF1D511D)],
+        ),
+    );
 
-    for (var index = 0; index < 10; index++) {
-      final start = index / 10;
-      final end = (index + 1) / 10;
-      final stripe = _quad(width, height, start, 0, end, 1);
-      canvas.drawPath(
-        stripe,
-        Paint()
-          ..color = index.isEven
-              ? const Color(0x22FFFFFF)
-              : const Color(0x1D000000),
-      );
+    final stripe = Paint()..color = const Color(0x0CFFFFFF);
+    for (var index = 0; index < 12; index++) {
+      if (index.isEven) {
+        canvas.drawRect(
+          Rect.fromLTWH(
+            field.left + field.width / 12 * index,
+            field.top,
+            field.width / 12,
+            field.height,
+          ),
+          stripe,
+        );
+      }
     }
-
-    for (var row = 0; row < 14; row++) {
-      final top = row / 14;
-      final bottom = (row + 1) / 14;
-      if (row.isOdd) continue;
-      canvas.drawPath(
-        _quad(width, height, 0, top, 1, bottom),
-        Paint()..color = const Color(0x05000000),
-      );
-    }
-
-    _drawPitchShading(canvas, field);
-    _drawPitchMarkings(canvas, width, height);
+    drawPitchMarkings(canvas, field);
+    drawGoal(canvas, field, left: true);
+    drawGoal(canvas, field, left: false);
+    _drawPerspectiveWash(canvas, field);
   }
 
-  static void drawPitchBorder(Canvas canvas, Path pitch) {
-    canvas.drawPath(
-      pitch,
+  static void drawPitchBorder(Canvas canvas, RRect clip) {
+    canvas.drawRRect(
+      clip,
       Paint()
-        ..color = const Color(0xE4F3FFF4)
+        ..color = const Color(0x9978D620)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.35,
-    );
-    canvas.drawPath(
-      pitch,
-      Paint()
-        ..color = const Color(0x33000000)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4.2
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+        ..strokeWidth = 1.15,
     );
   }
 
@@ -177,163 +63,92 @@ abstract final class MatchPitchVisuals {
     final vignette = Paint()
       ..shader = Gradient.radial(
         field.center,
-        field.longestSide * .7,
-        const [Color(0x00000000), Color(0x70000000)],
-        const [.42, 1],
+        field.longestSide * .62,
+        const [Color(0x00000000), Color(0x66000000)],
+        const [.48, 1],
       );
-    canvas.drawRect(field.inflate(22), vignette);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(field, const Radius.circular(14)),
+      vignette,
+    );
   }
 
-  static void _drawPitchShading(Canvas canvas, Rect field) {
+  static void _drawPerspectiveWash(Canvas canvas, Rect field) {
     final wash = Paint()
       ..shader = Gradient.linear(
         field.topCenter,
         field.bottomCenter,
-        const [
-          Color(0x26000000),
-          Color(0x00FFFFFF),
-          Color(0x11000000),
-          Color(0x22000000),
-        ],
-        const [0, .28, .7, 1],
+        const [Color(0x18000000), Color(0x00FFFFFF), Color(0x1A000000)],
+        const [0, .48, 1],
       );
     canvas.drawRect(field, wash);
-
-    final spotlight = Paint()
-      ..shader = Gradient.radial(
-        Offset(field.center.dx, field.top + field.height * .32),
-        field.width * .58,
-        const [Color(0x2EFFFFFF), Color(0x00000000)],
-      );
-    canvas.drawRect(field, spotlight);
   }
 
-  static void _drawPitchMarkings(
-    Canvas canvas,
-    double width,
-    double height,
-  ) {
+  static void drawPitchMarkings(Canvas canvas, Rect field) {
     final line = Paint()
-      ..color = const Color(0xFAFFFFFF)
+      ..color = const Color(0xB8FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6;
-
-    _drawPolygon(
-      canvas,
-      width,
-      height,
-      const [
-        Offset(.026, .032),
-        Offset(.974, .032),
-        Offset(.974, .968),
-        Offset(.026, .968),
-      ],
+      ..strokeWidth = 1.15;
+    final bounds = field.deflate(7);
+    canvas.drawRect(bounds, line);
+    canvas.drawLine(
+      Offset(field.center.dx, bounds.top),
+      Offset(field.center.dx, bounds.bottom),
       line,
-      close: true,
     );
-
-    _drawLine(canvas, width, height, const Offset(.5, .032), const Offset(.5, .968), line);
-    _drawEllipse(canvas, width, height, const Offset(.5, .5), .1, .17, line);
     canvas.drawCircle(
-      projectDisplayPoint(const Offset(.5, .5), width, height),
-      2.0,
-      Paint()..color = const Color(0xF8FFFFFF),
+      field.center,
+      math.min(field.width, field.height) * .12,
+      line,
     );
+    canvas.drawCircle(field.center, 1.8, Paint()..color = const Color(0xDFFFFFFF));
 
-    _drawBox(canvas, width, height, .026, .185, .205, .795, line);
-    _drawBox(canvas, width, height, .815, .974, .205, .795, line);
-    _drawBox(canvas, width, height, .026, .084, .35, .65, line);
-    _drawBox(canvas, width, height, .916, .974, .35, .65, line);
+    final boxWidth = field.width * .16;
+    final boxHeight = field.height * .56;
+    final smallWidth = field.width * .065;
+    final smallHeight = field.height * .29;
+    final boxTop = field.center.dy - boxHeight / 2;
+    final smallTop = field.center.dy - smallHeight / 2;
 
-    for (final spot in [const Offset(.13, .5), const Offset(.87, .5)]) {
-      canvas.drawCircle(
-        projectDisplayPoint(spot, width, height),
-        1.75,
-        Paint()..color = const Color(0xEFFFFFFF),
-      );
-    }
-
-    _drawArc(
-      canvas,
-      width,
-      height,
-      center: const Offset(.13, .5),
-      radiusX: .068,
-      radiusY: .112,
-      start: -1.16,
-      end: 1.16,
-      paint: line,
+    canvas.drawRect(Rect.fromLTWH(bounds.left, boxTop, boxWidth, boxHeight), line);
+    canvas.drawRect(
+      Rect.fromLTWH(bounds.right - boxWidth, boxTop, boxWidth, boxHeight),
+      line,
     );
-    _drawArc(
-      canvas,
-      width,
-      height,
-      center: const Offset(.87, .5),
-      radiusX: .068,
-      radiusY: .112,
-      start: math.pi - 1.16,
-      end: math.pi + 1.16,
-      paint: line,
+    canvas.drawRect(
+      Rect.fromLTWH(bounds.left, smallTop, smallWidth, smallHeight),
+      line,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(bounds.right - smallWidth, smallTop, smallWidth, smallHeight),
+      line,
+    );
+    canvas.drawCircle(
+      Offset(bounds.left + boxWidth * .70, field.center.dy),
+      1.7,
+      Paint()..color = const Color(0xDFFFFFFF),
+    );
+    canvas.drawCircle(
+      Offset(bounds.right - boxWidth * .70, field.center.dy),
+      1.7,
+      Paint()..color = const Color(0xDFFFFFFF),
     );
   }
 
-  static void drawGoals(Canvas canvas, double width, double height) {
-    drawGoal(canvas, width, height, left: true);
-    drawGoal(canvas, width, height, left: false);
-  }
-
-  static void drawGoal(
-    Canvas canvas,
-    double width,
-    double height, {
-    required bool left,
-  }) {
-    final frontTop = projectDisplayPoint(
-      Offset(left ? .026 : .974, .39),
-      width,
-      height,
-    );
-    final frontBottom = projectDisplayPoint(
-      Offset(left ? .026 : .974, .61),
-      width,
-      height,
-    );
-    final depth = math.min(16.0, width * .026);
-    final direction = left ? -1.0 : 1.0;
-    final backTop = frontTop.translate(direction * depth, -5);
-    final backBottom = frontBottom.translate(direction * depth, 5);
-    final framePaint = Paint()
-      ..color = const Color(0xEFFFFFFF)
+  static void drawGoal(Canvas canvas, Rect field, {required bool left}) {
+    final goalHeight = field.height * .24;
+    final depth = math.min(7.0, field.height * .04);
+    final top = field.center.dy - goalHeight / 2;
+    final x = left ? field.left + 1 : field.right - depth - 1;
+    final rect = Rect.fromLTWH(x, top, depth, goalHeight);
+    final net = Paint()
+      ..color = const Color(0x99FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-    final netPaint = Paint()
-      ..color = const Color(0x8CFFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .7;
-
-    final frame = Path()
-      ..moveTo(frontTop.dx, frontTop.dy)
-      ..lineTo(frontBottom.dx, frontBottom.dy)
-      ..lineTo(backBottom.dx, backBottom.dy)
-      ..lineTo(backTop.dx, backTop.dy)
-      ..close();
-    canvas.drawPath(frame, framePaint);
-
-    for (var index = 1; index <= 5; index++) {
-      final t = index / 6;
-      canvas.drawLine(
-        Offset.lerp(frontTop, frontBottom, t)!,
-        Offset.lerp(backTop, backBottom, t)!,
-        netPaint,
-      );
-    }
-    for (var index = 1; index <= 3; index++) {
-      final t = index / 4;
-      canvas.drawLine(
-        Offset.lerp(frontTop, backTop, t)!,
-        Offset.lerp(frontBottom, backBottom, t)!,
-        netPaint,
-      );
+      ..strokeWidth = .8;
+    canvas.drawRect(rect, net);
+    for (var index = 1; index < 5; index++) {
+      final y = top + goalHeight * index / 5;
+      canvas.drawLine(Offset(rect.left, y), Offset(rect.right, y), net);
     }
   }
 
@@ -363,177 +178,65 @@ abstract final class MatchPitchVisuals {
           eventType == MatchEventType.woodwork) {
         _drawTrajectoryArrow(
           canvas,
-          trailStart,
-          ball,
-          Paint()
-            ..color = replay
-                ? const Color(0xAAFFFFFF)
-                : const Color(0x7DFFFFFF)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = replay ? 1.3 : 1.05,
+          from: trailStart,
+          to: ball,
+          emphasized: eventType != MatchEventType.pass,
         );
       }
     }
-
     if (woodwork) {
       canvas.drawCircle(
         ball,
-        10.5,
-        Paint()..color = const Color(0x20FFEE88),
+        8.5,
+        Paint()
+          ..color = const Color(0x55E7C14D)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
       );
     }
-
+    canvas.drawCircle(
+      Offset(ball.dx + 1.2, ball.dy + 2),
+      4.4,
+      Paint()..color = const Color(0x66000000),
+    );
     drawMatchBallGraphic(
       canvas,
       center: ball,
-      radius: replay ? 5.1 : 4.5,
+      radius: 4.3,
       style: style,
     );
   }
 
   static void _drawTrajectoryArrow(
-    Canvas canvas,
-    Offset from,
-    Offset to,
-    Paint paint,
-  ) {
-    final vector = to - from;
-    final length = vector.distance;
-    if (length < 8) return;
-    final unit = Offset(vector.dx / length, vector.dy / length);
-    final tipBase = to - unit * 6;
-    canvas.drawLine(from, tipBase, paint);
-    final left = Offset(-unit.dy, unit.dx);
-    canvas.drawLine(to, tipBase + left * 3, paint);
-    canvas.drawLine(to, tipBase - left * 3, paint);
-  }
-
-  static Path _quad(
-    double width,
-    double height,
-    double left,
-    double top,
-    double right,
-    double bottom,
-  ) => Path()
-    ..moveTo(projectDisplayPoint(Offset(left, top), width, height).dx,
-        projectDisplayPoint(Offset(left, top), width, height).dy)
-    ..lineTo(projectDisplayPoint(Offset(right, top), width, height).dx,
-        projectDisplayPoint(Offset(right, top), width, height).dy)
-    ..lineTo(projectDisplayPoint(Offset(right, bottom), width, height).dx,
-        projectDisplayPoint(Offset(right, bottom), width, height).dy)
-    ..lineTo(projectDisplayPoint(Offset(left, bottom), width, height).dx,
-        projectDisplayPoint(Offset(left, bottom), width, height).dy)
-    ..close();
-
-  static void _drawPolygon(
-    Canvas canvas,
-    double width,
-    double height,
-    List<Offset> points,
-    Paint paint, {
-    bool close = false,
+    Canvas canvas, {
+    required Offset from,
+    required Offset to,
+    required bool emphasized,
   }) {
-    if (points.isEmpty) return;
+    final delta = to - from;
+    final distance = delta.distance;
+    if (distance < 8) return;
+    final direction = delta / distance;
+    final normal = Offset(-direction.dy, direction.dx);
+    final tip = to - direction * 6;
+    final size = emphasized ? 4.2 : 3.2;
     final path = Path()
-      ..moveTo(
-        projectDisplayPoint(points.first, width, height).dx,
-        projectDisplayPoint(points.first, width, height).dy,
-      );
-    for (final point in points.skip(1)) {
-      final projected = projectDisplayPoint(point, width, height);
-      path.lineTo(projected.dx, projected.dy);
-    }
-    if (close) path.close();
-    canvas.drawPath(path, paint);
+      ..moveTo(tip.dx, tip.dy)
+      ..lineTo(
+        tip.dx - direction.dx * size + normal.dx * size,
+        tip.dy - direction.dy * size + normal.dy * size,
+      )
+      ..lineTo(
+        tip.dx - direction.dx * size - normal.dx * size,
+        tip.dy - direction.dy * size - normal.dy * size,
+      )
+      ..close();
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = emphasized
+            ? const Color(0xCCF4D35E)
+            : const Color(0x88FFFFFF),
+    );
   }
-
-  static void _drawLine(
-    Canvas canvas,
-    double width,
-    double height,
-    Offset from,
-    Offset to,
-    Paint paint,
-  ) => canvas.drawLine(
-        projectDisplayPoint(from, width, height),
-        projectDisplayPoint(to, width, height),
-        paint,
-      );
-
-  static void _drawEllipse(
-    Canvas canvas,
-    double width,
-    double height,
-    Offset center,
-    double radiusX,
-    double radiusY,
-    Paint paint,
-  ) {
-    final points = <Offset>[];
-    for (var step = 0; step <= 36; step++) {
-      final angle = step / 36 * math.pi * 2;
-      points.add(
-        Offset(
-          center.dx + math.cos(angle) * radiusX,
-          center.dy + math.sin(angle) * radiusY,
-        ),
-      );
-    }
-    _drawPolygon(canvas, width, height, points, paint, close: true);
-  }
-
-  static void _drawBox(
-    Canvas canvas,
-    double width,
-    double height,
-    double left,
-    double right,
-    double top,
-    double bottom,
-    Paint paint,
-  ) => _drawPolygon(
-        canvas,
-        width,
-        height,
-        [
-          Offset(left, top),
-          Offset(right, top),
-          Offset(right, bottom),
-          Offset(left, bottom),
-        ],
-        paint,
-        close: true,
-      );
-
-  static void _drawArc(
-    Canvas canvas,
-    double width,
-    double height, {
-    required Offset center,
-    required double radiusX,
-    required double radiusY,
-    required double start,
-    required double end,
-    required Paint paint,
-  }) {
-    final points = <Offset>[];
-    for (var step = 0; step <= 20; step++) {
-      final t = step / 20;
-      final angle = start + (end - start) * t;
-      points.add(
-        Offset(
-          center.dx + math.cos(angle) * radiusX,
-          center.dy + math.sin(angle) * radiusY,
-        ),
-      );
-    }
-    _drawPolygon(canvas, width, height, points, paint);
-  }
-
-  static double _perspectiveInset(Rect field, double y) =>
-      _lerp(field.width * .202, field.width * .006, y.clamp(0.0, 1.0));
-
-  static double _lerp(double start, double end, double t) =>
-      start + (end - start) * t;
 }

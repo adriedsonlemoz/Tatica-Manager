@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.103';
+  static const String version = '0.1.1.104';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.104',
+      title: 'Campo visual restaurado',
+      changes: [
+        'Restaura o painel e o renderer visual da partida ao desenho usado na 0.1.1.91, sem voltar o restante do projeto.',
+        'Campo, estádio, jogadores e mapeamento visual retornam ao formato anterior, enquanto HUD, replay e eventos atuais permanecem.',
+        'Match Engine, CareerState schema 13, saves, IDs e multi-competição continuam intactos.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.103',
       title: 'Correção do analyzer do campo',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Usa o novo estádio/gramado em WebP como fundo principal da partida, no mesmo aspecto 2.48 do painel.',
         'Jogadores, bola, destaques e animações continuam sendo desenhados pelo Flame sobre o cenário e seguem os eventos do Match Engine.',
         'Calibra a projeção às linhas reais da imagem e mantém o renderer procedural anterior como fallback seguro.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.101',
-      title: 'Workflow do GitHub restaurado',
-      changes: [
-        'Restaura .github/workflows/flutter-ci.yml removido do pacote anterior ao compactar arquivos ocultos.',
-        'O workflow volta a responder a push e workflow_dispatch e continua publicando somente o APK versionado.',
-        'Restaura também os .gitignore do projeto/Android sem alterar código, Match Engine, saves ou IDs.',
       ],
     ),
   ];

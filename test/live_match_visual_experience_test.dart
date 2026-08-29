@@ -104,7 +104,7 @@ void main() {
     );
     expect(pitchPanel, isNot(contains('LiveMatchMomentCard(')));
     expect(pitchPanel, contains('AspectRatio('));
-    expect(pitchPanel, contains('aspectRatio: 2.48'));
+    expect(pitchPanel, contains('aspectRatio: 105 / 68'));
     expect(narrationPanel, contains('NARRAÇÃO AO VIVO'));
     final controls = File(
       'lib/features/match/widgets/live_match_controls.dart',
@@ -146,34 +146,15 @@ void main() {
     expect(homeShotTarget.y, closeTo(.50, .0001));
   });
 
-  test('projeção do Flame acompanha os limites do novo campo em imagem', () {
-    final topLeft = MatchPitchVisuals.projectDisplayPoint(
-      Offset.zero,
-      1000,
-      400,
-    );
-    final topRight = MatchPitchVisuals.projectDisplayPoint(
-      const Offset(1, 0),
-      1000,
-      400,
-    );
-    final bottomLeft = MatchPitchVisuals.projectDisplayPoint(
-      const Offset(0, 1),
-      1000,
-      400,
-    );
-    final bottomRight = MatchPitchVisuals.projectDisplayPoint(
-      const Offset(1, 1),
-      1000,
-      400,
-    );
+  test('campo ao vivo restaura a geometria visual da 0.1.1.91', () {
+    final field = MatchPitchVisuals.fieldRect(1000, 400);
+    final clip = MatchPitchVisuals.pitchClip(1000, 400);
 
-    expect(topLeft.dx, closeTo(202, .01));
-    expect(topRight.dx, closeTo(798, .01));
-    expect(topLeft.dy, closeTo(77.6, .01));
-    expect(bottomLeft.dx, closeTo(6, .01));
-    expect(bottomRight.dx, closeTo(994, .01));
-    expect(bottomLeft.dy, closeTo(378.8, .01));
+    expect(field.left, 14);
+    expect(field.top, 18);
+    expect(field.right, 986);
+    expect(field.bottom, 382);
+    expect(clip.outerRect, field);
   });
 
   test('renderer enfileira lances e só representa a timeline do motor', () {
@@ -208,28 +189,21 @@ void main() {
       'lib/game/match/renderer/match_stadium_visuals.dart',
     ).readAsStringSync();
     expect(visuals, contains('drawGoal'));
-    expect(visuals, contains('projectDisplayPoint'));
-    expect(visuals, contains('pitchPath'));
-    expect(visuals, contains('_perspectiveInset(field, perspectiveY)'));
-    expect(visuals, contains('height * .194'));
-    expect(visuals, contains('height * .947'));
-    expect(visuals, contains('field.width * .202'));
-    expect(visuals, contains('drawFieldImage('));
-    expect(renderer, contains('perspectiveScale(display.y) * .58'));
-    expect(playerVisuals, contains('ClubKitPattern.verticalStripes'));
+    expect(visuals, contains('pitchClip'));
+    expect(visuals, contains('Rect.fromLTWH('));
+    expect(visuals, contains('width - 28'));
+    expect(visuals, contains('height - 36'));
+    expect(visuals, contains('field.width * .16'));
+    expect(visuals, isNot(contains('drawFieldImage(')));
+    expect(renderer, contains('field.left + display.x * field.width'));
+    expect(playerVisuals, contains('required Color color'));
     expect(screen, contains('LiveMatchTimelineBar('));
     expect(playerVisuals, contains('goalkeeperDive'));
     expect(playerVisuals, contains('celebration'));
-    expect(stadiumVisuals, contains('_drawCrowd('));
-    expect(stadiumVisuals, contains('_drawFloodlights('));
-    expect(stadiumVisuals, contains('_drawCrowdImage('));
-    expect(renderer, contains('assets/images/match/match_field.webp'));
-    expect(renderer, contains('assets/images/match/stadium_crowd.webp'));
-    expect(renderer, contains('if (fieldImage != null)'));
-    expect(
-      File('assets/images/match/match_field.webp').existsSync(),
-      isTrue,
-    );
-    expect(File('assets/images/match/stadium_crowd.webp').existsSync(), isTrue);
+    expect(stadiumVisuals, contains('_crowd('));
+    expect(stadiumVisuals, contains('_floodlights('));
+    expect(renderer, isNot(contains('assets/images/match/match_field.webp')));
+    expect(renderer, isNot(contains('assets/images/match/stadium_crowd.webp')));
+    expect(renderer, isNot(contains('fieldImage')));
   });
 }

@@ -12,9 +12,9 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.103
-Android versionCode: 104
-pubspec: 0.1.1+104
+Release visível: 0.1.1.104
+Android versionCode: 105
+pubspec: 0.1.1+105
 
 Novidade desta base: sobre a seleção de ligas da 0.1.1.75, adiciona a fundação multi-competição do `CareerState` schema 13. Cada `competitionId` possui progresso, tabela, estatísticas e disciplina próprios; fixtures continuam num calendário global e carregam metadados de fase/grupo/confronto. O Match Engine permanece único e apenas produz `MatchResult`; a aplicação ao save fica fora dele. O catálogo também fica preparado para futuras competições internacionais sem associá-las artificialmente a um país.
 
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.104 com versionCode > 104.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.105 com versionCode > 105.
 
 
 Depois de editar al-sistemas.json, execute:
@@ -135,7 +135,7 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 Esses itens ainda precisam de validação no APK/aparelho quando aplicável. Se um problema continuar no dispositivo, corrija a causa sem desfazer a arquitetura.
 
 PRÓXIMAS PRIORIDADES
-1. Validar a 0.1.1.97 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
+1. Validar a 0.1.1.104 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
 2. Em aparelho, validar a nova etapa de seleção de ligas e confirmar que a Série A do clube permanece completa em todos os presets.
 3. Testar abertura da Central de Carreiras com múltiplos saves antigos e novos após a migração SQLite v2 -> v3.
 4. Exercitar avanço diário, jogos CPU, mercado e contratos para confirmar que a configuração persistida não altera a Série A atual.

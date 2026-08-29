@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.103`
-**Android versionCode:** `104`
+**Release atual:** `0.1.1.104`
+**Android versionCode:** `105`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,26 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.103`);
+- `VERSION` — versão visível simples (`0.1.1.104`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+104`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.103` e `versionCode 104`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+105`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.104` e `versionCode 105`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.103` é representada internamente como `0.1.1+104`. A versão visível do aplicativo/Android continua sendo `0.1.1.103`. a próxima entrega normalmente será `0.1.1.104`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.104` é representada internamente como `0.1.1+105`. A versão visível do aplicativo/Android continua sendo `0.1.1.104`. a próxima entrega normalmente será `0.1.1.105`.
 
 
 
+
+
+## Campo visual restaurado — 0.1.1.104
+
+- mantém a base funcional atual e restaura somente a apresentação do campo usada na 0.1.1.91;
+- o painel volta à proporção `105 / 68`, com gramado retangular, marcações, gols, arquibancada Canvas e jogadores do renderer anterior;
+- o mapeamento visual volta a ser linear dentro do campo, eliminando a projeção e o campo em imagem introduzidos depois da 0.1.1.91;
+- HUD atual, placar, timeline, replay, narração, estatísticas, substituições e eventos continuam nas versões atuais;
+- preserva Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
 
 ## Correção do analyzer do campo em imagem — 0.1.1.103
 

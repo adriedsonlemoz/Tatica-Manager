@@ -2,8 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/game.dart';
-import 'package:flutter/services.dart';
-
 import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
 import 'match_pitch_moment_state.dart';
@@ -97,38 +95,6 @@ class MatchPitchGame extends FlameGame {
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
-  Image? _matchFieldImage;
-  Image? _stadiumCrowdImage;
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    _matchFieldImage = await _loadAssetImage(
-      'assets/images/match/match_field.webp',
-    );
-    if (_matchFieldImage == null) {
-      _stadiumCrowdImage = await _loadAssetImage(
-        'assets/images/match/stadium_crowd.webp',
-      );
-    }
-  }
-
-  Future<Image?> _loadAssetImage(String assetPath) async {
-    try {
-      final data = await rootBundle.load(assetPath);
-      final bytes = data.buffer.asUint8List(
-        data.offsetInBytes,
-        data.lengthInBytes,
-      );
-      final codec = await instantiateImageCodec(bytes);
-      final frame = await codec.getNextFrame();
-      codec.dispose();
-      return frame.image;
-    } catch (_) {
-      return null;
-    }
-  }
-
   bool get isReplayActive => _replayActive;
 
   bool get blocksClock => _replayPending || _replayActive;
@@ -398,46 +364,26 @@ class MatchPitchGame extends FlameGame {
     }
 
     final fieldRect = MatchPitchVisuals.fieldRect(width, height);
-    final pitch = MatchPitchVisuals.pitchPath(width, height);
-    final fieldImage = _matchFieldImage;
-
-    if (fieldImage != null) {
-      MatchPitchVisuals.drawFieldImage(
-        canvas,
-        width,
-        height,
-        fieldImage,
-      );
-      canvas.save();
-      canvas.clipPath(pitch);
-      _drawPlayers(canvas, width, height);
-      _drawBall(canvas, width, height);
-      canvas.restore();
-    } else {
-      // Safe fallback for devices/assets that fail to decode the photographic
-      // field. The previous Canvas renderer remains available, but it is no
-      // longer the normal presentation path.
-      MatchStadiumVisuals.draw(
-        canvas,
-        width,
-        height,
-        fieldRect: fieldRect,
-        homeColor: homeColor,
-        awayColor: awayColor,
-        elapsed: _elapsed,
-        crowdIntensity: _momentState.crowdIntensity,
-        crowdImage: _stadiumCrowdImage,
-      );
-      canvas.save();
-      canvas.clipPath(pitch);
-      MatchPitchVisuals.drawPitch(canvas, width, height);
-      _drawPlayers(canvas, width, height);
-      _drawBall(canvas, width, height);
-      canvas.restore();
-      MatchPitchVisuals.drawGoals(canvas, width, height);
-      MatchPitchVisuals.drawVignette(canvas, fieldRect);
-      MatchPitchVisuals.drawPitchBorder(canvas, pitch);
-    }
+    MatchStadiumVisuals.draw(
+      canvas,
+      width,
+      height,
+      fieldRect: fieldRect,
+      homeColor: homeColor,
+      awayColor: awayColor,
+      elapsed: _elapsed,
+      crowdIntensity: _momentState.crowdIntensity,
+    );
+    final clip = MatchPitchVisuals.pitchClip(width, height);
+    canvas.save();
+    canvas.clipRRect(clip);
+    MatchPitchVisuals.drawPitch(canvas, width, height);
+    _drawPlayers(canvas, width, height, _homePlayers, homeColor, true);
+    _drawPlayers(canvas, width, height, _awayPlayers, awayColor, false);
+    _drawBall(canvas, width, height);
+    canvas.restore();
+    MatchPitchVisuals.drawVignette(canvas, fieldRect);
+    MatchPitchVisuals.drawPitchBorder(canvas, clip);
     super.render(canvas);
   }
 
@@ -445,44 +391,22 @@ class MatchPitchGame extends FlameGame {
     Canvas canvas,
     double width,
     double height,
+    List<FieldPoint> players,
+    Color color,
+    bool home,
   ) {
-    final entries = <_RenderedPlayer>[];
-    for (var index = 0; index < _homePlayers.length; index++) {
-      if (_dismissedHomeIndexes.contains(index)) continue;
-      entries.add(_RenderedPlayer(home: true, index: index, point: _homePlayers[index]));
-    }
-    for (var index = 0; index < _awayPlayers.length; index++) {
-      if (_dismissedAwayIndexes.contains(index)) continue;
-      entries.add(_RenderedPlayer(home: false, index: index, point: _awayPlayers[index]));
-    }
-    entries.sort((a, b) {
-      final ay = toHorizontalDisplayPoint(a.point).y;
-      final by = toHorizontalDisplayPoint(b.point).y;
-      return ay.compareTo(by);
-    });
-
-    for (final entry in entries) {
-      final display = toHorizontalDisplayPoint(entry.point);
-      final center = MatchPitchVisuals.projectDisplayPoint(
-        Offset(display.x, display.y),
-        width,
-        height,
-      );
-      final home = entry.home;
-      final index = entry.index;
+    final dismissed = home ? _dismissedHomeIndexes : _dismissedAwayIndexes;
+    for (var index = 0; index < players.length; index++) {
+      if (dismissed.contains(index)) continue;
+      final center = _toCanvasOffset(players[index], width, height);
       final active = _activeHome == home && _activePlayerIndex == index;
-      final playerIds = home ? _homePlayerIds : _awayPlayerIds;
-      final playerId = index < playerIds.length ? playerIds[index] : '${home ? 'home' : 'away'}-$index';
       MatchPlayerVisuals.draw(
         canvas,
         center: center,
-        kit: home ? homeKit : awayKit,
-        playerId: playerId,
+        color: color,
         active: active,
         pulse: _pulse,
         replay: _replayActive,
-        goalkeeper: index == 0,
-        scale: MatchPitchVisuals.perspectiveScale(display.y) * .58,
         pose: _momentState.poseFor(home, index),
         animationPhase: _elapsed,
         diveDirection: _momentState.diveDirection(home),
@@ -548,10 +472,10 @@ class MatchPitchGame extends FlameGame {
 
   static Offset _toCanvasOffset(FieldPoint point, double width, double height) {
     final display = toHorizontalDisplayPoint(point);
-    return MatchPitchVisuals.projectDisplayPoint(
-      Offset(display.x, display.y),
-      width,
-      height,
+    final field = MatchPitchVisuals.fieldRect(width, height);
+    return Offset(
+      field.left + display.x * field.width,
+      field.top + display.y * field.height,
     );
   }
 
@@ -574,17 +498,4 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
 
-}
-
-
-class _RenderedPlayer {
-  const _RenderedPlayer({
-    required this.home,
-    required this.index,
-    required this.point,
-  });
-
-  final bool home;
-  final int index;
-  final FieldPoint point;
 }
