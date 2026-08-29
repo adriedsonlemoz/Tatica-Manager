@@ -45,8 +45,16 @@ abstract final class MatchPlayerVisuals {
     final socks = Color(kit.socksHex);
 
     final run = movementAmount.clamp(0.0, 1.0);
-    final gait = math.sin(animationPhase * (8.2 + run * 5.0) + seed * .017) * run;
-    final bob = math.sin(animationPhase * (8.2 + run * 4.4) + seed * .011).abs() * .8 * run;
+    final strideRate = 4.8 + run * 7.0;
+    final gait = math.sin(animationPhase * strideRate + seed * .017) * run;
+    final bob = math
+            .sin(animationPhase * strideRate * 2.0 + seed * .011)
+            .abs() *
+        .65 *
+        run;
+    final idleBreath = pose == MatchPlayerPose.normal
+        ? math.sin(animationPhase * 1.7 + seed * .013) * .12 * (1.0 - run)
+        : 0.0;
     final celebrationBounce = pose == MatchPlayerPose.celebration
         ? math.sin(animationPhase * math.pi * 4).abs() * 2.6
         : 0.0;
@@ -57,7 +65,10 @@ abstract final class MatchPlayerVisuals {
     final lean = (dive
         ? diveDirection.sign * .88
         : movementDirection.clamp(-1.0, 1.0) * .10 * run).toDouble();
-    final bodyCenter = center.translate(0, (-bob - celebrationBounce + crouch) * scale);
+    final bodyCenter = center.translate(
+      0,
+      (idleBreath - bob - celebrationBounce + crouch) * scale,
+    );
 
     _drawShadow(
       canvas,

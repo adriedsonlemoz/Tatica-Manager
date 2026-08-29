@@ -35,7 +35,15 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
         _homePlayers = _homeBase.map(_copyPoint).toList(),
         _awayPlayers = _awayBase.map(_copyPoint).toList(),
         _homeTargets = _homeBase.map(_copyPoint).toList(),
-        _awayTargets = _awayBase.map(_copyPoint).toList();
+        _awayTargets = _awayBase.map(_copyPoint).toList(),
+        _homeMotionStates = List.generate(
+          _homeBase.length,
+          (index) => MatchPlayerMotionState(seed: 13 + index * 7),
+        ),
+        _awayMotionStates = List.generate(
+          _awayBase.length,
+          (index) => MatchPlayerMotionState(seed: 47 + index * 7),
+        );
 
   final Color homeColor;
   final Color awayColor;
@@ -84,6 +92,9 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
   final List<FieldPoint> _awayPlayers;
   final List<FieldPoint> _homeTargets;
   final List<FieldPoint> _awayTargets;
+  final List<MatchPlayerMotionState> _homeMotionStates;
+  final List<MatchPlayerMotionState> _awayMotionStates;
+  final Map<String, MatchPlayerLabelPlacement> _labelPlacements = {};
   final List<MatchPresentationCue> _cueQueue = [];
   final MatchPitchMomentState _momentState = MatchPitchMomentState();
 
@@ -171,7 +182,7 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
 
     if (cue.startsReplay) {
       _setReplayActive(true);
-      _resetTargets();
+      _resetTargets(staggered: false);
     }
 
 
@@ -207,6 +218,10 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
 
     final eventTargets = homeEvent ? _homeTargets : _awayTargets;
     final oppositeTargets = homeEvent ? _awayTargets : _homeTargets;
+    final eventMotionStates =
+        homeEvent ? _homeMotionStates : _awayMotionStates;
+    final oppositeMotionStates =
+        homeEvent ? _awayMotionStates : _homeMotionStates;
     final dismissed =
         homeEvent ? _dismissedHomeIndexes : _dismissedAwayIndexes;
     if (_activePlayerIndex != null && dismissed.contains(_activePlayerIndex)) {
@@ -224,7 +239,17 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
         excluded: dismissed,
       );
       _activePlayerIndex = activeIndex;
-      eventTargets[activeIndex] = MatchPlayerMotion.playerPoint(event.start!);
+    }
+
+    if (_activePlayerIndex != null &&
+        event.start != null &&
+        _eventUsesStartPosition(event.type)) {
+      eventMotionStates[_activePlayerIndex!].prepareNextTransition(
+        delay: 0,
+        curveScale: .35,
+      );
+      eventTargets[_activePlayerIndex!] =
+          MatchPlayerMotion.playerPoint(event.start!);
     }
 
     if (event.type == MatchEventType.red && _activePlayerIndex != null) {
@@ -234,12 +259,19 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
 
     if (event.type == MatchEventType.penalty && event.start != null) {
       final activeIndex = _activePlayerIndex ?? 0;
-      MatchPlayerMotion.penaltySetup(
+      final movedIndexes = MatchPlayerMotion.penaltySetup(
         eventTargets,
         oppositeTargets,
         attackingHome: homeEvent,
         takerIndex: activeIndex,
         penaltySpot: event.start!,
+      );
+      MatchPlayerMotion.preparePenaltyTransitions(
+        eventMotionStates,
+        oppositeMotionStates,
+        takerIndex: activeIndex,
+        attackingIndexes: movedIndexes.$1,
+        defendingIndexes: movedIndexes.$2,
       );
       _momentState.setPenalty(takerHome: homeEvent, takerIndex: activeIndex);
       _ball = event.start!;
@@ -257,6 +289,10 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
         event.end!,
         excluding: activeIndex,
         excluded: dismissed,
+      );
+      eventMotionStates[receiver].prepareNextTransition(
+        delay: .055,
+        curveScale: .72,
       );
       eventTargets[receiver] = MatchPlayerMotion.playerPoint(event.end!);
       MatchPlayerMotion.supportRun(
@@ -279,6 +315,10 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       final defensiveTarget = event.type == MatchEventType.woodwork
           ? (event.start ?? event.end!)
           : event.end!;
+      oppositeMotionStates[0].prepareNextTransition(
+        delay: .025,
+        curveScale: .18,
+      );
       MatchPlayerMotion.defendShot(
         oppositeTargets,
         defensiveTarget,
@@ -307,6 +347,10 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     if ((event.type == MatchEventType.save ||
             event.type == MatchEventType.penaltySaved) &&
         event.end != null) {
+      eventMotionStates[0].prepareNextTransition(
+        delay: .020,
+        curveScale: .16,
+      );
       MatchPlayerMotion.defendShot(
         eventTargets,
         event.end!,
@@ -337,12 +381,14 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     MatchPlayerMotion.moveTeam(
       _homePlayers,
       _homeTargets,
+      _homeMotionStates,
       dt,
       replay: _replayActive,
     );
     MatchPlayerMotion.moveTeam(
       _awayPlayers,
       _awayTargets,
+      _awayMotionStates,
       dt,
       replay: _replayActive,
     );
@@ -418,7 +464,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
           home: true,
           index: index,
           point: _homePlayers[index],
-          target: _homeTargets[index],
         ),
       );
     }
@@ -429,7 +474,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
           home: false,
           index: index,
           point: _awayPlayers[index],
-          target: _awayTargets[index],
         ),
       );
     }
@@ -446,29 +490,14 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       final home = entry.home;
       final index = entry.index;
       final display = toHorizontalDisplayPoint(entry.point);
-      final targetDisplay = toHorizontalDisplayPoint(entry.target);
       final depthScale = MatchPitchVisuals.depthScale(display.y);
       final playerScale = depthScale * interfaceScale;
-      final movementDistance = sqrt(
-        MatchPlayerMotion.distanceSquared(entry.point, entry.target),
-      );
-      final movementAmount = (movementDistance * 9).clamp(0.0, 1.0).toDouble();
-      final horizontalDelta = targetDisplay.x - display.x;
-      final verticalDelta = targetDisplay.y - display.y;
-      final directionMagnitude = sqrt(
-        horizontalDelta * horizontalDelta + verticalDelta * verticalDelta,
-      );
-      final movementDirection = directionMagnitude <= .0001
-          ? 0.0
-          : (horizontalDelta / directionMagnitude).clamp(-1.0, 1.0).toDouble();
+      final motionState =
+          (home ? _homeMotionStates : _awayMotionStates)[index];
+      final movementAmount = motionState.movementAmount;
+      final movementDirection = motionState.displayDirection;
       final baseCenter = _toCanvasOffset(entry.point, width, height);
-      final idleFactor = 1 - movementAmount;
-      final idleSeed = (index + (home ? 3 : 19)) * .73;
-      final ambientOffset = Offset(
-        sin(_elapsed * 1.35 + idleSeed) * .48 * idleFactor * playerScale,
-        cos(_elapsed * 1.05 + idleSeed) * .24 * idleFactor * playerScale,
-      );
-      final center = baseCenter + ambientOffset;
+      final center = baseCenter;
       final active = _activeHome == home && _activePlayerIndex == index;
       final playerIds = home ? _homePlayerIds : _awayPlayerIds;
       final playerId = index < playerIds.length
@@ -515,6 +544,7 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       field: field,
       candidates: labels,
       interfaceScale: interfaceScale,
+      placementStates: _labelPlacements,
     );
   }
 
@@ -592,7 +622,24 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     _ballDelay = 0;
   }
 
-  void _resetTargets() {
+  void _resetTargets({bool staggered = true}) {
+    if (staggered) {
+      MatchPlayerMotion.prepareFormationReturn(
+        _homeMotionStates,
+        home: true,
+        current: _homePlayers,
+        formation: _homeBase,
+      );
+      MatchPlayerMotion.prepareFormationReturn(
+        _awayMotionStates,
+        home: false,
+        current: _awayPlayers,
+        formation: _awayBase,
+      );
+    } else {
+      MatchPlayerMotion.clearPreparedTransitions(_homeMotionStates);
+      MatchPlayerMotion.clearPreparedTransitions(_awayMotionStates);
+    }
     for (var index = 0; index < _homeTargets.length; index++) {
       _homeTargets[index] = _copyPoint(_homeBase[index]);
       _awayTargets[index] = _copyPoint(_awayBase[index]);
@@ -630,8 +677,13 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       type == MatchEventType.goal ||
       type == MatchEventType.ownGoal;
 
-  @override
-  void disposeController() {}
+  static bool _eventUsesStartPosition(MatchEventType type) =>
+      type == MatchEventType.pass ||
+      type == MatchEventType.shot ||
+      type == MatchEventType.woodwork ||
+      type == MatchEventType.goal ||
+      type == MatchEventType.ownGoal ||
+      type == MatchEventType.penalty;
 
   static bool _isMajor(MatchEventType type) =>
       type == MatchEventType.goal ||
@@ -644,6 +696,8 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
 
+  @override
+  void disposeController() {}
 }
 
 
@@ -652,11 +706,9 @@ class _DepthPlayer {
     required this.home,
     required this.index,
     required this.point,
-    required this.target,
   });
 
   final bool home;
   final int index;
   final FieldPoint point;
-  final FieldPoint target;
 }

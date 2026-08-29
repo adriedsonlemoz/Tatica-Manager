@@ -5,6 +5,7 @@ import 'package:tatica_manager/features/match/match_event_presentation.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_game.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_visuals.dart';
 import 'package:tatica_manager/game/match/renderer/match_player_labels.dart';
+import 'package:tatica_manager/game/match/renderer/match_player_motion.dart';
 
 void main() {
   test('apresentação ao vivo cobre todos os tipos de evento', () {
@@ -177,6 +178,22 @@ void main() {
       MatchPlayerLabels.compactName('NomeExtremamenteComprido'),
       endsWith('…'),
     );
+  });
+
+  test('renderer mantém estado visual de movimento e de posição dos nomes', () {
+    final motion = MatchPlayerMotionState(seed: 11);
+    final placement = MatchPlayerLabelPlacement();
+
+    expect(motion.movementAmount, 0);
+    expect(placement.anchorIndex, isNull);
+
+    final renderer = File(
+      'lib/game/match/renderer/match_pitch_game.dart',
+    ).readAsStringSync();
+    expect(renderer, contains('_eventUsesStartPosition'));
+    expect(renderer, contains('preparePenaltyTransitions'));
+    expect(renderer, contains('prepareFormationReturn'));
+    expect(renderer, contains('placementStates: _labelPlacements'));
   });
 
   test('renderer enfileira lances e só representa a timeline do motor', () {

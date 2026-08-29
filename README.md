@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.112`
-**Android versionCode:** `113`
+**Release atual:** `0.1.1.113`
+**Android versionCode:** `114`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.112`);
+- `VERSION` — versão visível simples (`0.1.1.113`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+113`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.112` e `versionCode 113`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+114`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.113` e `versionCode 114`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.112` é representada internamente como `0.1.1+113`. A versão visível do aplicativo/Android continua sendo `0.1.1.112`. a próxima entrega normalmente será `0.1.1.113`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.113` é representada internamente como `0.1.1+114`. A versão visível do aplicativo/Android continua sendo `0.1.1.113`. a próxima entrega normalmente será `0.1.1.114`.
 
+
+
+## Reintegração da qualidade visual da 0.1.1.107 ao renderer libGDX — 0.1.1.113
+
+- a 0.1.1.107 existiu como dois pacotes divergentes do mesmo ponto de partida: um aprimorou somente o movimento/rótulos do renderer Flame, o outro seguiu para a integração libGDX (0.1.1.108 a 0.1.1.112) sem essas melhorias;
+- reintegra ao `MatchPitchGame` a máquina de estado de movimento (`MatchPlayerMotionState`, aceleração/frenagem, curvas, atraso escalonado no retorno à formação e na cobrança de pênalti) e a memória de âncora dos rótulos de nome (`MatchPlayerLabelPlacement`) do pacote de movimento;
+- preserva integralmente a interface `MatchPitchController`, `LibGdxMatchPitchController`, `MainActivity`, o pipeline Gradle/Kotlin e a seleção de renderer por plataforma introduzidos pela integração libGDX;
+- restaura os testes de movimento e de continuidade visual dos rótulos que a integração libGDX havia deixado de fora;
+- não altera Match Engine, `CareerState` schema 13, saves, IDs ou multi-competição.
 
 
 ## Correção da compilação Kotlin do renderer libGDX — 0.1.1.112
@@ -237,7 +246,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.112`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.114`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

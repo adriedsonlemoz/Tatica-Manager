@@ -20,6 +20,10 @@ class MatchPlayerLabelCandidate {
   final bool goalkeeper;
 }
 
+class MatchPlayerLabelPlacement {
+  int? anchorIndex;
+}
+
 abstract final class MatchPlayerLabels {
   static final Map<String, Paragraph> _paragraphCache = {};
 
@@ -28,6 +32,7 @@ abstract final class MatchPlayerLabels {
     required Rect field,
     required List<MatchPlayerLabelCandidate> candidates,
     required double interfaceScale,
+    required Map<String, MatchPlayerLabelPlacement> placementStates,
   }) {
     if (candidates.isEmpty) return;
     final accepted = <Rect>[];
@@ -38,7 +43,7 @@ abstract final class MatchPlayerLabels {
         final byGoalkeeper =
             (second.goalkeeper ? 1 : 0) - (first.goalkeeper ? 1 : 0);
         if (byGoalkeeper != 0) return byGoalkeeper;
-        return first.center.dy.compareTo(second.center.dy);
+        return first.playerId.compareTo(second.playerId);
       });
 
     for (final candidate in ordered) {
@@ -56,7 +61,11 @@ abstract final class MatchPlayerLabels {
           .clamp(24.0 * interfaceScale, maxWidth + 8 * interfaceScale)
           .toDouble();
       final height = paragraph.height + 4.6 * interfaceScale;
-      final rect = _place(
+      final placement = placementStates.putIfAbsent(
+        candidate.playerId,
+        MatchPlayerLabelPlacement.new,
+      );
+      final result = _place(
         field: field,
         center: candidate.center,
         width: width,
@@ -65,8 +74,11 @@ abstract final class MatchPlayerLabels {
         interfaceScale: interfaceScale,
         occupied: accepted,
         force: candidate.active,
+        preferredAnchor: placement.anchorIndex,
       );
-      if (rect == null) continue;
+      if (result == null) continue;
+      final rect = result.$1;
+      placement.anchorIndex = result.$2;
       accepted.add(rect.inflate(1.2 * interfaceScale));
       _drawLabel(
         canvas,
@@ -95,7 +107,7 @@ abstract final class MatchPlayerLabels {
     return '${String.fromCharCodes(runes.take(limit - 1))}…';
   }
 
-  static Rect? _place({
+  static (Rect, int)? _place({
     required Rect field,
     required Offset center,
     required double width,
@@ -104,6 +116,7 @@ abstract final class MatchPlayerLabels {
     required double interfaceScale,
     required List<Rect> occupied,
     required bool force,
+    required int? preferredAnchor,
   }) {
     final above = 18.0 * playerScale + height / 2;
     final below = 12.0 * playerScale + height / 2;
@@ -118,8 +131,18 @@ abstract final class MatchPlayerLabels {
     ];
     final safeField = field.deflate(1.5 * interfaceScale);
     Rect? bestEffort;
+    int? bestEffortAnchor;
     var lowestOverlap = double.infinity;
-    for (final position in positions) {
+    final anchorOrder = <int>[
+      if (preferredAnchor != null &&
+          preferredAnchor >= 0 &&
+          preferredAnchor < positions.length)
+        preferredAnchor,
+      for (var index = 0; index < positions.length; index++)
+        if (index != preferredAnchor) index,
+    ];
+    for (final anchor in anchorOrder) {
+      final position = positions[anchor];
       final rect = Rect.fromCenter(
         center: position,
         width: width,
@@ -130,7 +153,7 @@ abstract final class MatchPlayerLabels {
         continue;
       }
       final collisions = occupied.where(rect.overlaps).toList();
-      if (collisions.isEmpty) return rect;
+      if (collisions.isEmpty) return (rect, anchor);
       if (force) {
         final overlap = collisions.fold<double>(0, (sum, item) {
           final intersection = rect.intersect(item);
@@ -139,10 +162,13 @@ abstract final class MatchPlayerLabels {
         if (overlap < lowestOverlap) {
           lowestOverlap = overlap;
           bestEffort = rect;
+          bestEffortAnchor = anchor;
         }
       }
     }
-    return force ? bestEffort : null;
+    return force && bestEffort != null && bestEffortAnchor != null
+        ? (bestEffort, bestEffortAnchor)
+        : null;
   }
 
   static void _drawLabel(

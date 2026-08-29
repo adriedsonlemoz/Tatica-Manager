@@ -2,6 +2,46 @@ import 'dart:math' as math;
 
 import '../../../domain/match/match_models.dart';
 
+class MatchPlayerMotionState {
+  MatchPlayerMotionState({required this.seed});
+
+  final int seed;
+  double velocityX = 0;
+  double velocityY = 0;
+  double delayRemaining = 0;
+  FieldPoint? _lastTarget;
+  FieldPoint? _transitionStart;
+  double _initialDistance = 0;
+  double _curveStrength = 0;
+  double? _preparedDelay;
+  double _preparedCurveScale = 1;
+  int _transitionCount = 0;
+
+  double get speed => math.sqrt(velocityX * velocityX + velocityY * velocityY);
+
+  double get movementAmount => (speed / .50).clamp(0.0, 1.0).toDouble();
+
+  double get displayDirection {
+    final currentSpeed = speed;
+    if (currentSpeed < .005) return 0;
+    return (-velocityY / currentSpeed).clamp(-1.0, 1.0).toDouble();
+  }
+
+  void prepareNextTransition({
+    required double delay,
+    double curveScale = 1,
+  }) {
+    _lastTarget = null;
+    _preparedDelay = math.max(0.0, delay).toDouble();
+    _preparedCurveScale = curveScale.clamp(0.0, 1.4).toDouble();
+  }
+
+  void clearPreparedTransition() {
+    _preparedDelay = null;
+    _preparedCurveScale = 1;
+  }
+}
+
 abstract final class MatchPlayerMotion {
   static int nearestIndex(
     List<FieldPoint> points,
@@ -96,42 +136,86 @@ abstract final class MatchPlayerMotion {
     }
   }
 
-  static void penaltySetup(
+  static (Set<int>, Set<int>) penaltySetup(
     List<FieldPoint> attackingTargets,
     List<FieldPoint> defendingTargets, {
     required bool attackingHome,
     required int takerIndex,
     required FieldPoint penaltySpot,
   }) {
+    final movedAttackers = <int>{takerIndex};
+    final movedDefenders = <int>{0};
     attackingTargets[takerIndex] = playerPoint(penaltySpot);
-    final waitingY = attackingHome ? .26 : .74;
-    final defendingWaitingY = attackingHome ? .22 : .78;
+    final attackingBoundary = attackingHome ? .29 : .71;
+    final defendingBoundary = attackingHome ? .255 : .745;
 
-    var lane = 0;
-    for (var index = 0; index < attackingTargets.length; index++) {
+    // O goleiro atacante e os jogadores que já estão fora da área mantêm a
+    // posição. Assim o pênalti não puxa os 22 atletas para uma única coluna.
+    for (var index = 1; index < attackingTargets.length; index++) {
       if (index == takerIndex) continue;
-      final x = .24 + (lane % 5) * .13;
-      final rowOffset = lane >= 5 ? .045 : 0.0;
-      attackingTargets[index] = FieldPoint(
-        x.clamp(.12, .88).toDouble(),
-        (waitingY + (attackingHome ? rowOffset : -rowOffset))
-            .clamp(.12, .88)
-            .toDouble(),
+      final current = attackingTargets[index];
+      if (!_insidePenaltyApproach(
+        current.y,
+        attackingHome: attackingHome,
+        boundary: attackingBoundary,
+      )) {
+        continue;
+      }
+      attackingTargets[index] = _penaltyWaitingPoint(
+        current,
+        index: index,
+        attackingHome: attackingHome,
+        boundary: attackingBoundary,
+        teamOffset: .020,
       );
-      lane++;
+      movedAttackers.add(index);
     }
 
     defendingTargets[0] = FieldPoint(.5, attackingHome ? .10 : .90);
     for (var index = 1; index < defendingTargets.length; index++) {
-      final x = .22 + ((index - 1) % 5) * .14;
-      final rowOffset = index > 5 ? .045 : 0.0;
-      defendingTargets[index] = FieldPoint(
-        x.clamp(.12, .88).toDouble(),
-        (defendingWaitingY + (attackingHome ? -rowOffset : rowOffset))
-            .clamp(.12, .88)
-            .toDouble(),
+      final current = defendingTargets[index];
+      if (!_insidePenaltyApproach(
+        current.y,
+        attackingHome: attackingHome,
+        boundary: defendingBoundary,
+      )) {
+        continue;
+      }
+      defendingTargets[index] = _penaltyWaitingPoint(
+        current,
+        index: index,
+        attackingHome: attackingHome,
+        boundary: defendingBoundary,
+        teamOffset: 0,
       );
+      movedDefenders.add(index);
     }
+    return (movedAttackers, movedDefenders);
+  }
+
+  static bool _insidePenaltyApproach(
+    double y, {
+    required bool attackingHome,
+    required double boundary,
+  }) =>
+      attackingHome ? y < boundary : y > boundary;
+
+  static FieldPoint _penaltyWaitingPoint(
+    FieldPoint current, {
+    required int index,
+    required bool attackingHome,
+    required double boundary,
+    required double teamOffset,
+  }) {
+    final row = (index - 1) ~/ 4;
+    final depth = teamOffset + row * .018;
+    final lateral = ((index % 3) - 1) * .012;
+    return FieldPoint(
+      (current.x + lateral).clamp(.10, .90).toDouble(),
+      (boundary + (attackingHome ? depth : -depth))
+          .clamp(.12, .88)
+          .toDouble(),
+    );
   }
 
   static void celebrationRun(
@@ -168,19 +252,202 @@ abstract final class MatchPlayerMotion {
   static void moveTeam(
     List<FieldPoint> current,
     List<FieldPoint> targets,
+    List<MatchPlayerMotionState> motionStates,
     double dt, {
     required bool replay,
   }) {
     for (var index = 0; index < current.length; index++) {
-      final distance = math.sqrt(distanceSquared(current[index], targets[index]));
-      final rate = (replay ? 2.8 : 4.4) + math.min(2.2, distance * 7.5);
-      final factor = (1 - math.exp(-rate * dt)).clamp(0, 1).toDouble();
-      current[index] = FieldPoint(
-        current[index].x + (targets[index].x - current[index].x) * factor,
-        current[index].y + (targets[index].y - current[index].y) * factor,
+      final state = motionStates[index];
+      if (state._lastTarget == null &&
+          distanceSquared(current[index], targets[index]) <= .00000025) {
+        state._lastTarget = _copyPoint(targets[index]);
+        state.clearPreparedTransition();
+      } else if (state._lastTarget == null ||
+          distanceSquared(state._lastTarget!, targets[index]) > .00000025) {
+        _beginTransition(
+          state,
+          current: current[index],
+          target: targets[index],
+          index: index,
+        );
+      }
+
+      var remaining = dt.clamp(0.0, .12).toDouble();
+      while (remaining > 0) {
+        final step = math.min(.025, remaining).toDouble();
+        current[index] = _advancePlayer(
+          current[index],
+          targets[index],
+          state,
+          step,
+          replay: replay,
+          goalkeeper: index == 0,
+        );
+        remaining -= step;
+      }
+    }
+  }
+
+  static void preparePenaltyTransitions(
+    List<MatchPlayerMotionState> attacking,
+    List<MatchPlayerMotionState> defending, {
+    required int takerIndex,
+    required Set<int> attackingIndexes,
+    required Set<int> defendingIndexes,
+  }) {
+    clearPreparedTransitions(attacking);
+    clearPreparedTransitions(defending);
+    for (final index in attackingIndexes) {
+      final delay = index == takerIndex ? 0.0 : .08 + (index % 4) * .035;
+      attacking[index].prepareNextTransition(
+        delay: delay,
+        curveScale: index == takerIndex ? .30 : .65,
+      );
+    }
+    for (final index in defendingIndexes) {
+      defending[index].prepareNextTransition(
+        delay: index == 0 ? .025 : .12 + (index % 4) * .035,
+        curveScale: index == 0 ? .20 : .65,
       );
     }
   }
+
+  static void prepareFormationReturn(
+    List<MatchPlayerMotionState> states, {
+    required bool home,
+    required List<FieldPoint> current,
+    required List<FieldPoint> formation,
+  }) {
+    for (var index = 0; index < states.length; index++) {
+      states[index].clearPreparedTransition();
+      if (distanceSquared(current[index], formation[index]) < .00000025) {
+        continue;
+      }
+      final sectorDelay = switch (index) {
+        0 => .12,
+        >= 1 && <= 4 => .04,
+        >= 5 && <= 7 => .11,
+        _ => .19,
+      };
+      states[index].prepareNextTransition(
+        delay: sectorDelay + (index % 3) * .035 + (home ? 0 : .025),
+        curveScale: .72,
+      );
+    }
+  }
+
+  static void clearPreparedTransitions(
+    List<MatchPlayerMotionState> states,
+  ) {
+    for (final state in states) {
+      state.clearPreparedTransition();
+    }
+  }
+
+  static void _beginTransition(
+    MatchPlayerMotionState state, {
+    required FieldPoint current,
+    required FieldPoint target,
+    required int index,
+  }) {
+    state._lastTarget = _copyPoint(target);
+    state._transitionStart = _copyPoint(current);
+    state._initialDistance = math.sqrt(distanceSquared(current, target));
+    state._transitionCount++;
+    state.delayRemaining = state._preparedDelay ??
+        (index == 0
+            ? .015
+            : .025 * ((state.seed + index) % 4) + .018 * (index ~/ 4));
+    final sign = (state.seed + state._transitionCount).isEven ? 1.0 : -1.0;
+    final curveScale = state._preparedCurveScale;
+    state._curveStrength = state._initialDistance < .07
+        ? 0
+        : math.min(.032, state._initialDistance * .11) * sign * curveScale;
+    state.clearPreparedTransition();
+  }
+
+  static FieldPoint _advancePlayer(
+    FieldPoint current,
+    FieldPoint target,
+    MatchPlayerMotionState state,
+    double dt, {
+    required bool replay,
+    required bool goalkeeper,
+  }) {
+    if (state.delayRemaining > 0) {
+      state.delayRemaining = math.max(0.0, state.delayRemaining - dt).toDouble();
+      final braking = (replay ? 1.8 : 3.0) * dt;
+      state.velocityX = _approach(state.velocityX, 0, braking);
+      state.velocityY = _approach(state.velocityY, 0, braking);
+      return current;
+    }
+
+    final dx = target.x - current.x;
+    final dy = target.y - current.y;
+    final distance = math.sqrt(dx * dx + dy * dy);
+    if (distance < .0015 && state.speed < .025) {
+      state.velocityX = 0;
+      state.velocityY = 0;
+      return _copyPoint(target);
+    }
+
+    var guidanceX = target.x;
+    var guidanceY = target.y;
+    final start = state._transitionStart;
+    if (start != null && state._initialDistance > .001 && distance > .025) {
+      final routeX = target.x - start.x;
+      final routeY = target.y - start.y;
+      final routeLength = math.sqrt(routeX * routeX + routeY * routeY);
+      if (routeLength > .001) {
+        final progress = (1 - distance / state._initialDistance)
+            .clamp(0.0, 1.0)
+            .toDouble();
+        final bend = math.sin(progress * math.pi) * state._curveStrength;
+        guidanceX += -routeY / routeLength * bend;
+        guidanceY += routeX / routeLength * bend;
+      }
+    }
+
+    var guideX = guidanceX - current.x;
+    var guideY = guidanceY - current.y;
+    var guideDistance = math.sqrt(guideX * guideX + guideY * guideY);
+    if (guideDistance < .001) {
+      guideX = dx;
+      guideY = dy;
+      guideDistance = math.max(distance, .001).toDouble();
+    }
+
+    final maximumSpeed = (replay ? .42 : .66) * (goalkeeper ? .90 : 1);
+    final deceleration = replay ? 1.15 : 1.90;
+    final desiredSpeed = math
+        .min(maximumSpeed, math.sqrt(2 * deceleration * distance))
+        .toDouble();
+    final desiredX = guideX / guideDistance * desiredSpeed;
+    final desiredY = guideY / guideDistance * desiredSpeed;
+    final acceleration = (replay ? 1.35 : 2.55) * dt;
+    state.velocityX = _approach(state.velocityX, desiredX, acceleration);
+    state.velocityY = _approach(state.velocityY, desiredY, acceleration);
+
+    final next = FieldPoint(
+      (current.x + state.velocityX * dt).clamp(.04, .96).toDouble(),
+      (current.y + state.velocityY * dt).clamp(.04, .96).toDouble(),
+    );
+    if (distanceSquared(next, target) < .00000225 && state.speed < .05) {
+      state.velocityX = 0;
+      state.velocityY = 0;
+      return _copyPoint(target);
+    }
+    return next;
+  }
+
+  static double _approach(double current, double target, double maximumDelta) {
+    final difference = target - current;
+    if (difference.abs() <= maximumDelta) return target;
+    return current + difference.sign * maximumDelta;
+  }
+
+  static FieldPoint _copyPoint(FieldPoint point) =>
+      FieldPoint(point.x, point.y);
 
   static double distanceSquared(FieldPoint a, FieldPoint b) {
     final dx = a.x - b.x;
