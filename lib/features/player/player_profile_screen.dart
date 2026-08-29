@@ -309,7 +309,7 @@ class _RatingPill extends StatelessWidget {
           children: [
             Text(
               label,
-              style:  TextStyle(
+              style: const TextStyle(
                 color: AppColors.muted,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,

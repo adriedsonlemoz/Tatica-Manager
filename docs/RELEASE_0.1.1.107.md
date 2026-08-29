@@ -1,62 +1,38 @@
-# Release 0.1.1.107 — libGDX integrado ao campo da partida no Android
+# Release 0.1.1.107 — movimentação visual natural
 
 ## Escopo
 
-Esta release integra o libGDX como nova camada de renderização do campo da partida no Android, sem alterar o Match Engine, suas probabilidades, resultados, estatísticas ou coordenadas. O objetivo é testar uma superfície OpenGL dedicada mantendo toda a interface e as regras existentes em Flutter/Dart.
+Esta release altera somente a forma como o renderer Flame apresenta coordenadas e eventos já produzidos. Nenhuma regra, probabilidade, decisão, placar, resultado ou trajetória do Match Engine foi modificada.
 
-## Arquitetura adotada
+## Movimento dos jogadores
 
-- `MatchEngine` continua sendo a única fonte de eventos e coordenadas da partida;
-- `MatchPitchController` define o contrato visual usado pela tela da partida;
-- no Android, `LibGdxMatchPitchController` reproduz a fila de apresentação já existente e envia apenas eventos visuais para o renderer nativo;
-- fora do Android, `MatchPitchGame` continua disponível como renderer Flame de fallback;
-- `LiveMatchPitchPanel` continua sendo um widget Flutter e mantém sobre o campo os overlays de replay, eventos e transições;
-- placar, timeline, áudio, simulação, táticas, substituições e finalização da partida permanecem nos módulos atuais.
+- cada atleta mantém um estado visual independente de velocidade;
+- deslocamentos ganham aceleração e frenagem, eliminando partidas e paradas instantâneas;
+- pequenas curvas determinísticas quebram o aspecto de movimento em linha reta sem introduzir aleatoriedade de gameplay;
+- atrasos curtos por jogador e setor evitam que todos comecem a correr no mesmo frame;
+- a passada, a inclinação e a sombra agora respondem à velocidade real do boneco, e não apenas à distância restante para o alvo;
+- o atleta associado ao lance acompanha o `event.start` fornecido pela timeline.
 
-## Integração Android
+## Pênaltis e retorno à formação
 
-A `MainActivity` passa a usar `FlutterFragmentActivity` e registra um `PlatformView` específico para o campo. O Dart usa `PlatformViewLink` + `AndroidViewSurface`/`initSurfaceAndroidView` para forçar Hybrid Composition, adequada à superfície OpenGL do libGDX. O PlatformView hospeda um `AndroidFragmentApplication` por meio de `initializeForView()`, de modo que a superfície ocupa somente o retângulo do campo, em vez de abrir uma segunda Activity ou substituir a tela inteira.
+- o pênalti reposiciona o cobrador e o goleiro;
+- somente jogadores dentro da zona próxima à área são afastados para a espera da cobrança;
+- atletas que já estão fora da área preservam suas posições, evitando a coluna vertical observada na gravação;
+- depois do lance, defesa, meio, ataque e goleiros retornam à formação com atrasos diferentes.
 
-Foi adotado libGDX `1.14.2`, estável, com OpenGL ES 2 por padrão para maior compatibilidade. Os natives Android são empacotados para `arm64-v8a`, `armeabi-v7a`, `x86` e `x86_64` durante o build.
+## Nomes e estabilidade visual
 
-## Renderer libGDX inicial
+- a posição escolhida para cada nome é lembrada entre frames;
+- uma etiqueta só troca de âncora quando a anterior deixa de caber ou entra em conflito relevante;
+- a respiração em repouso foi reduzida e separada do deslocamento do boneco.
 
-O primeiro renderer desenha proceduralmente:
+## Integridade
 
-- gramado horizontal com faixas e marcações;
-- gols e malha das redes;
-- jogadores com uniformes principal/reserva já resolvidos pelo Flutter;
-- goleiros com kits próprios;
-- nomes dos atletas;
-- bola, sombra e arco visual básico;
-- interpolação dos jogadores e da bola a partir dos `FieldPoint` enviados pela timeline;
-- reação visual simples de torcida e replay.
-
-Nenhuma imagem, modelo 3D ou asset externo foi adicionado nesta etapa.
-
-## Compatibilidade e riscos controlados
-
+- Match Engine e `lib/game/match/engine/` permanecem byte a byte inalterados;
 - `CareerState` permanece no schema 13;
-- nenhum ID persistido foi alterado;
-- saves antigos continuam compatíveis;
-- não existe chamada ao `MatchEngine` no código Kotlin/libGDX;
-- nenhuma regra de substituição, cartão, placar ou resultado foi duplicada no renderer;
-- o Flame continua presente como fallback, deixando a integração reversível.
+- saves, IDs, eventos, coordenadas, replay, HUD, uniformes e multi-competição continuam compatíveis;
+- nenhuma imagem ou mockup foi criado, alterado ou adicionado nesta release.
 
-O principal ponto que ainda precisa de validação em aparelho é o ciclo de vida do `PlatformView`/Fragment ao entrar, sair, minimizar e retornar à partida, além da fluidez em aparelhos Android de diferentes GPUs.
+## Validação esperada
 
-## Testes
-
-Adicionado `test/libgdx_match_renderer_integration_test.dart`, verificando estruturalmente:
-
-- seleção do renderer libGDX somente no Android;
-- preservação do fallback Flame;
-- uso de Hybrid Composition no `PlatformView`, `AndroidFragmentApplication` e `initializeForView()`;
-- uso do libGDX 1.14.2 e natives Android;
-- ausência de `MatchEngine` e aleatoriedade no renderer Kotlin.
-
-## Validação
-
-`python3 tool/versioning.py verify` deve permanecer verde após a sincronização da versão.
-
-Neste ambiente não há Flutter/Dart instalados, portanto `flutter pub get`, `flutter analyze`, `flutter test` e `flutter build apk --release` não puderam ser executados localmente e dependem do GitHub Actions.
+O CI deve executar `flutter analyze`, `flutter test` e `flutter build apk --release`. Em aparelho, validar uma partida completa, especialmente cobrança de pênalti, sequência passe/chute/gol, retorno à formação e estabilidade dos nomes em telas estreitas.

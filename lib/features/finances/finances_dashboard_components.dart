@@ -39,7 +39,7 @@ class FinanceHeroDashboard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Text('CAIXA ATUAL', style: TextStyle(color: AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w900)),
+                    const Text('CAIXA ATUAL', style: TextStyle(color: AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 2),
                     Text(
                       formatMoney(balance),
@@ -256,7 +256,7 @@ class _FinanceCategoryRow extends StatelessWidget {
               item.label,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style:  TextStyle(color: AppColors.muted, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
             ),
           ),
           Expanded(
@@ -277,7 +277,7 @@ class _FinanceCategoryRow extends StatelessWidget {
           ),
           if (item.onTap != null) ...[
             const SizedBox(width: 2),
-             Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 16),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 16),
           ],
         ],
       ),

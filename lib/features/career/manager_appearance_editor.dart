@@ -71,7 +71,7 @@ class _ManagerAppearanceSheetState extends State<_ManagerAppearanceSheet> {
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 3),
-                       Text(
+                      const Text(
                         'Defina rosto, tom de pele, cabelo, barba e detalhes visuais do treinador.',
                         style: TextStyle(color: AppColors.muted, fontSize: 12),
                       ),
@@ -367,7 +367,7 @@ class _ManagerAppearanceSheetState extends State<_ManagerAppearanceSheet> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                 Text(
+                const Text(
                   'Reposicione e aproxime a foto antes de aplicar.',
                   style: TextStyle(color: AppColors.muted, fontSize: 12),
                   textAlign: TextAlign.center,

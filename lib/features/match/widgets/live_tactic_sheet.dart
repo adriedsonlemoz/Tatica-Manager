@@ -42,7 +42,7 @@ class _LiveTacticSheetState extends State<LiveTacticSheet> {
                     ?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 4),
-               Text(
+              const Text(
                 'As mudanças recalculam somente o restante da partida; os acontecimentos anteriores permanecem preservados.',
                 style: TextStyle(color: AppColors.muted, fontSize: 10.5, height: 1.35),
               ),
@@ -204,12 +204,12 @@ class _CompactTacticChoice<T> extends StatelessWidget {
               const SizedBox(height: 6),
               Row(
                 children: [
-                   Icon(Icons.info_outline_rounded, size: 12, color: AppColors.muted),
+                  const Icon(Icons.info_outline_rounded, size: 12, color: AppColors.muted),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
                       helper(selected),
-                      style:  TextStyle(color: AppColors.muted, fontSize: 9.5),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
                     ),
                   ),
                 ],

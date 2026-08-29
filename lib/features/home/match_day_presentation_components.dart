@@ -178,7 +178,7 @@ class _QuickInfo extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                 Positioned(
+                const Positioned(
                   right: -2,
                   top: -2,
                   child: Icon(Icons.chevron_right_rounded, color: AppColors.muted, size: 16),
@@ -193,7 +193,7 @@ class _QuickInfo extends StatelessWidget {
                         label,
                         maxLines: 2,
                         textAlign: TextAlign.center,
-                        style:  TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w800),
+                        style: const TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 5),
                       valueWidget ??
@@ -208,7 +208,7 @@ class _QuickInfo extends StatelessWidget {
                         caption,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:  TextStyle(color: AppColors.muted, fontSize: 7.5),
+                        style: const TextStyle(color: AppColors.muted, fontSize: 7.5),
                       ),
                     ],
                   ),
@@ -243,7 +243,7 @@ class _PrepMetric extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style:  TextStyle(color: AppColors.muted, fontSize: 8.8)),
+                  Text(title, style: const TextStyle(color: AppColors.muted, fontSize: 8.8)),
                   Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w900)),
                 ],
               ),

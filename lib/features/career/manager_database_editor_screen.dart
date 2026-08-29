@@ -119,7 +119,7 @@ class _ManagerDatabaseEditorScreenState extends State<ManagerDatabaseEditorScree
                           ),
                           Text(
                             '$employed em clubes • ${_managers.length - employed} livres',
-                            style:  TextStyle(color: AppColors.muted, fontSize: 12),
+                            style: const TextStyle(color: AppColors.muted, fontSize: 12),
                           ),
                         ],
                       ),
@@ -424,7 +424,7 @@ class _ManagerDatabaseCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         '${CountryCatalog.flagOf(manager.nationality)} ${manager.nationality} • ${manager.ageAtStart} anos',
-                        style:  TextStyle(color: AppColors.muted, fontSize: 12),
+                        style: const TextStyle(color: AppColors.muted, fontSize: 12),
                       ),
                       const SizedBox(height: 2),
                       Text(

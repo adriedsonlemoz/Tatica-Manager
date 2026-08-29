@@ -230,7 +230,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
               audio.customMenuTracks.isEmpty
                   ? 'Use as músicas do Tática Manager ou selecione faixas armazenadas no celular.'
                   : '${audio.customMenuTracks.length} faixa(s) personalizada(s) importada(s).',
-              style:  TextStyle(color: AppColors.muted, height: 1.4),
+              style: const TextStyle(color: AppColors.muted, height: 1.4),
             ),
             if (audio.customMenuTracks.isNotEmpty) ...[
               const SizedBox(height: 8),

@@ -82,13 +82,11 @@ class _GameShellState extends ConsumerState<GameShell> {
             color: AppColors.navigation,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: AppColors.border),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: AppColors.isDarkMode ? .24 : .08,
-                ),
+                color: Color(0x55000000),
                 blurRadius: 22,
-                offset: const Offset(0, 8),
+                offset: Offset(0, 8),
               ),
             ],
           ),
@@ -178,7 +176,7 @@ class _IntegratedMessageCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     message!,
-                    style:  TextStyle(color: AppColors.muted, height: 1.35),
+                    style: const TextStyle(color: AppColors.muted, height: 1.35),
                   ),
                 ],
               ),

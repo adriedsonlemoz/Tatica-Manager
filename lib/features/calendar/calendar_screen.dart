@@ -651,7 +651,7 @@ class _FixtureTile extends StatelessWidget {
                 ],
               ),
             ),
-             Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
           ],
         ),
       ),

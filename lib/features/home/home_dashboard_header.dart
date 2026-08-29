@@ -90,7 +90,7 @@ class HomeClubHeader extends StatelessWidget {
                     child: Text(
                       'Temporada $season • $competitionName',
                       maxLines: 1,
-                      style:  TextStyle(
+                      style: const TextStyle(
                         color: AppColors.muted,
                         fontSize: 11.8,
                         fontWeight: FontWeight.w600,

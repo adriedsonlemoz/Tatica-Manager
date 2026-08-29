@@ -73,7 +73,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
             children: [
               Text(pack.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
               if (pack.author?.isNotEmpty == true)
-                Text('Por ${pack.author}', style:  TextStyle(color: AppColors.muted, fontSize: 12)),
+                Text('Por ${pack.author}', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -91,7 +91,7 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
                 ),
               ),
               const SizedBox(height: 9),
-               Text(
+              const Text(
                 'Os dados serão preparados para revisão. Nada é gravado até você tocar em Salvar alterações. IDs internos permanentes são preservados.',
                 style: TextStyle(color: AppColors.muted, height: 1.35, fontSize: 12.5),
               ),
@@ -173,9 +173,9 @@ extension _ClubEditorImportActions on _ClubEditorScreenState {
             children: [
               Text('${pack.name} • ${pack.logos.length} escudo(s)', style: const TextStyle(fontWeight: FontWeight.w900)),
               if (pack.author?.isNotEmpty == true)
-                Text('Por ${pack.author}', style:  TextStyle(color: AppColors.muted)),
+                Text('Por ${pack.author}', style: const TextStyle(color: AppColors.muted)),
               const SizedBox(height: 7),
-               Text(
+              const Text(
                 'Somente os escudos vinculados aos IDs permanentes serão alterados.',
                 style: TextStyle(color: AppColors.muted, height: 1.35),
               ),

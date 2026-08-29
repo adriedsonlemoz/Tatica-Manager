@@ -25,7 +25,7 @@ class MatchDayHeader extends StatelessWidget {
         children: [
           Container(
             height: 190,
-            decoration:  BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -83,7 +83,7 @@ class MatchDayHeader extends StatelessWidget {
                 Text(
                   competition,
                   textAlign: TextAlign.center,
-                  style:  TextStyle(color: AppColors.muted, fontSize: 11, fontWeight: FontWeight.w700),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 11, fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -193,7 +193,7 @@ class _ClubSide extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style:  TextStyle(color: AppColors.muted, fontSize: 8, fontWeight: FontWeight.w900),
+            style: const TextStyle(color: AppColors.muted, fontSize: 8, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 7),
           ClubBadge(club: club, size: 72),
@@ -234,12 +234,12 @@ class _FooterInfo extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style:  TextStyle(color: AppColors.muted, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
             ),
           ),
           if (onTap != null) ...[
             const SizedBox(width: 2),
-             Icon(
+            const Icon(
               Icons.chevron_right_rounded,
               color: AppColors.muted,
               size: 15,

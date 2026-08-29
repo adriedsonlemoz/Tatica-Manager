@@ -58,7 +58,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
               ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 6),
-         Text(
+        const Text(
           'Preencha só o essencial. Aparência e perfil profissional podem ser ajustados depois.',
           style: TextStyle(color: AppColors.muted, height: 1.4),
         ),
@@ -85,7 +85,7 @@ class _ManagerProfileStepState extends State<ManagerProfileStep> {
                     const SizedBox(height: 4),
                     Text(
                       '${CountryCatalog.flagOf(previewManager.nationality)} ${previewManager.nationality}',
-                      style:  TextStyle(color: AppColors.muted),
+                      style: const TextStyle(color: AppColors.muted),
                     ),
                     const SizedBox(height: 7),
                     OutlinedButton.icon(

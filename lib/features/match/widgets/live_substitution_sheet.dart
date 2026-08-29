@@ -203,7 +203,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                           widget.halftime
                               ? 'Substituições: $projectedSubstitutions/${widget.substitutionLimit} • intervalo não consome janela.'
                               : 'Substituições: $projectedSubstitutions/${widget.substitutionLimit} • janelas: $projectedWindows/${widget.substitutionWindowLimit}.',
-                          style:  TextStyle(
+                          style: const TextStyle(
                             color: AppColors.muted,
                             fontSize: 11,
                           ),
@@ -236,7 +236,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                     const Spacer(),
                     Text(
                       '${plannedChanges.length} nesta janela',
-                      style:  TextStyle(
+                      style: const TextStyle(
                         color: AppColors.muted,
                         fontSize: 9.5,
                       ),
@@ -268,7 +268,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 7),
               child: Row(
                 children: [
-                   Text(
+                  const Text(
                     'QUEM SAI',
                     style: TextStyle(
                       color: AppColors.muted,
@@ -293,7 +293,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
             SizedBox(
               height: 104,
               child: starters.isEmpty
-                  ?  Center(
+                  ? const Center(
                       child: Text(
                         'Não há outra troca disponível nesta janela.',
                         style: TextStyle(color: AppColors.muted, fontSize: 11),
@@ -330,7 +330,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 7),
               child: Row(
                 children: [
-                   Text(
+                  const Text(
                     'QUEM ENTRA',
                     style: TextStyle(
                       color: AppColors.muted,
@@ -346,7 +346,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                       style: TextStyle(color: AppColors.warning, fontSize: 10),
                     )
                   else if (outgoing == null)
-                     Text(
+                    const Text(
                       'Selecione primeiro quem sai',
                       style: TextStyle(color: AppColors.muted, fontSize: 10),
                     ),
@@ -355,7 +355,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
             ),
             Expanded(
               child: bench.isEmpty
-                  ?  Center(
+                  ? const Center(
                       child: Padding(
                         padding: EdgeInsets.all(24),
                         child: Text(
@@ -386,7 +386,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
             ),
             Container(
               padding: const EdgeInsets.fromLTRB(16, 9, 16, 12),
-              decoration:  BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.surface,
                 border: Border(top: BorderSide(color: AppColors.border)),
               ),
@@ -683,7 +683,7 @@ class _SwapPreview extends StatelessWidget {
               accentColor: accentColor,
             ),
           ),
-           Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: Icon(Icons.arrow_forward_rounded, color: AppColors.muted),
           ),

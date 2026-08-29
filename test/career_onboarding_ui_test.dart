@@ -3,16 +3,14 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('tema mantém azul-grafite no escuro e verde atual como destaque', () {
+  test('tema usa azul-grafite e mantém verde como destaque', () {
     final source = File('lib/core/theme/app_colors.dart').readAsStringSync();
 
     expect(source, contains('0xFF101820'));
     expect(source, contains('0xFF162229'));
     expect(source, contains('0xFF1C2B32'));
-    expect(source, contains('0xFF35A94B'));
-    expect(source, contains('0xFFD5A626'));
-    expect(source, contains('0xFFF3F7F6'));
-    expect(source, contains('0xFFFFFFFF'));
+    expect(source, contains('0xFF76D91B'));
+    expect(source, contains('0xFFD6B65D'));
   });
 
   test('primeira abertura exige aceite e mantém termos e privacidade internos', () {

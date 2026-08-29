@@ -92,7 +92,7 @@ class StadiumScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           Text('Orçamento do estádio', style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                          const Text('Orçamento do estádio', style: TextStyle(color: AppColors.muted, fontSize: 10)),
                           Text(
                             formatMoney(stadiumBudget),
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
@@ -111,7 +111,7 @@ class StadiumScreen extends ConsumerWidget {
                   namingRights == null
                       ? 'O nome original do estádio está preservado. Propostas de naming rights continuam em Finanças.'
                       : 'Naming rights ativo com ${namingRights.sponsorName}; o nome original permanece salvo.',
-                  style:  TextStyle(color: AppColors.muted, fontSize: 9.8, height: 1.35),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 9.8, height: 1.35),
                 ),
               ],
             ),

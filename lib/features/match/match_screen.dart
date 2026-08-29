@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,16 +8,13 @@ import '../../app/audio/audio_providers.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/state/live_match_controller.dart';
 import '../../app/widgets/common.dart';
-import '../../core/theme/app_colors.dart';
 import '../../domain/club/club.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/match/live_substitution_rules.dart';
-import '../../game/match/renderer/libgdx_match_pitch_controller.dart';
 import '../../game/match/renderer/match_kit_resolver.dart';
-import '../../game/match/renderer/match_pitch_controller.dart';
 import '../../game/match/renderer/match_pitch_game.dart';
 import 'live_match_playback.dart';
 import 'live_round_feed.dart';
@@ -49,7 +46,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   int minute = 0;
   bool paused = false;
   double presentationElapsedMs = 0;
-  late MatchPitchController pitchGame;
+  late MatchPitchGame pitchGame;
   bool finishing = false;
   bool atHalftime = false;
   bool fullTime = false;
@@ -87,60 +84,37 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     };
     _audioManager = ref.read(audioManagerProvider);
     unawaited(_audioManager.enterMatch(homeName: home.name, awayName: away.name));
-    void onEventStarted(MatchEvent event) {
-      if (!mounted) return;
-      unawaited(
-        _audioManager.presentMatchEvent(
-          event,
-          teamName: _eventTeamName(event, home, away),
-        ),
-      );
-      setState(() => presentedEvent = event);
-    }
-
-    void onReplayChanged(bool active) {
-      if (!mounted) return;
-      setState(() {
-        replayActive = active;
-        if (!active) _completePendingPhase();
-      });
-    }
-
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      pitchGame = LibGdxMatchPitchController(
-        homeColor: Color(home.colors.primaryHex),
-        awayColor: Color(away.colors.primaryHex),
-        homeKit: kits.homeKit,
-        awayKit: kits.awayKit,
-        homeGoalkeeperKit: kits.homeGoalkeeperKit,
-        awayGoalkeeperKit: kits.awayGoalkeeperKit,
-        homeClubId: home.id,
-        awayClubId: away.id,
-        homePlayerIds: live.homeStarterIds,
-        awayPlayerIds: live.awayStarterIds,
-        playerNames: playerNames,
-        ballStyle: career.settings.matchBallStyle,
-        onEventStarted: onEventStarted,
-        onReplayChanged: onReplayChanged,
-      );
-    } else {
-      pitchGame = MatchPitchGame(
-        homeColor: Color(home.colors.primaryHex),
-        awayColor: Color(away.colors.primaryHex),
-        homeKit: kits.homeKit,
-        awayKit: kits.awayKit,
-        homeGoalkeeperKit: kits.homeGoalkeeperKit,
-        awayGoalkeeperKit: kits.awayGoalkeeperKit,
-        homeClubId: home.id,
-        awayClubId: away.id,
-        homePlayerIds: live.homeStarterIds,
-        awayPlayerIds: live.awayStarterIds,
-        playerNames: playerNames,
-        ballStyle: career.settings.matchBallStyle,
-        onEventStarted: onEventStarted,
-        onReplayChanged: onReplayChanged,
-      );
-    }
+    pitchGame = MatchPitchGame(
+      homeColor: Color(home.colors.primaryHex),
+      awayColor: Color(away.colors.primaryHex),
+      homeKit: kits.homeKit,
+      awayKit: kits.awayKit,
+      homeGoalkeeperKit: kits.homeGoalkeeperKit,
+      awayGoalkeeperKit: kits.awayGoalkeeperKit,
+      homeClubId: home.id,
+      awayClubId: away.id,
+      homePlayerIds: live.homeStarterIds,
+      awayPlayerIds: live.awayStarterIds,
+      playerNames: playerNames,
+      ballStyle: career.settings.matchBallStyle,
+      onEventStarted: (event) {
+        if (!mounted) return;
+        unawaited(
+          _audioManager.presentMatchEvent(
+                event,
+                teamName: _eventTeamName(event, home, away),
+              ),
+        );
+        setState(() => presentedEvent = event);
+      },
+      onReplayChanged: (active) {
+        if (!mounted) return;
+        setState(() {
+          replayActive = active;
+          if (!active) _completePendingPhase();
+        });
+      },
+    );
     timer = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
   }
 
@@ -251,7 +225,6 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   void dispose() {
     timer?.cancel();
     roundAlertTimer?.cancel();
-    pitchGame.disposeController();
     unawaited(_leaveMatchAudio());
     super.dispose();
   }
@@ -294,11 +267,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       canPop: false,
       child: PremiumScaffold(
         body: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: AppColors.broadcastGradient,
+              colors: [Color(0xFF091117), Color(0xFF0D171C), Color(0xFF101A20)],
             ),
           ),
           child: Column(

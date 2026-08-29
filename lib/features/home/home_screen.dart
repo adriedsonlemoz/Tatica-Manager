@@ -9,29 +9,30 @@ import '../../app/widgets/manager_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/competition_catalog.dart';
+import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
+import '../../game/career/manager_career_engine.dart';
 import '../../game/cpu/cpu_user_offer_engine.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../../game/season/season_engine.dart';
 import '../calendar/calendar_screen.dart';
 import '../clubs/club_profile_screen.dart';
 import '../career/manager_job_market_screen.dart';
+import '../career/manager_profile_screen.dart';
 import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../market/incoming_transfer_offer_dialog.dart';
 import '../market/market_screen.dart';
+import '../medical/medical_department_screen.dart';
 import '../player/player_profile_screen.dart';
 import '../season/season_history_screen.dart';
-import '../squad/squad_screen.dart';
 import '../standings/standings_screen.dart';
 import '../statistics/statistics_screen.dart';
+import '../stadium/stadium_screen.dart';
 import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
-import '../more/more_screen.dart';
-import 'home_clean_content.dart';
-import 'home_clean_header.dart';
-import 'home_dashboard_rankings.dart';
+import 'home_dashboard_widgets.dart';
 import 'match_day_presentation_screen.dart';
 import 'news_highlights_screen.dart';
 
@@ -51,18 +52,20 @@ class HomeScreen extends ConsumerWidget {
     if (career.managerUnemployed) {
       return _UnemployedHome(career: career);
     }
-
     final club = career.userClub;
+    final position = career.standings.indexWhere((s) => s.clubId == club.id) + 1;
     final fixture = career.nextUserFixture;
     final opponent = fixture == null
         ? null
         : career.clubs.firstWhere(
-            (candidate) =>
-                candidate.id ==
-                (fixture.homeClubId == club.id
-                    ? fixture.awayClubId
-                    : fixture.homeClubId),
+            (c) => c.id == (fixture.homeClubId == club.id ? fixture.awayClubId : fixture.homeClubId),
           );
+    final daysUntilMatch = career.daysUntilNextMatch;
+    final totalRounds = career.fixtures.fold<int>(
+      career.currentRound,
+      (highest, item) => item.round > highest ? item.round : highest,
+    );
+
     final primarySeries = CompetitionCatalog.primarySeriesForClub(club.id);
     final competitionName = _homeCompetitionLabel(
       fixture == null
@@ -72,26 +75,17 @@ class HomeScreen extends ConsumerWidget {
     final unreadMessages = career.inbox
         .where((message) => !message.read && !message.archived && !message.deleted)
         .length;
-    final recentNews = career.news.reversed.take(3).toList(growable: false);
-    final lineupCompetitionId =
-        fixture?.competitionId ?? career.primaryCompetitionId;
-    final lineupNeedsAttention = !LineupEngine.validate(
-      club.squad,
-      career.starterIds,
-      career.formation,
-      competitionSuspendedPlayerIds:
-          career.suspendedPlayerIdsForCompetition(lineupCompetitionId),
-    ).isValid;
-    final financeNeedsAttention = career
-        .clubAdministration.sponsorshipProposals
-        .any(
-          (proposal) =>
-              proposal.canRespond && !proposal.isExpiredAt(career.currentDate),
-        );
-    final userStanding = career.standings
-        .where((standing) => standing.clubId == club.id)
-        .firstOrNull;
-
+    final monthTransactions = career.finances.where(
+      (tx) => tx.createdAt.year == career.currentDate.year &&
+          tx.createdAt.month == career.currentDate.month,
+    );
+    final monthIncome = monthTransactions
+        .where((tx) => tx.amount > 0)
+        .fold<int>(0, (sum, tx) => sum + tx.amount);
+    final monthExpenses = monthTransactions
+        .where((tx) => tx.amount < 0)
+        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
+    final boardConfidence = ManagerCareerEngine.reputationFor(career);
     final primaryCompetitionState =
         career.competitionStateFor(career.primaryCompetitionId);
     final primaryClubIds = primaryCompetitionState.participantClubIds.toSet();
@@ -111,207 +105,317 @@ class HomeScreen extends ConsumerWidget {
         return b.stats.assists.compareTo(a.stats.assists);
       });
     final topScorers = scorers.take(3).toList(growable: false);
+    final recentNews = career.news.reversed.take(4).toList(growable: false);
+    final lineupCompetitionId = fixture?.competitionId ?? career.primaryCompetitionId;
+    final lineupNeedsAttention = !LineupEngine.validate(
+      club.squad,
+      career.starterIds,
+      career.formation,
+      competitionSuspendedPlayerIds:
+          career.suspendedPlayerIdsForCompetition(lineupCompetitionId),
+    ).isValid;
+    final financeNeedsAttention = career.clubAdministration.sponsorshipProposals.any(
+      (proposal) =>
+          proposal.canRespond && !proposal.isExpiredAt(career.currentDate),
+    );
+    final medicalNeedsAttention = club.squad.any((player) => player.injury != null);
+    final recentUserMatches = <HomeRecentMatchEntry>[];
+    for (final result in career.matchHistory.reversed) {
+      if (result.homeClubId != club.id && result.awayClubId != club.id) continue;
+      final opponentId =
+          result.homeClubId == club.id ? result.awayClubId : result.homeClubId;
+      final recentOpponent = career.clubs
+          .where((candidate) => candidate.id == opponentId)
+          .firstOrNull;
+      if (recentOpponent == null) continue;
+      final relatedFixture = career.fixtures
+          .where((candidate) => candidate.id == result.fixtureId)
+          .firstOrNull;
+      recentUserMatches.add(
+        HomeRecentMatchEntry(
+          result: result,
+          opponent: recentOpponent,
+          userClubId: club.id,
+          date: relatedFixture?.date,
+          round: relatedFixture?.round,
+        ),
+      );
+      if (recentUserMatches.length == 5) break;
+    }
+    final showRecentMatches =
+        recentUserMatches.isNotEmpty && MediaQuery.sizeOf(context).height >= 700;
 
-    void openNews() => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => NewsHighlightsScreen(
-              events: career.news.reversed.toList(growable: false),
-              onEventTap: (newsContext, event) => _openCareerEvent(
-                newsContext,
-                ref,
-                career,
-                event,
-                transferActionable: CpuUserOfferEngine.isOfferActive(
-                  state: career,
-                  event: event,
-                ),
-              ),
-            ),
-          ),
-        );
-
-    final actionLabel = fixture == null
-        ? 'REVISAR TEMPORADA'
+    final nextMatchLabel = fixture == null
+        ? 'Temporada concluída'
         : career.isMatchDay
-            ? 'JOGAR PARTIDA'
-            : 'AVANÇAR DIA';
-    final actionIcon = fixture == null
-        ? Icons.emoji_events_rounded
-        : career.isMatchDay
-            ? Icons.play_arrow_rounded
-            : Icons.arrow_forward_rounded;
+            ? 'Próximo jogo • Hoje, ${fixture.kickoffLabel}'
+            : daysUntilMatch == 1
+                ? 'Próximo jogo • Amanhã, ${fixture.kickoffLabel}'
+                : 'Próximo jogo • ${shortDate(fixture.date)}, ${fixture.kickoffLabel}';
 
     return PremiumScaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: HomeCleanTopBar(
-              unreadMessages: unreadMessages,
-              onMenuTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const MoreScreen(showBackButton: true)),
-              ),
-              onNotificationsTap: openNews,
-              onInboxTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const InboxScreen()),
+      body: Stack(
+        children: [
+          const Positioned.fill(child: IgnorePointer(child: _HomeBackdrop())),
+          CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: HomeClubHeader(
+                club: club,
+                manager: career.manager,
+                season: career.season,
+                competitionName: competitionName,
+                nextMatchLabel: nextMatchLabel,
+                unreadMessages: unreadMessages,
+                onInboxTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const InboxScreen()),
+                ),
+                onManagerTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ManagerProfileScreen()),
+                ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
-            sliver: SliverList.list(
-              children: [
-                HomeCleanClubCard(
-                  club: club,
-                  season: career.season,
-                  levelLabel: 'Reputação ${club.reputation}',
-                ),
-                const SizedBox(height: 9),
-                HomeCleanPrimaryAction(
-                  label: actionLabel,
-                  icon: actionIcon,
-                  onPressed: fixture == null
-                      ? () => _showSeasonEndDialog(context, ref, career)
-                      : career.isMatchDay
-                          ? () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const MatchDayPresentationScreen(),
-                                ),
-                              )
-                          : () => _advanceDayWithTransition(
-                                context,
-                                ref,
-                                career.currentDate,
-                              ),
-                ),
-                const SizedBox(height: 9),
-                HomeCleanModules(
-                  items: [
-                    HomeCleanModuleItem(
-                      icon: Icons.groups_2_rounded,
-                      label: 'Elenco',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SquadScreen()),
-                      ),
-                    ),
-                    HomeCleanModuleItem(
-                      icon: Icons.sports_soccer_rounded,
-                      label: 'Táticas',
-                      showDot: lineupNeedsAttention,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const TacticsScreen()),
-                      ),
-                    ),
-                    HomeCleanModuleItem(
-                      icon: Icons.swap_horiz_rounded,
-                      label: 'Transferências',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const MarketScreen(showBackButton: true),
-                        ),
-                      ),
-                    ),
-                    HomeCleanModuleItem(
-                      icon: Icons.trending_up_rounded,
-                      label: 'Finanças',
-                      showDot: financeNeedsAttention,
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 12),
+              sliver: SliverList.list(
+                children: [
+                  SizedBox(
+                    height: 58,
+                    child: HomeFinanceGrid(
+                      balance: club.money,
+                      transferBudget: club.transferBudget,
+                      monthIncome: monthIncome,
+                      monthExpenses: monthExpenses,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const FinancesScreen()),
                       ),
                     ),
-                    HomeCleanModuleItem(
-                      icon: Icons.calendar_month_rounded,
-                      label: 'Calendário',
-                      showDot: career.isMatchDay,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                  ),
+                  const SizedBox(height: 8),
+                  HomeMainOverview(
+                    club: club,
+                    opponent: opponent,
+                    fixture: fixture,
+                    competitionName: competitionName,
+                    boardConfidence: boardConfidence,
+                    position: position,
+                    totalRounds: totalRounds,
+                    currentRound: career.currentRound,
+                    isMatchDay: career.isMatchDay,
+                    daysUntilMatch: daysUntilMatch ?? 0,
+                    onAdvance: () => _advanceDayWithTransition(
+                      context,
+                      ref,
+                      career.currentDate,
+                    ),
+                    onMatchDay: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const MatchDayPresentationScreen(),
                       ),
                     ),
-                    HomeCleanModuleItem(
-                      icon: Icons.school_rounded,
-                      label: 'Base',
-                      onTap: () => Navigator.of(context).push(
+                    onStadiumTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StadiumScreen()),
+                    ),
+                    onSeasonTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                    ),
+                    onMatchTap: fixture == null
+                        ? null
+                        : () {
+                            if (career.isMatchDay) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const MatchDayPresentationScreen(),
+                                ),
+                              );
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
+                              ),
+                            );
+                          },
+                  ),
+                  if (fixture == null) ...[
+                    const SizedBox(height: 6),
+                    SectionCard(
+                      padding: const EdgeInsets.all(10),
+                      borderColor: AppColors.green.withValues(alpha: .45),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.emoji_events_rounded, color: AppColors.green, size: 24),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TEMPORADA CONCLUÍDA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                                SizedBox(height: 1),
+                                Text('Revise a temporada antes de iniciar a próxima.', style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                              ],
+                            ),
+                          ),
+                          FilledButton(
+                            onPressed: () => _showSeasonEndDialog(context, ref, career),
+                            child: const Text('Revisar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+
+                  HomeQuickAccess(
+                    items: [
+                      HomeQuickAccessItem(
+                        icon: Icons.sports_soccer_rounded,
+                        label: 'Táticas',
+                        accent: const Color(0xFF7B35E8),
+                        showDot: lineupNeedsAttention,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const TacticsScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.calendar_month_rounded,
+                        label: 'Calendário',
+                        accent: const Color(0xFFE28A1B),
+                        showDot: career.isMatchDay,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.account_balance_wallet_rounded,
+                        label: 'Finanças',
+                        accent: const Color(0xFF1ABEA1),
+                        showDot: financeNeedsAttention,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const FinancesScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.school_rounded,
+                        label: 'Base',
+                        accent: const Color(0xFF2F8BFF),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const YouthAcademyScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
+                        icon: Icons.medical_services_rounded,
+                        label: 'Departamento\nMédico',
+                        accent: const Color(0xFFE24F87),
+                        showDot: medicalNeedsAttention,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final sameRow = constraints.maxWidth >= 315;
+                      final newsCard = HomeNewsHighlights(
+                        events: recentNews,
+                        playerForEvent: (playerId) => _playerForEvent(career, playerId),
+                        playerAccent: (player) => _playerAccent(career, player),
+                        onEventTap: (event) => _openCareerEvent(
+                          context,
+                          ref,
+                          career,
+                          event,
+                          transferActionable: CpuUserOfferEngine.isOfferActive(
+                            state: career,
+                            event: event,
+                          ),
+                        ),
+                        onViewAll: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => NewsHighlightsScreen(
+                              events: career.news.reversed.toList(growable: false),
+                              onEventTap: (newsContext, event) => _openCareerEvent(
+                                newsContext,
+                                ref,
+                                career,
+                                event,
+                                transferActionable: CpuUserOfferEngine.isOfferActive(
+                                  state: career,
+                                  event: event,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        compact: sameRow,
+                      );
+                      final rankings = HomeLeagueAndScorers(
+                        standings: career.standings,
+                        clubs: career.clubs,
+                        userClubId: career.userClubId,
+                        scorers: topScorers,
+                        competitionName: primarySeries.name,
+                        onClubTap: (clubId) => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
+                        ),
+                        onPlayerTap: (entry) => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PlayerProfileScreen(
+                              playerId: entry.player.id,
+                              clubId: entry.club.id,
+                            ),
+                          ),
+                        ),
+                        onStandingsTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                        ),
+                        onScorersTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                        ),
+                        compactSingleRow: sameRow,
+                      );
+                      if (!sameRow) {
+                        return Column(
+                          children: [
+                            newsCard,
+                            const SizedBox(height: 6),
+                            rankings,
+                          ],
+                        );
+                      }
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(flex: 13, child: newsCard),
+                            const SizedBox(width: 5),
+                            Expanded(flex: 17, child: rankings),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  if (showRecentMatches) ...[
+                    const SizedBox(height: 6),
+                    HomeRecentMatches(
+                      entries: recentUserMatches,
+                      onTap: (entry) => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const YouthAcademyScreen(),
+                          builder: (_) => CalendarScreen(
+                            initialFixtureId: entry.result.fixtureId,
+                          ),
                         ),
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 10),
-                HomeCleanNextMatch(
-                  club: club,
-                  opponent: opponent,
-                  fixture: fixture,
-                  competitionName: competitionName,
-                  onTap: fixture == null
-                      ? null
-                      : () {
-                          if (career.isMatchDay) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const MatchDayPresentationScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => CalendarScreen(
-                                initialFixtureId: fixture.id,
-                              ),
-                            ),
-                          );
-                        },
-                ),
-                const SizedBox(height: 10),
-                HomeCleanSeasonSummary(standing: userStanding),
-                const SizedBox(height: 12),
-                HomeCleanRankings(
-                  standings: career.standings,
-                  clubs: career.clubs,
-                  userClubId: career.userClubId,
-                  scorers: topScorers,
-                  onClubTap: (clubId) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ClubProfileScreen(clubId: clubId),
-                    ),
-                  ),
-                  onPlayerTap: (entry) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => PlayerProfileScreen(
-                        playerId: entry.player.id,
-                        clubId: entry.club.id,
-                      ),
-                    ),
-                  ),
-                  onStandingsTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                  ),
-                  onScorersTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                HomeCleanNews(
-                  events: recentNews,
-                  onEventTap: (event) => _openCareerEvent(
-                    context,
-                    ref,
-                    career,
-                    event,
-                    transferActionable: CpuUserOfferEngine.isOfferActive(
-                      state: career,
-                      event: event,
-                    ),
-                  ),
-                  onViewAll: openNews,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ],
       ),
     );
   }
@@ -432,6 +536,29 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
+  static Player? _playerForEvent(CareerState career, String? playerId) {
+    if (playerId == null) return null;
+    for (final club in career.clubs) {
+      for (final player in club.squad) {
+        if (player.id == playerId) return player;
+      }
+    }
+    for (final player in career.freeAgents) {
+      if (player.id == playerId) return player;
+    }
+    for (final player in career.youthAcademy) {
+      if (player.id == playerId) return player;
+    }
+    return null;
+  }
+
+  static Color _playerAccent(CareerState career, Player player) {
+    for (final club in career.clubs) {
+      if (club.id == player.clubId) return Color(club.colors.primaryHex);
+    }
+    return AppColors.green;
+  }
+
   static Future<void> _showSeasonEndDialog(
     BuildContext context,
     WidgetRef ref,
@@ -541,6 +668,72 @@ class HomeScreen extends ConsumerWidget {
 
 }
 
+class _HomeBackdrop extends StatelessWidget {
+  const _HomeBackdrop();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0A1319), AppColors.background, Color(0xFF0B1419)],
+          ),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              left: -80,
+              top: -40,
+              child: Container(
+                width: 220,
+                height: 220,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [Color(0xFF4A79FF).withValues(alpha: .12), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: -90,
+              top: 10,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [AppColors.green.withValues(alpha: .10), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: 220,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Color(0x99060A0D),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
 class _DayAdvanceTransition extends StatelessWidget {
   const _DayAdvanceTransition({
     required this.from,
@@ -612,7 +805,7 @@ class _DayAdvanceTransition extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 3),
-                 Text(
+                const Text(
                   'Avançando para o próximo dia da carreira.',
                   style: TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
                 ),
@@ -713,7 +906,7 @@ class _DayAdvanceTransition extends StatelessWidget {
                 const SizedBox(height: 12),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(99),
-                  child:  LinearProgressIndicator(
+                  child: const LinearProgressIndicator(
                     minHeight: 6,
                     backgroundColor: AppColors.surfaceRaised,
                   ),
@@ -757,7 +950,7 @@ class _AdvanceDateCard extends StatelessWidget {
               weekdayLabel(date),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style:  TextStyle(color: AppColors.textSecondary, fontSize: 9),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 9),
             ),
           ],
         ),
@@ -786,7 +979,7 @@ class _AdvanceMetric extends StatelessWidget {
             subtitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style:  TextStyle(color: AppColors.textSecondary, fontSize: 7.5),
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 7.5),
           ),
         ],
       );
@@ -867,7 +1060,7 @@ class _UnemployedHome extends ConsumerWidget {
                       ? 'Você possui $offers proposta(s) ativa(s). Avalie os projetos antes que expirem.'
                       : 'Consulte as vagas abertas ou avance os dias. Clubes podem entrar em contato de acordo com sua reputação e trajetória.',
                   textAlign: TextAlign.center,
-                  style:  TextStyle(color: AppColors.muted, height: 1.4),
+                  style: const TextStyle(color: AppColors.muted, height: 1.4),
                 ),
                 const SizedBox(height: 14),
                 SizedBox(

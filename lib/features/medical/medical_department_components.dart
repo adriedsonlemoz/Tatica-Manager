@@ -116,7 +116,7 @@ class MedicalStatusBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   text,
-                  style:  TextStyle(color: AppColors.muted, fontSize: 10.5, height: 1.35),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10.5, height: 1.35),
                 ),
               ],
             ),
@@ -192,7 +192,7 @@ class MedicalPlayerRow extends StatelessWidget {
                     player.injury?.name ?? player.primaryPosition.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:  TextStyle(color: AppColors.muted, fontSize: 9.3),
+                    style: const TextStyle(color: AppColors.muted, fontSize: 9.3),
                   ),
                 ],
               ),
@@ -287,7 +287,7 @@ class _DistributionRow extends StatelessWidget {
           children: [
             Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
             const SizedBox(width: 8),
-            Expanded(child: Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 10))),
+            Expanded(child: Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10))),
             Text(
               '$count',
               style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 10.5),

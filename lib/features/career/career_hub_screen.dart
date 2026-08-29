@@ -51,7 +51,7 @@ class CareerHubScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                     ),
                   ),
-                  Text('${state.saves.length}', style:  TextStyle(color: AppColors.muted)),
+                  Text('${state.saves.length}', style: const TextStyle(color: AppColors.muted)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -157,7 +157,7 @@ class _BrandHeader extends StatelessWidget {
                   'TÁTICA MANAGER',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
                 ),
-                 Text('Carregar jogo salvo', style: TextStyle(color: AppColors.muted)),
+                const Text('Carregar jogo salvo', style: TextStyle(color: AppColors.muted)),
               ],
             ),
           ),
@@ -180,7 +180,7 @@ class _VersionFooter extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                 Icon(Icons.bug_report_outlined, size: 15, color: AppColors.muted),
+                const Icon(Icons.bug_report_outlined, size: 15, color: AppColors.muted),
                 const SizedBox(width: 6),
                 Text(
                   'Tática Manager Beta 2.0 • v${AppInfo.version}',

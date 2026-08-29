@@ -389,7 +389,7 @@ class _CompactTotal extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 9.5)),
+            Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9.5)),
             const SizedBox(height: 3),
             Text(compactMoney(value), style: TextStyle(color: color, fontWeight: FontWeight.w900)),
           ],

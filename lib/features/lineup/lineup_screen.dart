@@ -173,7 +173,7 @@ class LineupScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 7),
-                 Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 4),
                   child: Text(
                     'Toque para trocar • segure para abrir o perfil. O número no campo é o OVR efetivo naquela posição.',
@@ -197,7 +197,7 @@ class LineupScreen extends ConsumerWidget {
                           ),
                           Text(
                             '${availableBench.length} disponíveis',
-                            style:  TextStyle(color: AppColors.muted),
+                            style: const TextStyle(color: AppColors.muted),
                           ),
                         ],
                       ),
@@ -235,7 +235,7 @@ class LineupScreen extends ConsumerWidget {
                             const Spacer(),
                             Text(
                               '${unavailable.length}',
-                              style:  TextStyle(color: AppColors.muted),
+                              style: const TextStyle(color: AppColors.muted),
                             ),
                           ],
                         ),
@@ -326,7 +326,7 @@ class _GroupHeading extends StatelessWidget {
           children: [
             Text(
               label,
-              style:  TextStyle(
+              style: const TextStyle(
                 color: AppColors.muted,
                 fontSize: 10,
                 fontWeight: FontWeight.w900,
@@ -334,7 +334,7 @@ class _GroupHeading extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Text('$count', style:  TextStyle(color: AppColors.muted, fontSize: 10)),
+            Text('$count', style: const TextStyle(color: AppColors.muted, fontSize: 10)),
           ],
         ),
       );
@@ -367,7 +367,7 @@ class _PlayerBenchRow extends StatelessWidget {
                   message: _unavailableReason(player),
                   child: const Icon(Icons.warning_amber_rounded, color: AppColors.warning),
                 )
-              :  Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+              : const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
         ),
       );
 }

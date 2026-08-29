@@ -96,7 +96,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                 Text(
+                const Text(
                   'O relatório reúne falhas Flutter/Dart, contexto do erro, stack trace e informações da última saída nativa quando o Android disponibiliza esses dados.',
                   style: TextStyle(color: AppColors.muted, height: 1.4, fontSize: 12),
                 ),
@@ -136,12 +136,12 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
               const Expanded(
                 child: Text('REGISTROS RECENTES', style: TextStyle(fontWeight: FontWeight.w900)),
               ),
-              Text('${_entries.length}', style:  TextStyle(color: AppColors.muted)),
+              Text('${_entries.length}', style: const TextStyle(color: AppColors.muted)),
             ],
           ),
           const SizedBox(height: 7),
           if (_entries.isEmpty)
-             SectionCard(
+            const SectionCard(
               child: Text(
                 'Nenhum erro persistido até agora.',
                 textAlign: TextAlign.center,
@@ -171,7 +171,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
                   ),
                   child: SelectableText(
                     _report,
-                    style:  TextStyle(fontFamily: 'monospace', fontSize: 11.5, height: 1.4, color: AppColors.muted),
+                    style: const TextStyle(fontFamily: 'monospace', fontSize: 11.5, height: 1.4, color: AppColors.muted),
                   ),
                 ),
               ],
@@ -212,7 +212,7 @@ class _DiagnosticMetric extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-                  Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 10.5)),
+                  Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10.5)),
                 ],
               ),
             ),
@@ -250,7 +250,7 @@ class _DiagnosticEntryCard extends StatelessWidget {
               style: const TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 2),
-            Text(_formatTime(entry.time), style:  TextStyle(color: AppColors.muted, fontSize: 10.5)),
+            Text(_formatTime(entry.time), style: const TextStyle(color: AppColors.muted, fontSize: 10.5)),
           ],
         ),
         childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
@@ -266,7 +266,7 @@ class _DiagnosticEntryCard extends StatelessWidget {
             const SizedBox(height: 3),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(entry.context!, style:  TextStyle(color: AppColors.muted, fontSize: 11.5)),
+              child: Text(entry.context!, style: const TextStyle(color: AppColors.muted, fontSize: 11.5)),
             ),
           ],
           if (entry.stack?.isNotEmpty == true) ...[
@@ -288,7 +288,7 @@ class _DiagnosticEntryCard extends StatelessWidget {
               ),
               child: SelectableText(
                 entry.stack!,
-                style:  TextStyle(fontFamily: 'monospace', fontSize: 10.5, color: AppColors.muted),
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 10.5, color: AppColors.muted),
               ),
             ),
           ],

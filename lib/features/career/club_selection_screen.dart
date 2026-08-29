@@ -234,7 +234,7 @@ class _ClubSelectionCard extends StatelessWidget {
             const SizedBox(height: 3),
             Row(
               children: [
-                 Text(
+                const Text(
                   'ORÇ.',
                   style: TextStyle(
                     color: AppColors.muted,

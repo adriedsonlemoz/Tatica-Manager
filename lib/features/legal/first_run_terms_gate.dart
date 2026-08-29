@@ -16,11 +16,11 @@ class FirstRunTermsGate extends StatelessWidget {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration:  BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.surfaceSoft, AppColors.background],
+              colors: [Color(0xFF162932), AppColors.background],
             ),
           ),
           child: SafeArea(
@@ -34,7 +34,7 @@ class FirstRunTermsGate extends StatelessWidget {
                       insetPadding: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
-                        side:  BorderSide(color: AppColors.border),
+                        side: const BorderSide(color: AppColors.border),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
@@ -65,7 +65,7 @@ class FirstRunTermsGate extends StatelessWidget {
                                   ?.copyWith(fontWeight: FontWeight.w900),
                             ),
                             const SizedBox(height: 7),
-                             Text(
+                            const Text(
                               'Antes de continuar, leia os Termos de Uso e a Política de Privacidade. O jogo mantém os principais dados de carreira localmente no aparelho.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -116,7 +116,7 @@ class FirstRunTermsGate extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 7),
-                             Text(
+                            const Text(
                               'Ao tocar em “Aceitar e continuar”, você confirma que leu e concorda com os Termos de Uso.',
                               textAlign: TextAlign.center,
                               style: TextStyle(

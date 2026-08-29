@@ -7,36 +7,36 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.118';
+  static const String version = '0.1.1.107';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
     ReleaseNote(
-      version: '0.1.1.118',
-      title: 'Elenco e Classificação conforme mockups',
+      version: '0.1.1.107',
+      title: 'Movimentação visual natural',
       changes: [
-        'Reformula o Elenco com cabeçalho do clube, abas, tabela compacta, moral e resumo de nacionalidades.',
-        'Reformula a Classificação sem rolagem horizontal e adiciona abas funcionais, informações do campeonato e critérios de desempate.',
-        'Adapta integralmente as duas telas aos modos claro e escuro sem alterar dados, Match Engine, saves ou IDs.',
+        'Jogadores aceleram, freiam e mudam de direção com trajetórias visuais mais orgânicas, sem alterar os eventos do Match Engine.',
+        'Pênaltis movimentam somente os atletas envolvidos próximos da área, eliminando o agrupamento magnético observado.',
+        'Passadas, sombras e nomes acompanham melhor o movimento real, com retorno à formação em tempos diferentes por setor.',
       ],
     ),
     ReleaseNote(
-      version: '0.1.1.117',
-      title: 'Refinamento da Home compacta',
+      version: '0.1.1.106',
+      title: 'Campo mais legível e uniformes',
       changes: [
-        'Distribui os seis indicadores do Resumo da Temporada em uma única faixa e compacta os atalhos.',
-        'Move o ícone de Avançar/Jogar para a direita, melhora espaçamentos e normaliza os escudos da Próxima Partida.',
-        'Adiciona retorno explícito ao menu Mais quando aberto pela barra superior, sem alterar a aba raiz.',
+        'Exibe nomes responsivos junto aos jogadores, priorizando o atleta da jogada e evitando sobreposições no campo.',
+        'Permite escolher entre três uniformes antes da partida e resolve conflitos de cores automaticamente, com goleiros em kits próprios.',
+        'Refina redes, traves, gramado, marcações, bola, sombras e movimentos sem alterar o Match Engine.',
       ],
     ),
     ReleaseNote(
-      version: '0.1.1.116',
-      title: 'Correção dos testes da Home e tema',
+      version: '0.1.1.105',
+      title: 'Partida visual 2.5D',
       changes: [
-        'Atualiza a regressão da paleta para as cores atuais do tema claro/escuro.',
-        'Faz o teste de avatares validar a nova HomeCleanRankings em vez da ligação removida da Home antiga.',
-        'Preserva Home, tema, libGDX, movimentação, Match Engine, saves e IDs.',
+        'Mantém o campo restaurado da 0.1.1.91 e adiciona escala/ordem por profundidade aos jogadores.',
+        'Jogadores ganham uniforme real com volume, sombra, passada animada e goleiros visualmente diferenciados.',
+        'Bola ganha altura e sombra próprias nos lances, e a rede reage visualmente ao gol sem alterar o Match Engine.',
       ],
     ),
   ];

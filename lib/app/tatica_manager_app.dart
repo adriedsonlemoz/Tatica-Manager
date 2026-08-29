@@ -7,13 +7,11 @@ import '../domain/season/career_state.dart';
 import '../features/bootstrap/bootstrap_screen.dart';
 import 'audio/audio_manager.dart';
 import 'audio/audio_providers.dart';
-import 'state/app_appearance_controller.dart';
 import 'state/game_controller.dart';
 import 'state/providers.dart';
 import 'widgets/audio_interaction_layer.dart';
 import '../core/config/app_preferences.dart';
 import '../core/platform/system_ui.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_theme.dart';
 
 class TaticaManagerApp extends ConsumerStatefulWidget {
@@ -70,7 +68,7 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      unawaited(SystemUiController.apply(darkMode: AppColors.isDarkMode));
+      unawaited(SystemUiController.apply());
       unawaited(_audioManager.resumeAfterLifecycle());
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
@@ -85,18 +83,12 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
     // Reaplicamos o modo imersivo depois da animação de abertura/fechamento.
     _systemUiRestoreTimer?.cancel();
     _systemUiRestoreTimer = Timer(const Duration(milliseconds: 1200), () {
-      unawaited(SystemUiController.apply(darkMode: AppColors.isDarkMode));
+      unawaited(SystemUiController.apply());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(appAppearanceProvider);
-    AppColors.useDarkMode(themeMode == ThemeMode.dark);
-    ref.listen<ThemeMode>(appAppearanceProvider, (previous, next) {
-      unawaited(SystemUiController.apply(darkMode: next == ThemeMode.dark));
-    });
-
     ref.listen<GameState>(gameControllerProvider, (previous, next) {
       final settings = next.career?.settings;
       if (settings != null) unawaited(_audioManager.applySettings(settings));
@@ -105,9 +97,7 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tática Manager',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: themeMode,
+      theme: AppTheme.dark,
       navigatorObservers: [_audioNavigationObserver],
       builder: (context, child) => AudioInteractionLayer(
         audioManager: _audioManager,

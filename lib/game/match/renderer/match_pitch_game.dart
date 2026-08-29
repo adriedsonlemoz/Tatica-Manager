@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import '../../../domain/club/club.dart';
 import '../../../domain/match/match_models.dart';
-import 'match_pitch_controller.dart';
 import 'match_pitch_moment_state.dart';
 import 'match_pitch_visuals.dart';
 import 'match_player_labels.dart';
@@ -13,7 +12,7 @@ import 'match_player_visuals.dart';
 import 'match_presentation_director.dart';
 import 'match_stadium_visuals.dart';
 
-class MatchPitchGame extends FlameGame implements MatchPitchController {
+class MatchPitchGame extends FlameGame {
   MatchPitchGame({
     required this.homeColor,
     required this.awayColor,
@@ -115,16 +114,12 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
-  @override
   bool get isReplayActive => _replayActive;
 
-  @override
   bool get blocksClock => _replayPending || _replayActive;
 
-  @override
   void playEvent(MatchEvent event) => playEvents([event]);
 
-  @override
   void updateLineups({
     required List<String> homePlayerIds,
     required List<String> awayPlayerIds,
@@ -133,7 +128,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     _awayPlayerIds = [...awayPlayerIds];
   }
 
-  @override
   void playEvents(Iterable<MatchEvent> events) {
     final list = events.toList();
     if (list.isEmpty) return;
@@ -143,7 +137,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     if (_eventRemaining <= 0) _beginNextCue();
   }
 
-  @override
   void skipReplay() {
     if (!_replayPending && !_replayActive) return;
     _cueQueue.removeWhere((cue) => cue.replay);
@@ -156,7 +149,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     }
   }
 
-  @override
   void clearPresentationQueue() {
     _cueQueue.clear();
     _replayPending = false;
@@ -684,9 +676,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       type == MatchEventType.goal ||
       type == MatchEventType.ownGoal ||
       type == MatchEventType.penalty;
-
-  @override
-  void disposeController() {}
 
   static bool _isMajor(MatchEventType type) =>
       type == MatchEventType.goal ||

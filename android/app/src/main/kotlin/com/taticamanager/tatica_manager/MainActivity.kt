@@ -6,9 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import com.badlogic.gdx.backends.android.AndroidFragmentApplication
-import com.taticamanager.tatica_manager.matchgdx.LibGdxMatchPitchFactory
-import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -18,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class MainActivity : FlutterFragmentActivity(), AndroidFragmentApplication.Callbacks {
+class MainActivity : FlutterActivity() {
     private val channelName = "tatica_manager/diagnostics"
     private val nativeCrashFile by lazy { File(filesDir, "diagnostic_native_last.txt") }
 
@@ -29,10 +27,6 @@ class MainActivity : FlutterFragmentActivity(), AndroidFragmentApplication.Callb
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        flutterEngine.platformViewsController.registry.registerViewFactory(
-            "tatica_manager/libgdx_match_pitch",
-            LibGdxMatchPitchFactory(this, flutterEngine.dartExecutor.binaryMessenger),
-        )
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName).setMethodCallHandler { call, result ->
             when (call.method) {
                 "deviceInfo" -> result.success(buildDeviceInfo())
@@ -122,8 +116,4 @@ class MainActivity : FlutterFragmentActivity(), AndroidFragmentApplication.Callb
             File(folder, fileName).apply { writeText(contents) }.absolutePath
         }
     }
-    override fun exit() {
-        // libGDX is embedded only as the match renderer. Flutter owns navigation.
-    }
-
 }

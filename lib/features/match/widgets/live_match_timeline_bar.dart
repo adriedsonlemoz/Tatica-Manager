@@ -80,7 +80,7 @@ class LiveMatchTimelineBar extends StatelessWidget {
                             color: _eventColor(event.type),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: AppColors.surface,
+                              color: const Color(0xFF0D171C),
                               width: 1,
                             ),
                           ),

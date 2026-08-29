@@ -93,7 +93,7 @@ class _ClubsScreenState extends ConsumerState<ClubsScreen> {
                     ),
                     subtitle: Text(
                       '${club.stadium.name} • elenco ${club.squad.length}',
-                      style:  TextStyle(color: AppColors.muted),
+                      style: const TextStyle(color: AppColors.muted),
                     ),
                     trailing: Text(
                       '${ClubRatingCalculator.squadOverall(club.squad, fallback: club.reputation)} OVR',

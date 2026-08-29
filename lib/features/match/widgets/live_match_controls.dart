@@ -32,8 +32,8 @@ class LiveMatchControlBar extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.panelGradient,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF101B22), Color(0xFF152329), Color(0xFF101B22)],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border),
@@ -233,7 +233,7 @@ class _MatchActionButton extends StatelessWidget {
               foregroundColor: AppColors.green,
               backgroundColor: selected
                   ? AppColors.green.withValues(alpha: .10)
-                  : AppColors.contrastSurface,
+                  : const Color(0xFF142128),
               side: BorderSide(
                 color: selected
                     ? AppColors.green.withValues(alpha: .55)
@@ -252,8 +252,8 @@ class _MatchActionButton extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
+                  style: const TextStyle(
+                    color: AppColors.white,
                     fontSize: 9.8,
                     fontWeight: FontWeight.w900,
                   ),
@@ -275,7 +275,7 @@ class _PossessionStat extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-           Text(
+          const Text(
             'POSSE DE BOLA',
             maxLines: 1,
             style: TextStyle(
@@ -311,8 +311,8 @@ class _PossessionStat extends StatelessWidget {
                     Container(
                       width: 20,
                       height: 20,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF101A20),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -352,7 +352,7 @@ class _VersusStat extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style:  TextStyle(
+            style: const TextStyle(
               color: AppColors.muted,
               fontSize: 8.5,
               fontWeight: FontWeight.w900,
@@ -391,7 +391,7 @@ class _CardsStat extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-           Text(
+          const Text(
             'CARTÕES',
             style: TextStyle(
               color: AppColors.muted,

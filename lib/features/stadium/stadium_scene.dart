@@ -346,7 +346,7 @@ class _SceneMetric extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10.5),
           ),
-          Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 8)),
+          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 8)),
         ],
       );
 }

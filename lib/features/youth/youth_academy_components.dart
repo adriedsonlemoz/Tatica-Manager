@@ -50,7 +50,7 @@ class YouthAcademyOverview extends StatelessWidget {
                       players.isEmpty
                           ? 'Nenhum jovem disponível no momento'
                           : 'Formação vinculada ao elenco de ${club.name}',
-                      style:  TextStyle(color: AppColors.muted, fontSize: 10.5),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 10.5),
                     ),
                   ],
                 ),
@@ -174,7 +174,7 @@ class YouthProspectHighlight extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       '${player.primaryPosition.label} • ${player.age} anos • ${player.nationality}',
-                      style:  TextStyle(color: AppColors.muted, fontSize: 10),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 10),
                     ),
                     const SizedBox(height: 9),
                     Row(
@@ -271,7 +271,7 @@ class YouthPlayerCard extends StatelessWidget {
                       '${player.age} anos • ${player.primaryPosition.label} • potencial est. $low–$high',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:  TextStyle(
+                      style: const TextStyle(
                         color: AppColors.muted,
                         fontSize: 9.8,
                       ),
@@ -283,7 +283,7 @@ class YouthPlayerCard extends StatelessWidget {
                       _report(player, low, high),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style:  TextStyle(
+                      style: const TextStyle(
                         color: AppColors.muted,
                         fontSize: 9.5,
                         height: 1.25,
@@ -295,7 +295,7 @@ class YouthPlayerCard extends StatelessWidget {
               const SizedBox(width: 7),
               Column(
                 children: [
-                   Icon(
+                  const Icon(
                     Icons.chevron_right_rounded,
                     color: AppColors.muted,
                     size: 20,
@@ -346,7 +346,7 @@ class _ProspectMetric extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style:  TextStyle(color: AppColors.muted, fontSize: 8.5)),
+            Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 8.5)),
             const SizedBox(height: 2),
             Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
           ],

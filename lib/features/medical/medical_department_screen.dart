@@ -99,7 +99,7 @@ class _MedicalTableHeader extends StatelessWidget {
   const _MedicalTableHeader();
 
   @override
-  Widget build(BuildContext context) =>  Row(
+  Widget build(BuildContext context) => const Row(
         children: [
           Expanded(
             flex: 5,

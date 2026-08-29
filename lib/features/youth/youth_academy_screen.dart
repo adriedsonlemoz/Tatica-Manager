@@ -60,7 +60,7 @@ class YouthAcademyScreen extends ConsumerWidget {
               ),
             ),
           ] else
-             Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 10),
               child: SectionCard(
                 child: Padding(

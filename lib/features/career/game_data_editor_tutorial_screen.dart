@@ -121,7 +121,7 @@ class _TutorialSection extends StatelessWidget {
                   children: [
                     Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 4),
-                    Text(text, style:  TextStyle(color: AppColors.muted, height: 1.4)),
+                    Text(text, style: const TextStyle(color: AppColors.muted, height: 1.4)),
                   ],
                 ),
               ),

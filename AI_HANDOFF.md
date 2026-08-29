@@ -7,133 +7,21 @@
 - **Nome:** Tática Manager 2
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
-- **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.118`
-- **Android versionCode:** `119`
+- **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
+- **Release deste handoff:** `0.1.1.107`
+- **Android versionCode:** `108`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
-
-
-## Estado funcional da release 0.1.1.118
-
-- aplica os mockups aprovados ao Elenco e à Classificação com tabelas compactas que cabem na largura da tela;
-- Elenco passa a exibir cabeçalho do clube, abas funcionais, busca/filtro, posição, geral, moral e resumo de nacionalidades;
-- Classificação passa a exibir Tabela, Jogos e Artilheiros, informações reais do campeonato e critérios de desempate;
-- todos os fundos, textos, bordas e destaques usam a paleta adaptativa já alternada em Configurações;
-- preserva dados, controllers, navegação, Match Engine, renderer libGDX/Flame, `CareerState` schema 13, saves e IDs.
-
-Consulte `docs/RELEASE_0.1.1.118.md`.
-
-
-## Estado funcional da release 0.1.1.117
-
-- refina somente Home e navegação para aproximar as proporções do mockup claro aprovado;
-- Resumo da Temporada volta a usar seis indicadores na mesma faixa, atalhos ficam mais baixos/compactos e Transferências deixa de quebrar de forma irregular;
-- ação principal mantém texto centralizado com ícone menor preso à direita, Próxima Partida ganha maior respiro entre metadados e escudos de 58 px;
-- aumenta a separação entre Resumo, Classificação e Artilharia e adiciona retorno explícito ao `MoreScreen` somente quando ele é empurrado pela barra superior da Home;
-- preserva tema claro/escuro, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.117.md`.
-
-
-## Estado funcional da release 0.1.1.116
-
-- corrige as duas regressões estruturais reveladas depois que o analyzer da 0.1.1.115 passou: 287 testes foram aprovados e somente dois ficaram desatualizados;
-- atualiza a regressão da paleta para as cores atuais do tema claro/escuro, sem restaurar os hexadecimais antigos;
-- faz o teste de identidade visual validar `HomeCleanRankings`/`PlayerAvatar` na nova Home, em vez do antigo `playerForEvent` removido;
-- preserva Home, modo escuro persistente, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.116.md`.
-
-## Estado funcional da release 0.1.1.115
-
-- corrige os nove erros de `flutter analyze` da 0.1.1.114 sem alterar comportamento funcional;
-- restaura o import de `AppColors` em `match_screen.dart` e remove dois `const` incompatíveis com getters de cor adaptativos no pré-jogo;
-- corrige seis expectativas do teste estrutural de calendário/Home para procurar literalmente interpolações `${s?...}` sem tentar resolvê-las dentro do próprio teste;
-- preserva Home clara, modo escuro persistente, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.115.md`.
-
-
-## Estado funcional da release 0.1.1.114
-
-- torna o modo claro o padrão global do aplicativo e mantém modo escuro persistente por preferência fora do save;
-- reformula a Home em cards claros e responsivos com cabeçalho, ação contextual, seis atalhos, próxima partida, resumo da temporada, classificação, artilharia e notícias usando dados reais;
-- centraliza superfícies, bordas e textos neutros em uma paleta adaptativa única, preservando identidade verde e estados semânticos;
-- pré-jogo e interface ao redor do campo também acompanham o tema; elementos gráficos do renderer (gramado, jogadores e estádio) mantêm sua paleta de jogo;
-- preserva renderer libGDX, movimentação da 0.1.1.113, Match Engine, CareerState schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.114.md`.
-
-
-## Estado funcional da release 0.1.1.113
-
-- integra no renderer Android libGDX as melhorias de movimentação da versão Work 0.1.1.107 sem substituir a base nativa da 0.1.1.112;
-- adiciona estado visual individual de velocidade, aceleração, frenagem, atraso e curvatura determinística para cada jogador;
-- corrige a apresentação de pênaltis para mover apenas cobrador, goleiro e atletas que realmente precisam sair da área, e escalona o retorno à formação por setor;
-- sincroniza passada, inclinação e sombra com a velocidade e estabiliza as âncoras dos nomes entre frames;
-- preserva as mesmas melhorias no Flame fallback e mantém `lib/game/match/engine/` inalterado, além de `CareerState` schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.113.md`.
-
-
-## Estado funcional da release 0.1.1.112
-
-- corrige a falha `compileReleaseKotlin` da 0.1.1.111 em `LibGdxPitchPainter.kt`, onde `drawCrowd()` usava `crowdPulse` sem recebê-lo no próprio escopo;
-- propaga o parâmetro visual explicitamente por `draw()` → `drawStadiumBase()` → `drawCrowd()` e adiciona regressão estrutural para o contrato;
-- o log anterior confirmou `flutter analyze` sem problemas e 282 testes aprovados antes dessa falha Kotlin;
-- preserva Match Engine, renderer visual, Hybrid Composition, `SurfaceView` 105:68, `FitViewport`, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.112.md`.
-
-
-## Estado funcional da release 0.1.1.111
-
-- corrige a única falha do GitHub Actions da 0.1.1.110, causada por uma expectativa estrutural antiga que ainda procurava `AspectRatio` no painel da partida;
-- mantém a implementação correta da 0.1.1.110: tamanho explícito `105 / 68` com `SizedBox`, clipping e Hybrid Composition para conter o `SurfaceView` libGDX;
-- atualiza a regressão para validar o contrato atual sem alterar renderer, Match Engine, `CareerState` schema 13, saves, IDs ou multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.111.md`.
-
-
-## Estado funcional da release 0.1.1.110
-
-- corrige o `SurfaceView` libGDX que podia ocupar uma área maior que o campo ao forçar Hybrid Composition real com `initExpensiveAndroidView`;
-- limita o renderer ao retângulo `105 / 68` calculado pelo Flutter, adiciona clipping no host nativo e usa `FitViewport` `1050 x 680` com atualização explícita do `glViewport`;
-- refina jogadores, goleiros, bola, gols/redes, gramado, sombras e nomes, incluindo placas de contraste e redução de colisões;
-- separa pintura do campo e rótulos do orquestrador nativo, sem mover nenhuma regra do Match Engine para Kotlin/libGDX;
-- preserva Flame fallback, `CareerState` schema 13, IDs, saves e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.110.md`.
-
-
-## Estado funcional da release 0.1.1.109
-
-- corrige o build Android da 0.1.1.108 que falhava no AGP 9.1 ao passar um `Provider` para `AndroidSourceSet.jniLibs`;
-- registra o diretório gerado de natives do libGDX pela Variant Sources API oficial (`addGeneratedSourceDirectory`) e mantém a extração em tarefa tipada;
-- adiciona regressão estrutural que proíbe tanto o padrão antigo quanto o opt-out `android.sourceset.disallowProvider=false`;
-- preserva Match Engine, renderer libGDX, Flame fallback, `CareerState` schema 13, IDs, saves e multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.109.md`.
-
-
-## Estado funcional da release 0.1.1.108
-
-- corrige os oito lints da integração libGDX apontados pelo GitHub Actions da 0.1.1.107 antes da etapa de compilação Android;
-- remove o import redundante do bridge nativo e adiciona `@override` aos membros de `MatchPitchGame` que implementam `MatchPitchController`;
-- não altera Match Engine, libGDX, dependências, `CareerState` schema 13, IDs, saves ou multi-competição.
-
-Consulte `docs/RELEASE_0.1.1.108.md`.
-
 ## Estado funcional da release 0.1.1.107
 
-- integra libGDX 1.14.2 como renderer do campo no Android usando `AndroidFragmentApplication` dentro de um `PlatformView`, sem abrir uma segunda tela nativa;
-- mantém Match Engine, placar, timeline, áudio, táticas, substituições e simulação em Dart/Flutter e envia ao Kotlin apenas eventos, coordenadas, lineups, nomes e kits já resolvidos;
-- preserva o renderer Flame como fallback fora do Android e mantém `CareerState` schema 13, IDs, saves e multi-competição;
-- adiciona teste estrutural da fronteira Dart → libGDX e não adiciona imagens/modelos externos.
+- substitui a interpolação linear uniforme do renderer por estados individuais de velocidade, aceleração, frenagem, atraso e curvatura determinística;
+- conecta visualmente o atleta ativo ao `event.start` já produzido pelo Match Engine, sem modificar a timeline;
+- corrige a apresentação de pênaltis para mover somente cobrador, goleiro e jogadores que realmente precisam sair da área;
+- escalona o retorno à formação por setores, sincroniza a passada à velocidade e estabiliza as âncoras dos nomes;
+- preserva integralmente Match Engine, resultados, eventos, coordenadas, `CareerState` schema 13, IDs, saves e multi-competição; nenhuma imagem foi adicionada.
 
 Consulte `docs/RELEASE_0.1.1.107.md`.
 
@@ -847,11 +735,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.118
-versionCode:         119
-pubspec:             0.1.1+119
+release/versionName: 0.1.1.107
+versionCode:         108
+pubspec:             0.1.1+108
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.119` e usar um `versionCode` maior que 119.
+A próxima alteração/entrega normalmente deve virar `0.1.1.108` e usar um `versionCode` maior que 108.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
@@ -968,8 +856,8 @@ Sempre adicione ou ajuste testes quando mudar regra de negócio.
 
 ## Próximas prioridades recomendadas
 
-1. Validar a `0.1.1.75` no GitHub Actions com analyzer, testes e build release.
-2. Em aparelho, validar a nova etapa de ligas, criação de carreira e carregamento de saves antigos após a migração SQLite v2 -> v3.
+1. Validar a `0.1.1.107` no GitHub Actions com analyzer, testes e build release.
+2. Em aparelho, gravar uma partida completa e validar aceleração/frenagem, pênaltis, retorno à formação e estabilidade dos nomes em 60 e 120 Hz.
 3. Exercitar avanço diário, partida do usuário, jogos CPU, mercado e contratos para confirmar que a Série A atual continua no caminho completo do Match Engine.
 4. Quando entrar uma segunda competição real, implementar estado competitivo por competição (calendário/classificação/rodada/estatísticas) antes de ativá-la como liga completa simultânea.
 5. Manter a seleção de ligas imutável após o início do save até existir reconstrução segura de calendário, tabela, resultados e estatísticas.

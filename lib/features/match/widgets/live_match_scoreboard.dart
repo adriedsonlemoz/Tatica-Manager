@@ -36,10 +36,10 @@ class LiveMatchScoreboard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: AppColors.panelGradient,
+          colors: [Color(0xFF101B22), Color(0xFF0A1218), Color(0xFF121D22)],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border.withValues(alpha: .88)),
@@ -76,7 +76,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                       const Spacer(),
                       Text(
                         '$phaseLabel  •',
-                        style:  TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 10.5,
                           fontWeight: FontWeight.w900,
@@ -235,7 +235,7 @@ class _ClubSide extends StatelessWidget {
               if (yellow == 0 && red == 0)
                 Text(
                   club.shortName.toUpperCase(),
-                  style:  TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 9.2,
                     fontWeight: FontWeight.w800,
@@ -279,8 +279,8 @@ class _CardCount extends StatelessWidget {
           const SizedBox(width: 3),
           Text(
             '$value',
-            style: TextStyle(
-              color: AppColors.textPrimary,
+            style: const TextStyle(
+              color: AppColors.white,
               fontSize: 9,
               fontWeight: FontWeight.w900,
             ),

@@ -161,7 +161,7 @@ class _IncomingOffersTab extends ConsumerWidget {
                     const SizedBox(height: 3),
                     Text(
                       event.message,
-                      style:  TextStyle(color: AppColors.muted, fontSize: 11),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 11),
                     ),
                   ],
                 ),
@@ -258,7 +258,7 @@ class _MarketPlayerCard extends StatelessWidget {
                       '${entry.club?.shortName ?? 'Sem clube'} • ${player.primaryPosition.label} • ${player.age} anos • ${player.nationality}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:  TextStyle(color: AppColors.muted, fontSize: 10),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 10),
                     ),
                     const SizedBox(height: 5),
                     _KnowledgeLine(player: player, report: report),
@@ -375,7 +375,7 @@ class _NegotiationCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             negotiation.message,
-            style:  TextStyle(color: AppColors.muted, fontSize: 11),
+            style: const TextStyle(color: AppColors.muted, fontSize: 11),
           ),
           const SizedBox(height: 7),
           Wrap(
@@ -506,7 +506,7 @@ class _EmptyMarketState extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style:  TextStyle(color: AppColors.muted),
+                style: const TextStyle(color: AppColors.muted),
               ),
             ],
           ),

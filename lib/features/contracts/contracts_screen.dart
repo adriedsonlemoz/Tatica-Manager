@@ -75,7 +75,7 @@ class _ContractsScreenState extends ConsumerState<ContractsScreen> {
           ),
           const SizedBox(height: 10),
           if (visible.isEmpty)
-             SectionCard(
+            const SectionCard(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 18),
                 child: Center(

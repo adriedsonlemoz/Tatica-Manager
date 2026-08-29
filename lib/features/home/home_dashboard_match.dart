@@ -140,7 +140,7 @@ class HomeNextMatchCard extends StatelessWidget {
     final nextFixture = fixture;
     if (nextFixture == null || opponentClub == null) {
       return _HomeDashboardCard(
-        child:  SizedBox(
+        child: const SizedBox(
           height: 106,
           child: Center(
             child: Column(
@@ -188,11 +188,11 @@ class HomeNextMatchCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                       Icon(Icons.calendar_today_rounded, size: 10, color: AppColors.textSecondary),
+                      const Icon(Icons.calendar_today_rounded, size: 10, color: AppColors.textSecondary),
                       const SizedBox(width: 3),
                       Text(
                         '${shortDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
-                        style:  TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12.2,
                           fontWeight: FontWeight.w800,
@@ -485,7 +485,7 @@ class _MatchInfo extends StatelessWidget {
                   caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style:  TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 9.2,
                     fontWeight: FontWeight.w800,

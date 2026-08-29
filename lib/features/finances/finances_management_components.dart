@@ -39,7 +39,7 @@ class DepartmentBudgetSection extends StatelessWidget {
             ),
           ],
         ),
-         Text(
+        const Text(
           'Valores disponíveis e gastos registrados na temporada.',
           style: TextStyle(color: AppColors.muted, fontSize: 10.5),
         ),
@@ -71,7 +71,7 @@ class DepartmentBudgetSection extends StatelessWidget {
                     department.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:  TextStyle(
+                    style: const TextStyle(
                       color: AppColors.muted,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -124,7 +124,7 @@ class SponsorshipManagementSection extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (open.isEmpty)
-           _FinanceInsetPanel(
+          const _FinanceInsetPanel(
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Text(
@@ -165,7 +165,7 @@ class SponsorshipManagementSection extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (contracts.isEmpty)
-           _FinanceInsetPanel(
+          const _FinanceInsetPanel(
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Text(
@@ -223,7 +223,7 @@ class _FinanceInsetPanel extends StatelessWidget {
         color: AppColors.surfaceRaised,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side:  BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.border),
         ),
         clipBehavior: Clip.antiAlias,
         child: child,
@@ -265,7 +265,7 @@ Future<Map<ClubDepartment, int>?> showBudgetAllocationDialog(
             children: [
               Text(
                 'Saldo máximo para distribuição: ${formatMoney(career.userClub.money)}',
-                style:  TextStyle(color: AppColors.muted, fontSize: 11),
+                style: const TextStyle(color: AppColors.muted, fontSize: 11),
               ),
               const SizedBox(height: 12),
               for (final department in ClubDepartment.values)
@@ -469,7 +469,7 @@ class _DetailLine extends StatelessWidget {
           children: [
             Text(
               label,
-              style:  TextStyle(color: AppColors.muted, fontSize: 10),
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
             ),
             const SizedBox(height: 2),
             Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),

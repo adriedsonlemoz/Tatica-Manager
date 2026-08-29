@@ -6,7 +6,6 @@ abstract final class AppPreferences {
   static const termsVersion = '1';
   static const termsAcceptedKey = 'legal_terms_accepted_version';
   static const defaultGameSettingsKey = 'default_game_settings';
-  static const themeModeKey = 'ui_theme_mode';
 
   static String careerIntroPendingKey(String careerId) =>
       'career_intro_pending:$careerId';

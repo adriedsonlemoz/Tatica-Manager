@@ -62,9 +62,7 @@ void main() {
 
     expect(colors, contains('static Color readableAccent(Color color)'));
     expect(colors, contains('static Color foregroundOn(Color background)'));
-    expect(theme, contains('static ThemeData get light'));
-    expect(theme, contains('static ThemeData get dark'));
-    expect(theme, contains('appBarTheme: AppBarTheme('));
+    expect(theme, contains('appBarTheme: const AppBarTheme('));
     expect(theme, contains('surfaceTintColor: Colors.transparent'));
     expect(common, contains('AppColors.readableAccent(Color(club.colors.primaryHex))'));
     expect(stadiumScene, contains('AppColors.readableAccent'));

@@ -54,7 +54,7 @@ class LineupCandidateSheet extends StatelessWidget {
                         ),
                         Text(
                           'Posição do campo: ${role.label} • lista ordenada pelo rendimento efetivo',
-                          style:  TextStyle(color: AppColors.muted, fontSize: 10.5),
+                          style: const TextStyle(color: AppColors.muted, fontSize: 10.5),
                         ),
                       ],
                     ),
@@ -69,7 +69,7 @@ class LineupCandidateSheet extends StatelessWidget {
             const Divider(height: 1),
             Expanded(
               child: candidates.isEmpty
-                  ?  Center(
+                  ? const Center(
                       child: Text(
                         'Nenhum jogador disponível para esta troca.',
                         style: TextStyle(color: AppColors.muted),
@@ -134,7 +134,7 @@ class LineupCandidateSheet extends StatelessWidget {
                                         const SizedBox(height: 2),
                                         Text(
                                           '${candidate.player.primaryPosition.label} • ${LineupEngine.fitLabel(candidate.player, role)} • OVR base ${candidate.player.overall}',
-                                          style:  TextStyle(
+                                          style: const TextStyle(
                                             color: AppColors.muted,
                                             fontSize: 10,
                                           ),

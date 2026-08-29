@@ -357,7 +357,7 @@ class _PlayerDatabaseEditorScreenState extends State<PlayerDatabaseEditorScreen>
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 4),
-                 Text(
+                const Text(
                   'PNG, JPG/JPEG ou WebP, até 8 MB. A imagem é centralizada, recortada e salva em cópia privada otimizada.',
                   style: TextStyle(color: AppColors.muted, fontSize: 10.5, height: 1.35),
                 ),

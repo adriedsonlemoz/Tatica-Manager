@@ -26,7 +26,7 @@ void main() {
     final hub = File('lib/features/career/career_hub_screen.dart').readAsStringSync();
 
     expect(hub, contains('ClipRRect('));
-    expect(hub, contains("Text('Carregar jogo salvo'"));
+    expect(hub, contains("const Text('Carregar jogo salvo'"));
     expect(hub, contains('Tática Manager Beta 2.0'));
     expect(hub, contains('AppInfo.version'));
     expect(hub, contains('DiagnosticScreen'));

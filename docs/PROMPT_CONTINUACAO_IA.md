@@ -9,14 +9,14 @@ REPOSITÓRIO OFICIAL
 https://github.com/adriedsonlemoz/Tatica-Manager
 
 STACK
-Flutter + Dart, Riverpod, SQLite (sqflite), libGDX como renderer Android do campo e Flame como fallback visual.
+Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.118
-Android versionCode: 119
-pubspec: 0.1.1+119
+Release visível: 0.1.1.107
+Android versionCode: 108
+pubspec: 0.1.1+108
 
-Novidade desta base: Elenco e Classificação seguem os mockups aprovados com tabelas compactas e responsivas, abas funcionais e adaptação integral ao tema claro/escuro. Mantém libGDX 1.14.2 como renderer do campo no Android, Hybrid Composition real, SurfaceView contido em 105/68 e FitViewport 1050x680. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame preserva o mesmo refinamento como fallback.
+Novidade desta base: naturaliza exclusivamente a movimentação apresentada pelo Flame. Jogadores passam a ter velocidade, aceleração, frenagem, atrasos e curvas visuais individuais; o atleta acompanha o início do lance, pênaltis deixam de agrupar os dois times e o retorno à formação ocorre por setores. Passadas, sombras e nomes ficam sincronizados e estáveis. O Match Engine permanece intacto e continua sendo a única fonte de resultados, eventos e coordenadas.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -36,7 +36,7 @@ Mantenha domínio, engines, persistência, estado e UI separados.
 - lib/features: telas e widgets por funcionalidade.
 - lib/app/state: controladores Riverpod.
 - lib/core: banco, save, tema, plataforma e utilitários.
-- libGDX/Flame devem apenas representar a partida, nunca decidir o resultado.
+- Flame deve representar a partida, não decidir o resultado.
 
 CONTROLADORES ATUAIS
 - CareerController: múltiplos saves, criar/abrir/listar/excluir carreira.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.119 com versionCode > 119.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.108 com versionCode > 108.
 
 
 Depois de editar al-sistemas.json, execute:
@@ -135,8 +135,8 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 Esses itens ainda precisam de validação no APK/aparelho quando aplicável. Se um problema continuar no dispositivo, corrija a causa sem desfazer a arquitetura.
 
 PRÓXIMAS PRIORIDADES
-1. Validar a 0.1.1.106 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
-2. Em aparelho, validar legibilidade/colisões dos nomes, seleção dos três uniformes, contraste automático, goleiros e proporções do campo em diferentes telas.
+1. Validar a 0.1.1.107 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
+2. Em aparelho, validar aceleração/frenagem, pênaltis, retorno à formação e estabilidade dos nomes em partidas completas.
 3. Testar abertura da Central de Carreiras com múltiplos saves antigos e novos após a migração SQLite v2 -> v3.
 4. Exercitar avanço diário, jogos CPU, mercado e contratos para confirmar que a configuração persistida não altera a Série A atual.
 5. A próxima expansão de dados pode adicionar a Série B real usando o estado por competição já existente; antes de estaduais/copas, implementar somente o regulamento/calendário específico de cada torneio.

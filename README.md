@@ -1,11 +1,11 @@
 # Tática Manager 2
 
-Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo retrato, interface esportiva premium e partida com renderer libGDX no Android e Flame como fallback visual.
+Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo retrato, interface esportiva premium e partida 2D com Flame.
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.118`
-**Android versionCode:** `119`
+**Release atual:** `0.1.1.107`
+**Android versionCode:** `108`
 
 ## Fonte oficial de versão
 
@@ -14,106 +14,27 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.118`);
+- `VERSION` — versão visível simples (`0.1.1.107`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+119`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.118` e `versionCode 119`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+108`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.107` e `versionCode 108`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.118` é representada internamente como `0.1.1+119`. A versão visível do aplicativo/Android continua sendo `0.1.1.118`. a próxima entrega normalmente será `0.1.1.119`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.107` é representada internamente como `0.1.1+108`. A versão visível do aplicativo/Android continua sendo `0.1.1.107`. a próxima entrega normalmente será `0.1.1.108`.
 
 
 
-## Elenco e Classificação conforme os mockups — 0.1.1.118
 
-- substitui os cards grandes do Elenco por uma tabela compacta com número, avatar, jogador, posição, geral e moral;
-- adiciona cabeçalho do clube com escudo, temporada, reputação, caixa e orçamento, além de busca e filtro discretos;
-- mantém as abas Jogadores, Funções e Status funcionais e apresenta o resumo de jogadores brasileiros e estrangeiros;
-- substitui a `DataTable` horizontal da Classificação por uma tabela responsiva com Time, J, V, E, D, GP e PTS;
-- adiciona abas funcionais para Tabela, Jogos e Artilheiros, além de Sobre o campeonato e Critérios de desempate;
-- usa exclusivamente `AppColors` e o tema global para reproduzir as duas referências nos modos claro e escuro;
-- preserva dados reais da carreira, competição selecionada, navegação, Match Engine, `CareerState` schema 13, saves e IDs.
+## Movimentação visual natural — 0.1.1.107
 
-
-## Refinamento da Home compacta — 0.1.1.117
-
-- distribui os seis indicadores do Resumo da Temporada em uma única faixa horizontal, com divisores e tipografia compacta;
-- reduz altura e ícones dos seis atalhos, mantendo toda a largura disponível e fazendo `TRANSFERÊNCIAS` caber sem quebra irregular;
-- mantém o texto da ação centralizado e move o ícone de `AVANÇAR DIA`/`JOGAR PARTIDA` para o extremo direito em escala menor;
-- aumenta discretamente o espaçamento entre competição, data e estádio na Próxima Partida e normaliza os escudos desse card para 58 px;
-- aumenta a separação visual entre Resumo da Temporada, Classificação e Artilharia sem voltar a aumentar os cards;
-- quando `Mais` é aberto pelo menu superior da Home, exibe AppBar com botão `Voltar`; como aba inferior, continua sem botão de retorno indevido;
-- preserva tema claro/escuro, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves e IDs.
-
-
-## Correção das regressões de teste da Home/tema — 0.1.1.116
-
-- o GitHub Actions da 0.1.1.115 confirmou `flutter analyze` sem problemas e **287 testes aprovados**, com somente duas regressões estruturais restantes;
-- atualiza `career_onboarding_ui_test.dart` para validar o verde `0xFF35A94B`, o amarelo `0xFFD5A626` e as superfícies claras atuais, preservando também a paleta azul-grafite do modo escuro;
-- atualiza `player_avatar_identity_test.dart` para validar os avatares na nova `HomeCleanRankings`, em vez de exigir o antigo `playerForEvent` removido com a reconstrução da Home;
-- não altera a Home, o sistema claro/escuro, renderer libGDX, movimentação, Match Engine, saves, IDs ou `CareerState` schema 13.
-
-
-## Movimentação natural do Work integrada ao libGDX — 0.1.1.113
-
-- usa a 0.1.1.112 libGDX como base e porta as melhorias visuais da versão Work 0.1.1.107, sem substituir a arquitetura nativa já estabilizada;
-- cada atleta passa a manter velocidade própria, aceleração, frenagem, atraso de saída e curva determinística até o alvo recebido da timeline;
-- pênaltis deixam de reposicionar quase os 22 jogadores: cobrador e goleiro recebem destaque e somente atletas realmente próximos da área são afastados;
-- o retorno à formação ocorre com atrasos diferentes para goleiro, defesa, meio e ataque, reduzindo o efeito de todos voltarem no mesmo frame;
-- passe, chute, defesa e comemoração usam transições preparadas individualmente, enquanto passada, inclinação e sombra respondem à velocidade visual real;
-- nomes mantêm a âncora anterior enquanto ela continua válida e atletas secundários podem omitir a etiqueta em aglomerações, reduzindo saltos de texto;
-- as mesmas melhorias do Work também permanecem no renderer Flame de fallback; Match Engine, eventos, coordenadas, resultados, `CareerState` schema 13, saves e IDs não são alterados.
-
-
-## Correção da compilação Kotlin do renderer libGDX — 0.1.1.112
-
-- o GitHub Actions da 0.1.1.111 confirmou `flutter analyze` sem problemas e **282 testes aprovados** antes de chegar ao build Android;
-- corrige `LibGdxPitchPainter.kt:126: Unresolved reference 'crowdPulse'`, causado pela refatoração visual da 0.1.1.110 não ter propagado o parâmetro recebido por `draw()` até `drawCrowd()`;
-- `crowdPulse` agora é passado explicitamente por `drawStadiumBase` até a torcida, sem criar estado duplicado nem alterar eventos;
-- adiciona regressão estrutural para validar o encadeamento do parâmetro em futuras refatorações;
-- preserva Match Engine, Hybrid Composition, `SurfaceView` 105:68, `FitViewport`, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
-
-
-## Correção da regressão de layout da partida — 0.1.1.111
-
-- corrige a única falha do GitHub Actions da 0.1.1.110: 281 testes passaram e somente a regressão estrutural do painel do campo ficou desatualizada;
-- o teste deixa de exigir o antigo widget `AspectRatio` e passa a validar a implementação atual: proporção `105 / 68`, altura explícita por `width / pitchAspectRatio`, `SizedBox` limitado e clipping rígido;
-- mantém integralmente Hybrid Composition, `SurfaceView` contido, `FitViewport`, renderer libGDX, Flame fallback, Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
-
-
-## Campo libGDX contido e visual refinado — 0.1.1.110
-
-- força Hybrid Composition real para o `SurfaceView` do libGDX e evita que a superfície nativa escape do retângulo reservado pelo Flutter;
-- o painel da partida recebe tamanho explícito na proporção `105 / 68`, clipping no Flutter e `MATCH_PARENT` no host/Fragment Android;
-- o renderer passa a usar mundo virtual `1050 x 680` com `FitViewport`, mantendo o `glViewport` sincronizado com o tamanho real da View;
-- aumenta e refina jogadores, goleiros, bola, sombras, redes, traves, marcações e gramado;
-- nomes ficam maiores, com placa de contraste e reposicionamento automático entre quatro âncoras para reduzir colisões;
-- divide o renderer visual em módulos menores e preserva integralmente Match Engine, Flame fallback, `CareerState` schema 13, saves, IDs e multi-competição.
-
-
-## Compatibilidade dos natives libGDX com AGP 9 — 0.1.1.109
-
-- corrige a falha de `flutter build apk --release` da 0.1.1.108 em `android/app/build.gradle.kts`, causada pelo bloqueio do AGP 9 a `Provider` no `AndroidSourceSet`;
-- substitui `sourceSets.main.jniLibs.srcDir(Provider)` pela Variant Sources API oficial com `variant.sources.jniLibs?.addGeneratedSourceDirectory(...)`;
-- transforma a extração dos natives em uma tarefa tipada com `DirectoryProperty`, permitindo que o Android Gradle Plugin conecte automaticamente o diretório gerado ao grafo do build;
-- não usa `android.sourceset.disallowProvider=false`, não altera o Match Engine, o renderer libGDX, saves, IDs ou `CareerState` schema 13.
-
-
-## Correção do analyzer da integração libGDX — 0.1.1.108
-
-- corrige os oito lints apontados pelo `flutter analyze` da 0.1.1.107, que impediam o workflow de chegar à compilação Android;
-- remove o import redundante no `LibGdxMatchPitchController` e explicita `@override` nos membros de `MatchPitchGame` que implementam `MatchPitchController`;
-- não altera renderer libGDX, Match Engine, dependências, `CareerState` schema 13, saves, IDs ou multi-competição.
-
-
-## Campo Android com libGDX — 0.1.1.107
-
-- integra libGDX 1.14.2 dentro do próprio painel da partida no Android por meio de `PlatformView` + `AndroidFragmentApplication`;
-- mantém placar, timeline, narração, substituições, táticas e simulação na tela Flutter atual;
-- o Match Engine continua sendo a única fonte de eventos e coordenadas; o Kotlin/libGDX apenas interpola e desenha;
-- desenha gramado, gols/redes, jogadores, goleiros, nomes, uniformes e bola sem adicionar assets externos;
-- mantém Flame como fallback fora do Android e preserva `CareerState` schema 13, saves, IDs e multi-competição.
+- substitui o deslocamento linear uniforme por estados visuais individuais de velocidade, aceleração e frenagem;
+- adiciona pequenas curvas e atrasos determinísticos para que jogadores não saiam e parem todos juntos;
+- vincula o atleta ativo ao ponto inicial do lance já produzido pelo Match Engine;
+- corrige o pênalti para reposicionar somente cobrador, goleiro e atletas próximos da área, sem puxar os dois times para uma coluna;
+- retorna os setores à formação em tempos diferentes e sincroniza passada, inclinação e sombra à velocidade real;
+- estabiliza a âncora dos nomes durante o movimento, reduzindo saltos entre cima, lado e baixo;
+- não altera Match Engine, resultado, eventos, coordenadas, saves ou regras e não adiciona imagens.
 
 
 ## Campo legível e uniformes seguros — 0.1.1.106
@@ -278,7 +199,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.116`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.108`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
