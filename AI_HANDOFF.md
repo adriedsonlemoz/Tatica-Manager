@@ -8,12 +8,20 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.107`
-- **Android versionCode:** `108`
+- **Release deste handoff:** `0.1.1.108`
+- **Android versionCode:** `109`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.108
+
+- corrige os oito lints da integração libGDX apontados pelo GitHub Actions da 0.1.1.107 antes da etapa de compilação Android;
+- remove o import redundante do bridge nativo e adiciona `@override` aos membros de `MatchPitchGame` que implementam `MatchPitchController`;
+- não altera Match Engine, libGDX, dependências, `CareerState` schema 13, IDs, saves ou multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.108.md`.
 
 ## Estado funcional da release 0.1.1.107
 
@@ -735,10 +743,10 @@ Arquivos relevantes:
 Para esta release:
 
 release/versionName: 0.1.1.106
-versionCode:         108
-pubspec:             0.1.1+108
+versionCode:         109
+pubspec:             0.1.1+109
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.108` e usar um `versionCode` maior que 108.
+A próxima alteração/entrega normalmente deve virar `0.1.1.109` e usar um `versionCode` maior que 109.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

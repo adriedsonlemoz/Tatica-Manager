@@ -104,12 +104,16 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
+  @override
   bool get isReplayActive => _replayActive;
 
+  @override
   bool get blocksClock => _replayPending || _replayActive;
 
+  @override
   void playEvent(MatchEvent event) => playEvents([event]);
 
+  @override
   void updateLineups({
     required List<String> homePlayerIds,
     required List<String> awayPlayerIds,
@@ -118,6 +122,7 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     _awayPlayerIds = [...awayPlayerIds];
   }
 
+  @override
   void playEvents(Iterable<MatchEvent> events) {
     final list = events.toList();
     if (list.isEmpty) return;
@@ -127,6 +132,7 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     if (_eventRemaining <= 0) _beginNextCue();
   }
 
+  @override
   void skipReplay() {
     if (!_replayPending && !_replayActive) return;
     _cueQueue.removeWhere((cue) => cue.replay);
@@ -139,6 +145,7 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
     }
   }
 
+  @override
   void clearPresentationQueue() {
     _cueQueue.clear();
     _replayPending = false;

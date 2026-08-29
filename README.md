@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.107`
-**Android versionCode:** `108`
+**Release atual:** `0.1.1.108`
+**Android versionCode:** `109`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,24 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.107`);
+- `VERSION` — versão visível simples (`0.1.1.108`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+108`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.107` e `versionCode 108`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+109`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.108` e `versionCode 109`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.107` é representada internamente como `0.1.1+108`. A versão visível do aplicativo/Android continua sendo `0.1.1.107`. a próxima entrega normalmente será `0.1.1.108`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.108` é representada internamente como `0.1.1+109`. A versão visível do aplicativo/Android continua sendo `0.1.1.108`. a próxima entrega normalmente será `0.1.1.109`.
 
 
 
+
+
+## Correção do analyzer da integração libGDX — 0.1.1.108
+
+- corrige os oito lints apontados pelo `flutter analyze` da 0.1.1.107, que impediam o workflow de chegar à compilação Android;
+- remove o import redundante no `LibGdxMatchPitchController` e explicita `@override` nos membros de `MatchPitchGame` que implementam `MatchPitchController`;
+- não altera renderer libGDX, Match Engine, dependências, `CareerState` schema 13, saves, IDs ou multi-competição.
 
 
 ## Campo Android com libGDX — 0.1.1.107
