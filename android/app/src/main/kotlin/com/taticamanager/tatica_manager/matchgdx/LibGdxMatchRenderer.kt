@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import org.json.JSONObject
 import java.util.concurrent.ConcurrentLinkedQueue
-import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
@@ -50,8 +49,20 @@ class LibGdxMatchRenderer(
         Vector2(.50f, .46f), Vector2(.73f, .42f), Vector2(.18f, .65f),
         Vector2(.50f, .71f), Vector2(.82f, .65f),
     )
-    private val homePlayers = homeBase.map { GdxPlayerState(Vector2(it), Vector2(it)) }
-    private val awayPlayers = awayBase.map { GdxPlayerState(Vector2(it), Vector2(it)) }
+    private val homePlayers = homeBase.mapIndexed { index, point ->
+        GdxPlayerState(
+            position = Vector2(point),
+            target = Vector2(point),
+            motion = GdxPlayerMotionState(seed = 13 + index * 7),
+        )
+    }
+    private val awayPlayers = awayBase.mapIndexed { index, point ->
+        GdxPlayerState(
+            position = Vector2(point),
+            target = Vector2(point),
+            motion = GdxPlayerMotionState(seed = 47 + index * 7),
+        )
+    }
     private val dismissedHome = mutableSetOf<Int>()
     private val dismissedAway = mutableSetOf<Int>()
 
@@ -143,14 +154,11 @@ class LibGdxMatchRenderer(
         elapsed += dt
         crowdPulse = max(.12f, crowdPulse - dt * .22f)
 
-        // Presentation smoothing only. Targets still come from Match Engine
-        // coordinates delivered by Dart.
-        val response = if (replayActive) 4.4f else 7.4f
-        val movementAlpha = (1f - exp((-response * dt).toDouble()))
-            .toFloat()
-            .coerceIn(0f, 1f)
-        homePlayers.forEach { it.position.lerp(it.target, movementAlpha) }
-        awayPlayers.forEach { it.position.lerp(it.target, movementAlpha) }
+        // Presentation-only movement. Targets still come from Match Engine
+        // coordinates delivered by Dart; libGDX only controls how each player
+        // reaches those targets visually.
+        LibGdxPlayerMotion.moveTeam(homePlayers, dt, replay = replayActive)
+        LibGdxPlayerMotion.moveTeam(awayPlayers, dt, replay = replayActive)
 
         if (ballProgress < 1f) {
             ballProgress = min(1f, ballProgress + dt / ballDuration)
@@ -163,7 +171,7 @@ class LibGdxMatchRenderer(
             if (eventRemaining <= 0f) resetDelay = .34f
         } else if (resetDelay > 0f) {
             resetDelay -= dt
-            if (resetDelay <= 0f && !replayActive) resetTargets()
+            if (resetDelay <= 0f && !replayActive) resetTargets(staggered = true)
         }
     }
 
@@ -175,14 +183,14 @@ class LibGdxMatchRenderer(
                 "updateLineups" -> updateLineups(asMap(command.arguments))
                 "skipReplay" -> {
                     replayActive = false
-                    resetTargets()
+                    resetTargets(staggered = true)
                 }
                 "clearPresentation" -> {
                     replayActive = false
                     currentType = ""
                     eventRemaining = 0f
                     resetDelay = 0f
-                    resetTargets()
+                    resetTargets(staggered = true)
                 }
                 "setReplayActive" -> replayActive = command.arguments as? Boolean ?: false
             }
@@ -194,7 +202,7 @@ class LibGdxMatchRenderer(
         val endsReplay = payload["endsReplay"] as? Boolean ?: false
         if (startsReplay) {
             replayActive = true
-            resetTargets()
+            resetTargets(staggered = false)
         }
         if (endsReplay) replayActive = false
         val duration = (payload["duration"] as? Number)?.toFloat() ?: .3f
@@ -235,41 +243,113 @@ class LibGdxMatchRenderer(
         }
         activeHome = homeEvent
         if (homeEvent == null) return
+
         val ids = if (homeEvent) homeIds else awayIds
         val players = if (homeEvent) homePlayers else awayPlayers
         val opposite = if (homeEvent) awayPlayers else homePlayers
         val dismissed = if (homeEvent) dismissedHome else dismissedAway
         val playerId = event["playerId"]?.toString()
         var index = ids.indexOf(playerId).takeIf { it in players.indices && it !in dismissed }
-        if (index == null && start != null) index = nearestIndex(players, start, dismissed)
         if (currentType == "save" || currentType == "penaltySaved") {
             index = if (0 !in dismissed) 0 else firstVisibleIndex(players.size, dismissed)
+        } else if (index == null && start != null) {
+            index = LibGdxPlayerMotion.nearestIndex(players, start, excluded = dismissed)
         }
         activeIndex = index
+
+        if (index != null && start != null && eventUsesStartPosition(currentType)) {
+            players[index].motion.prepareNextTransition(delay = 0f, curveScale = .35f)
+            players[index].target.set(LibGdxPlayerMotion.playerPoint(start))
+        }
 
         if (currentType == "red" && index != null) {
             dismissed.add(index)
             return
         }
 
-        if (index != null && start != null) players[index].target.set(start)
-        when (currentType) {
-            "pass" -> if (end != null) {
-                val receiver = nearestIndex(players, end, dismissed + listOfNotNull(index))
-                players[receiver].target.set(end)
-                spreadSupport(players, end, setOfNotNull(index, receiver), homeEvent)
+        if (currentType == "penalty" && start != null) {
+            val taker = index ?: 0
+            val moved = LibGdxPlayerMotion.penaltySetup(
+                attackers = players,
+                defenders = opposite,
+                takerIndex = taker,
+                spot = start,
+                attackingHome = homeEvent,
+            )
+            LibGdxPlayerMotion.preparePenaltyTransitions(
+                attackers = players,
+                defenders = opposite,
+                takerIndex = taker,
+                attackingIndexes = moved.first,
+                defendingIndexes = moved.second,
+            )
+            ball.set(start)
+            ballStart.set(start)
+            ballTarget.set(start)
+            ballProgress = 1f
+            eventRemaining = duration
+            return
+        }
+
+        if (currentType == "pass" && end != null) {
+            val active = index ?: 0
+            val receiver = LibGdxPlayerMotion.nearestIndex(
+                players = players,
+                target = end,
+                excluding = active,
+                excluded = dismissed,
+            )
+            players[receiver].motion.prepareNextTransition(delay = .055f, curveScale = .72f)
+            players[receiver].target.set(LibGdxPlayerMotion.playerPoint(end))
+            LibGdxPlayerMotion.supportRun(
+                players = players,
+                destination = end,
+                excluding = buildSet {
+                    add(active)
+                    add(receiver)
+                    addAll(dismissed)
+                },
+                attackingHome = homeEvent,
+            )
+            eventRemaining = duration
+            return
+        }
+
+        if (isAttackingShotEvent(currentType) && end != null) {
+            val active = index ?: 0
+            val attackStart = start ?: end
+            LibGdxPlayerMotion.attackBox(
+                players = players,
+                start = attackStart,
+                activeIndex = active,
+                attackingHome = homeEvent,
+            )
+            val defensiveTarget = if (currentType == "woodwork") attackStart else end
+            opposite.getOrNull(0)?.motion?.prepareNextTransition(delay = .025f, curveScale = .18f)
+            LibGdxPlayerMotion.defendShot(
+                players = opposite,
+                target = defensiveTarget,
+                defendingHome = !homeEvent,
+            )
+            if (currentType == "goal" || currentType == "ownGoal") {
+                LibGdxPlayerMotion.celebrationRun(
+                    players = players,
+                    scorerIndex = active,
+                    start = attackStart,
+                    attackingHome = homeEvent,
+                )
             }
-            "shot", "goal", "ownGoal", "woodwork" -> if (end != null) {
-                attackBox(players, end, setOfNotNull(index), homeEvent)
-                defendBox(opposite, end, !homeEvent)
-            }
-            "save", "penaltySaved" -> if (end != null) {
-                val keeper = firstVisibleIndex(players.size, dismissed)
-                players[keeper].target.set(end)
-            }
-            "penalty" -> if (start != null) {
-                penaltySetup(players, opposite, index ?: 0, start, homeEvent)
-            }
+            eventRemaining = duration
+            return
+        }
+
+        if ((currentType == "save" || currentType == "penaltySaved") && end != null) {
+            players.getOrNull(0)?.motion?.prepareNextTransition(delay = .020f, curveScale = .16f)
+            LibGdxPlayerMotion.defendShot(
+                players = players,
+                target = end,
+                defendingHome = homeEvent,
+            )
         }
         eventRemaining = duration
     }
@@ -279,91 +359,38 @@ class LibGdxMatchRenderer(
         awayIds = stringList(payload["awayPlayerIds"])
     }
 
-    private fun resetTargets() {
+    private fun resetTargets(staggered: Boolean = true) {
+        if (staggered) {
+            LibGdxPlayerMotion.prepareFormationReturn(homePlayers, homeBase, home = true)
+            LibGdxPlayerMotion.prepareFormationReturn(awayPlayers, awayBase, home = false)
+        } else {
+            LibGdxPlayerMotion.clearPreparedTransitions(homePlayers)
+            LibGdxPlayerMotion.clearPreparedTransitions(awayPlayers)
+        }
         homePlayers.forEachIndexed { index, player -> player.target.set(homeBase[index]) }
         awayPlayers.forEachIndexed { index, player -> player.target.set(awayBase[index]) }
         activeHome = null
         activeIndex = null
     }
 
-    private fun spreadSupport(
-        players: List<GdxPlayerState>,
-        target: Vector2,
-        excluded: Set<Int>,
-        attackingHome: Boolean,
-    ) {
-        players.indices.filter { it !in excluded && it != 0 }.take(3).forEachIndexed { order, index ->
-            val lane = (order - 1) * .08f
-            players[index].target.set(
-                (target.x + lane).coerceIn(.08f, .92f),
-                (target.y + if (attackingHome) -.06f else .06f).coerceIn(.08f, .92f),
-            )
-        }
-    }
-
-    private fun attackBox(
-        players: List<GdxPlayerState>,
-        target: Vector2,
-        excluded: Set<Int>,
-        attackingHome: Boolean,
-    ) {
-        val direction = if (attackingHome) -1f else 1f
-        players.indices.filter { it !in excluded && it != 0 }.takeLast(3).forEachIndexed { order, index ->
-            players[index].target.set(
-                (target.x + (order - 1) * .07f).coerceIn(.08f, .92f),
-                (target.y - direction * .06f).coerceIn(.04f, .96f),
-            )
-        }
-    }
-
-    private fun defendBox(
-        players: List<GdxPlayerState>,
-        target: Vector2,
-        defendingHome: Boolean,
-    ) {
-        val direction = if (defendingHome) 1f else -1f
-        players.indices.filter { it != 0 }.take(4).forEachIndexed { order, index ->
-            players[index].target.set(
-                (target.x + (order - 1.5f) * .055f).coerceIn(.06f, .94f),
-                (target.y + direction * .07f).coerceIn(.04f, .96f),
-            )
-        }
-    }
-
-    private fun penaltySetup(
-        attackers: List<GdxPlayerState>,
-        defenders: List<GdxPlayerState>,
-        takerIndex: Int,
-        spot: Vector2,
-        attackingHome: Boolean,
-    ) {
-        attackers[takerIndex.coerceIn(0, attackers.lastIndex)].target.set(spot)
-        val defendingKeeper = defenders.firstOrNull() ?: return
-        defendingKeeper.target.set(.5f, if (attackingHome) .055f else .945f)
-    }
-
-    private fun nearestIndex(
-        players: List<GdxPlayerState>,
-        target: Vector2,
-        excluded: Collection<Int>,
-    ): Int {
-        var best = firstVisibleIndex(players.size, excluded.toSet())
-        var bestDistance = Float.MAX_VALUE
-        players.forEachIndexed { index, player ->
-            if (index in excluded) return@forEachIndexed
-            val dx = player.position.x - target.x
-            val dy = player.position.y - target.y
-            val distance = dx * dx + dy * dy
-            if (distance < bestDistance) {
-                bestDistance = distance
-                best = index
-            }
-        }
-        return best
-    }
-
     private fun firstVisibleIndex(count: Int, dismissed: Set<Int>): Int =
         (0 until count).firstOrNull { it !in dismissed } ?: 0
+
+    private fun eventUsesStartPosition(type: String): Boolean = type in setOf(
+        "pass",
+        "shot",
+        "woodwork",
+        "goal",
+        "ownGoal",
+        "penalty",
+    )
+
+    private fun isAttackingShotEvent(type: String): Boolean = type in setOf(
+        "shot",
+        "woodwork",
+        "goal",
+        "ownGoal",
+    )
 
     override fun dispose() {
         painter.dispose()

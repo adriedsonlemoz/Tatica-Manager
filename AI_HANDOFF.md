@@ -15,6 +15,17 @@
 
 
 
+## Estado funcional da release 0.1.1.113
+
+- integra no renderer Android libGDX as melhorias de movimentação da versão Work 0.1.1.107 sem substituir a base nativa da 0.1.1.112;
+- adiciona estado visual individual de velocidade, aceleração, frenagem, atraso e curvatura determinística para cada jogador;
+- corrige a apresentação de pênaltis para mover apenas cobrador, goleiro e atletas que realmente precisam sair da área, e escalona o retorno à formação por setor;
+- sincroniza passada, inclinação e sombra com a velocidade e estabiliza as âncoras dos nomes entre frames;
+- preserva as mesmas melhorias no Flame fallback e mantém `lib/game/match/engine/` inalterado, além de `CareerState` schema 13, saves, IDs e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.113.md`.
+
+
 ## Estado funcional da release 0.1.1.112
 
 - corrige a falha `compileReleaseKotlin` da 0.1.1.111 em `LibGdxPitchPainter.kt`, onde `drawCrowd()` usava `crowdPulse` sem recebê-lo no próprio escopo;

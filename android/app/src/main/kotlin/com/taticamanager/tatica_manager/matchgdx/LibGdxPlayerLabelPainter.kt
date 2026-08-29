@@ -23,6 +23,7 @@ internal class LibGdxPlayerLabelPainter(
     private lateinit var batch: SpriteBatch
     private lateinit var font: BitmapFont
     private val layout = GlyphLayout()
+    private val placementAnchors = mutableMapOf<String, Int>()
 
     fun create() {
         shapes = ShapeRenderer()
@@ -101,23 +102,26 @@ internal class LibGdxPlayerLabelPainter(
     ): List<LabelPlacement> {
         val occupied = mutableListOf<Rectangle>()
         val placements = mutableListOf<LabelPlacement>()
+        fun playerId(entry: GdxPlayerRenderEntry): String = if (entry.home) {
+            homeIds.getOrNull(entry.index).orEmpty()
+        } else {
+            awayIds.getOrNull(entry.index).orEmpty()
+        }.ifBlank { "${if (entry.home) "home" else "away"}:${entry.index}" }
+
         val prioritized = entries.sortedWith(
             compareByDescending<GdxPlayerRenderEntry> {
                 activeHome == it.home && activeIndex == it.index
             }.thenByDescending { it.index == 0 }
-                .thenBy { GdxPitchGeometry.displayPoint(it.player.position).y },
+                .thenBy { playerId(it) },
         )
 
         prioritized.forEach { entry ->
-            val id = if (entry.home) {
-                homeIds.getOrNull(entry.index)
-            } else {
-                awayIds.getOrNull(entry.index)
-            }
-            val raw = id?.let { names[it] }.orEmpty().trim()
+            val id = playerId(entry)
+            val raw = names[id].orEmpty().trim()
             if (raw.isEmpty()) return@forEach
 
-            val text = supportedName(compactName(raw))
+            val active = activeHome == entry.home && activeIndex == entry.index
+            val text = supportedName(compactName(raw, active))
             layout.setText(font, text)
             val boxWidth = layout.width + LABEL_PAD_X * 2f + ACCENT_WIDTH
             val boxHeight = layout.height + LABEL_PAD_Y * 2f
@@ -136,6 +140,8 @@ internal class LibGdxPlayerLabelPainter(
                 Rectangle(p.x - boxWidth / 2f, p.y - radius * 1.72f - boxHeight, boxWidth, boxHeight),
                 Rectangle(p.x + radius * 1.35f, p.y - boxHeight / 2f, boxWidth, boxHeight),
                 Rectangle(p.x - radius * 1.35f - boxWidth, p.y - boxHeight / 2f, boxWidth, boxHeight),
+                Rectangle(p.x - boxWidth * .86f, p.y + radius * 1.42f, boxWidth, boxHeight),
+                Rectangle(p.x - boxWidth * .14f, p.y + radius * 1.42f, boxWidth, boxHeight),
             ).map {
                 clampLabel(
                     rect = it,
@@ -146,20 +152,47 @@ internal class LibGdxPlayerLabelPainter(
                 )
             }
 
-            val chosen = candidates.firstOrNull { candidate ->
-                occupied.none { it.overlaps(candidate) }
-            } ?: candidates.minByOrNull { candidate -> overlapScore(candidate, occupied) }
-                ?: return@forEach
-            occupied += Rectangle(chosen)
+            val preferred = placementAnchors[id]
+            val anchorOrder = buildList {
+                if (preferred != null && preferred in candidates.indices) add(preferred)
+                candidates.indices.forEach { if (it != preferred) add(it) }
+            }
+            var chosenAnchor: Int? = null
+            var chosen: Rectangle? = null
+            var fallbackAnchor: Int? = null
+            var fallback: Rectangle? = null
+            var lowestOverlap = Float.MAX_VALUE
+            for (anchor in anchorOrder) {
+                val candidate = candidates[anchor]
+                val score = overlapScore(candidate, occupied)
+                if (score <= 0f) {
+                    chosen = candidate
+                    chosenAnchor = anchor
+                    break
+                }
+                if (active && score < lowestOverlap) {
+                    lowestOverlap = score
+                    fallback = candidate
+                    fallbackAnchor = anchor
+                }
+            }
+            val finalBox = chosen ?: fallback ?: return@forEach
+            val finalAnchor = chosenAnchor ?: fallbackAnchor ?: return@forEach
+            placementAnchors[id] = finalAnchor
+            occupied += Rectangle(
+                finalBox.x - 2.5f,
+                finalBox.y - 2.5f,
+                finalBox.width + 5f,
+                finalBox.height + 5f,
+            )
 
-            val isActive = activeHome == entry.home && activeIndex == entry.index
             placements += LabelPlacement(
                 text = text,
-                x = chosen.x + LABEL_PAD_X + ACCENT_WIDTH,
-                textTop = chosen.y + chosen.height - LABEL_PAD_Y,
-                box = chosen,
-                accent = Color(labelAccent(entry, isActive)),
-                active = isActive,
+                x = finalBox.x + LABEL_PAD_X + ACCENT_WIDTH,
+                textTop = finalBox.y + finalBox.height - LABEL_PAD_Y,
+                box = finalBox,
+                accent = Color(labelAccent(entry, active)),
+                active = active,
             )
         }
         return placements
@@ -202,18 +235,19 @@ internal class LibGdxPlayerLabelPainter(
         return score
     }
 
-    private fun compactName(value: String): String {
+    private fun compactName(value: String, active: Boolean = false): String {
         val clean = value.trim().replace(Regex("\\s+"), " ")
-        if (clean.length <= 12) return clean
+        val limit = if (active) 16 else 12
+        if (clean.length <= limit) return clean
         val parts = clean.split(' ').filter { it.isNotBlank() }
         val last = parts.lastOrNull().orEmpty()
-        if (last.length in 3..12) return last
+        if (last.length in 3..limit) return last
         if (parts.size >= 2) {
-            val first = parts.first().take(8)
+            val first = parts.first().take(if (active) 11 else 8)
             val initial = parts.last().firstOrNull()?.uppercaseChar()
             if (initial != null) return "$first $initial."
         }
-        return clean.take(9) + "..."
+        return clean.take((limit - 3).coerceAtLeast(1)) + "..."
     }
 
     /**

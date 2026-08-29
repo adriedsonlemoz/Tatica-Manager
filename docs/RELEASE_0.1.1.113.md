@@ -1,46 +1,63 @@
-# Release 0.1.1.113 — reintegração da qualidade visual da 0.1.1.107 ao renderer libGDX
+# Release 0.1.1.113 — movimentação natural integrada ao libGDX
 
-## Contexto
+## Escopo
 
-A 0.1.1.107 existiu como dois pacotes divergentes a partir do mesmo ponto de partida:
+Esta release usa a 0.1.1.112 libGDX como base e incorpora as melhorias de movimentação produzidas separadamente no Work 0.1.1.107. O merge foi feito por responsabilidade: nenhuma versão antiga substituiu a integração Android/libGDX atual e nenhum arquivo do Match Engine foi alterado.
 
-- um pacote aprimorou somente a apresentação do renderer Flame (`movimentação visual natural`): aceleração/frenagem real dos jogadores, curvas determinísticas de deslocamento, atrasos escalonados no retorno à formação, cobrança de pênalti que não puxa os 22 atletas para uma coluna, e memória de âncora dos rótulos de nome entre frames;
-- o outro pacote partiu do mesmo ponto, mas seguiu para a integração do libGDX como renderer nativo Android (`libGDX integrado ao campo da partida`), evoluindo até a 0.1.1.112 através das correções de CI documentadas em `RELEASE_0.1.1.108.md` a `RELEASE_0.1.1.112.md`.
+## Movimento no libGDX
 
-Como os dois pacotes divergiram do mesmo commit, a integração libGDX nunca recebeu as melhorias de movimento/rótulos, e o pacote de movimento nunca recebeu a integração libGDX. Esta release une os dois.
+- cada atleta possui estado visual independente de velocidade X/Y, atraso, alvo anterior, início da transição e força de curva;
+- o deslocamento usa aceleração e frenagem em vez de `Vector2.lerp` uniforme;
+- trajetórias recebem curvas pequenas e determinísticas, sem `Random` e sem alterar o destino entregue pela timeline;
+- saídas recebem atrasos curtos por atleta/setor, eliminando o efeito de todos iniciarem no mesmo frame;
+- goleiros usam velocidade máxima ligeiramente menor e transições específicas em defesa/pênalti;
+- a posição final continua exatamente o alvo produzido pela apresentação dos eventos do Match Engine.
 
-## O que foi reintegrado
+## Pênaltis e retorno à formação
 
-Do pacote de movimento (0.1.1.107), para dentro da base com libGDX (0.1.1.112):
+- o cobrador vai ao ponto da cobrança e o goleiro defensor assume a linha visual apropriada;
+- somente jogadores dentro da aproximação da área são movidos para posições de espera;
+- atletas já fora da zona preservam sua posição, evitando a antiga coluna/efeito de ímã;
+- defesa, meio, ataque e goleiros retornam à formação com atrasos diferentes e curvas discretas.
 
-- `lib/game/match/renderer/match_player_motion.dart`: `MatchPlayerMotionState` (velocidade, atraso preparado, curva de trajetória) e as funções `moveTeam`, `preparePenaltyTransitions`, `prepareFormationReturn`, `clearPreparedTransitions`, `_beginTransition`, `_advancePlayer`, `_approach`;
-- `lib/game/match/renderer/match_player_labels.dart`: `MatchPlayerLabelPlacement` e a preferência de âncora (`preferredAnchor`) em `_place`, que evita que um rótulo troque de posição a cada frame sem necessidade;
-- `lib/game/match/renderer/match_player_visuals.dart`: taxa de passada/balanço refinada e `idleBreath` separado do deslocamento do boneco;
-- `lib/game/match/renderer/match_pitch_game.dart`: reconstruído a partir da versão da 0.1.1.107 (que já contém `_homeMotionStates`/`_awayMotionStates`, `_labelPlacements`, `_eventUsesStartPosition` e o uso de `preparePenaltyTransitions`/`prepareFormationReturn`), com a interface `MatchPitchController` (introduzida pela integração libGDX) reaplicada por cima: `implements MatchPitchController`, `@override` em `isReplayActive`, `blocksClock`, `playEvent`, `updateLineups`, `playEvents`, `skipReplay`, `clearPresentationQueue`, e `disposeController()`.
+## Animação e nomes
 
-Do pacote libGDX (0.1.1.112), preservado integralmente:
+- passada, braços, inclinação, balanço vertical e sombra respondem à velocidade real do estado visual;
+- jogador parado deixa de receber deslocamento ambiente do corpo inteiro;
+- o painter de nomes mantém a âncora anterior enquanto ela continua utilizável;
+- a prioridade dos nomes fica estável por jogador, com atleta ativo e goleiros à frente;
+- em aglomerações, etiquetas secundárias podem ser omitidas temporariamente em vez de trocar de lado a cada frame;
+- nomes acentuados continuam usando o fallback de glifos já existente no libGDX.
 
-- `MatchPitchController` (contrato), `LibGdxMatchPitchController`, `libgdx_match_pitch_view.dart`;
-- `MainActivity`, o módulo Kotlin `matchgdx` e o pipeline Gradle (`ExtractGdxNativesTask`, Variant Sources API, natives arm64-v8a/armeabi-v7a/x86/x86_64);
-- a seleção de renderer por plataforma em `match_screen.dart` (`LibGdxMatchPitchController` no Android, `MatchPitchGame`/Flame fora dele);
-- o encaixe visual do `SurfaceView` em `live_match_pitch_panel.dart` (`SizedBox` explícito 105:68, `Clip.hardEdge`, `initExpensiveAndroidView`).
+## Flame fallback
 
-O `MatchPitchGame` (Flame) passa a ser, ao mesmo tempo, o renderer de fallback fora do Android **e** a base funcional de onde a integração libGDX herdou seu contrato — mas o Kotlin/libGDX continua fazendo sua própria interpolação nativa (`FitViewport`, `LibGdxMatchRenderer`), sem chamar nada deste arquivo Dart.
+Os quatro arquivos modificados pelo Work (`match_pitch_game.dart`, `match_player_motion.dart`, `match_player_labels.dart` e `match_player_visuals.dart`) foram integrados também ao fallback Flame por merge de três vias, preservando `MatchPitchController` e a arquitetura libGDX adicionada depois da base 0.1.1.106.
+
+## Integridade
+
+- `lib/game/match/engine/` não foi modificado;
+- libGDX continua somente como renderer/apresentação visual;
+- não há `Random` nem decisão de gameplay no Kotlin;
+- `CareerState` permanece no schema 13;
+- saves e IDs persistidos não mudam;
+- Hybrid Composition, SurfaceView 105:68, FitViewport, bridge Dart/Kotlin, uniformes, goleiros, bola, redes, replay, substituições, timeline e narração são preservados.
 
 ## Testes
 
-- `test/match_player_motion_visual_test.dart` (existia somente na 0.1.1.107) volta a fazer parte da suíte, cobrindo `penaltySetup`, aceleração/frenagem até o alvo exato e atraso preparado;
-- `test/live_match_visual_experience_test.dart` recupera o teste "renderer mantém estado visual de movimento e de posição dos nomes" removido pela integração libGDX, validando `_eventUsesStartPosition`, `preparePenaltyTransitions`, `prepareFormationReturn` e `placementStates: _labelPlacements` em `match_pitch_game.dart`;
-- as ~80 asserções de conteúdo desse arquivo de teste foram conferidas programaticamente contra o código mesclado (sem executor Flutter neste ambiente) e todas batem;
-- `test/libgdx_match_renderer_integration_test.dart` (0.1.1.107 a 0.1.1.112) não foi alterado e continua validando exclusivamente o lado Kotlin/Gradle/PlatformView, que não foi tocado por esta release.
-
-## Compatibilidade
-
-- Match Engine e `lib/game/match/engine/` continuam intocados;
-- `CareerState` permanece no schema 13; saves e IDs persistidos não mudam;
-- Flame continua como fallback fora do Android; libGDX continua como renderer Android;
-- nenhuma regra de jogo, probabilidade, placar ou resultado foi alterada — apenas a apresentação visual do campo.
+- mantém `match_player_motion_visual_test.dart` vindo do Work para o fallback Flame;
+- amplia `libgdx_match_renderer_integration_test.dart` para exigir aceleração/frenagem, curvas, pênalti seletivo, retorno escalonado, animação por velocidade e estabilidade de nomes no renderer nativo;
+- atualiza `live_match_visual_experience_test.dart` preservando simultaneamente a regressão do layout libGDX e a regressão de movimento do Work.
 
 ## Validação necessária
 
-Este ambiente não tem Flutter/Dart instalado, então `flutter pub get`, `flutter analyze`, `flutter test` e `flutter build apk --release` precisam ser confirmados pelo GitHub Actions ou localmente. Recomenda-se rodar a suíte completa (com atenção aos dois testes reintegrados) e validar em aparelho Android real que a partida ainda usa o renderer libGDX com o movimento/rótulos agora mais estáveis herdados da 0.1.1.107.
+Executar no CI:
+
+```text
+python3 tool/versioning.py verify
+flutter pub get
+flutter analyze
+flutter test
+flutter build apk --release
+```
+
+Em aparelho, validar principalmente pênalti, passe seguido de chute, gol/comemoração, retorno à formação, estabilidade dos nomes e sensação de aceleração/frenagem.

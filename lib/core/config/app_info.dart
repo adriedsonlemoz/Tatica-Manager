@@ -14,11 +14,11 @@ abstract final class AppInfo {
   static const List<ReleaseNote> recentReleases = [
     ReleaseNote(
       version: '0.1.1.113',
-      title: 'Reintegração da 0.1.1.107 ao renderer libGDX',
+      title: 'Movimentação natural integrada ao libGDX',
       changes: [
-        'Reintegra ao MatchPitchGame o movimento com aceleração/frenagem, curvas de trajetória e retorno escalonado à formação, além da memória de âncora dos rótulos de nome, desenvolvidos em paralelo na 0.1.1.107.',
-        'Preserva integralmente MatchPitchController, LibGdxMatchPitchController, MainActivity e o pipeline Gradle/Kotlin da integração libGDX.',
-        'Restaura os testes de movimento e de continuidade visual dos rótulos; não altera Match Engine, saves, IDs ou CareerState schema 13.',
+        'Porta para o renderer libGDX aceleração, frenagem, trajetórias curvas e saídas escalonadas desenvolvidas no Work.',
+        'Corrige a apresentação visual de pênaltis e escalona o retorno à formação por setor, mantendo o Match Engine intacto.',
+        'Sincroniza passada, inclinação e sombra à velocidade e estabiliza as âncoras dos nomes; Flame mantém o mesmo refinamento como fallback.',
       ],
     ),
     ReleaseNote(

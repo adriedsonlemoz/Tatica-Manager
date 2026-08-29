@@ -25,13 +25,15 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 
 
-## Reintegração da qualidade visual da 0.1.1.107 ao renderer libGDX — 0.1.1.113
+## Movimentação natural do Work integrada ao libGDX — 0.1.1.113
 
-- a 0.1.1.107 existiu como dois pacotes divergentes do mesmo ponto de partida: um aprimorou somente o movimento/rótulos do renderer Flame, o outro seguiu para a integração libGDX (0.1.1.108 a 0.1.1.112) sem essas melhorias;
-- reintegra ao `MatchPitchGame` a máquina de estado de movimento (`MatchPlayerMotionState`, aceleração/frenagem, curvas, atraso escalonado no retorno à formação e na cobrança de pênalti) e a memória de âncora dos rótulos de nome (`MatchPlayerLabelPlacement`) do pacote de movimento;
-- preserva integralmente a interface `MatchPitchController`, `LibGdxMatchPitchController`, `MainActivity`, o pipeline Gradle/Kotlin e a seleção de renderer por plataforma introduzidos pela integração libGDX;
-- restaura os testes de movimento e de continuidade visual dos rótulos que a integração libGDX havia deixado de fora;
-- não altera Match Engine, `CareerState` schema 13, saves, IDs ou multi-competição.
+- usa a 0.1.1.112 libGDX como base e porta as melhorias visuais da versão Work 0.1.1.107, sem substituir a arquitetura nativa já estabilizada;
+- cada atleta passa a manter velocidade própria, aceleração, frenagem, atraso de saída e curva determinística até o alvo recebido da timeline;
+- pênaltis deixam de reposicionar quase os 22 jogadores: cobrador e goleiro recebem destaque e somente atletas realmente próximos da área são afastados;
+- o retorno à formação ocorre com atrasos diferentes para goleiro, defesa, meio e ataque, reduzindo o efeito de todos voltarem no mesmo frame;
+- passe, chute, defesa e comemoração usam transições preparadas individualmente, enquanto passada, inclinação e sombra respondem à velocidade visual real;
+- nomes mantêm a âncora anterior enquanto ela continua válida e atletas secundários podem omitir a etiqueta em aglomerações, reduzindo saltos de texto;
+- as mesmas melhorias do Work também permanecem no renderer Flame de fallback; Match Engine, eventos, coordenadas, resultados, `CareerState` schema 13, saves e IDs não são alterados.
 
 
 ## Correção da compilação Kotlin do renderer libGDX — 0.1.1.112

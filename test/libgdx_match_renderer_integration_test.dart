@@ -119,12 +119,53 @@ void main() {
     );
     expect(painter, contains('crowdPulse = crowdPulse'));
     expect(labels, contains('buildPlacements('));
-    expect(labels, contains('occupied.none { it.overlaps(candidate) }'));
-    expect(labels, contains('shapes.rect('));
-    expect(labels, contains('supportedName(compactName(raw))'));
+    expect(labels, contains('placementAnchors'));
+    expect(labels, contains('val preferred = placementAnchors[id]'));
+    expect(labels, contains('supportedName(compactName(raw, active))'));
     expect(labels, contains('Normalizer.normalize'));
     expect(renderer, isNot(contains('MatchEngine')));
     expect(painter, isNot(contains('MatchEngine')));
     expect(labels, isNot(contains('MatchEngine')));
+  });
+
+  test('movimento do Work foi portado para o renderer libGDX', () {
+    final renderer = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxMatchRenderer.kt',
+    ).readAsStringSync();
+    final motion = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxPlayerMotion.kt',
+    ).readAsStringSync();
+    final painter = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxPitchPainter.kt',
+    ).readAsStringSync();
+    final models = File(
+      'android/app/src/main/kotlin/com/taticamanager/tatica_manager/matchgdx/'
+      'LibGdxMatchVisualModels.kt',
+    ).readAsStringSync();
+
+    expect(renderer, contains('LibGdxPlayerMotion.moveTeam'));
+    expect(renderer, contains('preparePenaltyTransitions'));
+    expect(renderer, contains('prepareFormationReturn'));
+    expect(renderer, contains('eventUsesStartPosition'));
+    expect(renderer, contains('celebrationRun'));
+    expect(motion, contains('delayRemaining'));
+    expect(motion, contains('curveStrength'));
+    expect(motion, contains('desiredSpeed'));
+    expect(motion, contains('acceleration'));
+    expect(motion, contains('deceleration'));
+    expect(motion, contains('penaltySetup'));
+    expect(motion, contains('insidePenaltyApproach'));
+    expect(models, contains('GdxPlayerMotionState'));
+    expect(models, contains('movementAmount'));
+    expect(models, contains('displayDirection'));
+    expect(painter, contains('val run = motion.movementAmount'));
+    expect(painter, contains('val gait = MathUtils.sin'));
+    expect(painter, contains('val lean = motion.displayDirection'));
+    expect(motion, isNot(contains('Random(')));
+    expect(motion, isNot(contains('MatchEngine')));
+    expect(renderer, isNot(contains('MatchEngine')));
   });
 }

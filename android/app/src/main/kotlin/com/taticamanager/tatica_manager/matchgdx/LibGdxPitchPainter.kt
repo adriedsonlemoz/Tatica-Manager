@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -246,55 +247,104 @@ internal class LibGdxPitchPainter(
             val active = activeHome == entry.home && activeIndex == entry.index
             val keeper = entry.index == 0
             val kit = kitFor(entry.home, keeper)
+            val motion = entry.player.motion
+            val run = motion.movementAmount
+            val strideRate = 4.8f + run * 7.0f
+            val gait = MathUtils.sin(elapsed * strideRate + motion.seed * .017f) * run
+            val bob = abs(
+                MathUtils.sin(elapsed * strideRate * 2f + motion.seed * .011f),
+            ) * radius * .055f * run
+            val idleBreath = MathUtils.sin(elapsed * 1.7f + motion.seed * .013f) *
+                radius * .010f * (1f - run)
+            val lean = motion.displayDirection * .10f * run
+            val bodyX = p.x + lean * radius
+            val bodyY = p.y + idleBreath - bob
+            val stride = gait * radius * .28f
 
+            // Shadow stays grounded. Its small stretch reflects actual visual
+            // speed instead of distance remaining to the next target.
+            val shadowWidth = radius * (2.10f + run * .18f)
             shapes.color = Color(0f, 0f, 0f, .30f)
             shapes.ellipse(
-                p.x - radius * 1.05f,
+                p.x - shadowWidth / 2f,
                 p.y - radius * 1.55f,
-                radius * 2.1f,
-                radius * .68f,
+                shadowWidth,
+                radius * (.68f - run * .06f),
             )
 
             if (active) {
                 val pulse = 1.38f + .06f * MathUtils.sin(elapsed * 8f)
                 shapes.color = Color(1f, .82f, .16f, .25f)
-                shapes.circle(p.x, p.y, radius * pulse, 28)
+                shapes.circle(bodyX, bodyY, radius * pulse, 28)
             }
 
+            // Alternating stride is driven by velocity, so a stopped player no
+            // longer appears to run or slide in place.
             shapes.color = kit.socks
-            shapes.rect(p.x - radius * .62f, p.y - radius * 1.18f, radius * .38f, radius * .52f)
-            shapes.rect(p.x + radius * .24f, p.y - radius * 1.18f, radius * .38f, radius * .52f)
+            shapes.rect(
+                bodyX - radius * .62f,
+                bodyY - radius * 1.18f + stride,
+                radius * .38f,
+                radius * .52f,
+            )
+            shapes.rect(
+                bodyX + radius * .24f,
+                bodyY - radius * 1.18f - stride,
+                radius * .38f,
+                radius * .52f,
+            )
             shapes.color = kit.shorts
-            shapes.rect(p.x - radius * .74f, p.y - radius * .72f, radius * 1.48f, radius * .62f)
+            shapes.rect(
+                bodyX - radius * .74f,
+                bodyY - radius * .72f,
+                radius * 1.48f,
+                radius * .62f,
+            )
 
             shapes.color = Color(0f, 0f, 0f, .24f)
-            shapes.circle(p.x, p.y + radius * .02f, radius * 1.02f, 24)
+            shapes.circle(bodyX, bodyY + radius * .02f, radius * 1.02f, 24)
             shapes.color = kit.primary
-            shapes.circle(p.x, p.y + radius * .04f, radius * .91f, 24)
-            drawKitPattern(p, radius, kit)
+            shapes.circle(bodyX, bodyY + radius * .04f, radius * .91f, 24)
+            drawKitPattern(Vector2(bodyX, bodyY), radius, kit)
 
             shapes.color = if (keeper) kit.primary else Color(.82f, .64f, .50f, 1f)
             val armWidth = if (keeper) radius * .36f else radius * .28f
-            shapes.rect(p.x - radius * 1.14f, p.y - radius * .18f, armWidth, radius * .65f)
-            shapes.rect(p.x + radius * .78f, p.y - radius * .18f, armWidth, radius * .65f)
+            val armSwing = gait * radius * .13f
+            shapes.rect(
+                bodyX - radius * 1.14f,
+                bodyY - radius * .18f - armSwing,
+                armWidth,
+                radius * .65f,
+            )
+            shapes.rect(
+                bodyX + radius * .78f,
+                bodyY - radius * .18f + armSwing,
+                armWidth,
+                radius * .65f,
+            )
             if (keeper) {
                 shapes.color = kit.accent
-                shapes.circle(p.x - radius * 1.03f, p.y - radius * .28f, radius * .24f, 12)
-                shapes.circle(p.x + radius * 1.03f, p.y - radius * .28f, radius * .24f, 12)
+                shapes.circle(bodyX - radius * 1.03f, bodyY - radius * .28f, radius * .24f, 12)
+                shapes.circle(bodyX + radius * 1.03f, bodyY - radius * .28f, radius * .24f, 12)
             }
 
             shapes.color = Color(.86f, .69f, .55f, 1f)
-            shapes.circle(p.x, p.y + radius * 1.02f, radius * .43f, 18)
+            shapes.circle(bodyX, bodyY + radius * 1.02f, radius * .43f, 18)
             shapes.color = Color(.12f, .09f, .075f, .92f)
             shapes.rect(
-                p.x - radius * .34f,
-                p.y + radius * 1.22f,
+                bodyX - radius * .34f,
+                bodyY + radius * 1.22f,
                 radius * .68f,
                 radius * .14f,
             )
             if (keeper) {
                 shapes.color = Color(1f, 1f, 1f, .62f)
-                shapes.rect(p.x - radius * .36f, p.y + radius * .18f, radius * .72f, radius * .10f)
+                shapes.rect(
+                    bodyX - radius * .36f,
+                    bodyY + radius * .18f,
+                    radius * .72f,
+                    radius * .10f,
+                )
             }
         }
         shapes.end()
@@ -311,11 +361,22 @@ internal class LibGdxPitchPainter(
                 fieldHeight,
             )
             val depthScale = .90f + GdxPitchGeometry.displayPoint(entry.player.position).y * .16f
+            val radius = GdxPitchGeometry.PLAYER_RADIUS * depthScale
+            val motion = entry.player.motion
+            val run = motion.movementAmount
+            val strideRate = 4.8f + run * 7.0f
+            val bob = abs(
+                MathUtils.sin(elapsed * strideRate * 2f + motion.seed * .011f),
+            ) * radius * .055f * run
+            val idleBreath = MathUtils.sin(elapsed * 1.7f + motion.seed * .013f) *
+                radius * .010f * (1f - run)
+            val bodyX = p.x + motion.displayDirection * .10f * run * radius
+            val bodyY = p.y + idleBreath - bob
             shapes.color = Color(1f, .86f, .24f, .92f)
             shapes.circle(
-                p.x,
-                p.y,
-                GdxPitchGeometry.PLAYER_RADIUS * depthScale * 1.28f,
+                bodyX,
+                bodyY,
+                radius * 1.28f,
                 28,
             )
         }

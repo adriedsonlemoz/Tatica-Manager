@@ -16,7 +16,7 @@ Release visível: 0.1.1.113
 Android versionCode: 114
 pubspec: 0.1.1+114
 
-Novidade desta base: mantém libGDX 1.14.2 como renderer do campo no Android, Hybrid Composition real, SurfaceView contido em 105/68 e FitViewport 1050x680. A 0.1.1.112 corrige a falha compileReleaseKotlin da release anterior propagando explicitamente crowdPulse por draw() → drawStadiumBase() → drawCrowd(), com regressão estrutural específica. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame permanece como fallback fora do Android.
+Novidade desta base: mantém libGDX 1.14.2 como renderer do campo no Android, Hybrid Composition real, SurfaceView contido em 105/68 e FitViewport 1050x680. A 0.1.1.113 porta para o libGDX as melhorias de movimentação da versão Work 0.1.1.107: velocidade/aceleração individuais, curvas e atrasos determinísticos, pênalti sem aglomeração, retorno escalonado e nomes mais estáveis. O Match Engine permanece em Dart e continua sendo a única fonte de resultados, eventos e coordenadas; Flame preserva o mesmo refinamento como fallback.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.

@@ -685,6 +685,9 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       type == MatchEventType.ownGoal ||
       type == MatchEventType.penalty;
 
+  @override
+  void disposeController() {}
+
   static bool _isMajor(MatchEventType type) =>
       type == MatchEventType.goal ||
       type == MatchEventType.ownGoal ||
@@ -696,8 +699,6 @@ class MatchPitchGame extends FlameGame implements MatchPitchController {
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
 
-  @override
-  void disposeController() {}
 }
 
 
