@@ -2,6 +2,11 @@ PROMPT MESTRE — NOVO TÁTICA MANAGER EM FLUTTER
 Versão inicial consolidada
 
 
+ATUALIZAÇÃO DE REGRESSÃO DO RENDERER — 0.1.1.111
+
+Os testes estruturais da partida devem validar a implementação atual do retângulo nativo: proporção 105/68, altura explícita calculada pelo Flutter, SizedBox limitado e clipping. Não reintroduzir AspectRatio apenas para satisfazer testes antigos. O SurfaceView libGDX continua usando Hybrid Composition real e FitViewport; Match Engine e coordenadas permanecem em Dart.
+
+
 ATUALIZAÇÃO DO RENDERER ANDROID — 0.1.1.110
 
 No Android, o SurfaceView do libGDX deve permanecer estritamente contido no retângulo do campo definido pelo Flutter. A integração usa Hybrid Composition real, tamanho 105/68 explícito no widget, host nativo com clipping/MATCH_PARENT e FitViewport 1050x680 no renderer. Não substituir isso por composição por textura enquanto o GLSurfaceView for adicionado pelo Fragment após a criação do PlatformView. Nomes, jogadores, bola, gols e demais refinamentos pertencem somente à camada visual; Match Engine e coordenadas permanecem em Dart.

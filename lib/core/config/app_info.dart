@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.110';
+  static const String version = '0.1.1.111';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.111',
+      title: 'Correção do teste do campo libGDX',
+      changes: [
+        'Atualiza a regressão visual que ainda exigia o antigo AspectRatio mesmo após o campo passar a usar tamanho explícito 105:68.',
+        'Mantém SizedBox, clipping, Hybrid Composition e FitViewport sem alterar o renderer ou o Match Engine.',
+        'Preserva Flame fallback, saves, IDs e CareerState schema 13.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.110',
       title: 'Campo libGDX contido e refinado',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige o build Android que falhava ao registrar os natives do libGDX no sourceSets com um Provider.',
         'Passa a usar a Variant Sources API oficial e liga a tarefa de extração dos natives diretamente ao diretório JNI gerado.',
         'Não altera Match Engine, renderer, saves, IDs ou CareerState schema 13.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.108',
-      title: 'Correção do analyzer do libGDX',
-      changes: [
-        'Corrige os oito lints que faziam o GitHub Actions parar no flutter analyze antes da compilação Android.',
-        'Remove o import redundante do bridge libGDX e marca explicitamente os membros que implementam MatchPitchController.',
-        'Não altera o Match Engine, o renderer libGDX, saves, IDs ou CareerState schema 13.',
       ],
     ),
   ];

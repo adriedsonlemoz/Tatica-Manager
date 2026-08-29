@@ -104,8 +104,13 @@ void main() {
       contains("import 'widgets/live_match_event_widgets.dart';"),
     );
     expect(pitchPanel, isNot(contains('LiveMatchMomentCard(')));
-    expect(pitchPanel, contains('AspectRatio('));
-    expect(pitchPanel, contains('aspectRatio: 105 / 68'));
+    expect(
+      pitchPanel,
+      contains('static const double pitchAspectRatio = 105 / 68;'),
+    );
+    expect(pitchPanel, contains('final height = width / pitchAspectRatio;'));
+    expect(pitchPanel, contains('return SizedBox('));
+    expect(pitchPanel, contains('clipBehavior: Clip.hardEdge'));
     expect(narrationPanel, contains('NARRAÇÃO AO VIVO'));
     final controls = File(
       'lib/features/match/widgets/live_match_controls.dart',
