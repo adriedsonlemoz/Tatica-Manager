@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.115`
-**Android versionCode:** `116`
+**Release atual:** `0.1.1.116`
+**Android versionCode:** `117`
 
 ## Fonte oficial de versão
 
@@ -14,15 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.115`);
+- `VERSION` — versão visível simples (`0.1.1.116`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+116`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.115` e `versionCode 116`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+117`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.116` e `versionCode 117`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.115` é representada internamente como `0.1.1+116`. A versão visível do aplicativo/Android continua sendo `0.1.1.115`. a próxima entrega normalmente será `0.1.1.116`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.116` é representada internamente como `0.1.1+117`. A versão visível do aplicativo/Android continua sendo `0.1.1.116`. a próxima entrega normalmente será `0.1.1.117`.
 
+
+
+## Correção das regressões de teste da Home/tema — 0.1.1.116
+
+- o GitHub Actions da 0.1.1.115 confirmou `flutter analyze` sem problemas e **287 testes aprovados**, com somente duas regressões estruturais restantes;
+- atualiza `career_onboarding_ui_test.dart` para validar o verde `0xFF35A94B`, o amarelo `0xFFD5A626` e as superfícies claras atuais, preservando também a paleta azul-grafite do modo escuro;
+- atualiza `player_avatar_identity_test.dart` para validar os avatares na nova `HomeCleanRankings`, em vez de exigir o antigo `playerForEvent` removido com a reconstrução da Home;
+- não altera a Home, o sistema claro/escuro, renderer libGDX, movimentação, Match Engine, saves, IDs ou `CareerState` schema 13.
 
 
 ## Movimentação natural do Work integrada ao libGDX — 0.1.1.113

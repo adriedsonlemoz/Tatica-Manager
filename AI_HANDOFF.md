@@ -8,12 +8,22 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`), libGDX no renderer Android da partida e Flame como fallback visual
-- **Release deste handoff:** `0.1.1.115`
-- **Android versionCode:** `116`
+- **Release deste handoff:** `0.1.1.116`
+- **Android versionCode:** `117`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+
+## Estado funcional da release 0.1.1.116
+
+- corrige as duas regressões estruturais reveladas depois que o analyzer da 0.1.1.115 passou: 287 testes foram aprovados e somente dois ficaram desatualizados;
+- atualiza a regressão da paleta para as cores atuais do tema claro/escuro, sem restaurar os hexadecimais antigos;
+- faz o teste de identidade visual validar `HomeCleanRankings`/`PlayerAvatar` na nova Home, em vez do antigo `playerForEvent` removido;
+- preserva Home, modo escuro persistente, renderer libGDX, movimentação, Match Engine, `CareerState` schema 13, saves, IDs e multi-competição.
+
+Consulte `docs/RELEASE_0.1.1.116.md`.
 
 ## Estado funcional da release 0.1.1.115
 
@@ -814,11 +824,11 @@ Arquivos relevantes:
 
 Para esta release:
 
-release/versionName: 0.1.1.113
-versionCode:         116
-pubspec:             0.1.1+116
+release/versionName: 0.1.1.116
+versionCode:         117
+pubspec:             0.1.1+117
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.116` e usar um `versionCode` maior que 116.
+A próxima alteração/entrega normalmente deve virar `0.1.1.117` e usar um `versionCode` maior que 117.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
