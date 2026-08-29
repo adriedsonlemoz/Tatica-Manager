@@ -10,22 +10,15 @@ enum MatchPlayerPose {
   penaltyReady,
 }
 
-/// Renders players as bold, high-contrast "tokens" (a broadcast-style top
-/// down chip: body blob + jersey pattern + small head) rather than a
-/// finely detailed stick figure. At the small on-screen scale used during
-/// live match rendering, fine detail (separate limbs, hair strands, socks)
-/// just turns into visual noise — a simplified, bigger-contrast shape reads
-/// far better and looks closer to a real match-manager broadcast camera.
+/// Renders each player as a single flat "chip" — one solid disc carrying
+/// the kit color/pattern, with no separate head shape floating above the
+/// body. Earlier iterations used a two-part body+head silhouette; at the
+/// tiny scale used during a live match that either turned into a blurry
+/// mess (fine limb strokes) or, once simplified, into an oversized head
+/// sitting on a tiny torso ("bobblehead" look). A single disc has no way
+/// to misjudge proportions between two parts, so it stays legible and
+/// clean at any render scale.
 abstract final class MatchPlayerVisuals {
-  static const _skinTones = <Color>[
-    Color(0xFFF1C7A2),
-    Color(0xFFDFA77A),
-    Color(0xFFC98A5D),
-    Color(0xFFA86643),
-    Color(0xFF7E452D),
-    Color(0xFF5C3226),
-  ];
-
   static void draw(
     Canvas canvas, {
     required Offset center,
@@ -40,9 +33,7 @@ abstract final class MatchPlayerVisuals {
     double animationPhase = 0,
     double diveDirection = 0,
   }) {
-    // Tokens read better a bit bigger than the old anatomical figure did,
-    // since there's no separate limb geometry adding perceived size.
-    final s = scale * 1.28;
+    final s = scale * 1.15;
 
     final bounce = pose == MatchPlayerPose.celebration
         ? math.sin(animationPhase * math.pi * 4).abs() * 2.6 * s
@@ -54,7 +45,6 @@ abstract final class MatchPlayerVisuals {
     final dive = pose == MatchPlayerPose.goalkeeperDive;
     final angle = dive ? diveDirection.sign * .82 : 0.0;
     final hash = playerId.hashCode.abs();
-    final skin = _skinTones[hash % _skinTones.length];
     final primary =
         goalkeeper ? _goalkeeperColor(kit.primaryHex, hash) : Color(kit.primaryHex);
     final secondary = goalkeeper
@@ -68,138 +58,115 @@ abstract final class MatchPlayerVisuals {
       canvas.translate(-translated.dx, -translated.dy);
     }
 
-    // Ground shadow first, anchored slightly ahead of the body so the
-    // token feels grounded on the pitch rather than floating.
+    // Ground shadow, slightly offset down so the chip reads as sitting on
+    // the grass rather than floating on top of it.
     canvas.drawOval(
       Rect.fromCenter(
-        center: Offset(translated.dx, translated.dy + 8.4 * s),
-        width: (dive ? 19 : 15.5) * s,
-        height: 4.6 * s,
+        center: Offset(translated.dx, translated.dy + 7.2 * s),
+        width: (dive ? 17 : 13.5) * s,
+        height: 3.8 * s,
       ),
       Paint()
         ..color = const Color(0x55000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.1),
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.0),
     );
 
     if (active) {
       final ringColor = replay ? const Color(0xFFFFFFFF) : const Color(0xFF9AF12A);
       canvas.drawCircle(
         translated,
-        (15 + pulse * 4) * s,
+        (13.5 + pulse * 4) * s,
         Paint()..color = ringColor.withValues(alpha: .10 + .12 * pulse),
       );
       canvas.drawCircle(
         translated,
-        (12.2 + pulse * 3) * s,
+        (11 + pulse * 3) * s,
         Paint()
           ..color = ringColor.withValues(alpha: .34 + .2 * pulse)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = replay ? 1.9 : 1.55,
+          ..strokeWidth = replay ? 1.9 : 1.5,
       );
     }
 
-    // Body: one bold rounded-capsule silhouette carries the jersey. Arms
-    // are suggested with two short stub caps instead of full limb lines,
-    // which keeps the token crisp instead of turning to mush at 6-9px.
-    final bodyCenter = Offset(translated.dx, translated.dy + 2.6 * s);
-    final body = RRect.fromRectAndRadius(
-      Rect.fromCenter(center: bodyCenter, width: 12.6 * s, height: 12.0 * s),
-      Radius.circular(5.4 * s),
-    );
+    final radius = 7.4 * s;
 
-    final armLift = pose == MatchPlayerPose.celebration ? 5.6 : 1.6;
-    final armPaint = Paint()..color = primary;
-    canvas.drawCircle(
-      Offset(translated.dx - 7.0 * s, translated.dy - .4 * s - armLift * s * .3),
-      2.5 * s,
-      armPaint,
-    );
-    canvas.drawCircle(
-      Offset(translated.dx + 7.0 * s, translated.dy - .4 * s - armLift * s * .3),
-      2.5 * s,
-      armPaint,
-    );
+    // Base disc: solid kit color.
+    canvas.drawCircle(translated, radius, Paint()..color = primary);
 
-    _drawKit(canvas, body, primary, secondary, kit.pattern, s);
-    canvas.drawRRect(
-      body,
-      Paint()
-        ..color = const Color(0xC4FFFFFF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .9 * s,
-    );
-    // Soft top-down light sheen so the token doesn't read as flat.
+    // Pattern lives inside a clip of the same disc so it never spills out
+    // into a separate silhouette.
     canvas.save();
-    canvas.clipRRect(body);
+    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: translated, radius: radius)));
+    _drawKitPattern(canvas, translated, radius, secondary, kit.pattern);
+
+    // Faint darker cap near the top third suggests "facing forward"
+    // without ever detaching from the disc as its own shape.
+    canvas.drawCircle(
+      Offset(translated.dx, translated.dy - radius * .42),
+      radius * .5,
+      Paint()..color = const Color(0x24000000),
+    );
+
+    // Soft top-down sheen for a bit of dimensionality.
     canvas.drawRect(
-      body.outerRect,
+      Rect.fromCircle(center: translated, radius: radius),
       Paint()
-        ..shader = Gradient.linear(
-          body.outerRect.topCenter,
-          body.outerRect.bottomCenter,
-          const [Color(0x3AFFFFFF), Color(0x00FFFFFF), Color(0x22000000)],
-          const [0, .5, 1],
+        ..shader = Gradient.radial(
+          Offset(translated.dx, translated.dy - radius * .5),
+          radius * 1.5,
+          const [Color(0x3AFFFFFF), Color(0x00FFFFFF)],
         ),
     );
     canvas.restore();
 
-    // Head: simple flat disc, no hair/neck strokes — reads as a clean dot
-    // at this size and avoids the "bald mannequin" look from fine strokes.
-    final headCenter = Offset(translated.dx, translated.dy - 6.6 * s);
-    canvas.drawCircle(headCenter, 4.0 * s, Paint()..color = skin);
+    // Crisp rim so the chip separates cleanly from the grass and from
+    // neighbouring players.
     canvas.drawCircle(
-      headCenter,
-      4.0 * s,
+      translated,
+      radius,
       Paint()
-        ..color = const Color(0x2A000000)
+        ..color = const Color(0xD8FFFFFF)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = .55 * s,
+        ..strokeWidth = 1.15 * s,
     );
 
     canvas.restore();
   }
 
-  static void _drawKit(
+  static void _drawKitPattern(
     Canvas canvas,
-    RRect body,
-    Color primary,
+    Offset center,
+    double radius,
     Color secondary,
     ClubKitPattern pattern,
-    double scale,
   ) {
-    canvas.save();
-    canvas.clipRRect(body);
-    canvas.drawRRect(body, Paint()..color = primary);
-    final rect = body.outerRect;
+    final rect = Rect.fromCircle(center: center, radius: radius);
     final accent = Paint()..color = secondary;
     switch (pattern) {
       case ClubKitPattern.solid:
         canvas.drawRect(
-          Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height * .22),
-          accent..color = secondary.withValues(alpha: .55),
+          Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height * .3),
+          accent..color = secondary.withValues(alpha: .6),
         );
         break;
       case ClubKitPattern.verticalStripes:
-        // Two bold stripes instead of five thin ones — legible at 8px.
-        final stripe = rect.width / 3;
         canvas.drawRect(
-          Rect.fromLTWH(rect.left + stripe * .5, rect.top, stripe, rect.height),
+          Rect.fromLTWH(rect.left + rect.width * .36, rect.top, rect.width * .28, rect.height),
           accent,
         );
         break;
       case ClubKitPattern.horizontalStripes:
-        final stripe = rect.height / 3;
         canvas.drawRect(
-          Rect.fromLTWH(rect.left, rect.top + stripe, rect.width, stripe),
+          Rect.fromLTWH(rect.left, rect.top + rect.height * .36, rect.width, rect.height * .28),
           accent,
         );
         break;
       case ClubKitPattern.sash:
         final path = Path()
-          ..moveTo(rect.left - 2 * scale, rect.top + rect.height * .18)
-          ..lineTo(rect.left + 2 * scale, rect.top - 2 * scale)
-          ..lineTo(rect.right + 2 * scale, rect.bottom + 2 * scale)
-          ..lineTo(rect.right - 2 * scale, rect.bottom - rect.height * .18)
+          ..moveTo(rect.left, rect.top + rect.height * .2)
+          ..lineTo(rect.left + rect.width * .35, rect.top)
+          ..lineTo(rect.right, rect.bottom - rect.height * .2)
+          ..lineTo(rect.right - rect.width * .35, rect.bottom)
           ..close();
         canvas.drawPath(path, accent);
         break;
@@ -216,12 +183,11 @@ abstract final class MatchPlayerVisuals {
             ..shader = Gradient.linear(
               rect.topCenter,
               rect.bottomCenter,
-              [primary, secondary],
+              [secondary.withValues(alpha: 0), secondary],
             ),
         );
         break;
     }
-    canvas.restore();
   }
 
   static Color _goalkeeperColor(int primaryHex, int hash) {

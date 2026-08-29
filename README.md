@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.100`
-**Android versionCode:** `101`
+**Release atual:** `0.1.1.101`
+**Android versionCode:** `102`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.100`);
+- `VERSION` — versão visível simples (`0.1.1.101`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+101`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.100` e `versionCode 101`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+102`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.101` e `versionCode 102`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.100` é representada internamente como `0.1.1+101`. A versão visível do aplicativo/Android continua sendo `0.1.1.100`. a próxima entrega normalmente será `0.1.1.101`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.101` é representada internamente como `0.1.1+102`. A versão visível do aplicativo/Android continua sendo `0.1.1.101`. a próxima entrega normalmente será `0.1.1.102`.
 
 
 
+
+## Token do jogador refeito do zero — 0.1.1.101
+
+- refaz o token do jogador da partida ao vivo como um disco chapado único, sem cabeça separada acima do corpo;
+- elimina o efeito "bobblehead" (cabeça grande destacada) da versão anterior, mantendo padrão do uniforme, cor de goleiro, sombra, brilho e anéis de destaque;
+- não altera Match Engine, gramado, saves, IDs ou multi-competição.
 
 ## Sincronização de versão — 0.1.1.100
 
