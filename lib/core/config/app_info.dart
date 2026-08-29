@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.95';
+  static const String version = '0.1.1.96';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.96',
+      title: 'Correção do renderer da bola',
+      changes: [
+        'Corrige o único erro de analyzer da 0.1.1.95 no campo redesenhado.',
+        'Usa a API real drawMatchBallGraphic do sistema de estilos da bola e elimina o warning de import não utilizado.',
+        'Não altera o novo campo, Match Engine, eventos, saves, IDs ou multi-competição.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.95',
       title: 'Campo da partida redesenhado',

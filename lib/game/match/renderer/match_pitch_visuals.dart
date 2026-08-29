@@ -342,11 +342,11 @@ abstract final class MatchPitchVisuals {
       );
     }
 
-    drawMatchBall(
+    drawMatchBallGraphic(
       canvas,
       center: ball,
       radius: replay ? 5.1 : 4.5,
-      styleIndex: style,
+      style: style,
     );
   }
 
