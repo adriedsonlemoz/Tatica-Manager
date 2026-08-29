@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.97';
+  static const String version = '0.1.1.98';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.98',
+      title: 'Jogadores e gramado mais nítidos',
+      changes: [
+        'Redesenha os jogadores como tokens sólidos de alto contraste no lugar da figura anatômica fina que virava mancha na escala real da tela.',
+        'Deixa o gramado mais verde/saturado, com listras de corte mais contrastantes, linhas mais grossas e perspectiva mais acentuada.',
+        'Não altera Match Engine, eventos, placar, saves, IDs ou multi-competição.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.97',
       title: 'Correção dos testes da transmissão',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige o único erro de analyzer da 0.1.1.95 no campo redesenhado.',
         'Usa a API real drawMatchBallGraphic do sistema de estilos da bola e elimina o warning de import não utilizado.',
         'Não altera o novo campo, Match Engine, eventos, saves, IDs ou multi-competição.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.95',
-      title: 'Campo da partida redesenhado',
-      changes: [
-        'Refaz o gramado da partida com perspectiva mais equilibrada, moldura de estádio e marcações/gols redesenhados do zero.',
-        'Reordena o desenho dos jogadores por profundidade e reduz novamente a escala visual para aproximar o enquadramento do mockup.',
-        'Mantém torcida, Match Engine, eventos, placar, saves, IDs e fundação multi-competição intactos.',
       ],
     ),
   ];

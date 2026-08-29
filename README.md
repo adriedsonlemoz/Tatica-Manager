@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.97`
-**Android versionCode:** `99`
+**Release atual:** `0.1.1.98`
+**Android versionCode:** `100`
 
 ## Fonte oficial de versão
 
@@ -14,17 +14,23 @@ A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool
 Arquivos de identificação/versionamento incluídos no projeto:
 
 - `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.97`);
+- `VERSION` — versão visível simples (`0.1.1.98`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+99`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.97` e `versionCode 99`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+100`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.98` e `versionCode 100`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.97` é representada internamente como `0.1.1+99`. A versão visível do aplicativo/Android continua sendo `0.1.1.97`. a próxima entrega normalmente será `0.1.1.98`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.98` é representada internamente como `0.1.1+100`. A versão visível do aplicativo/Android continua sendo `0.1.1.98`. a próxima entrega normalmente será `0.1.1.99`.
 
 
 
+
+## Jogadores e gramado mais nítidos — 0.1.1.98
+
+- redesenha os jogadores da partida ao vivo como tokens sólidos de alto contraste (corpo em cápsula única com padrão do uniforme, cabeça simples, sombra e brilho sutis) no lugar da figura anatômica fina que virava mancha na escala real da tela;
+- deixa o gramado mais verde/saturado, com listras de corte mais contrastantes, linhas do campo mais grossas e perspectiva mais acentuada para o efeito de câmera de transmissão;
+- não altera Match Engine, eventos, placar, saves, IDs ou multi-competição.
 
 ## Correção dos testes da transmissão — 0.1.1.97
 
