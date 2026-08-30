@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.107
-Android versionCode: 108
-pubspec: 0.1.1+108
+Release visível: 0.1.1.108
+Android versionCode: 109
+pubspec: 0.1.1+109
 
-Novidade desta base: naturaliza exclusivamente a movimentação apresentada pelo Flame. Jogadores passam a ter velocidade, aceleração, frenagem, atrasos e curvas visuais individuais; o atleta acompanha o início do lance, pênaltis deixam de agrupar os dois times e o retorno à formação ocorre por setores. Passadas, sombras e nomes ficam sincronizados e estáveis. O Match Engine permanece intacto e continua sendo a única fonte de resultados, eventos e coordenadas.
+Novidade desta base: corrige o único warning do flutter analyze da 0.1.1.107 removendo um parâmetro opcional de ícone que não era utilizado no cabeçalho de Classificação/Artilharia. O visual da Home e o Match Engine permanecem intactos.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica é al-sistemas.json.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
 O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.108 com versionCode > 108.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.109 com versionCode > 109.
 
 
 Depois de editar al-sistemas.json, execute:

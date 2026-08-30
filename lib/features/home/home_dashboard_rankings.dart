@@ -179,13 +179,11 @@ class _DashboardSectionHeader extends StatelessWidget {
   const _DashboardSectionHeader({
     required this.title,
     required this.compact,
-    this.icon,
     this.action,
     this.onAction,
   });
 
   final String title;
-  final IconData? icon;
   final String? action;
   final VoidCallback? onAction;
   final bool compact;
@@ -193,10 +191,6 @@ class _DashboardSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          if (icon != null) ...[
-            Icon(icon, color: AppColors.green, size: compact ? 13 : 17),
-            SizedBox(width: compact ? 3 : 5),
-          ],
           Expanded(
             child: Text(
               title,
