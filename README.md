@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.114`
-**Android versionCode:** `115`
+**Release atual:** `0.1.1.115`
+**Android versionCode:** `116`
 
 ## Fonte oficial de versão
 
@@ -13,15 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.114`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.115`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+115`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.114` e `versionCode 115`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+116`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.115` e `versionCode 116`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.114`, o pubspec é `0.1.1+115`. a próxima entrega normalmente será `0.1.1.115`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.115`, o pubspec é `0.1.1+116`. a próxima entrega normalmente será `0.1.1.116`.
 
+
+## Correção do cabeçalho da Home — 0.1.1.115
+
+- corrige o erro do GitHub Actions em `home_dashboard_header.dart`, onde `minHeight` foi passado diretamente ao `Container` apesar de esse parâmetro não existir;
+- preserva a altura mínima de 104 px por meio de `BoxConstraints(minHeight: 104)`, mantendo o desenho aprovado da Home;
+- a correção é restrita ao cabeçalho da Home e não altera dados, navegação, Match Engine, músicas, saves, IDs, regras ou resultados;
+- o log da 0.1.1.114 parou no `flutter analyze`, antes dos testes e do build do APK.
 
 ## Home alinhada à referência — 0.1.1.114
 

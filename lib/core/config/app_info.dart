@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.114';
+  static const String version = '0.1.1.115';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.115',
+      title: 'Correção do cabeçalho da Home',
+      changes: [
+        'Corrige o erro de análise estática causado pelo uso inválido de minHeight no Container do cabeçalho da Home.',
+        'Mantém a altura mínima planejada usando BoxConstraints, sem desfazer o alinhamento visual da Home.',
+        'Não altera Match Engine, músicas, saves, IDs, regras ou resultados do jogo.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.114',
       title: 'Home alinhada à referência',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Redesenha a tela Elenco no formato compacto da referência, com cabeçalho do clube e uma única lista de jogadores.',
         'Remove a faixa de abas e mantém busca e filtros existentes apenas nos ícones do topo.',
         'Mostra número, jogador, posição, GER, moral e o resumo de brasileiros/estrangeiros usando somente dados já existentes no save.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.112',
-      title: 'Novidades limitada às três releases recentes',
-      changes: [
-        'Corrige o teste de Sobre / Novidades que falhava porque a lista havia acumulado mais de três releases.',
-        'Mantém na tela somente as três releases mais recentes, preservando o histórico completo nos documentos de release.',
-        'Não altera músicas, player, Match Engine, saves, IDs, regras ou resultados do jogo.',
       ],
     ),
   ];

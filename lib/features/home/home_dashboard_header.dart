@@ -89,7 +89,7 @@ class HomeClubHeader extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(10, 3, 10, 3),
         child: Container(
-          minHeight: 104,
+          constraints: const BoxConstraints(minHeight: 104),
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
