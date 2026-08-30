@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.119';
+  static const String version = '0.1.1.120';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.120',
+      title: 'Correção da compilação de Finanças',
+      changes: [
+        'Corrige o fechamento de FinanceBalanceOverview que fazia o analisador interpretar os componentes seguintes como classes internas.',
+        'Mantém a tela de Finanças e suas integrações existentes sem criar lógica financeira paralela.',
+        'Ajusta a lista de Novidades para manter exatamente três releases, conforme validado pelos testes do projeto.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.119',
       title: 'Finanças conectadas à carreira',
@@ -28,24 +37,6 @@ abstract final class AppInfo {
         'Redesenha o Pré-jogo com confronto tático, escalações prováveis, desfalques e os três atalhos Escalação, Tática e Uniformes.',
         'Usa formação, tática, força, titulares, desfalques e forma recente derivados dos dados reais da carreira, sem técnico, clima ou árbitro inventados.',
         'Adiciona simulação direta pelo mesmo LiveMatchController e move a escolha de uniformes para um pop-up centralizado.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.117',
-      title: 'Correção de consistência do Estádio',
-      changes: [
-        'Corrige os dois testes que bloquearam o CI da 0.1.1.116 sem remover os novos sistemas do Estádio.',
-        'Aplica acento legível baseado na cor do clube e limita a disponibilidade de obras ao menor valor entre caixa e orçamento do estádio.',
-        'Mantém Match Engine, músicas, saves e regras de partida inalterados.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.116',
-      title: 'Estádio imersivo e novos sistemas',
-      changes: [
-        'Redesenha o Estádio conforme a referência aprovada usando as duas imagens otimizadas do estádio.',
-        'Cria manutenção persistente, Centro de Treinamento e obras com prazo/status que só aplicam melhorias na conclusão.',
-        'Mantém Match Engine, músicas, IDs e resultados de partidas inalterados.',
       ],
     ),
   ];
