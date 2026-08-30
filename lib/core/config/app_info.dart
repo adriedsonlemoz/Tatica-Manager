@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.112';
+  static const String version = '0.1.1.113';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.113',
+      title: 'Elenco em lista compacta',
+      changes: [
+        'Redesenha a tela Elenco no formato compacto da referência, com cabeçalho do clube e uma única lista de jogadores.',
+        'Remove a faixa de abas e mantém busca e filtros existentes apenas nos ícones do topo.',
+        'Mostra número, jogador, posição, GER, moral e o resumo de brasileiros/estrangeiros usando somente dados já existentes no save.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.112',
       title: 'Novidades limitada às três releases recentes',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Recomprime as cinco músicas padrão do menu com Opus em contêiner OGG, preservando estéreo e duração completa.',
         'Reduz o conjunto das cinco faixas em cerca de 15% sem alterar a playlist, os nomes ou o comportamento do player.',
         'Mantém Match Engine, saves, IDs, efeitos sonoros e regras do jogo inalterados.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.110',
-      title: 'Teste da Home sincronizado',
-      changes: [
-        'Atualiza o teste estrutural da Home para os componentes realmente usados pelo layout atual.',
-        'Remove expectativas obsoletas de widgets antigos sem alterar a interface ou a lógica do jogo.',
-        'Mantém Match Engine, saves, playlist reduzida e regras do jogo inalterados.',
       ],
     ),
   ];

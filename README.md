@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.112`
-**Android versionCode:** `113`
+**Release atual:** `0.1.1.113`
+**Android versionCode:** `114`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,25 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.112`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.113`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+113`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.112` e `versionCode 113`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+114`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.113` e `versionCode 114`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.112`, o pubspec é `0.1.1+113`. a próxima entrega normalmente será `0.1.1.113`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.113`, o pubspec é `0.1.1+114`. a próxima entrega normalmente será `0.1.1.114`.
+
+## Elenco em lista compacta — 0.1.1.113
+
+- redesenha somente a tela **Elenco** seguindo a referência fornecida: cabeçalho compacto do clube, lista única e resumo no rodapé;
+- remove a faixa de abas `Jogadores / Funções / Status` e não cria substitutos para essas abas;
+- mantém a busca e os filtros que já existiam, agora acessíveis pelos ícones do topo;
+- cada linha usa dados reais do jogador já existentes no save: número, avatar, nome, posição, GER e moral;
+- o cabeçalho usa apenas dados já existentes do clube/carreira: escudo, nome, temporada, reputação, saldo e orçamento de transferências;
+- o rodapé calcula total de jogadores, brasileiros e estrangeiros diretamente do elenco;
+- o atalho da Home abre o Elenco com retorno visível; a aba principal do GameShell continua sem botão de retorno;
+- não altera Match Engine, saves, IDs, regras, resultados, músicas ou assets.
 
 ## Correção de Sobre / Novidades — 0.1.1.112
 
@@ -236,7 +247,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.113`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.114`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
