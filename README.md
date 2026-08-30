@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.110`
-**Android versionCode:** `111`
+**Release atual:** `0.1.1.112`
+**Android versionCode:** `113`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,29 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.110`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.112`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+111`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.110` e `versionCode 111`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+113`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.112` e `versionCode 113`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.110`, o pubspec é `0.1.1+111`. a próxima entrega normalmente será `0.1.1.111`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.112`, o pubspec é `0.1.1+113`. a próxima entrega normalmente será `0.1.1.113`.
+
+## Correção de Sobre / Novidades — 0.1.1.112
+
+- corrige o único teste que falhou no GitHub Actions da 0.1.1.111: `app_info_test.dart` esperava exatamente três releases recentes;
+- limita `AppInfo.recentReleases` às três versões mais recentes (`0.1.1.112`, `0.1.1.111` e `0.1.1.110`), mantendo o histórico antigo nos arquivos de documentação;
+- preserva integralmente as cinco músicas otimizadas da 0.1.1.111 e não altera player, Match Engine, saves, IDs, regras ou resultados;
+- `flutter analyze` já havia passado sem problemas no log da 0.1.1.111; a correção é restrita ao cadastro de novidades/versionamento.
+
+## Músicas do menu mais leves — 0.1.1.111
+
+- mantém as mesmas cinco músicas da playlist padrão e os mesmos nomes/caminhos dos assets;
+- troca internamente a codificação das faixas de Vorbis para **Opus em contêiner OGG**, suportado pelo ExoPlayer/Android;
+- preserva estéreo e duração completa, com VBR em torno de 64 kbps para reduzir tamanho sem perda perceptível no uso como música de fundo;
+- reduz o conjunto das cinco faixas de **10.386.273 bytes para 8.852.371 bytes**, economia de aproximadamente **14,8%**;
+- não altera `AudioCatalog`, fluxo do player, efeitos da partida, Match Engine, saves, IDs ou regras.
 
 ## Teste da Home sincronizado — 0.1.1.110
 
@@ -221,7 +236,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.111`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.113`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

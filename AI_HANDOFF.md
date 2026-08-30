@@ -8,12 +8,30 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.110`
-- **Android versionCode:** `111`
+- **Release deste handoff:** `0.1.1.112`
+- **Android versionCode:** `113`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.112
+
+- corrige a falha de `app_info_test.dart` observada no GitHub Actions da 0.1.1.111;
+- mantém `AppInfo.recentReleases` com exatamente as três versões mais recentes, como a tela Sobre / Novidades e o teste esperam;
+- preserva o histórico completo de releases na pasta `docs/`, sem acumular todas elas na lista exibida pelo aplicativo;
+- não altera as cinco músicas otimizadas, player, Match Engine, saves, IDs, regras ou resultados.
+
+Consulte `docs/RELEASE_0.1.1.112.md`.
+
+## Estado funcional da release 0.1.1.111
+
+- mantém as cinco músicas padrão escolhidas na 0.1.1.109, sem adicionar ou remover faixas;
+- recomprime somente esses assets de Vorbis para Opus dentro de OGG, em estéreo e com duração integral;
+- reduz o conjunto de 10.386.273 para 8.852.371 bytes (~14,8%), sem mudar nomes de arquivos nem `AudioCatalog`;
+- preserva player, efeitos, Match Engine, saves, IDs e regras.
+
+Consulte `docs/RELEASE_0.1.1.111.md`.
 
 ## Estado funcional da release 0.1.1.110
 
@@ -763,11 +781,11 @@ Para esta release:
 
 ```text
 release/versionName: 0.1.1.110
-versionCode:         111
-pubspec:             0.1.1+111
+versionCode:         113
+pubspec:             0.1.1+113
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.111` e usar um `versionCode` maior que 111.
+A próxima alteração/entrega normalmente deve virar `0.1.1.113` e usar um `versionCode` maior que 113.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

@@ -7,11 +7,29 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.110';
+  static const String version = '0.1.1.112';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.112',
+      title: 'Novidades limitada às três releases recentes',
+      changes: [
+        'Corrige o teste de Sobre / Novidades que falhava porque a lista havia acumulado mais de três releases.',
+        'Mantém na tela somente as três releases mais recentes, preservando o histórico completo nos documentos de release.',
+        'Não altera músicas, player, Match Engine, saves, IDs, regras ou resultados do jogo.',
+      ],
+    ),
+    ReleaseNote(
+      version: '0.1.1.111',
+      title: 'Músicas do menu mais leves',
+      changes: [
+        'Recomprime as cinco músicas padrão do menu com Opus em contêiner OGG, preservando estéreo e duração completa.',
+        'Reduz o conjunto das cinco faixas em cerca de 15% sem alterar a playlist, os nomes ou o comportamento do player.',
+        'Mantém Match Engine, saves, IDs, efeitos sonoros e regras do jogo inalterados.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.110',
       title: 'Teste da Home sincronizado',
@@ -19,33 +37,6 @@ abstract final class AppInfo {
         'Atualiza o teste estrutural da Home para os componentes realmente usados pelo layout atual.',
         'Remove expectativas obsoletas de widgets antigos sem alterar a interface ou a lógica do jogo.',
         'Mantém Match Engine, saves, playlist reduzida e regras do jogo inalterados.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.109',
-      title: 'Playlist reduzida e versionamento simples',
-      changes: [
-        'Mantém somente as cinco músicas de menu fornecidas na lista reduzida e remove as outras seis faixas antigas.',
-        'Remove al-sistemas.json e passa VERSION a ser a fonte canônica da versão visível, com CI e testes atualizados.',
-        'Atualiza a documentação da release sem alterar Match Engine, saves, IDs ou regras do jogo.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.108',
-      title: 'Correção do analyzer da Home',
-      changes: [
-        'Remove o parâmetro opcional de ícone que não era usado no cabeçalho de classificação e artilharia.',
-        'Elimina o único warning apontado pelo flutter analyze da 0.1.1.107 sem mudar o visual atual da Home.',
-        'Preserva Match Engine, saves, IDs e regras do jogo.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.107',
-      title: 'Movimentação visual natural',
-      changes: [
-        'Jogadores aceleram, freiam e mudam de direção com trajetórias visuais mais orgânicas, sem alterar os eventos do Match Engine.',
-        'Pênaltis movimentam somente os atletas envolvidos próximos da área, eliminando o agrupamento magnético observado.',
-        'Passadas, sombras e nomes acompanham melhor o movimento real, com retorno à formação em tempos diferentes por setor.',
       ],
     ),
   ];

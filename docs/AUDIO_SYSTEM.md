@@ -100,7 +100,7 @@ Se um save contendo caminhos de áudio personalizados for movido para outro apar
 
 ## Assets incluídos e licença
 
-Na 0.1.1.109, a playlist padrão foi reduzida para somente as 5 faixas OGG selecionadas e fornecidas em `musicasmenu.zip`. As outras seis faixas OGG foram removidas dos assets e do catálogo. Os arquivos não possuem metadados embutidos; a interface exibe nomes legíveis derivados dos próprios nomes dos arquivos.
+Na 0.1.1.109, a playlist padrão foi reduzida para somente as 5 faixas OGG selecionadas e fornecidas em `musicasmenu.zip`. Na 0.1.1.111, essas mesmas cinco faixas foram recomprimidas para **Opus em contêiner OGG**, estéreo, VBR em torno de 64 kbps, preservando a duração completa e reduzindo o conjunto em cerca de 14,8%. As outras seis faixas continuam removidas dos assets e do catálogo. Os arquivos não possuem metadados úteis à interface; os nomes legíveis continuam derivados dos próprios nomes dos arquivos.
 
 Os efeitos de interface e partida continuam podendo ser regenerados por:
 
@@ -119,6 +119,12 @@ O player expõe a faixa atual, permite selecionar qualquer música da lista ativ
 ## Playlist reduzida — 0.1.1.109
 
 A lista padrão passa a conter exatamente cinco faixas: Jim Yosef — Lights, Disfigure — Blank, DEAF KEV — Invincible, Cormak — Flavors e David Bulla — Unexpected. O player, shuffle, loop, seleção manual, próxima faixa e playlist personalizada continuam usando o mesmo `AudioManager`; somente o catálogo padrão e os assets incluídos foram reduzidos.
+
+## Otimização das cinco faixas — 0.1.1.111
+
+As cinco músicas da playlist padrão permanecem exatamente as mesmas em catálogo, nome e duração. Somente a codificação interna dos assets foi alterada de Vorbis para Opus dentro do mesmo contêiner `.ogg`, mantendo estéreo e usando VBR em torno de 64 kbps. O conjunto caiu de 10.386.273 bytes para 8.852.371 bytes (aproximadamente 14,8% menor). O `AudioManager` e os caminhos em `AudioCatalog` não mudaram.
+
+A escolha por Opus mantém compatibilidade com o pipeline Android/ExoPlayer usado pelo projeto; não foram reduzidos canais, não foram cortados trechos e não houve alteração de volume ou duração intencional.
 
 ## Sons da interface
 
