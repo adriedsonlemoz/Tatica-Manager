@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
+import '../../app/widgets/management_dashboard_widgets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/finance/finance.dart';

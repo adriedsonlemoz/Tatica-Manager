@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.120
-Android versionCode: 121
-pubspec: 0.1.1+121
+Release visível: 0.1.1.121
+Android versionCode: 122
+pubspec: 0.1.1+122
 
-Novidade desta base: a compilação da tela de Finanças foi corrigida sem alterar a arquitetura entregue. O gráfico, os cards, a distribuição, os filtros e a previsão usam somente `CareerState.finances`, caixa, orçamento e folha já persistidos; não existe segundo sistema financeiro. Estádio, Mercado, Contratos, Patrocínios e Orçamentos seguem ligados à mesma carreira. Transferências, renovações e bônus novos usam `career.currentDate`. Não criar categorias de despesa sem fluxo real, como Base ou Comissão técnica. Pré-jogo, Estádio, músicas e Match Engine permanecem preservados.
+Novidade desta base: o último erro de análise estática da tela de Finanças foi corrigido, incluindo o import de `DashboardSectionHeader` e a remoção de duas asserções não nulas redundantes, sem alterar a arquitetura entregue. O gráfico, os cards, a distribuição, os filtros e a previsão usam somente `CareerState.finances`, caixa, orçamento e folha já persistidos; não existe segundo sistema financeiro. Estádio, Mercado, Contratos, Patrocínios e Orçamentos seguem ligados à mesma carreira. Transferências, renovações e bônus novos usam `career.currentDate`. Não criar categorias de despesa sem fluxo real, como Base ou Comissão técnica. Pré-jogo, Estádio, músicas e Match Engine permanecem preservados.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.121 com versionCode > 121.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.122 com versionCode > 122.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

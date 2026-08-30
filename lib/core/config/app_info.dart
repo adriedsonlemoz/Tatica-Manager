@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.120';
+  static const String version = '0.1.1.121';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.121',
+      title: 'Análise estática de Finanças corrigida',
+      changes: [
+        'Importa o componente compartilhado DashboardSectionHeader na tela de Finanças, corrigindo o símbolo indefinido apontado pelo CI.',
+        'Remove duas asserções não nulas redundantes na previsão financeira para manter o flutter analyze sem warnings.',
+        'Preserva a lógica financeira, os dados da carreira e todas as integrações existentes.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.120',
       title: 'Correção da compilação de Finanças',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Redesenha Finanças com Resumo, Receitas, Despesas e Salários, usando exclusivamente o livro-caixa real da carreira.',
         'Adiciona gráfico mensal, distribuição de gastos, filtros por categoria e previsão calculada a partir de meses fechados com lançamentos.',
         'Conecta Estádio, Mercado, Contratos, Patrocínios e Orçamentos; novos lançamentos de transferência e renovação passam a usar a data da carreira.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.118',
-      title: 'Pré-jogo alinhado à referência',
-      changes: [
-        'Redesenha o Pré-jogo com confronto tático, escalações prováveis, desfalques e os três atalhos Escalação, Tática e Uniformes.',
-        'Usa formação, tática, força, titulares, desfalques e forma recente derivados dos dados reais da carreira, sem técnico, clima ou árbitro inventados.',
-        'Adiciona simulação direta pelo mesmo LiveMatchController e move a escolha de uniformes para um pop-up centralizado.',
       ],
     ),
   ];
