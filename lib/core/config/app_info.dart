@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.117';
+  static const String version = '0.1.1.118';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.118',
+      title: 'Pré-jogo alinhado à referência',
+      changes: [
+        'Redesenha o Pré-jogo com confronto tático, escalações prováveis, desfalques e os três atalhos Escalação, Tática e Uniformes.',
+        'Usa formação, tática, força, titulares, desfalques e forma recente derivados dos dados reais da carreira, sem técnico, clima ou árbitro inventados.',
+        'Adiciona simulação direta pelo mesmo LiveMatchController e move a escolha de uniformes para um pop-up centralizado.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.117',
       title: 'Correção de consistência do Estádio',
@@ -30,15 +39,5 @@ abstract final class AppInfo {
         'Mantém Match Engine, músicas, IDs e resultados de partidas inalterados.',
       ],
     ),
-    ReleaseNote(
-      version: '0.1.1.115',
-      title: 'Correção do cabeçalho da Home',
-      changes: [
-        'Corrige o erro de análise estática causado pelo uso inválido de minHeight no Container do cabeçalho da Home.',
-        'Mantém a altura mínima planejada usando BoxConstraints, sem desfazer o alinhamento visual da Home.',
-        'Não altera Match Engine, músicas, saves, IDs, regras ou resultados do jogo.',
-      ],
-    ),
   ];
-
 }

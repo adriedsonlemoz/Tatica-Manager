@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.117
-Android versionCode: 118
-pubspec: 0.1.1+118
+Release visível: 0.1.1.118
+Android versionCode: 119
+pubspec: 0.1.1+119
 
-Novidade desta base: a tela Estádio mantém o design e os três sistemas da 0.1.1.116, mas corrige a consistência de contraste e de disponibilidade financeira revelada pelo CI. Obras e melhoria sugerida agora respeitam simultaneamente orçamento do estádio e caixa do clube. As cinco músicas permanecem inalteradas, al-sistemas.json continua removido e o Match Engine permanece inalterado.
+Novidade desta base: o Pré-jogo foi redesenhado conforme a referência aprovada. Ele compara forma recente, formação/tática, forças do Match Engine, escalações prováveis e desfalques reais dos dois clubes; Escalação, Tática e Uniformes viraram os três atalhos centrais, com uniformes em pop-up. O botão Simular reutiliza o LiveMatchController e não existe segundo motor de partida. Não adicionar técnico, clima ou árbitro enquanto esses dados não existirem no domínio. O Estádio da 0.1.1.116/117, as cinco músicas e o Match Engine permanecem preservados.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.118 com versionCode > 118.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.119 com versionCode > 119.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

@@ -14,15 +14,17 @@ void main() {
     expect(lineup, contains('Navigator.of(context).pop()'));
   });
 
-  test('pré-jogo usa apenas dados existentes do domínio e importa formação', () {
+  test('pré-jogo usa somente dados existentes e abre tática existente', () {
     final preMatch =
         File('lib/features/match/pre_match_screen.dart').readAsStringSync();
-    final hero = File('lib/features/match/pre_match_hero_card.dart').readAsStringSync();
+    final layout = File(
+      'lib/features/match/pre_match_reference_components.dart',
+    ).readAsStringSync();
 
     expect(preMatch, contains("import '../../domain/formation/formation.dart';"));
-    expect(preMatch, contains('final FormationType formation = career.formation'));
-    expect(preMatch, contains('formationLabel: formation.label'));
-    expect(hero, contains('home.stadium.name'));
-    expect('$preMatch\n$hero', isNot(contains('home.city')));
+    expect(preMatch, contains('final FormationType userFormation = career.formation'));
+    expect(preMatch, contains('MaterialPageRoute(builder: (_) => const TacticsScreen())'));
+    expect(layout, contains('home.stadium.name'));
+    expect('$preMatch\n$layout', isNot(contains('home.city')));
   });
 }

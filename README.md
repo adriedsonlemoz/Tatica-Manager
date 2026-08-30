@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.117`
-**Android versionCode:** `118`
+**Release atual:** `0.1.1.118`
+**Android versionCode:** `119`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,28 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.117`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.118`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+118`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.117` e `versionCode 118`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+119`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.118` e `versionCode 119`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.117`, o pubspec é `0.1.1+118`. a próxima entrega normalmente será `0.1.1.118`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.118`, o pubspec é `0.1.1+119`. a próxima entrega normalmente será `0.1.1.119`.
+
+
+## Pré-jogo alinhado à referência — 0.1.1.118
+
+- refaz a tela **Pré-jogo** seguindo a referência aprovada, com card principal da partida, confronto tático, escalação provável, desfalques, três atalhos e ações Jogar/Simular;
+- remove do Pré-jogo a duração da transmissão e o seletor permanente de uniformes; a duração continua configurável nas Configurações e os uniformes passam a abrir em pop-up centralizado;
+- não adiciona técnico, clima ou árbitro, porque esses dados não existem no domínio atual;
+- calcula a forma recente de cada clube usando os últimos cinco jogos disputados já registrados na carreira;
+- usa `LiveRoundSimulator.formationFor/tacticFor`, `LineupEngine.autoSelect` e `MatchStrengthCalculator` para exibir o rival e a comparação de Ataque/Meio-campo/Defesa com a mesma lógica utilizada pela partida;
+- mostra os onze titulares selecionados do usuário e a escalação automática real do rival em duas colunas compactas;
+- mostra desfalques reais dos dois clubes por lesão, suspensão da competição ou condição física abaixo do limite;
+- adiciona **Simular** reutilizando `LiveMatchController.prepareMatch()` + `finishMatch()`, sem criar um segundo Match Engine;
+- mantém a escolha automática de contraste de uniformes via `MatchKitResolver` e preserva o fluxo normal de **Jogar Partida**;
+- não altera Match Engine, músicas, estádio, saves, schema, IDs ou regras de resultado.
 
 
 ## Correção de consistência do Estádio — 0.1.1.117
@@ -291,7 +305,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.115`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.119`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

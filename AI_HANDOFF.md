@@ -8,12 +8,27 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.117`
-- **Android versionCode:** `118`
+- **Release deste handoff:** `0.1.1.118`
+- **Android versionCode:** `119`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+
+## Estado funcional da release 0.1.1.118
+
+- redesenha `PreMatchScreen` seguindo a referência aprovada, sem técnico, clima ou árbitro;
+- `PreMatchReferenceHero` exibe competição, clubes, data/hora, estádio e forma recente calculada dos dois clubes;
+- `PreMatchTacticalComparison` usa formação/tática real do usuário e a mesma derivação CPU de `LiveRoundSimulator` para o rival, com força calculada por `MatchStrengthCalculator`;
+- `PreMatchProbableLineups` exibe os titulares reais do usuário e os onze selecionados para a CPU por `LineupEngine.autoSelect`;
+- `PreMatchAbsences` compara lesões, suspensões da competição e baixa condição dos dois clubes;
+- os três cards aprovados abrem Escalação, Tática e o seletor de Uniformes em diálogo centralizado;
+- `Simular` reutiliza `LiveMatchController.prepareMatch()` e `finishMatch()` e segue diretamente ao `ResultScreen`;
+- duração da transmissão deixa o Pré-jogo, mas permanece nas Configurações;
+- Match Engine, estádio, músicas, persistência e regras de resultado permanecem inalterados.
+
+Consulte `docs/RELEASE_0.1.1.118.md`.
 
 
 ## Estado funcional da release 0.1.1.117
@@ -838,12 +853,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.117
-versionCode:         118
-pubspec:             0.1.1+118
+release/versionName: 0.1.1.118
+versionCode:         119
+pubspec:             0.1.1+119
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.118` e usar um `versionCode` maior que 118.
+A próxima alteração/entrega normalmente deve virar `0.1.1.119` e usar um `versionCode` maior que 119.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
