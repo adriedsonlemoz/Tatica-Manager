@@ -151,17 +151,18 @@ void main() {
     expect(face(firstIdentity), isNot(face(secondIdentity)));
   });
 
-  test('Finanças usa resumo, gráficos e seções expansíveis', () {
+  test('Finanças usa resumo mensal, abas e seções expansíveis', () {
     final source = [
       File('lib/features/finances/finances_screen.dart').readAsStringSync(),
       File('lib/features/finances/finances_dashboard_components.dart').readAsStringSync(),
     ].join('\n');
-    expect(source, contains('_FinanceHero('));
-    expect(source, contains('Receitas x despesas'));
-    expect(source, contains('EVOLUÇÃO DO SALDO'));
+    expect(source, contains('FinanceBalanceOverview('));
+    expect(source, contains('FinanceDashboardEngine.build'));
+    expect(source, contains("Tab(text: 'Receitas')"));
+    expect(source, contains('Distribuição de gastos'));
     expect(source, contains('ExpansionTile('));
     expect(source, contains("title: 'Patrocínios'"));
     expect(source, contains("title: 'Estádio'"));
-    expect(source, contains("title: 'Histórico'"));
+    expect(source, contains('FinanceTransactionsList('));
   });
 }

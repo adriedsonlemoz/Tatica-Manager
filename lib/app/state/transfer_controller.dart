@@ -245,7 +245,7 @@ class TransferController {
               kind: FinanceKind.operations,
               description: 'Bônus de assinatura',
               amount: -bonus,
-              createdAt: DateTime.now(),
+              createdAt: next.currentDate,
             ),
           ],
         );
@@ -342,7 +342,7 @@ class TransferController {
           ? 'Entrada da contratação de ${player.displayName}'
           : 'Contratação de ${player.displayName}',
       amount: -paidNow,
-      createdAt: DateTime.now(),
+      createdAt: career.currentDate,
     );
     var starters = career.starterIds;
     if (starters.length < 11) {
@@ -413,7 +413,7 @@ class TransferController {
       kind: FinanceKind.contractRenewal,
       description: 'Renovação de ${player.displayName}',
       amount: -negotiation.signingCost,
-      createdAt: DateTime.now(),
+      createdAt: career.currentDate,
     );
     final next = career.copyWith(
       clubs: career.clubs
@@ -801,7 +801,7 @@ class TransferController {
       kind: FinanceKind.playerSale,
       description: 'Venda de ${player.displayName} para ${buyer.name}',
       amount: offer.fee,
-      createdAt: DateTime.now(),
+      createdAt: career.currentDate,
     );
     final next = career.copyWith(
       clubs: clubs,

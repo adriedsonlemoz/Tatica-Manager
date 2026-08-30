@@ -8,12 +8,24 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.118`
-- **Android versionCode:** `119`
+- **Release deste handoff:** `0.1.1.119`
+- **Android versionCode:** `120`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+
+## Estado funcional da release 0.1.1.119
+
+- redesenha `FinancesScreen` com abas Resumo, Receitas, Despesas e Salários, preservando `CareerState.finances` como livro-caixa único;
+- `FinanceDashboardEngine` reconstrói saldos mensais a partir do caixa atual e dos lançamentos persistidos, sem salvar ou manter uma segunda lista de valores;
+- a previsão usa somente até três meses fechados que já possuem lançamentos; sem histórico, a UI informa a indisponibilidade em vez de inventar números;
+- categorias, filtros e atalhos levam aos módulos reais de Estádio, Mercado, Contratos, Patrocínios e Orçamentos;
+- novos lançamentos de compra, venda, renovação e bônus de assinatura usam `career.currentDate`; dados antigos com data do aparelho são ajustados apenas para a visualização financeira;
+- não adiciona categorias sem fluxo real, como Base ou Comissão técnica, e não altera Match Engine, resultados, schema, IDs ou saves.
+
+Consulte `docs/RELEASE_0.1.1.119.md`.
 
 
 ## Estado funcional da release 0.1.1.118
@@ -853,12 +865,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.118
-versionCode:         119
-pubspec:             0.1.1+119
+release/versionName: 0.1.1.119
+versionCode:         120
+pubspec:             0.1.1+120
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.119` e usar um `versionCode` maior que 119.
+A próxima alteração/entrega normalmente deve virar `0.1.1.120` e usar um `versionCode` maior que 120.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

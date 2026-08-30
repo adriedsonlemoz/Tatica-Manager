@@ -6,8 +6,9 @@ import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/finance/finance.dart';
-import '../../domain/player/player.dart';
+import '../../domain/finance/sponsorship.dart';
 import '../../game/finance/club_administration_engine.dart';
+import '../../game/finance/finance_dashboard_engine.dart';
 import '../../game/finance/sponsorship_engine.dart';
 import '../contracts/contracts_screen.dart';
 import '../market/market_screen.dart';
@@ -16,305 +17,405 @@ import '../stadium/stadium_screen.dart';
 import 'finances_dashboard_components.dart';
 import 'finances_management_components.dart';
 
-class FinancesScreen extends ConsumerWidget {
+class FinancesScreen extends ConsumerStatefulWidget {
   const FinancesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FinancesScreen> createState() => _FinancesScreenState();
+}
+
+class _FinancesScreenState extends ConsumerState<FinancesScreen> {
+  int _historyMonths = 6;
+  FinanceCategory? _incomeCategory;
+  FinanceCategory? _expenseCategory;
+
+  @override
+  Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final club = career.userClub;
-    final txs = career.finances.reversed.toList(growable: false);
-    final monthTransactions = career.finances
-        .where(
-          (tx) => tx.createdAt.year == career.currentDate.year && tx.createdAt.month == career.currentDate.month,
-        )
+    final dashboard = FinanceDashboardEngine.build(
+      transactions: career.finances,
+      currentBalance: club.money,
+      currentDate: career.currentDate,
+      months: _historyMonths,
+    );
+    final seasonTransactions = career.finances
+        .where((transaction) => transaction.season == career.season)
         .toList(growable: false);
-    final monthIncome = monthTransactions
-        .where((tx) => tx.amount > 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount);
-    final monthExpenses = monthTransactions
-        .where((tx) => tx.amount < 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
-    final totalIncome = career.finances
-        .where((tx) => tx.amount > 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount);
-    final totalExpenses = career.finances
-        .where((tx) => tx.amount < 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
-    final salaryLeaders = [...club.squad]..sort((a, b) => b.salary.compareTo(a.salary));
-    final payroll = club.payroll;
     final sponsors = SponsorshipEngine.contractsFor(club, season: career.season);
-    final historyPoints = _balanceHistory(career.finances, club.money);
 
-    int monthCategory(FinanceCategory category, {required bool income}) => monthTransactions
-        .where(
-          (tx) => tx.kind.category == category && (income ? tx.amount > 0 : tx.amount < 0),
-        )
-        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
-
-    final incomeCategories = [
-      FinanceCategoryAmount(
-        icon: Icons.stadium_outlined,
-        label: 'Estádio',
-        amount: monthCategory(FinanceCategory.stadium, income: true),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const StadiumScreen()),
+    return DefaultTabController(
+      length: 4,
+      child: PremiumScaffold(
+        safeBottom: true,
+        appBar: GameTopBar(
+          title: 'Finanças',
+          subtitle:
+              'Temporada ${career.season} • ${career.currentDate.month.toString().padLeft(2, '0')}/${career.currentDate.year}',
         ),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.handshake_outlined,
-        label: 'Comercial',
-        amount: monthCategory(FinanceCategory.commercial, income: true),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.emoji_events_outlined,
-        label: 'Premiações',
-        amount: monthCategory(FinanceCategory.prizes, income: true),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.sell_outlined,
-        label: 'Transferências',
-        amount: monthCategory(FinanceCategory.transfers, income: true),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
-        ),
-      ),
-    ];
-    final expenseCategories = [
-      FinanceCategoryAmount(
-        icon: Icons.groups_2_outlined,
-        label: 'Folha salarial',
-        amount: monthCategory(FinanceCategory.payroll, income: false),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ContractsScreen()),
-        ),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.shopping_cart_outlined,
-        label: 'Transferências',
-        amount: monthCategory(FinanceCategory.transfers, income: false),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
-        ),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.settings_suggest_outlined,
-        label: 'Operações',
-        amount: monthCategory(FinanceCategory.operations, income: false),
-      ),
-      FinanceCategoryAmount(
-        icon: Icons.stadium_rounded,
-        label: 'Estádio / obras',
-        amount: monthCategory(FinanceCategory.stadium, income: false),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const StadiumScreen()),
-        ),
-      ),
-    ];
-
-    return PremiumScaffold(
-      safeBottom: true,
-      appBar: GameTopBar(
-        title: 'Finanças',
-        subtitle: 'Temporada ${career.season} • ${career.currentDate.month.toString().padLeft(2, '0')}/${career.currentDate.year}',
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 28),
-        children: [
-          _FinanceHero(
-            balance: club.money,
-            transferBudget: club.transferBudget,
-            income: monthIncome,
-            expenses: monthExpenses,
-          ),
-          const SizedBox(height: 10),
-          FinanceVisualSummary(
-            income: monthIncome,
-            expenses: monthExpenses,
-            historyPoints: historyPoints,
-          ),
-          const SizedBox(height: 10),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final split = constraints.maxWidth >= 680;
-              final incomeCard = FinanceCategoryOverview(
-                title: 'Receitas do mês',
-                entries: incomeCategories,
-                income: true,
-              );
-              final expenseCard = FinanceCategoryOverview(
-                title: 'Maiores despesas do mês',
-                entries: expenseCategories,
-                income: false,
-              );
-              if (!split) {
-                return Column(
-                  children: [incomeCard, const SizedBox(height: 10), expenseCard],
-                );
-              }
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: incomeCard),
-                  const SizedBox(width: 10),
-                  Expanded(child: expenseCard),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
+              child: FinanceClubHeader(club: club, season: career.season),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AppColors.border)),
+              ),
+              child: const TabBar(
+                isScrollable: false,
+                labelColor: AppColors.green,
+                unselectedLabelColor: AppColors.muted,
+                indicatorColor: AppColors.green,
+                indicatorWeight: 3,
+                labelStyle: TextStyle(fontWeight: FontWeight.w900),
+                tabs: [
+                  Tab(text: 'Resumo'),
+                  Tab(text: 'Receitas'),
+                  Tab(text: 'Despesas'),
+                  Tab(text: 'Salários'),
                 ],
-              );
-            },
-          ),
-          const SizedBox(height: 10),
-          _FinanceExpansion(
-            icon: Icons.pie_chart_outline_rounded,
-            title: 'Orçamentos',
-            subtitle: 'Distribuição por departamento',
-            child: DepartmentBudgetSection(
-              career: career,
-              onEdit: () => _editBudgets(context, ref),
-            ),
-          ),
-          _FinanceExpansion(
-            icon: Icons.groups_rounded,
-            title: 'Salários',
-            subtitle: '${compactMoney(payroll)}/mês',
-            child: Column(
-              children: salaryLeaders
-                  .take(6)
-                  .map(
-                    (player) => _SalaryRow(
-                      player: player,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => PlayerProfileScreen(
-                            playerId: player.id,
-                            clubId: club.id,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(growable: false),
-            ),
-          ),
-          _FinanceExpansion(
-            icon: Icons.handshake_outlined,
-            title: 'Patrocínios',
-            subtitle: '${sponsors.length} contratos',
-            child: SponsorshipManagementSection(
-              contracts: sponsors,
-              proposals: career.clubAdministration.sponsorshipProposals,
-              onProposal: (proposal) => _openSponsorshipProposal(context, ref, proposal.id),
-            ),
-          ),
-          _FinanceExpansion(
-            icon: Icons.stadium_outlined,
-            title: 'Estádio',
-            subtitle: club.stadium.name,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.stadium_rounded, color: AppColors.green),
-              title: Text(club.stadium.name, style: const TextStyle(fontWeight: FontWeight.w900)),
-              subtitle: Text('${club.stadium.capacity} lugares • ingresso ${formatMoney(club.stadium.ticketPrice)}'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const StadiumScreen()),
               ),
             ),
-          ),
-          _FinanceExpansion(
-            icon: Icons.receipt_long_outlined,
-            title: 'Resumo acumulado',
-            subtitle: 'Receitas ${compactMoney(totalIncome)} • Despesas ${compactMoney(totalExpenses)}',
-            child: Row(
-              children: [
-                Expanded(
-                  child: _CompactTotal(label: 'Receitas', value: totalIncome, color: AppColors.green),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _CompactTotal(label: 'Despesas', value: totalExpenses, color: AppColors.danger),
-                ),
-              ],
-            ),
-          ),
-          _FinanceExpansion(
-            icon: Icons.history_rounded,
-            title: 'Histórico',
-            subtitle: '${txs.length} lançamentos',
-            child: txs.isEmpty
-                ? const EmptyState(
-                    icon: Icons.receipt_long_rounded,
-                    title: 'Sem movimentações',
-                    text: 'Receitas e despesas aparecerão aqui conforme a carreira avançar.',
-                  )
-                : Column(
-                    children: txs
-                        .map(
-                          (tx) => ListTile(
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            onTap: () => showFinanceTransactionDialog(context, tx),
-                            leading: Icon(
-                              tx.isIncome ? Icons.add_circle_outline_rounded : Icons.remove_circle_outline_rounded,
-                              color: tx.isIncome ? AppColors.green : AppColors.danger,
-                            ),
-                            title: Text(tx.description, style: const TextStyle(fontWeight: FontWeight.w700)),
-                            subtitle: Text('Rodada ${tx.round} • ${tx.kind.label}'),
-                            trailing: Text(
-                              formatMoney(tx.amount),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: tx.isIncome ? AppColors.green : AppColors.danger,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(growable: false),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _summaryTab(
+                    context,
+                    dashboard: dashboard,
+                    sponsors: sponsors,
                   ),
-          ),
-          const SizedBox(height: 2),
-          FinanceHealthStrip(
-            balance: club.money,
-            payroll: payroll,
-            monthIncome: monthIncome,
-            monthExpenses: monthExpenses,
-          ),
-        ],
+                  _transactionsTab(
+                    context,
+                    title: 'Receitas',
+                    income: true,
+                    transactions: seasonTransactions,
+                    selectedCategory: _incomeCategory,
+                    onCategorySelected: (value) =>
+                        setState(() => _incomeCategory = value),
+                  ),
+                  _transactionsTab(
+                    context,
+                    title: 'Despesas',
+                    income: false,
+                    transactions: seasonTransactions,
+                    selectedCategory: _expenseCategory,
+                    onCategorySelected: (value) =>
+                        setState(() => _expenseCategory = value),
+                  ),
+                  _salariesTab(
+                    context,
+                    monthIncome: dashboard.currentMonth.income,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  static List<double> _balanceHistory(List<FinanceTransaction> transactions, int currentBalance) {
-    if (transactions.isEmpty) return [currentBalance.toDouble(), currentBalance.toDouble()];
-    final recent = transactions.length > 12 ? transactions.sublist(transactions.length - 12) : transactions;
-    var start = currentBalance - recent.fold<int>(0, (sum, tx) => sum + tx.amount);
-    final points = <double>[start.toDouble()];
-    for (final tx in recent) {
-      start += tx.amount;
-      points.add(start.toDouble());
-    }
-    return points;
+  Widget _summaryTab(
+    BuildContext context, {
+    required FinanceDashboardSnapshot dashboard,
+    required List<SponsorshipContract> sponsors,
+  }) {
+    final career = ref.read(gameControllerProvider).career!;
+    final club = career.userClub;
+    final monthIncomeEntries = _categoryEntries(
+      context,
+      amounts: dashboard.currentMonth.incomeByCategory,
+    );
+    final monthExpenseEntries = _categoryEntries(
+      context,
+      amounts: dashboard.currentMonth.expensesByCategory,
+    );
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
+      children: [
+        FinanceBalanceOverview(
+          balance: club.money,
+          dashboard: dashboard,
+          periodMonths: _historyMonths,
+          onPeriodChanged: (value) => setState(() => _historyMonths = value),
+        ),
+        const SizedBox(height: 10),
+        FinanceMonthlyStatGrid(
+          current: dashboard.currentMonth,
+          previous: dashboard.previousMonth,
+        ),
+        const SizedBox(height: 10),
+        FinanceDistributionCard(entries: monthExpenseEntries),
+        const SizedBox(height: 10),
+        FinanceForecastCard(
+          forecast: dashboard.forecast,
+          balance: club.money,
+          payroll: club.payroll,
+          transferBudget: club.transferBudget,
+          onBudgetTap: () => _editBudgets(context, ref),
+        ),
+        const SizedBox(height: 13),
+        const Text(
+          'SISTEMAS RELACIONADOS',
+          style: TextStyle(
+            color: AppColors.muted,
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: .5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        FinanceQuickLinks(
+          links: [
+            FinanceQuickLink(
+              icon: Icons.stadium_outlined,
+              title: 'Estádio',
+              value: club.stadium.name,
+              onTap: () => _openStadium(context),
+            ),
+            FinanceQuickLink(
+              icon: Icons.swap_horiz_rounded,
+              title: 'Transferências',
+              value: compactMoney(club.transferBudget),
+              onTap: () => _openMarket(context),
+            ),
+            FinanceQuickLink(
+              icon: Icons.description_outlined,
+              title: 'Contratos',
+              value: '${compactMoney(club.payroll)}/mês',
+              onTap: () => _openContracts(context),
+            ),
+            FinanceQuickLink(
+              icon: Icons.account_balance_outlined,
+              title: 'Orçamentos',
+              value: '${career.clubAdministration.budgetPlan.available.length} áreas',
+              onTap: () => _editBudgets(context, ref),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _FinanceExpansion(
+          icon: Icons.tune_rounded,
+          title: 'Orçamentos',
+          subtitle: 'Distribuição por departamento',
+          child: DepartmentBudgetSection(
+            career: career,
+            onEdit: () => _editBudgets(context, ref),
+          ),
+        ),
+        _FinanceExpansion(
+          icon: Icons.handshake_outlined,
+          title: 'Patrocínios',
+          subtitle: '${sponsors.length} contrato(s) ativo(s)',
+          child: SponsorshipManagementSection(
+            contracts: sponsors,
+            proposals: career.clubAdministration.sponsorshipProposals,
+            onProposal: (proposal) =>
+                _openSponsorshipProposal(context, ref, proposal.id),
+          ),
+        ),
+        _FinanceExpansion(
+          icon: Icons.trending_up_rounded,
+          title: 'Receitas do mês',
+          subtitle: compactMoney(dashboard.currentMonth.income),
+          child: FinanceCategoryOverview(
+            title: 'Origem das receitas',
+            entries: monthIncomeEntries,
+            income: true,
+            emptyText: 'Nenhuma receita foi registrada neste mês.',
+          ),
+        ),
+        _FinanceExpansion(
+          icon: Icons.history_rounded,
+          title: 'Histórico financeiro',
+          subtitle: '${career.finances.length} lançamento(s) na carreira',
+          child: FinanceTransactionsList(
+            transactions: _sortTransactions(career.finances, career.currentDate),
+            currentDate: career.currentDate,
+            emptyTitle: 'Sem movimentações',
+            emptyText: 'Receitas e despesas aparecerão aqui conforme a carreira avançar.',
+            onTap: (transaction) => showFinanceTransactionDialog(context, transaction),
+          ),
+        ),
+      ],
+    );
   }
-}
 
-class _FinanceHero extends StatelessWidget {
-  const _FinanceHero({
-    required this.balance,
-    required this.transferBudget,
-    required this.income,
-    required this.expenses,
-  });
+  Widget _transactionsTab(
+    BuildContext context, {
+    required String title,
+    required bool income,
+    required List<FinanceTransaction> transactions,
+    required FinanceCategory? selectedCategory,
+    required ValueChanged<FinanceCategory?> onCategorySelected,
+  }) {
+    final career = ref.read(gameControllerProvider).career!;
+    final matching = transactions
+        .where((transaction) => income ? transaction.amount >= 0 : transaction.amount < 0)
+        .toList(growable: false);
+    final categories = FinanceCategory.values
+        .where(
+          (category) => matching.any((transaction) => transaction.kind.category == category),
+        )
+        .toList(growable: false);
+    final visible = _sortTransactions(
+      matching
+          .where(
+            (transaction) =>
+                selectedCategory == null ||
+                transaction.kind.category == selectedCategory,
+          )
+          .toList(growable: false),
+      career.currentDate,
+    );
+    final totals = _categoryTotals(matching, income: income);
+    final entries = _categoryEntries(context, amounts: totals);
 
-  final int balance;
-  final int transferBudget;
-  final int income;
-  final int expenses;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 28),
+      children: [
+        SectionCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DashboardSectionHeader(
+                title: '$title da temporada',
+                subtitle: 'Lançamentos já registrados na temporada ${career.season}',
+              ),
+              const SizedBox(height: 11),
+              FinanceFilterChips(
+                categories: categories,
+                selected: selectedCategory,
+                onSelected: onCategorySelected,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        FinanceCategoryOverview(
+          title: 'Distribuição por categoria',
+          entries: entries,
+          income: income,
+          emptyText: income
+              ? 'Nenhuma receita foi registrada nesta temporada.'
+              : 'Nenhuma despesa foi registrada nesta temporada.',
+        ),
+        const SizedBox(height: 10),
+        FinanceTransactionsList(
+          transactions: visible,
+          currentDate: career.currentDate,
+          emptyTitle: income ? 'Sem receitas' : 'Sem despesas',
+          emptyText: selectedCategory == null
+              ? 'Os lançamentos aparecerão aqui conforme a carreira avançar.'
+              : 'Não há lançamentos nesta categoria para a temporada.',
+          onTap: (transaction) => showFinanceTransactionDialog(context, transaction),
+        ),
+      ],
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) => FinanceHeroDashboard(
-        balance: balance,
-        transferBudget: transferBudget,
-        monthIncome: income,
-        monthExpenses: expenses,
+  Widget _salariesTab(BuildContext context, {required int monthIncome}) {
+    final career = ref.read(gameControllerProvider).career!;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 28),
+      children: [
+        FinanceSalaryPanel(
+          players: career.userClub.squad,
+          payroll: career.userClub.payroll,
+          monthIncome: monthIncome,
+          onPlayerTap: (player) => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => PlayerProfileScreen(
+                playerId: player.id,
+                clubId: career.userClub.id,
+              ),
+            ),
+          ),
+          onContractsTap: () => _openContracts(context),
+        ),
+      ],
+    );
+  }
+
+  List<FinanceCategoryAmount> _categoryEntries(
+    BuildContext context, {
+    required Map<FinanceCategory, int> amounts,
+  }) {
+    final entries = FinanceCategory.values
+        .map(
+          (category) => FinanceCategoryAmount(
+            category: category,
+            icon: _iconFor(category),
+            label: category.label,
+            amount: amounts[category] ?? 0,
+            onTap: _categoryTap(context, category),
+          ),
+        )
+        .where((entry) => entry.amount > 0)
+        .toList(growable: false)
+      ..sort((a, b) => b.amount.compareTo(a.amount));
+    return entries;
+  }
+
+  Map<FinanceCategory, int> _categoryTotals(
+    List<FinanceTransaction> transactions, {
+    required bool income,
+  }) {
+    final totals = <FinanceCategory, int>{
+      for (final category in FinanceCategory.values) category: 0,
+    };
+    for (final transaction in transactions) {
+      if (income && transaction.amount < 0) continue;
+      if (!income && transaction.amount >= 0) continue;
+      final category = transaction.kind.category;
+      totals[category] = totals[category]! + transaction.amount.abs();
+    }
+    return totals;
+  }
+
+  List<FinanceTransaction> _sortTransactions(
+    List<FinanceTransaction> transactions,
+    DateTime currentDate,
+  ) {
+    final sorted = [...transactions];
+    sorted.sort(
+      (a, b) => FinanceDashboardEngine.effectiveDate(b, currentDate).compareTo(
+            FinanceDashboardEngine.effectiveDate(a, currentDate),
+          ),
+    );
+    return sorted;
+  }
+
+  IconData _iconFor(FinanceCategory category) => switch (category) {
+        FinanceCategory.stadium => Icons.stadium_outlined,
+        FinanceCategory.commercial => Icons.handshake_outlined,
+        FinanceCategory.payroll => Icons.groups_2_outlined,
+        FinanceCategory.transfers => Icons.swap_horiz_rounded,
+        FinanceCategory.prizes => Icons.emoji_events_outlined,
+        FinanceCategory.operations => Icons.settings_suggest_outlined,
+      };
+
+  VoidCallback? _categoryTap(BuildContext context, FinanceCategory category) =>
+      switch (category) {
+        FinanceCategory.stadium => () => _openStadium(context),
+        FinanceCategory.transfers => () => _openMarket(context),
+        FinanceCategory.payroll => () => _openContracts(context),
+        _ => null,
+      };
+
+  void _openStadium(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const StadiumScreen()),
+      );
+
+  void _openMarket(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const MarketScreen(showBackButton: true)),
+      );
+
+  void _openContracts(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ContractsScreen()),
       );
 }
 
@@ -347,56 +448,6 @@ class _FinanceExpansion extends StatelessWidget {
       );
 }
 
-class _SalaryRow extends StatelessWidget {
-  const _SalaryRow({required this.player, required this.onTap});
-
-  final Player player;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => ListTile(
-        dense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-        leading: OverallShield(value: player.overall, compact: true),
-        title: Text(player.displayName, style: const TextStyle(fontWeight: FontWeight.w800)),
-        subtitle: Text('${player.primaryPosition.label} • ${player.age} anos'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('${compactMoney(player.salary)}/mês', style: const TextStyle(fontWeight: FontWeight.w900)),
-            const SizedBox(width: 4),
-            const Icon(Icons.chevron_right_rounded, size: 18),
-          ],
-        ),
-        onTap: onTap,
-      );
-}
-
-class _CompactTotal extends StatelessWidget {
-  const _CompactTotal({required this.label, required this.value, required this.color});
-
-  final String label;
-  final int value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(11),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceRaised,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9.5)),
-            const SizedBox(height: 3),
-            Text(compactMoney(value), style: TextStyle(color: color, fontWeight: FontWeight.w900)),
-          ],
-        ),
-      );
-}
-
 Future<void> _editBudgets(BuildContext context, WidgetRef ref) async {
   final career = ref.read(gameControllerProvider).career!;
   final allocation = await showBudgetAllocationDialog(context, career);
@@ -421,14 +472,17 @@ Future<void> _openSponsorshipProposal(
   String proposalId,
 ) async {
   final career = ref.read(gameControllerProvider).career!;
-  final proposal = career.clubAdministration.sponsorshipProposals.firstWhere((item) => item.id == proposalId);
+  final proposal = career.clubAdministration.sponsorshipProposals
+      .firstWhere((item) => item.id == proposalId);
   final decision = await showSponsorshipProposalDialog(context, proposal);
   if (decision == null) return;
   try {
     final current = ref.read(gameControllerProvider).career!;
     final result = switch (decision.type) {
-      SponsorshipDecisionType.accept => ClubAdministrationEngine.acceptSponsorship(current, proposalId),
-      SponsorshipDecisionType.reject => ClubAdministrationEngine.rejectSponsorship(current, proposalId),
+      SponsorshipDecisionType.accept =>
+        ClubAdministrationEngine.acceptSponsorship(current, proposalId),
+      SponsorshipDecisionType.reject =>
+        ClubAdministrationEngine.rejectSponsorship(current, proposalId),
       SponsorshipDecisionType.counter => ClubAdministrationEngine.counterSponsorship(
           current,
           proposalId,

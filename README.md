@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.118`
-**Android versionCode:** `119`
+**Release atual:** `0.1.1.119`
+**Android versionCode:** `120`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,26 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.118`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.119`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+119`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.118` e `versionCode 119`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+120`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.119` e `versionCode 120`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.118`, o pubspec é `0.1.1+119`. a próxima entrega normalmente será `0.1.1.119`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.119`, o pubspec é `0.1.1+120`. a próxima entrega normalmente será `0.1.1.120`.
+
+
+## Finanças conectadas à carreira — 0.1.1.119
+
+- refaz a tela **Finanças** com abas de Resumo, Receitas, Despesas e Salários, preservando a lista real de lançamentos da carreira como única fonte de dados;
+- adiciona saldo mensal reconstituído, filtro de período de 3/6/12 meses, gráfico com meses reais, cards de receita/despesa/resultado e distribuição percentual dos gastos existentes;
+- cria previsão do próximo mês apenas pela média de até três meses fechados com lançamentos; enquanto não houver base real, informa que ainda não há histórico suficiente;
+- conecta atalhos e categorias aos módulos existentes de Estádio, Mercado, Contratos e Orçamentos, sem duplicar valores em outro sistema;
+- mantém Patrocínios, orçamento departamental e histórico completo acessíveis na tela;
+- corrige novos lançamentos de compra, venda, renovação e bônus de assinatura para gravarem a data da carreira, não a data física do aparelho;
+- não cria custos fictícios de categoria de base, comissão técnica, dívida ou impostos enquanto esses sistemas não existirem no domínio;
+- não altera Match Engine, resultados, saves, schema, IDs, estádio ou regras de mercado.
 
 
 ## Pré-jogo alinhado à referência — 0.1.1.118

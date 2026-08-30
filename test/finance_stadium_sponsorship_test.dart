@@ -29,7 +29,7 @@ void main() {
     final stadiumEngine =
         File('lib/game/stadium/stadium_engine.dart').readAsStringSync();
 
-    expect(finances, contains("title: 'Salários'"));
+    expect(finances, contains("Tab(text: 'Salários')"));
     expect(finances, contains('PlayerProfileScreen('));
     expect(finances, contains("title: 'Patrocínios'"));
     expect(stadium, contains('assets/images/stadium/stadium_night.webp'));
