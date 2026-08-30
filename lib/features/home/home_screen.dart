@@ -12,7 +12,6 @@ import '../../data/competition_catalog.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
-import '../../game/career/manager_career_engine.dart';
 import '../../game/cpu/cpu_user_offer_engine.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../../game/season/season_engine.dart';
@@ -24,15 +23,15 @@ import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../market/incoming_transfer_offer_dialog.dart';
 import '../market/market_screen.dart';
-import '../medical/medical_department_screen.dart';
 import '../player/player_profile_screen.dart';
 import '../season/season_history_screen.dart';
+import '../squad/squad_screen.dart';
 import '../standings/standings_screen.dart';
 import '../statistics/statistics_screen.dart';
-import '../stadium/stadium_screen.dart';
 import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
 import 'home_dashboard_widgets.dart';
+import 'home_overview_widgets.dart';
 import 'match_day_presentation_screen.dart';
 import 'news_highlights_screen.dart';
 
@@ -53,19 +52,12 @@ class HomeScreen extends ConsumerWidget {
       return _UnemployedHome(career: career);
     }
     final club = career.userClub;
-    final position = career.standings.indexWhere((s) => s.clubId == club.id) + 1;
     final fixture = career.nextUserFixture;
     final opponent = fixture == null
         ? null
         : career.clubs.firstWhere(
             (c) => c.id == (fixture.homeClubId == club.id ? fixture.awayClubId : fixture.homeClubId),
           );
-    final daysUntilMatch = career.daysUntilNextMatch;
-    final totalRounds = career.fixtures.fold<int>(
-      career.currentRound,
-      (highest, item) => item.round > highest ? item.round : highest,
-    );
-
     final primarySeries = CompetitionCatalog.primarySeriesForClub(club.id);
     final competitionName = _homeCompetitionLabel(
       fixture == null
@@ -75,17 +67,9 @@ class HomeScreen extends ConsumerWidget {
     final unreadMessages = career.inbox
         .where((message) => !message.read && !message.archived && !message.deleted)
         .length;
-    final monthTransactions = career.finances.where(
-      (tx) => tx.createdAt.year == career.currentDate.year &&
-          tx.createdAt.month == career.currentDate.month,
-    );
-    final monthIncome = monthTransactions
-        .where((tx) => tx.amount > 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount);
-    final monthExpenses = monthTransactions
-        .where((tx) => tx.amount < 0)
-        .fold<int>(0, (sum, tx) => sum + tx.amount.abs());
-    final boardConfidence = ManagerCareerEngine.reputationFor(career);
+    final userStanding = career.standings
+        .where((s) => s.clubId == club.id)
+        .firstOrNull;
     final primaryCompetitionState =
         career.competitionStateFor(career.primaryCompetitionId);
     final primaryClubIds = primaryCompetitionState.participantClubIds.toSet();
@@ -118,40 +102,6 @@ class HomeScreen extends ConsumerWidget {
       (proposal) =>
           proposal.canRespond && !proposal.isExpiredAt(career.currentDate),
     );
-    final medicalNeedsAttention = club.squad.any((player) => player.injury != null);
-    final recentUserMatches = <HomeRecentMatchEntry>[];
-    for (final result in career.matchHistory.reversed) {
-      if (result.homeClubId != club.id && result.awayClubId != club.id) continue;
-      final opponentId =
-          result.homeClubId == club.id ? result.awayClubId : result.homeClubId;
-      final recentOpponent = career.clubs
-          .where((candidate) => candidate.id == opponentId)
-          .firstOrNull;
-      if (recentOpponent == null) continue;
-      final relatedFixture = career.fixtures
-          .where((candidate) => candidate.id == result.fixtureId)
-          .firstOrNull;
-      recentUserMatches.add(
-        HomeRecentMatchEntry(
-          result: result,
-          opponent: recentOpponent,
-          userClubId: club.id,
-          date: relatedFixture?.date,
-          round: relatedFixture?.round,
-        ),
-      );
-      if (recentUserMatches.length == 5) break;
-    }
-    final showRecentMatches =
-        recentUserMatches.isNotEmpty && MediaQuery.sizeOf(context).height >= 700;
-
-    final nextMatchLabel = fixture == null
-        ? 'Temporada concluída'
-        : career.isMatchDay
-            ? 'Próximo jogo • Hoje, ${fixture.kickoffLabel}'
-            : daysUntilMatch == 1
-                ? 'Próximo jogo • Amanhã, ${fixture.kickoffLabel}'
-                : 'Próximo jogo • ${shortDate(fixture.date)}, ${fixture.kickoffLabel}';
 
     return PremiumScaffold(
       body: Stack(
@@ -165,7 +115,7 @@ class HomeScreen extends ConsumerWidget {
                 manager: career.manager,
                 season: career.season,
                 competitionName: competitionName,
-                nextMatchLabel: nextMatchLabel,
+                balance: club.money,
                 unreadMessages: unreadMessages,
                 onInboxTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const InboxScreen()),
@@ -179,30 +129,8 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(10, 5, 10, 12),
               sliver: SliverList.list(
                 children: [
-                  SizedBox(
-                    height: 58,
-                    child: HomeFinanceGrid(
-                      balance: club.money,
-                      transferBudget: club.transferBudget,
-                      monthIncome: monthIncome,
-                      monthExpenses: monthExpenses,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const FinancesScreen()),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  HomeMainOverview(
-                    club: club,
-                    opponent: opponent,
-                    fixture: fixture,
-                    competitionName: competitionName,
-                    boardConfidence: boardConfidence,
-                    position: position,
-                    totalRounds: totalRounds,
-                    currentRound: career.currentRound,
+                  HomePrimaryActionButton(
                     isMatchDay: career.isMatchDay,
-                    daysUntilMatch: daysUntilMatch ?? 0,
                     onAdvance: () => _advanceDayWithTransition(
                       context,
                       ref,
@@ -213,29 +141,6 @@ class HomeScreen extends ConsumerWidget {
                         builder: (_) => const MatchDayPresentationScreen(),
                       ),
                     ),
-                    onStadiumTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const StadiumScreen()),
-                    ),
-                    onSeasonTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                    ),
-                    onMatchTap: fixture == null
-                        ? null
-                        : () {
-                            if (career.isMatchDay) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const MatchDayPresentationScreen(),
-                                ),
-                              );
-                              return;
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
-                              ),
-                            );
-                          },
                   ),
                   if (fixture == null) ...[
                     const SizedBox(height: 6),
@@ -264,152 +169,148 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
 
                   HomeQuickAccess(
                     items: [
                       HomeQuickAccessItem(
+                        icon: Icons.groups_2_rounded,
+                        label: 'Elenco',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const SquadScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
                         icon: Icons.sports_soccer_rounded,
                         label: 'Táticas',
-                        accent: const Color(0xFF7B35E8),
                         showDot: lineupNeedsAttention,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const TacticsScreen()),
                         ),
                       ),
                       HomeQuickAccessItem(
-                        icon: Icons.calendar_month_rounded,
-                        label: 'Calendário',
-                        accent: const Color(0xFFE28A1B),
-                        showDot: career.isMatchDay,
+                        icon: Icons.swap_horiz_rounded,
+                        label: 'Transferências',
                         onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                          MaterialPageRoute(builder: (_) => const MarketScreen()),
                         ),
                       ),
                       HomeQuickAccessItem(
-                        icon: Icons.account_balance_wallet_rounded,
+                        icon: Icons.show_chart_rounded,
                         label: 'Finanças',
-                        accent: const Color(0xFF1ABEA1),
                         showDot: financeNeedsAttention,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const FinancesScreen()),
                         ),
                       ),
                       HomeQuickAccessItem(
+                        icon: Icons.calendar_month_rounded,
+                        label: 'Calendário',
+                        showDot: career.isMatchDay,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                        ),
+                      ),
+                      HomeQuickAccessItem(
                         icon: Icons.school_rounded,
                         label: 'Base',
-                        accent: const Color(0xFF2F8BFF),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const YouthAcademyScreen()),
                         ),
                       ),
-                      HomeQuickAccessItem(
-                        icon: Icons.medical_services_rounded,
-                        label: 'Departamento\nMédico',
-                        accent: const Color(0xFFE24F87),
-                        showDot: medicalNeedsAttention,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const MedicalDepartmentScreen()),
-                        ),
-                      ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final sameRow = constraints.maxWidth >= 315;
-                      final newsCard = HomeNewsHighlights(
-                        events: recentNews,
-                        playerForEvent: (playerId) => _playerForEvent(career, playerId),
-                        playerAccent: (player) => _playerAccent(career, player),
-                        onEventTap: (event) => _openCareerEvent(
-                          context,
-                          ref,
-                          career,
-                          event,
-                          transferActionable: CpuUserOfferEngine.isOfferActive(
-                            state: career,
-                            event: event,
-                          ),
-                        ),
-                        onViewAll: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => NewsHighlightsScreen(
-                              events: career.news.reversed.toList(growable: false),
-                              onEventTap: (newsContext, event) => _openCareerEvent(
-                                newsContext,
-                                ref,
-                                career,
-                                event,
-                                transferActionable: CpuUserOfferEngine.isOfferActive(
-                                  state: career,
-                                  event: event,
+                  const SizedBox(height: 8),
+                  HomeNextMatchCard(
+                    club: club,
+                    opponent: opponent,
+                    fixture: fixture,
+                    competitionName: competitionName,
+                    onTap: fixture == null
+                        ? null
+                        : () {
+                            if (career.isMatchDay) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const MatchDayPresentationScreen(),
                                 ),
+                              );
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CalendarScreen(initialFixtureId: fixture.id),
                               ),
-                            ),
-                          ),
-                        ),
-                        compact: sameRow,
-                      );
-                      final rankings = HomeLeagueAndScorers(
-                        standings: career.standings,
-                        clubs: career.clubs,
-                        userClubId: career.userClubId,
-                        scorers: topScorers,
-                        competitionName: primarySeries.name,
-                        onClubTap: (clubId) => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
-                        ),
-                        onPlayerTap: (entry) => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PlayerProfileScreen(
-                              playerId: entry.player.id,
-                              clubId: entry.club.id,
-                            ),
-                          ),
-                        ),
-                        onStandingsTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const StandingsScreen()),
-                        ),
-                        onScorersTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-                        ),
-                        compactSingleRow: sameRow,
-                      );
-                      if (!sameRow) {
-                        return Column(
-                          children: [
-                            newsCard,
-                            const SizedBox(height: 6),
-                            rankings,
-                          ],
-                        );
-                      }
-                      return IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(flex: 13, child: newsCard),
-                            const SizedBox(width: 5),
-                            Expanded(flex: 17, child: rankings),
-                          ],
-                        ),
-                      );
-                    },
+                            );
+                          },
                   ),
-                  if (showRecentMatches) ...[
-                    const SizedBox(height: 6),
-                    HomeRecentMatches(
-                      entries: recentUserMatches,
-                      onTap: (entry) => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => CalendarScreen(
-                            initialFixtureId: entry.result.fixtureId,
+                  const SizedBox(height: 8),
+                  HomeSeasonSummaryRow(
+                    played: userStanding?.played ?? 0,
+                    wins: userStanding?.wins ?? 0,
+                    draws: userStanding?.draws ?? 0,
+                    losses: userStanding?.losses ?? 0,
+                    goalsFor: userStanding?.goalsFor ?? 0,
+                    goalsAgainst: userStanding?.goalsAgainst ?? 0,
+                  ),
+                  const SizedBox(height: 8),
+                  HomeLeagueAndScorers(
+                    standings: career.standings,
+                    clubs: career.clubs,
+                    userClubId: career.userClubId,
+                    scorers: topScorers,
+                    competitionName: primarySeries.name,
+                    onClubTap: (clubId) => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => ClubProfileScreen(clubId: clubId)),
+                    ),
+                    onPlayerTap: (entry) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PlayerProfileScreen(
+                          playerId: entry.player.id,
+                          clubId: entry.club.id,
+                        ),
+                      ),
+                    ),
+                    onStandingsTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StandingsScreen()),
+                    ),
+                    onScorersTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  HomeNewsHighlights(
+                    events: recentNews,
+                    playerForEvent: (playerId) => _playerForEvent(career, playerId),
+                    playerAccent: (player) => _playerAccent(career, player),
+                    onEventTap: (event) => _openCareerEvent(
+                      context,
+                      ref,
+                      career,
+                      event,
+                      transferActionable: CpuUserOfferEngine.isOfferActive(
+                        state: career,
+                        event: event,
+                      ),
+                    ),
+                    onViewAll: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => NewsHighlightsScreen(
+                          events: career.news.reversed.toList(growable: false),
+                          onEventTap: (newsContext, event) => _openCareerEvent(
+                            newsContext,
+                            ref,
+                            career,
+                            event,
+                            transferActionable: CpuUserOfferEngine.isOfferActive(
+                              state: career,
+                              event: event,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),

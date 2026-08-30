@@ -32,7 +32,7 @@ class HomeNewsHighlights extends StatelessWidget {
           children: [
             _DashboardSectionHeader(
               icon: Icons.newspaper_rounded,
-              title: 'NOTÍCIAS & DESTAQUES',
+              title: 'NOTÍCIAS E DESTAQUES',
               action: 'VER TODAS',
               onAction: onViewAll,
               compact: compact,
@@ -98,7 +98,7 @@ class HomeQuickAccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          final useRow = items.length <= 5 && constraints.maxWidth >= 285;
+          final useRow = items.length <= 6 && constraints.maxWidth >= 300;
           if (!useRow) {
             return SizedBox(
               height: 62,
@@ -160,49 +160,19 @@ class _QuickAccessTile extends StatelessWidget {
                 onTap: item.onTap,
                 borderRadius: BorderRadius.circular(13),
                 child: Ink(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        item.accent.withValues(alpha: .14),
-                        AppColors.surfaceRaised,
-                        AppColors.background,
-                      ],
-                    ),
+                    color: AppColors.surfaceRaised.withValues(alpha: .82),
                     borderRadius: BorderRadius.circular(13),
-                    border: Border.all(color: item.accent.withValues(alpha: .22)),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x1D000000),
-                        blurRadius: 7,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
+                    border: Border.all(color: AppColors.border.withValues(alpha: .75)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              item.accent.withValues(alpha: .86),
-                              item.accent.withValues(alpha: .45),
-                            ],
-                          ),
-                        ),
-                        child: Icon(item.icon, color: AppColors.white, size: 18),
-                      ),
-                      const SizedBox(height: 3),
+                      Icon(item.icon, color: AppColors.white, size: 21),
+                      const SizedBox(height: 5),
                       SizedBox(
-                        height: 18,
+                        height: 16,
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
@@ -210,8 +180,10 @@ class _QuickAccessTile extends StatelessWidget {
                             maxLines: 2,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontSize: 11.2,
-                              fontWeight: FontWeight.w800,
+                              color: AppColors.white,
+                              fontSize: 9.6,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: .1,
                               height: 1.05,
                             ),
                           ),

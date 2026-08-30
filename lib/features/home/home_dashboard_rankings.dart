@@ -38,7 +38,6 @@ class HomeLeagueAndScorers extends StatelessWidget {
         builder: (context, constraints) {
           final forceCompact = compactSingleRow;
           final canSplit = forceCompact || constraints.maxWidth >= 330;
-          final dense = forceCompact || constraints.maxWidth < 440;
           final tableCard = _DashboardCard(
             accent: AppColors.green,
             compact: forceCompact,
@@ -47,9 +46,8 @@ class HomeLeagueAndScorers extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
-                  icon: Icons.bar_chart_rounded,
-                  title: competitionName.toUpperCase(),
-                  action: 'TABELA',
+                  title: 'CLASSIFICAÇÃO',
+                  action: 'VER TABELA',
                   onAction: onStandingsTap,
                   compact: forceCompact,
                 ),
@@ -58,23 +56,23 @@ class HomeLeagueAndScorers extends StatelessWidget {
                   standings: standings,
                   clubs: clubs,
                   userClubId: userClubId,
-                  compactColumns: dense && canSplit,
-                  ultraCompact: forceCompact,
+                  compactColumns: true,
+                  ultraCompact: false,
                   onClubTap: onClubTap,
                 ),
               ],
             ),
           );
           final scorersCard = _DashboardCard(
-            accent: const Color(0xFFE4A92E),
+            accent: AppColors.green,
             compact: forceCompact,
             onTap: onScorersTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
-                  title: 'ARTILHEIROS',
-                  action: 'RANKING',
+                  title: 'ARTILHARIA',
+                  action: 'VER TODOS',
                   onAction: onScorersTap,
                   compact: forceCompact,
                 ),
@@ -95,7 +93,7 @@ class HomeLeagueAndScorers extends StatelessWidget {
                     _ScorerRow(
                       position: index + 1,
                       entry: scorers[index],
-                      compact: dense && canSplit,
+                      compact: canSplit,
                       ultraCompact: forceCompact,
                       onTap: () => onPlayerTap(scorers[index]),
                     ),

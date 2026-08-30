@@ -125,6 +125,71 @@ class HomeSeasonCard extends StatelessWidget {
   }
 }
 
+class HomePrimaryActionButton extends StatelessWidget {
+  const HomePrimaryActionButton({
+    super.key,
+    required this.isMatchDay,
+    required this.onAdvance,
+    required this.onMatchDay,
+  });
+
+  final bool isMatchDay;
+  final VoidCallback onAdvance;
+  final VoidCallback onMatchDay;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isMatchDay ? onMatchDay : onAdvance,
+          borderRadius: BorderRadius.circular(14),
+          child: Ink(
+            height: 50,
+            padding: const EdgeInsets.only(left: 16, right: 6),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.green, AppColors.greenDark],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: const [
+                BoxShadow(color: Color(0x3376D91B), blurRadius: 14, offset: Offset(0, 5)),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: .4,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: .16),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Icon(
+                    isMatchDay ? Icons.play_arrow_rounded : Icons.skip_next_rounded,
+                    color: Colors.black,
+                    size: 22,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
 class HomeAdvanceStrip extends StatelessWidget {
   const HomeAdvanceStrip({
     super.key,

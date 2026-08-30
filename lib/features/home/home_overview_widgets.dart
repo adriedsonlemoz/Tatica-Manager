@@ -112,6 +112,165 @@ class HomeDailyAdvancePanel extends StatelessWidget {
   }
 }
 
+class HomeSeasonSummaryRow extends StatelessWidget {
+  const HomeSeasonSummaryRow({
+    super.key,
+    required this.played,
+    required this.wins,
+    required this.draws,
+    required this.losses,
+    required this.goalsFor,
+    required this.goalsAgainst,
+  });
+
+  final int played;
+  final int wins;
+  final int draws;
+  final int losses;
+  final int goalsFor;
+  final int goalsAgainst;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF12202A), Color(0xFF162229), Color(0xFF111A20)],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border.withValues(alpha: .82)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                'RESUMO DA TEMPORADA',
+                style: TextStyle(
+                  color: AppColors.green,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: .3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.emoji_events_rounded,
+                    iconColor: AppColors.warning,
+                    value: '$played',
+                    label: 'Jogos',
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.check_rounded,
+                    iconColor: AppColors.green,
+                    value: '$wins',
+                    label: 'Vitórias',
+                    filled: true,
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.drag_handle_rounded,
+                    iconColor: AppColors.textSecondary,
+                    value: '$draws',
+                    label: 'Empates',
+                    filled: true,
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.close_rounded,
+                    iconColor: AppColors.danger,
+                    value: '$losses',
+                    label: 'Derrotas',
+                    filled: true,
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.stadium_rounded,
+                    iconColor: AppColors.white,
+                    value: '$goalsFor',
+                    label: 'Gols marcados',
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryStat(
+                    icon: Icons.shield_rounded,
+                    iconColor: AppColors.white,
+                    value: '$goalsAgainst',
+                    label: 'Gols sofridos',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+}
+
+class _SummaryStat extends StatelessWidget {
+  const _SummaryStat({
+    required this.icon,
+    required this.iconColor,
+    required this.value,
+    required this.label,
+    this.filled = false,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String value;
+  final String label;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        children: [
+          filled
+              ? Container(
+                  width: 22,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
+                  child: Icon(icon, color: AppColors.background, size: 14),
+                )
+              : Icon(icon, color: iconColor, size: 20),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: const TextStyle(
+                color: AppColors.muted,
+                fontSize: 9.2,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      );
+}
+
 class HomeCompactStandings extends StatelessWidget {
   const HomeCompactStandings({
     super.key,

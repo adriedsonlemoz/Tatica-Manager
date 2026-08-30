@@ -129,19 +129,19 @@ class ClubBadge extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: hasCustomIcon ? const Color(0xFFF4F4F4) : null,
+        color: Colors.transparent,
         gradient: hasCustomIcon
             ? null
             : LinearGradient(
                 colors: [primary, secondary],
               ),
         borderRadius: BorderRadius.circular(size * .28),
-        border: Border.all(
-          color: hasCustomIcon
-              ? Colors.white.withValues(alpha: .55)
-              : Colors.white.withValues(alpha: .22),
-          width: 1.2,
-        ),
+        border: hasCustomIcon
+            ? null
+            : Border.all(
+                color: Colors.white.withValues(alpha: .22),
+                width: 1.2,
+              ),
       ),
       child: child,
     );

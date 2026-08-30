@@ -14,7 +14,7 @@ class HomeClubHeader extends StatelessWidget {
     required this.manager,
     required this.season,
     required this.competitionName,
-    required this.nextMatchLabel,
+    required this.balance,
     required this.unreadMessages,
     required this.onInboxTap,
     required this.onManagerTap,
@@ -24,7 +24,7 @@ class HomeClubHeader extends StatelessWidget {
   final ManagerProfile manager;
   final int season;
   final String competitionName;
-  final String nextMatchLabel;
+  final int balance;
   final int unreadMessages;
   final VoidCallback onInboxTap;
   final VoidCallback onManagerTap;
@@ -97,32 +97,11 @@ class HomeClubHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_month_rounded, color: AppColors.green, size: 11),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            nextMatchLabel.toUpperCase(),
-                            maxLines: 1,
-                            style: const TextStyle(
-                              color: AppColors.green,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: .10,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
+            const SizedBox(width: 6),
+            _HeaderBalanceBadge(balance: balance),
             const SizedBox(width: 5),
             _HeaderIconButton(
               icon: Icons.mail_outline_rounded,
@@ -203,6 +182,37 @@ class HomeFinanceGrid extends StatelessWidget {
             ),
           ),
         ],
+      );
+}
+
+class _HeaderBalanceBadge extends StatelessWidget {
+  const _HeaderBalanceBadge({required this.balance});
+
+  final int balance;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.background.withValues(alpha: .54),
+          borderRadius: BorderRadius.circular(11),
+          border: Border.all(color: AppColors.green.withValues(alpha: .32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.payments_rounded, color: AppColors.green, size: 15),
+            const SizedBox(height: 2),
+            Text(
+              compactMoney(balance),
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
       );
 }
 
