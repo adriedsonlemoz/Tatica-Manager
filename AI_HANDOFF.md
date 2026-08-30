@@ -8,12 +8,23 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.116`
-- **Android versionCode:** `117`
+- **Release deste handoff:** `0.1.1.117`
+- **Android versionCode:** `118`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+
+## Estado funcional da release 0.1.1.117
+
+- corrige os dois testes de `visual_navigation_consistency_test.dart` que bloquearam o CI da 0.1.1.116, enquanto o `flutter analyze` já estava limpo;
+- `StadiumOverviewCard` usa acento legível derivado da cor primária do clube e contraste calculado quando há ícone sobre esse acento;
+- `StadiumScreen` calcula fundos realmente disponíveis com `min(orçamento do estádio, caixa do clube)` e repassa esse limite para a lista de obras e para a melhoria sugerida;
+- a melhoria sugerida não abre a ação quando o saldo/orçamento é insuficiente e comunica esse estado diretamente no card;
+- mantém integralmente os três sistemas criados na 0.1.1.116, os assets do estádio, Match Engine e playlist.
+
+Consulte `docs/RELEASE_0.1.1.117.md`.
 
 
 ## Estado funcional da release 0.1.1.116
@@ -827,12 +838,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.110
-versionCode:         117
-pubspec:             0.1.1+117
+release/versionName: 0.1.1.117
+versionCode:         118
+pubspec:             0.1.1+118
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.117` e usar um `versionCode` maior que 117.
+A próxima alteração/entrega normalmente deve virar `0.1.1.118` e usar um `versionCode` maior que 118.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

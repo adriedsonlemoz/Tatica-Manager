@@ -368,12 +368,14 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
     required this.facility,
     required this.cost,
     required this.durationDays,
+    required this.availableFunds,
     required this.onTap,
   });
 
   final StadiumFacility facility;
   final int cost;
   final int durationDays;
+  final int availableFunds;
   final VoidCallback onTap;
 
   @override
@@ -384,6 +386,7 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
     final description = facility == StadiumFacility.stands
         ? 'Amplia as arquibancadas e melhora a estrutura para os torcedores.'
         : facility.description;
+    final affordable = cost <= availableFunds;
     return SectionCard(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -420,7 +423,7 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           InkWell(
-            onTap: onTap,
+            onTap: affordable ? onTap : null,
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.all(2),
@@ -481,6 +484,17 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (!affordable) ...[
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Saldo/orçamento insuficiente',
+                            style: TextStyle(
+                              color: AppColors.warning,
+                              fontSize: 8.5,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

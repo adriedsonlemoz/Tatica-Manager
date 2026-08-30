@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.116`
-**Android versionCode:** `117`
+**Release atual:** `0.1.1.117`
+**Android versionCode:** `118`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,24 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.116`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.117`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+117`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.116` e `versionCode 117`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+118`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.117` e `versionCode 118`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.116`, o pubspec é `0.1.1+117`. a próxima entrega normalmente será `0.1.1.117`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.117`, o pubspec é `0.1.1+118`. a próxima entrega normalmente será `0.1.1.118`.
+
+
+## Correção de consistência do Estádio — 0.1.1.117
+
+- corrige os dois testes que falharam no GitHub Actions da 0.1.1.116; o `flutter analyze` já havia passado sem problemas;
+- a visão geral do estádio volta a usar `AppColors.readableAccent` com a cor do clube e `AppColors.foregroundOn` quando o ícone fica sobre o acento, preservando contraste para clubes com cores claras ou escuras;
+- a disponibilidade exibida para melhorias agora usa o menor valor entre o orçamento do departamento Estádio e o caixa real do clube;
+- o card de melhoria sugerida fica desabilitado quando o custo supera esse valor e informa `Saldo/orçamento insuficiente` em vez de permitir uma ação que seria recusada depois;
+- não desfaz manutenção, Centro de Treinamento, obras com prazo/status ou o novo design da 0.1.1.116;
+- não altera Match Engine, músicas, regras de partidas, IDs ou resultados.
 
 
 ## Estádio imersivo e três novos sistemas — 0.1.1.116

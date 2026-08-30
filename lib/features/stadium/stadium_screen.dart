@@ -1,9 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../domain/club/club.dart';
+import '../../domain/finance/club_administration.dart';
 import '../../domain/finance/finance.dart';
 import '../../game/stadium/stadium_engine.dart';
 import 'stadium_actions.dart';
@@ -80,6 +83,9 @@ class StadiumScreen extends ConsumerWidget {
         .where((project) => project.status == StadiumProjectStatus.planned)
         .length;
     final recommended = _recommendedFacility(stadium);
+    final stadiumBudget = career.clubAdministration.budgetPlan
+        .forDepartment(ClubDepartment.stadium);
+    final availableFunds = math.min(stadiumBudget, club.money).toInt();
 
     return PremiumScaffold(
       safeBottom: true,
@@ -144,7 +150,11 @@ class StadiumScreen extends ConsumerWidget {
                     completed: completed,
                     inProgress: inProgress,
                     planned: planned,
-                    onDetails: () => showStadiumProjectsSheet(context, ref),
+                    onDetails: () => showStadiumProjectsSheet(
+                      context,
+                      ref,
+                      availableFunds: availableFunds,
+                    ),
                   ),
                 ),
               ],
@@ -158,6 +168,7 @@ class StadiumScreen extends ConsumerWidget {
               durationDays: StadiumEngine.projectDurationDays(
                 StadiumEngine.projectKindForFacility(recommended),
               ),
+              availableFunds: availableFunds,
               onTap: () => showStadiumUpgradeDialog(
                 context,
                 ref,

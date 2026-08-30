@@ -22,17 +22,19 @@ class StadiumOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final stadium = club.stadium;
     final condition = StadiumEngine.maintenanceScore(stadium);
+    final primary = AppColors.readableAccent(Color(club.colors.primaryHex));
     return SectionCard(
       padding: const EdgeInsets.all(10),
+      borderColor: primary.withValues(alpha: .32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(4, 2, 4, 10),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 2, 4, 10),
             child: Text(
               'VISÃO GERAL DO ESTÁDIO',
               style: TextStyle(
-                color: AppColors.green,
+                color: primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
               ),
@@ -82,6 +84,7 @@ class StadiumOverviewCard extends StatelessWidget {
                         icon: Icons.chair_alt_rounded,
                         label: 'CAPACIDADE',
                         value: _formatCount(stadium.capacity),
+                        accent: primary,
                       ),
                     ),
                     const _MetricDivider(),
@@ -90,6 +93,7 @@ class StadiumOverviewCard extends StatelessWidget {
                         icon: Icons.groups_rounded,
                         label: 'PÚBLICO PROJ.',
                         value: _formatCount(projectedAttendance),
+                        accent: primary,
                       ),
                     ),
                     const _MetricDivider(),
@@ -98,12 +102,14 @@ class StadiumOverviewCard extends StatelessWidget {
                         icon: Icons.local_activity_rounded,
                         label: 'PREÇO DO INGRESSO',
                         value: formatMoney(stadium.ticketPrice),
+                        accent: primary,
                       ),
                     ),
                     const _MetricDivider(),
                     Expanded(
                       child: _ConditionMetric(
                         condition: condition,
+                        accent: primary,
                       ),
                     ),
                   ],
@@ -134,17 +140,19 @@ class _OverviewMetric extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.accent,
   });
 
   final IconData icon;
   final String label;
   final String value;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.green, size: 21),
+          Icon(icon, color: accent, size: 21),
           const SizedBox(width: 6),
           Expanded(
             child: Column(
@@ -168,8 +176,8 @@ class _OverviewMetric extends StatelessWidget {
                   child: Text(
                     value,
                     maxLines: 1,
-                    style: const TextStyle(
-                      color: AppColors.green,
+                    style: TextStyle(
+                      color: accent,
                       fontSize: 14.5,
                       fontWeight: FontWeight.w900,
                     ),
@@ -183,19 +191,31 @@ class _OverviewMetric extends StatelessWidget {
 }
 
 class _ConditionMetric extends StatelessWidget {
-  const _ConditionMetric({required this.condition});
+  const _ConditionMetric({required this.condition, required this.accent});
 
   final int condition;
+  final Color accent;
 
   @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) {
+    final primary = accent;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.monitor_heart_rounded, color: AppColors.green, size: 20),
-              SizedBox(width: 5),
-              Expanded(
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+                child: Icon(
+                  Icons.monitor_heart_rounded,
+                  color: AppColors.foregroundOn(primary),
+                  size: 13,
+                ),
+              ),
+              const SizedBox(width: 5),
+              const Expanded(
                 child: Text(
                   'CONDIÇÃO',
                   style: TextStyle(
@@ -212,8 +232,8 @@ class _ConditionMetric extends StatelessWidget {
             StadiumEngine.conditionLabel(condition),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.green,
+            style: TextStyle(
+              color: accent,
               fontSize: 12.5,
               fontWeight: FontWeight.w900,
             ),
@@ -225,11 +245,12 @@ class _ConditionMetric extends StatelessWidget {
               value: condition / 100,
               minHeight: 6,
               backgroundColor: AppColors.surfaceSoft,
-              valueColor: const AlwaysStoppedAnimation(AppColors.green),
+              valueColor: AlwaysStoppedAnimation(accent),
             ),
           ),
         ],
       );
+  }
 }
 
 String _formatCount(int value) {

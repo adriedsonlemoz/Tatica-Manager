@@ -291,12 +291,11 @@ Future<void> showTrainingCenterDialog(
 
 Future<void> showStadiumProjectsSheet(
   BuildContext context,
-  WidgetRef ref,
-) async {
+  WidgetRef ref, {
+  required int availableFunds,
+}) async {
   final career = ref.read(gameControllerProvider).career!;
   final club = career.userClub;
-  final available = career.clubAdministration.budgetPlan
-      .forDepartment(ClubDepartment.stadium);
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -356,7 +355,7 @@ Future<void> showStadiumProjectsSheet(
             const SizedBox(height: 8),
             StadiumFacilityGrid(
               club: club,
-              availableFunds: available,
+              availableFunds: availableFunds,
               onUpgrade: (facility, negotiated) {
                 Navigator.of(sheetContext).pop();
                 showStadiumUpgradeDialog(
