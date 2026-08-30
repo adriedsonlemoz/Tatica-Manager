@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -8,14 +9,11 @@ void main() {
     expect(File('android/app/build.gradle.kts').existsSync(), isTrue);
     expect(File('android/app/src/main/AndroidManifest.xml').existsSync(), isTrue);
 
-    final expectedVersionName = File('VERSION').readAsStringSync().trim();
-    final pubspec = File('pubspec.yaml').readAsStringSync();
-    final pubspecMatch = RegExp(
-      r'^version:\s*\d+\.\d+\.\d+\+(\d+)\s*$',
-      multiLine: true,
-    ).firstMatch(pubspec);
-    expect(pubspecMatch, isNotNull);
-    final expectedVersionCode = int.parse(pubspecMatch!.group(1)!);
+    final manifest = jsonDecode(File('al-sistemas.json').readAsStringSync())
+        as Map<String, dynamic>;
+    final android = manifest['android'] as Map<String, dynamic>;
+    final expectedVersionName = android['versionName'] as String;
+    final expectedVersionCode = android['versionCode'] as int;
 
     final settings = File('android/settings.gradle.kts').readAsStringSync();
     final appGradle = File('android/app/build.gradle.kts').readAsStringSync();
@@ -52,6 +50,5 @@ void main() {
     expect(workflow, contains('Upload somente do APK'));
     expect(workflow, contains('archive: false'));
     expect(workflow, isNot(contains('-pubspec.lock')));
-    expect(workflow, isNot(contains('al-sistemas.json')));
   });
 }

@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
-import '../../app/widgets/player_avatar.dart';
+import '../../app/widgets/player_card.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/utils/formatters.dart';
 import '../../domain/player/player.dart';
 import '../player/player_profile_screen.dart';
 
@@ -21,7 +20,6 @@ class SquadScreen extends ConsumerStatefulWidget {
 class _SquadScreenState extends ConsumerState<SquadScreen> {
   String query = '';
   _SquadFilter filter = _SquadFilter.all;
-  bool showSearch = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,101 +40,117 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
             player.fatigue > 55 ||
             player.discipline.yellowCards >= 2,
       };
-    }).toList()
-      ..sort(_comparePlayers);
+    }).toList();
 
-    final brazilianCount = club.squad
-        .where((player) => player.nationality.trim().toLowerCase() == 'brasil')
-        .length;
-    final foreignCount = club.squad.length - brazilianCount;
+    final groups = _buildGroups(players);
     return PremiumScaffold(
-      appBar: AppBar(
-        leading: widget.showBackButton
-            ? IconButton(
-                tooltip: 'Voltar',
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back_rounded),
-              )
-            : null,
-        automaticallyImplyLeading: false,
-        titleSpacing: widget.showBackButton ? 0 : 16,
-        title: const Text(
-          'Elenco',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Buscar',
-            onPressed: () => setState(() {
-              showSearch = !showSearch;
-              if (!showSearch) query = '';
-            }),
-            icon: Icon(showSearch ? Icons.close_rounded : Icons.search_rounded),
-          ),
-          PopupMenuButton<_SquadFilter>(
-            tooltip: 'Filtrar elenco',
-            initialValue: filter,
-            onSelected: (value) => setState(() => filter = value),
-            itemBuilder: (context) => _SquadFilter.values
-                .map(
-                  (item) => PopupMenuItem<_SquadFilter>(
-                    value: item,
-                    child: Text(item.label),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (widget.showBackButton) ...[
+                        IconButton.filledTonal(
+                          tooltip: 'Voltar',
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ELENCO',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${club.squad.length} jogadores • OVR médio ${club.averageOverall.toStringAsFixed(1)} • ${career.starterIds.length}/11 titulares',
+                              style: const TextStyle(color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                )
-                .toList(),
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Icons.filter_alt_outlined),
-                if (filter != _SquadFilter.all)
-                  const Positioned(
-                    right: -1,
-                    top: -2,
-                    child: CircleAvatar(
-                      radius: 4,
-                      backgroundColor: AppColors.green,
+                  const SizedBox(height: 14),
+                  TextField(
+                    onChanged: (value) => setState(() => query = value),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.search_rounded),
+                      hintText: 'Buscar jogador, posição ou país',
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 38,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: _SquadFilter.values
+                          .map(
+                            (item) => Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: ChoiceChip(
+                                label: Text(item.label),
+                                selected: filter == item,
+                                onSelected: (_) => setState(() => filter = item),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 110),
+            sliver: SliverList.list(
+              children: [
+                if (groups.every((group) => group.players.isEmpty))
+                  const SectionCard(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 22),
+                      child: Center(
+                        child: Text(
+                          'Nenhum jogador encontrado.',
+                          style: TextStyle(color: AppColors.muted),
+                        ),
+                      ),
+                    ),
+                  ),
+                for (final group in groups)
+                  if (group.players.isNotEmpty) ...[
+                    _PositionHeader(title: group.title, count: group.players.length),
+                    const SizedBox(height: 7),
+                    for (final player in group.players) ...[
+                      PlayerCard(
+                        player: player,
+                        club: club,
+                        size: PlayerCardSize.compact,
+                        lineupLabel: _lineupLabel(player, career.starterIds),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PlayerProfileScreen(playerId: player.id),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    const SizedBox(height: 6),
+                  ],
               ],
-            ),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
-        children: [
-          if (showSearch) ...[
-            TextField(
-              autofocus: true,
-              onChanged: (value) => setState(() => query = value),
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search_rounded),
-                hintText: 'Buscar jogador, posição ou país',
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-          _ClubSummaryCard(
-            clubName: club.name,
-            season: career.season,
-            reputation: club.reputation,
-            balance: club.money,
-            transferBudget: club.transferBudget,
-            badge: ClubBadge(club: club, size: 64),
-          ),
-          const SizedBox(height: 10),
-          _SquadTable(
-            players: players,
-            clubAccent: AppColors.readableAccent(Color(club.colors.primaryHex)),
-            total: club.squad.length,
-            brazilians: brazilianCount,
-            foreigners: foreignCount,
-            onPlayerTap: (player) => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => PlayerProfileScreen(playerId: player.id),
-              ),
             ),
           ),
         ],
@@ -144,36 +158,36 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
     );
   }
 
-  static int _comparePlayers(Player a, Player b) {
-    final position = _positionOrder(a.primaryPosition)
-        .compareTo(_positionOrder(b.primaryPosition));
-    if (position != 0) return position;
-    if (a.shirtNumber > 0 && b.shirtNumber > 0) {
-      final number = a.shirtNumber.compareTo(b.shirtNumber);
-      if (number != 0) return number;
-    } else if (a.shirtNumber > 0) {
-      return -1;
-    } else if (b.shirtNumber > 0) {
-      return 1;
-    }
-    final overall = b.overall.compareTo(a.overall);
-    if (overall != 0) return overall;
-    return a.displayName.compareTo(b.displayName);
+  List<_SquadGroup> _buildGroups(List<Player> players) {
+    List<Player> select(Set<PlayerPosition> positions) => players
+        .where((player) => positions.contains(player.primaryPosition))
+        .toList()
+      ..sort((a, b) {
+        if (a.isAvailable != b.isAvailable) return a.isAvailable ? -1 : 1;
+        final overall = b.overall.compareTo(a.overall);
+        if (overall != 0) return overall;
+        return a.displayName.compareTo(b.displayName);
+      });
+
+    return [
+      _SquadGroup('GOLEIROS', select({PlayerPosition.gol})),
+      _SquadGroup('ZAGUEIROS', select({PlayerPosition.zag})),
+      _SquadGroup('LATERAIS', select({PlayerPosition.ld, PlayerPosition.le})),
+      _SquadGroup(
+        'MEIO-CAMPISTAS',
+        select({PlayerPosition.vol, PlayerPosition.mc, PlayerPosition.mei}),
+      ),
+      _SquadGroup(
+        'ATACANTES',
+        select({PlayerPosition.pe, PlayerPosition.pd, PlayerPosition.sa, PlayerPosition.ca}),
+      ),
+    ];
   }
 
-  static int _positionOrder(PlayerPosition position) => switch (position) {
-        PlayerPosition.gol => 0,
-        PlayerPosition.ld => 1,
-        PlayerPosition.zag => 2,
-        PlayerPosition.le => 3,
-        PlayerPosition.vol => 4,
-        PlayerPosition.mc => 5,
-        PlayerPosition.mei => 6,
-        PlayerPosition.pd => 7,
-        PlayerPosition.pe => 8,
-        PlayerPosition.sa => 9,
-        PlayerPosition.ca => 10,
-      };
+  String _lineupLabel(Player player, List<String> starterIds) {
+    if (!player.isAvailable) return 'Fora';
+    return starterIds.contains(player.id) ? 'Titular' : 'Banco';
+  }
 }
 
 enum _SquadFilter { all, available, attention }
@@ -186,528 +200,53 @@ extension on _SquadFilter {
       };
 }
 
-class _ClubSummaryCard extends StatelessWidget {
-  const _ClubSummaryCard({
-    required this.clubName,
-    required this.season,
-    required this.reputation,
-    required this.balance,
-    required this.transferBudget,
-    required this.badge,
-  });
+class _SquadGroup {
+  const _SquadGroup(this.title, this.players);
 
-  final String clubName;
-  final int season;
-  final int reputation;
-  final int balance;
-  final int transferBudget;
-  final Widget badge;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border.withValues(alpha: .55)),
-        ),
-        child: Row(
-          children: [
-            badge,
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    clubName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Temporada $season',
-                    style: const TextStyle(
-                      color: AppColors.muted,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.public_rounded,
-                        size: 16,
-                        color: AppColors.muted,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          'Reputação $reputation',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.muted,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _MoneyLine(
-                  icon: Icons.account_balance_wallet_rounded,
-                  value: compactMoney(balance),
-                  color: AppColors.green,
-                ),
-                const SizedBox(height: 12),
-                _MoneyLine(
-                  icon: Icons.paid_rounded,
-                  value: compactMoney(transferBudget),
-                  color: AppColors.warning,
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-}
-
-class _MoneyLine extends StatelessWidget {
-  const _MoneyLine({
-    required this.icon,
-    required this.value,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 7),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      );
-}
-
-class _SquadTable extends StatelessWidget {
-  const _SquadTable({
-    required this.players,
-    required this.clubAccent,
-    required this.total,
-    required this.brazilians,
-    required this.foreigners,
-    required this.onPlayerTap,
-  });
-
+  final String title;
   final List<Player> players;
-  final Color clubAccent;
-  final int total;
-  final int brazilians;
-  final int foreigners;
-  final ValueChanged<Player> onPlayerTap;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border.withValues(alpha: .55)),
-        ),
-        child: Column(
-          children: [
-            const _SquadTableHeader(),
-            Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
-            if (players.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 28),
-                child: Text(
-                  'Nenhum jogador encontrado.',
-                  style: TextStyle(color: AppColors.muted),
-                ),
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 7, 8, 8),
-                child: Column(
-                  children: [
-                    for (var index = 0; index < players.length; index++) ...[
-                      _SquadPlayerRow(
-                        player: players[index],
-                        clubAccent: clubAccent,
-                        onTap: () => onPlayerTap(players[index]),
-                      ),
-                      if (index != players.length - 1)
-                        const SizedBox(height: 5),
-                    ],
-                  ],
-                ),
-              ),
-            Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
-            _SquadTotalsContent(
-              total: total,
-              brazilians: brazilians,
-              foreigners: foreigners,
-            ),
-          ],
-        ),
-      );
 }
 
-class _SquadTableHeader extends StatelessWidget {
-  const _SquadTableHeader();
+class _PositionHeader extends StatelessWidget {
+  const _PositionHeader({required this.title, required this.count});
 
-  @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.fromLTRB(10, 12, 10, 10),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 24,
-              child: Text('#', style: _headerStyle),
-            ),
-            SizedBox(width: 44),
-            Expanded(
-              child: Text('JOGADOR', style: _headerStyle),
-            ),
-            SizedBox(
-              width: 38,
-              child: Center(child: Text('POS', style: _headerStyle)),
-            ),
-            SizedBox(
-              width: 36,
-              child: Center(child: Text('GER', style: _headerStyle)),
-            ),
-            SizedBox(
-              width: 78,
-              child: Text('MORAL', style: _headerStyle),
-            ),
-          ],
-        ),
-      );
-
-  static const _headerStyle = TextStyle(
-    color: AppColors.muted,
-    fontSize: 9,
-    fontWeight: FontWeight.w800,
-    letterSpacing: .35,
-  );
-}
-
-class _SquadPlayerRow extends StatelessWidget {
-  const _SquadPlayerRow({
-    required this.player,
-    required this.clubAccent,
-    required this.onTap,
-  });
-
-  final Player player;
-  final Color clubAccent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final morale = _MoraleVisual.fromValue(player.morale);
-    return Material(
-      color: AppColors.surfaceRaised,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 24,
-                child: Text(
-                  player.shirtNumber > 0 ? '${player.shirtNumber}' : '—',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-              PlayerAvatar(
-                player: player,
-                size: 38,
-                accentColor: clubAccent,
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      player.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _positionName(player.primaryPosition),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        color: AppColors.muted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 38,
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(minWidth: 34),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Text(
-                      player.primaryPosition.label,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 36,
-                child: Center(
-                  child: Text(
-                    '${player.overall}',
-                    style: const TextStyle(
-                      color: AppColors.green,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 78,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: morale.color,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        morale.icon,
-                        size: 13,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        morale.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 9,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  static String _positionName(PlayerPosition position) => switch (position) {
-        PlayerPosition.gol => 'Goleiro',
-        PlayerPosition.ld => 'Lateral Direito',
-        PlayerPosition.le => 'Lateral Esquerdo',
-        PlayerPosition.zag => 'Zagueiro',
-        PlayerPosition.vol => 'Volante',
-        PlayerPosition.mc => 'Meia Central',
-        PlayerPosition.mei => 'Meia Ofensivo',
-        PlayerPosition.pe => 'Ponta Esquerda',
-        PlayerPosition.pd => 'Ponta Direita',
-        PlayerPosition.sa => 'Segundo Atacante',
-        PlayerPosition.ca => 'Centroavante',
-      };
-}
-
-class _MoraleVisual {
-  const _MoraleVisual({
-    required this.label,
-    required this.color,
-    required this.icon,
-  });
-
-  final String label;
-  final Color color;
-  final IconData icon;
-
-  factory _MoraleVisual.fromValue(int morale) {
-    if (morale >= 85) {
-      return const _MoraleVisual(
-        label: 'Excelente',
-        color: AppColors.greenDark,
-        icon: Icons.arrow_upward_rounded,
-      );
-    }
-    if (morale >= 70) {
-      return const _MoraleVisual(
-        label: 'Muito Bom',
-        color: AppColors.greenDark,
-        icon: Icons.arrow_upward_rounded,
-      );
-    }
-    return const _MoraleVisual(
-      label: 'Regular',
-      color: AppColors.warning,
-      icon: Icons.remove_rounded,
-    );
-  }
-}
-
-class _SquadTotalsContent extends StatelessWidget {
-  const _SquadTotalsContent({
-    required this.total,
-    required this.brazilians,
-    required this.foreigners,
-  });
-
-  final int total;
-  final int brazilians;
-  final int foreigners;
+  final String title;
+  final int count;
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+        padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
         child: Row(
           children: [
-            Expanded(
-              child: _TotalItem(
-                icon: Icons.groups_rounded,
-                iconColor: AppColors.green,
-                label: 'Total de Jogadores',
-                value: '$total',
+            Container(
+              width: 4,
+              height: 18,
+              decoration: BoxDecoration(
+                color: AppColors.green,
+                borderRadius: BorderRadius.circular(99),
               ),
             ),
-            _divider(),
-            Expanded(
-              child: _TotalItem(
-                leadingText: '🇧🇷',
-                label: 'Brasileiros',
-                value: '$brazilians',
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+                letterSpacing: .7,
               ),
             ),
-            _divider(),
-            Expanded(
-              child: _TotalItem(
-                icon: Icons.public_rounded,
-                iconColor: AppColors.info,
-                label: 'Estrangeiros',
-                value: '$foreigners',
+            const SizedBox(width: 8),
+            Expanded(child: Container(height: 1, color: AppColors.border)),
+            const SizedBox(width: 8),
+            Text(
+              '$count',
+              style: const TextStyle(
+                color: AppColors.muted,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],
         ),
-      );
-
-  static Widget _divider() => Container(
-        width: 1,
-        height: 42,
-        margin: const EdgeInsets.symmetric(horizontal: 7),
-        color: AppColors.border.withValues(alpha: .6),
-      );
-}
-
-class _TotalItem extends StatelessWidget {
-  const _TotalItem({
-    this.icon,
-    this.iconColor,
-    this.leadingText,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData? icon;
-  final Color? iconColor;
-  final String? leadingText;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (leadingText != null)
-            Text(leadingText!, style: const TextStyle(fontSize: 20))
-          else if (icon != null)
-            Icon(icon, size: 24, color: iconColor),
-          const SizedBox(width: 7),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 9.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: AppColors.green,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       );
 }

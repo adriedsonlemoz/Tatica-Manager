@@ -34,7 +34,7 @@ void main() {
     expect(source, contains('Rebaixamento'));
   });
 
-  test('home premium acompanha a estrutura atual responsiva e os dados reais', () {
+  test('home premium mantém classificação, avanço contextual e dados reais', () {
     final home = File('lib/features/home/home_screen.dart').readAsStringSync();
     final overview = File('lib/features/home/home_overview_widgets.dart')
         .readAsStringSync();
@@ -42,85 +42,96 @@ void main() {
         .readAsStringSync();
     final news = File('lib/features/home/home_dashboard_news.dart')
         .readAsStringSync();
-    final matchCard = File('lib/features/home/home_dashboard_match.dart')
+    final dashboard = File('lib/features/home/home_dashboard_match.dart')
+        .readAsStringSync();
+    final board = File('lib/features/home/home_dashboard_board.dart')
         .readAsStringSync();
     final controls = File('lib/features/home/home_dashboard_controls.dart')
         .readAsStringSync();
     final visuals = File('lib/features/home/home_visual_components.dart')
         .readAsStringSync();
+    final recentMatches = File('lib/features/home/home_recent_matches.dart')
+        .readAsStringSync();
     final pubspec = File('pubspec.yaml').readAsStringSync();
 
     expect(home, contains('HomeClubHeader'));
     expect(home, contains('_HomeBackdrop'));
+    expect(
+      home,
+      contains('      );\n}\n\nclass _DayAdvanceTransition extends StatelessWidget'),
+    );
     expect(home, contains('_AdvanceDateCard'));
     expect(home, contains('PROCESSANDO O DIA'));
     expect(home, contains('Condição física e fadiga do elenco'));
-    expect(home, contains('HomePrimaryActionButton'));
-    expect(home, contains('HomeQuickAccess'));
-    expect(home, contains('HomeNextMatchCard'));
-    expect(home, contains('HomeSeasonSummaryRow'));
-    expect(home, contains('HomeLeagueAndScorers'));
+    expect(home, contains('HomeFinanceGrid'));
+    expect(home, contains('monthIncome'));
+    expect(home, contains('monthExpenses'));
+    expect(home, contains('HomeMainOverview'));
+    expect(home, isNot(contains('HomeAdvanceStrip')));
+    expect(dashboard, contains('_CompactAdvanceButton'));
+    expect(dashboard, isNot(contains("caption: 'Horário'")));
+    expect(dashboard, contains('child: Center(\n                          child: _CompactAdvanceButton'));
+    expect(dashboard, contains('required this.onAdvance'));
     expect(home, contains('HomeNewsHighlights'));
-    expect(home, contains('career.news.reversed.take(4)'));
+    expect(home, contains('HomeLeagueAndScorers'));
+    expect(home, contains('HomeRecentMatches'));
+    expect(home, contains('recentUserMatches'));
+    expect(recentMatches, contains('ÚLTIMAS PARTIDAS'));
+    expect(recentMatches, contains('RODADA'));
+    expect(recentMatches, contains(r"'R${entry.round}'"));
+    expect(home, contains('_homeCompetitionLabel'));
+    expect(home, contains(r"'Brasileiro ${value.substring(prefix.length)}'"));
+    expect(dashboard, contains('AVANÇAR DIA'));
+    expect(dashboard, contains('JOGAR PARTIDA'));
+    expect(dashboard, contains('fontSize: 14.2'));
+    expect(rankings, contains('fontSize: compact ? 11.5 : 12'));
+    expect(news, contains('fontSize: compact ? 11.8 : 12.3'));
+    expect(overview, contains('club.name'));
+    expect(rankings, contains('HomeCompactStandings'));
+    expect(rankings, isNot(contains('VER TABELA')));
+    expect(rankings, isNot(contains('VER RANKING')));
+    expect(rankings, isNot(contains('this.padding = const EdgeInsets.all(12)')));
+    expect(news, isNot(contains('this.padding = const EdgeInsets.all(12)')));
+    expect(news, contains('final bool showDot'));
     expect(home, contains('showDot: lineupNeedsAttention'));
     expect(home, contains('showDot: career.isMatchDay'));
     expect(home, contains('showDot: financeNeedsAttention'));
-    expect(home, contains('_homeCompetitionLabel'));
-    expect(home, contains(r"'Brasileiro ${value.substring(prefix.length)}'"));
-    expect(home, contains('NewsHighlightsScreen'));
-    expect(home, isNot(contains('onNotificationsTap')));
-
-    expect(controls, contains('class HomePrimaryActionButton'));
-    expect(controls, contains("isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA'"));
-    expect(controls, contains('padding: const EdgeInsets.only(left: 16, right: 6)'));
-    expect(controls, contains('width: 36'));
-    expect(controls, contains('height: 36'));
-    expect(controls, contains('PANORAMA DA TEMPORADA'));
-    expect(controls, contains('_SeasonTrendPainter'));
-
-    expect(news, contains('class HomeQuickAccess'));
-    expect(news, contains('constraints.maxWidth >= 300'));
-    expect(news, contains('height: 62'));
-    expect(news, contains('width: 80'));
-    expect(news, contains('final bool showDot'));
-    expect(news, contains('NOTÍCIAS E DESTAQUES'));
-
-    expect(matchCard, contains('PRÓXIMA PARTIDA'));
-    expect(matchCard, contains('HomeClubCrest(club: club, size: 46)'));
-    expect(matchCard, contains('Icons.calendar_today_rounded'));
-    expect(matchCard, contains('Icons.stadium_rounded'));
-    expect(matchCard, contains('const SizedBox(height: 8)'));
-
-    expect(overview, contains('class HomeSeasonSummaryRow'));
-    expect(overview, contains('RESUMO DA TEMPORADA'));
-    expect(RegExp(r'Expanded\(\s*child: _SummaryStat\(').allMatches(overview).length, 6);
-    expect(overview, contains("label: 'Jogos'"));
-    expect(overview, contains("label: 'Vitórias'"));
-    expect(overview, contains("label: 'Empates'"));
-    expect(overview, contains("label: 'Derrotas'"));
-    expect(overview, contains("label: 'Gols marcados'"));
-    expect(overview, contains("label: 'Gols sofridos'"));
-    expect(overview, contains('club.name'));
+    expect(home, contains('showDot: medicalNeedsAttention'));
+    expect(home, contains('career.news.reversed.take(4)'));
     expect(overview, contains("_StandingCell('J'"));
     expect(overview, contains("_StandingCell('V'"));
     expect(overview, contains("_StandingCell('E'"));
     expect(overview, contains("_StandingCell('D'"));
     expect(overview, contains("_StandingCell('SG'"));
     expect(overview, contains("_StandingCell('PTS'"));
-
-    expect(rankings, contains('HomeCompactStandings'));
-    expect(rankings, contains('compactColumns: true'));
-    expect(rankings, contains('compactSingleRow'));
-    expect(rankings, contains('IntrinsicHeight'));
-    expect(rankings, contains("title: 'CLASSIFICAÇÃO'"));
-    expect(rankings, contains("title: 'ARTILHARIA'"));
-    expect(rankings, isNot(contains('final IconData? icon')));
-
+    expect(dashboard, contains('PREPARAÇÃO •'));
+    expect(dashboard, contains('HomeClubCrest(club: club, size: 68)'));
+    expect(dashboard, contains('height: 94'));
+    expect(dashboard, contains('height: 36'));
+    expect(dashboard, contains('fontSize: 12.2'));
+    expect(board, contains('ESTÁDIO'));
+    expect(board, isNot(contains('HomeVisualAssets.stadiumAerial')));
+    expect(board, isNot(contains('HomeImageShade')));
+    expect(dashboard, contains('HomeVisualAssets.matchStadium'));
+    expect(controls, contains('PANORAMA DA TEMPORADA'));
+    expect(controls, contains('_SeasonTrendPainter'));
+    expect(home, contains(r"label: 'Departamento\nMédico'"));
+    expect(home, contains('onSeasonTap'));
     expect(visuals, contains('class HomeClubCrest'));
     expect(pubspec, contains('assets/images/home/'));
     expect(File('assets/images/home/match_stadium.webp').existsSync(), isTrue);
     expect(File('assets/images/home/stadium_aerial.webp').existsSync(), isTrue);
+    expect(dashboard, isNot(contains('ÚLTIMAS 5 PARTIDAS')));
+    expect(rankings, contains('compactColumns: dense && canSplit'));
+    expect(rankings, contains('compactSingleRow'));
+    expect(overview, contains('ultraCompact'));
+    expect(overview, contains('if (!ultraCompact) ...['));
+    expect(rankings, contains('IntrinsicHeight'));
+    expect(home, contains('final sameRow = constraints.maxWidth >= 315'));
+    expect(home, contains('NewsHighlightsScreen'));
+    expect(home, isNot(contains('onNotificationsTap')));
+    expect(home, contains('final totalRounds = career.fixtures.fold<int>'));
+    expect(home, isNot(contains(r'Rodada ${career.currentRound}/38')));
   });
-
 
 }

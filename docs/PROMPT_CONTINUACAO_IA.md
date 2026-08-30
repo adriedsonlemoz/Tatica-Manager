@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.113
-Android versionCode: 114
-pubspec: 0.1.1+114
+Release visível: 0.1.1.108
+Android versionCode: 109
+pubspec: 0.1.1+109
 
-Novidade desta base: a tela Elenco foi redesenhada para a lista compacta da referência, sem a faixa de abas Jogadores/Funções/Status. Busca e filtros existentes ficam nos ícones do topo; os dados exibidos continuam vindo do save. As cinco músicas otimizadas permanecem inalteradas, al-sistemas.json continua removido e o Match Engine permanece inalterado.
+Novidade desta base: naturaliza exclusivamente a movimentação apresentada pelo Flame. Jogadores passam a ter velocidade, aceleração, frenagem, atrasos e curvas visuais individuais; o atleta acompanha o início do lance, pênaltis deixam de agrupar os dois times e o retorno à formação ocorre por setores. Passadas, sombras e nomes ficam sincronizados e estáveis. O Match Engine permanece intacto e continua sendo a única fonte de resultados, eventos e coordenadas.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -55,25 +55,30 @@ Bootstrap → Central de Carreiras → Nova carreira → Escolha do técnico (ex
 A carreira suporta múltiplos saves. Não reintroduza save único global.
 
 VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
-A fonte canônica da versão visível é VERSION.
-O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
-O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.114 com versionCode > 114.
+A fonte canônica é al-sistemas.json.
+O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
+O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.109 com versionCode > 109.
 
-Atualize VERSION e o build do pubspec.yaml, depois execute:
+
+Depois de editar al-sistemas.json, execute:
 python3 tool/versioning.py sync
 python3 tool/versioning.py verify
 
 Nunca deixe:
-- VERSION com uma versão;
-- app.json/AppInfo com outra;
-- pubspec/Android/APK com build ou versão antiga;
+- al-sistemas.json com uma versão;
+- pubspec com outra;
+- Android/APK com versão antiga;
 - ZIP com metadados divergentes.
 
-O arquivo al-sistemas.json foi removido na 0.1.1.109 e não deve ser recriado. Preserve na raiz:
+AL SISTEMAS
+O gerenciador AL Sistemas lê al-sistemas.json para detectar produto/versão. Preserve na raiz:
+- al-sistemas.json
 - VERSION
 - app.json
 - pubspec.yaml
+
+Não crie um package.json falso para fazer o projeto Flutter parecer Node.js.
 
 CI / CRITÉRIO DE CONCLUSÃO
 Não considere a entrega pronta até passar:
@@ -112,7 +117,7 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 - avanço diário com notícias, recuperação, propostas e alertas de contratos;
 - janelas de transferências;
 - narração e resumo com nomes completos dos clubes e tipos de eventos claros.
-- áudio modular com 5 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
+- áudio modular com 11 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
 - narração falada opcional por TTS do aparelho, com liga/desliga e volume próprios; apenas lances relevantes são falados e replay não repete a voz.
 - clubes padrão fictícios com IDs neutros permanentes `br-club-001` a `br-club-020`.
 - editor de nome, apelido e sigla na Central de Carreiras, por padrão global ou por save.
@@ -130,7 +135,7 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 Esses itens ainda precisam de validação no APK/aparelho quando aplicável. Se um problema continuar no dispositivo, corrija a causa sem desfazer a arquitetura.
 
 PRÓXIMAS PRIORIDADES
-1. Validar a 0.1.1.107 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
+1. Validar a 0.1.1.108 no GitHub Actions, incluindo `flutter analyze`, testes e build release.
 2. Em aparelho, validar aceleração/frenagem, pênaltis, retorno à formação e estabilidade dos nomes em partidas completas.
 3. Testar abertura da Central de Carreiras com múltiplos saves antigos e novos após a migração SQLite v2 -> v3.
 4. Exercitar avanço diário, jogos CPU, mercado e contratos para confirmar que a configuração persistida não altera a Série A atual.

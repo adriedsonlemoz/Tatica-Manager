@@ -31,15 +31,10 @@ jobs:
         run: |
           python3 tool/versioning.py verify
           python3 - <<'PY_VERSION' >> "$GITHUB_OUTPUT"
-          import re
-          from pathlib import Path
-          release = Path('VERSION').read_text(encoding='utf-8').strip()
-          pubspec = Path('pubspec.yaml').read_text(encoding='utf-8')
-          match = re.search(r'^version:\s*\d+\.\d+\.\d+\+(\d+)\s*$', pubspec, re.MULTILINE)
-          if not match:
-              raise SystemExit('Versão/build não encontrada no pubspec.yaml')
-          print(f"release={release}")
-          print(f"version_code={match.group(1)}")
+          import json
+          data = json.load(open('al-sistemas.json', encoding='utf-8'))
+          print(f"release={data['version']}")
+          print(f"version_code={data['android']['versionCode']}")
           PY_VERSION
 
       - name: Java 17 + cache Gradle
@@ -129,14 +124,8 @@ jobs:
         run: |
           python3 - <<'PY_APK'
           import json
-          import re
           from pathlib import Path
-          expected_name = Path('VERSION').read_text(encoding='utf-8').strip()
-          pubspec = Path('pubspec.yaml').read_text(encoding='utf-8')
-          version_match = re.search(r'^version:\s*\d+\.\d+\.\d+\+(\d+)\s*$', pubspec, re.MULTILINE)
-          if not version_match:
-              raise SystemExit('Versão/build não encontrada no pubspec.yaml')
-          expected_code = int(version_match.group(1))
+          manifest = json.load(open('al-sistemas.json', encoding='utf-8'))
           metadata = Path('build/app/outputs/apk/release/output-metadata.json')
           if not metadata.exists():
               metadata = Path('build/app/outputs/flutter-apk/output-metadata.json')
@@ -144,6 +133,8 @@ jobs:
               raise SystemExit('output-metadata.json do Android não encontrado')
           data = json.loads(metadata.read_text(encoding='utf-8'))
           element = data['elements'][0]
+          expected_name = manifest['android']['versionName']
+          expected_code = manifest['android']['versionCode']
           actual_name = element.get('versionName')
           actual_code = element.get('versionCode')
           if actual_name != expected_name or actual_code != expected_code:

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -5,7 +6,9 @@ import 'package:tatica_manager/core/config/app_info.dart';
 
 void main() {
   test('Sobre / Novidades mantém três releases e canais de apoio', () {
-    final currentVersion = File('VERSION').readAsStringSync().trim();
+    final manifest = jsonDecode(File('al-sistemas.json').readAsStringSync())
+        as Map<String, dynamic>;
+    final currentVersion = manifest['version'] as String;
     final releaseVersions =
         AppInfo.recentReleases.map((release) => release.version).toList();
 

@@ -177,7 +177,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.groups_2_rounded,
                         label: 'Elenco',
                         onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SquadScreen(showBackButton: true)),
+                          MaterialPageRoute(builder: (_) => const SquadScreen()),
                         ),
                       ),
                       HomeQuickAccessItem(
