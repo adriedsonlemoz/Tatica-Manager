@@ -90,29 +90,19 @@ abstract final class AudioCatalog {
   // inventa nomes alternativos nem autores que não estejam identificáveis.
   static const menuTracks = [
     MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_ash_o_connor_vibe.ogg',
-      artist: "Ash O'Connor",
-      title: 'Vibe',
+      asset: 'assets/audio/menu/menu_jim_yosef_lights.ogg',
+      artist: 'Jim Yosef',
+      title: 'Lights',
     ),
     MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_electro_light_symbolism.ogg',
-      artist: 'Electro-Light',
-      title: 'Symbolism',
+      asset: 'assets/audio/menu/menu_disfigure_blank.ogg',
+      artist: 'Disfigure',
+      title: 'Blank',
     ),
     MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_hoverboots_one.ogg',
-      artist: 'Hoverboots',
-      title: 'One',
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_lensko_let_s_go.ogg',
-      artist: 'Lensko',
-      title: "Let's Go",
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_different_heaven_eh_de_my_heart.ogg',
-      artist: 'Different Heaven / EH DE',
-      title: 'My Heart',
+      asset: 'assets/audio/menu/menu_deaf_kev_invincible.ogg',
+      artist: 'DEAF KEV',
+      title: 'Invincible',
     ),
     MenuTrackInfo(
       asset: 'assets/audio/menu/menu_cormak_flavors.ogg',
@@ -123,26 +113,6 @@ abstract final class AudioCatalog {
       asset: 'assets/audio/menu/menu_david_bulla_unexpected.ogg',
       artist: 'David Bulla',
       title: 'Unexpected',
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_krys_talk_fly_away_jpb_remix.ogg',
-      artist: 'Krys Talk',
-      title: 'Fly Away (JPB Remix)',
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_jim_yosef_lights.ogg',
-      artist: 'Jim Yosef',
-      title: 'Lights',
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_deaf_kev_invincible.ogg',
-      artist: 'DEAF KEV',
-      title: 'Invincible',
-    ),
-    MenuTrackInfo(
-      asset: 'assets/audio/menu/menu_disfigure_blank.ogg',
-      artist: 'Disfigure',
-      title: 'Blank',
     ),
   ];
 

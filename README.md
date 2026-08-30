@@ -4,25 +4,41 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.108`
-**Android versionCode:** `109`
+**Release atual:** `0.1.1.110`
+**Android versionCode:** `111`
 
 ## Fonte oficial de versão
 
-A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool/versioning.py` mantém os demais metadados sincronizados e o CI falha quando encontra divergência.
+A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versioning.py` usa esse valor como fonte canônica, mantém os demais metadados sincronizados e o CI falha quando encontra divergência.
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.108`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.110`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+109`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.108` e `versionCode 109`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+111`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.110` e `versionCode 111`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.108` é representada internamente como `0.1.1+109`. A versão visível do aplicativo/Android continua sendo `0.1.1.108`. a próxima entrega normalmente será `0.1.1.109`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.110`, o pubspec é `0.1.1+111`. a próxima entrega normalmente será `0.1.1.111`.
 
+## Teste da Home sincronizado — 0.1.1.110
+
+- corrige o único teste que falhou no GitHub Actions da 0.1.1.109: 282 testes passaram e 1 falhou;
+- atualiza `calendar_and_standings_ui_test.dart` para validar os componentes usados pela Home atual, em vez de procurar widgets removidos de layouts anteriores;
+- mantém a Home visualmente inalterada e preserva atalhos, próxima partida, resumo de seis indicadores, classificação/artilharia e notícias;
+- mantém `al-sistemas.json` removido e a playlist padrão reduzida para cinco faixas;
+- não altera Match Engine, saves, IDs, regras do jogo ou assets.
+
+## Playlist reduzida e versionamento simplificado — 0.1.1.109
+
+- reduz a playlist padrão do menu de 11 para **5 faixas OGG**, exatamente conforme `musicasmenu.zip`;
+- mantém apenas Jim Yosef — Lights, Disfigure — Blank, DEAF KEV — Invincible, Cormak — Flavors e David Bulla — Unexpected;
+- remove as outras seis faixas do diretório `assets/audio/menu/` e do `AudioCatalog`;
+- remove `al-sistemas.json` e elimina sua dependência no CI, testes e utilitário de versionamento;
+- passa `VERSION` a ser a fonte canônica da versão visível e mantém o build do `pubspec.yaml` como `versionCode` Android;
+- atualiza README, handoff, prompt de continuação, documentação de áudio e documento desta release;
+- não altera Match Engine, saves, IDs ou regras do jogo.
 
 ## Correção do analyzer da Home — 0.1.1.108
 
@@ -205,7 +221,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.108`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.111`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -337,7 +353,7 @@ A fundação já possui múltiplas carreiras, controladores separados e Match En
 
 Para continuar o projeto em outra IA, comece por `AI_HANDOFF.md` e `docs/PROMPT_CONTINUACAO_IA.md`.
 
-Consulte também `docs/RELEASE_0.1.1.37.md`, `docs/RELEASE_0.1.1.36.md`, `docs/AUDIO_SYSTEM.md`, `docs/RELEASE_0.1.1.35.md`, `docs/RELEASE_0.1.1.34.md`, `docs/RELEASE_0.1.1.33.md`, `docs/RELEASE_0.1.1.32.md`, `docs/RELEASE_0.1.1.31.md`, `docs/RELEASE_0.1.1.30.md`, `docs/RELEASE_0.1.1.29.md`, `docs/RELEASE_0.1.1.28.md`, `docs/RELEASE_0.1.1.27.md`, `docs/RELEASE_0.1.1.26.md`, `docs/RELEASE_0.1.1.25.md`, `docs/RELEASE_0.1.1.24.md`, `docs/RELEASE_0.1.1.23.md`, `docs/RELEASE_0.1.1.22.md`, `docs/RELEASE_0.1.1.21.md`, `docs/CPU_MARKET.md`, `docs/RELEASE_0.1.1.20.md`, `docs/RELEASE_0.1.1.19.md`, `docs/RELEASE_0.1.1.18.md`, `docs/RELEASE_0.1.1.17.md`, `docs/RELEASE_0.1.1.16.md`, `docs/RELEASE_0.1.1.15.md`, `docs/RELEASE_0.1.1.14.md`, `docs/RELEASE_0.1.1.13.md`, `docs/CLUB_IDENTITIES.md`, `docs/RELEASE_0.1.1.12.md`, `docs/RELEASE_0.1.1.11.md`, `docs/RELEASE_0.1.1.10.md`, `docs/RELEASE_0.1.1.9.md`, `docs/RELEASE_0.1.1.8.md`, `docs/RELEASE_0.1.1.7.md`, `docs/RELEASE_0.1.1.6.md`, `docs/RELEASE_0.1.1.5.md`, `docs/RELEASE_0.1.1.4.md`, `docs/RELEASE_0.1.1.3.md`, `docs/AL_SISTEMAS_FLUTTER.md`, `docs/ETAPA_1.md`, `docs/CARREIRAS_E_ESTADO.md`, `docs/REFATORACAO_CONTROLLERS.md` e `docs/REFATORACAO_MATCH_ENGINE.md`.
+Consulte também `docs/RELEASE_0.1.1.37.md`, `docs/RELEASE_0.1.1.36.md`, `docs/AUDIO_SYSTEM.md`, `docs/RELEASE_0.1.1.35.md`, `docs/RELEASE_0.1.1.34.md`, `docs/RELEASE_0.1.1.33.md`, `docs/RELEASE_0.1.1.32.md`, `docs/RELEASE_0.1.1.31.md`, `docs/RELEASE_0.1.1.30.md`, `docs/RELEASE_0.1.1.29.md`, `docs/RELEASE_0.1.1.28.md`, `docs/RELEASE_0.1.1.27.md`, `docs/RELEASE_0.1.1.26.md`, `docs/RELEASE_0.1.1.25.md`, `docs/RELEASE_0.1.1.24.md`, `docs/RELEASE_0.1.1.23.md`, `docs/RELEASE_0.1.1.22.md`, `docs/RELEASE_0.1.1.21.md`, `docs/CPU_MARKET.md`, `docs/RELEASE_0.1.1.20.md`, `docs/RELEASE_0.1.1.19.md`, `docs/RELEASE_0.1.1.18.md`, `docs/RELEASE_0.1.1.17.md`, `docs/RELEASE_0.1.1.16.md`, `docs/RELEASE_0.1.1.15.md`, `docs/RELEASE_0.1.1.14.md`, `docs/RELEASE_0.1.1.13.md`, `docs/CLUB_IDENTITIES.md`, `docs/RELEASE_0.1.1.12.md`, `docs/RELEASE_0.1.1.11.md`, `docs/RELEASE_0.1.1.10.md`, `docs/RELEASE_0.1.1.9.md`, `docs/RELEASE_0.1.1.8.md`, `docs/RELEASE_0.1.1.7.md`, `docs/RELEASE_0.1.1.6.md`, `docs/RELEASE_0.1.1.5.md`, `docs/RELEASE_0.1.1.4.md`, `docs/RELEASE_0.1.1.3.md`, `docs/ETAPA_1.md`, `docs/CARREIRAS_E_ESTADO.md`, `docs/REFATORACAO_CONTROLLERS.md` e `docs/REFATORACAO_MATCH_ENGINE.md`.
 
 
 ### Narração falada opcional

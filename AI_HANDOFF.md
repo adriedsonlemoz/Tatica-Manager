@@ -8,12 +8,31 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.108`
-- **Android versionCode:** `109`
+- **Release deste handoff:** `0.1.1.110`
+- **Android versionCode:** `111`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+## Estado funcional da release 0.1.1.110
+
+- corrige o teste estrutural da Home que ainda esperava componentes de layouts anteriores;
+- mantém o layout atual sem recolocar `HomeFinanceGrid`, `HomeMainOverview`, `HomeRecentMatches` ou `_CompactAdvanceButton` apenas para satisfazer o teste antigo;
+- passa a validar `HomePrimaryActionButton`, `HomeQuickAccess`, `HomeNextMatchCard`, `HomeSeasonSummaryRow`, `HomeLeagueAndScorers` e `HomeNewsHighlights`;
+- preserva Match Engine, saves, IDs, regras e a playlist reduzida da 0.1.1.109.
+
+Consulte `docs/RELEASE_0.1.1.110.md`.
+
+## Estado funcional da release 0.1.1.109
+
+- reduz a playlist padrão do menu para exatamente cinco faixas OGG fornecidas em `musicasmenu.zip` e remove as outras seis;
+- remove `al-sistemas.json` e todas as dependências funcionais desse arquivo no versionamento, testes e GitHub Actions;
+- adota `VERSION` como fonte canônica da release visível; o build do `pubspec.yaml` continua sendo o `versionCode` Android;
+- atualiza a documentação obrigatória desta entrega;
+- preserva Match Engine, saves, IDs, regras e resultados da partida.
+
+Consulte `docs/RELEASE_0.1.1.109.md`.
 
 ## Estado funcional da release 0.1.1.108
 
@@ -512,7 +531,7 @@ Consulte `docs/MULTI_COMPETITION_FOUNDATION.md` e `docs/RELEASE_0.1.1.76.md`.
 
 ## Estado funcional da release 0.1.1.49
 
-- a playlist padrão atual usa 11 faixas OGG navegáveis no mesmo `AudioManager`; `somdenavegamenu.mp3` permanece como som de toque/navegação;
+- a playlist padrão atual usa 5 faixas OGG navegáveis no mesmo `AudioManager`; `somdenavegamenu.mp3` permanece como som de toque/navegação;
 - novas preferências iniciam em 1x e com narração desligada; vibração reage na apresentação a eventos como trave, gol e cartões;
 - aviso de validação da carreira é central/temático; bola possui quatro estilos e movimento ocioso discreto;
 - editor do técnico mantém prévia fixa e aceita foto normalizada; Clubes usa País > Campeonato > Série > Clubes;
@@ -697,7 +716,7 @@ Na linha `0.1.1.x` foram tratados:
 - partida ao vivo modernizada com HUD/placar compacto fora da rolagem, narração contínua e notificações para todos os `MatchEventType`, substituições com avatares, cinco ajustes táticos acessíveis e `MatchPitchGame` enfileirando/representando trajetórias sem conhecer o Match Engine ou usar `Random`.
 - campo 2D horizontal em proporção 105:68 dentro do modo retrato; `MatchPitchGame` converte apenas a representação `x=1-y / y=x`, deixando coordenadas, timeline e regras do Match Engine intactas.
 - a partida 2D avançada agora inclui mergulho visual do goleiro, comemorações em grupo, pênalti com preparação específica, bola na trave como evento real do Match Engine, replay de trave/pênalti defendido, transições de intervalo/fim e estádio/torcida animados; Flame continua apenas encenando a timeline.
-- sistema de áudio modular em `app/audio` + `core/audio`, com 11 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface e partida, controles independentes, suporte a arquivos do aparelho e resolução de efeitos por `MatchEvent`; o Match Engine não conhece nem dispara áudio.
+- sistema de áudio modular em `app/audio` + `core/audio`, com 5 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface e partida, controles independentes, suporte a arquivos do aparelho e resolução de efeitos por `MatchEvent`; o Match Engine não conhece nem dispara áudio.
 - narração falada opcional por TTS do aparelho em `MatchNarrationService`, com volume próprio e frases derivadas apenas dos eventos relevantes; posse/passes não são falados e o Match Engine permanece sem dependência de áudio/TTS.
 - `GameSettings.sound` foi preservado como chave geral legada; as novas preferências ficam em `AudioSettings` com defaults compatíveis, sem exigir migração destrutiva do save.
 - preferência de validação em aparelho: acumular mudanças e testar APKs em blocos maiores, evitando solicitar instalação a cada microrelease; CI e validações locais continuam obrigatórios quando disponíveis.
@@ -721,66 +740,47 @@ Ao alterar entidades persistidas:
 
 ## Versionamento obrigatório
 
-A fonte canônica da versão visível é `al-sistemas.json`.
+A fonte canônica da versão visível é `VERSION`.
 
 Padrão de release solicitado pelo projeto:
 
 ```text
-0.1.1.19
+0.1.1.109
 ```
 
 Não usar o antigo padrão visível `0.1.0+3`.
 
 Arquivos relevantes:
 
-- `al-sistemas.json` — fonte canônica da release visível;
-- `VERSION` — cópia simples da versão;
-- `app.json` — metadados externos;
-- `pubspec.yaml` — versão SemVer compatível com Flutter;
-- Android — `versionName` igual à release visível e `versionCode` inteiro crescente;
-- iOS — o catálogo `AppIcon.appiconset` já está versionado; versão/build serão sincronizados quando a estrutura Xcode completa estiver presente;
+- `VERSION` — fonte canônica da release visível;
+- `app.json` — metadados externos e versão sincronizada;
+- `pubspec.yaml` — versão SemVer compatível com Flutter e build inteiro crescente;
+- Android — `versionName` igual à release visível e `versionCode` igual ao build do `pubspec.yaml`;
+- iOS — versão/build sincronizados pelo utilitário quando a estrutura está presente;
 - workflow — valida o APK antes de publicar o Artifact.
 
 Para esta release:
 
-release/versionName: 0.1.1.107
-versionCode:         109
-pubspec:             0.1.1+109
+```text
+release/versionName: 0.1.1.110
+versionCode:         111
+pubspec:             0.1.1+111
+```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.109` e usar um `versionCode` maior que 109.
+A próxima alteração/entrega normalmente deve virar `0.1.1.111` e usar um `versionCode` maior que 111.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
 Antes de empacotar qualquer nova release, confirme também que `flutter analyze` não possui lints; avisos tratados como erro no CI bloqueiam testes e build mesmo quando não afetam a lógica do jogo.
 
-
-Use:
+Para uma nova release, atualize `VERSION` e o build em `pubspec.yaml`, depois use:
 
 ```bash
 python3 tool/versioning.py sync
 python3 tool/versioning.py verify
 ```
 
-## AL Sistemas
-
-O AL Sistemas é o gerenciador usado para analisar/publicar o projeto.
-
-O projeto contém na raiz:
-
-- `al-sistemas.json`
-- `VERSION`
-- `app.json`
-- `pubspec.yaml`
-
-O manifesto `al-sistemas.json` existe para que ferramentas externas encontrem nome, versão e tipo do projeto sem depender do nome do ZIP.
-
-Documentação relacionada:
-
-- `docs/AL_SISTEMAS_FLUTTER.md`
-- `docs/AL_SISTEMAS_PATCH_SUGERIDO.md`
-- `docs/AUDIO_SYSTEM.md`
-
-Não crie `package.json` falso apenas para o AL Sistemas reconhecer Flutter.
+O arquivo `al-sistemas.json` foi removido na 0.1.1.109 e **não deve ser recriado**. Ferramentas e automações do projeto devem usar `VERSION`, `app.json` e `pubspec.yaml`.
 
 ## CI obrigatório antes de considerar uma entrega pronta
 
@@ -864,7 +864,7 @@ Sempre adicione ou ajuste testes quando mudar regra de negócio.
 
 ## Próximas prioridades recomendadas
 
-1. Validar a `0.1.1.107` no GitHub Actions com analyzer, testes e build release.
+1. Validar a `0.1.1.110` no GitHub Actions com analyzer, testes e build release; o log anterior já confirmou analyzer limpo e 282/283 testes aprovados antes desta correção.
 2. Em aparelho, gravar uma partida completa e validar aceleração/frenagem, pênaltis, retorno à formação e estabilidade dos nomes em 60 e 120 Hz.
 3. Exercitar avanço diário, partida do usuário, jogos CPU, mercado e contratos para confirmar que a Série A atual continua no caminho completo do Match Engine.
 4. Quando entrar uma segunda competição real, implementar estado competitivo por competição (calendário/classificação/rodada/estatísticas) antes de ativá-la como liga completa simultânea.
@@ -890,7 +890,6 @@ Sempre adicione ou ajuste testes quando mudar regra de negócio.
 - `docs/CARREIRAS_E_ESTADO.md`
 - `docs/REFATORACAO_CONTROLLERS.md`
 - `docs/REFATORACAO_MATCH_ENGINE.md`
-- `docs/AL_SISTEMAS_FLUTTER.md`
 - `docs/CLUB_IDENTITIES.md`
 - `docs/RELEASE_0.1.1.24.md`
 - `docs/RELEASE_0.1.1.23.md`

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Synchronize and verify Tática Manager release metadata.
 
-Canonical visible release is stored in al-sistemas.json as A.B.C.D.
-Dart/Flutter pubspec must remain valid SemVer (A.B.C+build), so the manifest
-also stores the mapped pubspecVersion. Android receives the exact visible
-A.B.C.D as versionName and a monotonic integer as versionCode.
+The canonical visible release is stored in VERSION as A.B.C.D.
+Flutter keeps a SemVer-compatible A.B.C+build entry in pubspec.yaml; its build
+number is also the Android versionCode. Android receives the exact visible
+A.B.C.D as versionName.
 """
 from __future__ import annotations
 
@@ -15,50 +15,64 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / 'al-sistemas.json'
+VERSION_FILE = ROOT / 'VERSION'
+PUBSPEC_FILE = ROOT / 'pubspec.yaml'
 
 
-def load_manifest() -> dict:
-    data = json.loads(MANIFEST.read_text(encoding='utf-8'))
-    required = ['product', 'version', 'projectType', 'android', 'flutter']
-    missing = [key for key in required if key not in data]
-    if missing:
-        raise RuntimeError(f'al-sistemas.json incompleto: {", ".join(missing)}')
-    if data['projectType'] != 'flutter':
-        raise RuntimeError('projectType deve ser flutter')
-    if not re.fullmatch(r'\d+\.\d+\.\d+\.\d+', data['version']):
-        raise RuntimeError('version deve seguir A.B.C.D, exemplo 0.1.1.3')
-    if not isinstance(data['android'].get('versionCode'), int) or data['android']['versionCode'] <= 0:
-        raise RuntimeError('android.versionCode deve ser inteiro positivo')
-    if data['android'].get('versionName') != data['version']:
-        raise RuntimeError('android.versionName deve ser igual à versão visível')
-    return data
+def load_release() -> dict:
+    if not VERSION_FILE.exists():
+        raise RuntimeError('Arquivo VERSION ausente')
+    version = VERSION_FILE.read_text(encoding='utf-8').strip()
+    if not re.fullmatch(r'\d+\.\d+\.\d+\.\d+', version):
+        raise RuntimeError('VERSION deve seguir A.B.C.D, exemplo 0.1.1.109')
+
+    pubspec = PUBSPEC_FILE.read_text(encoding='utf-8')
+    match = re.search(r'^version:\s*(\d+\.\d+\.\d+)\+(\d+)\s*$', pubspec, flags=re.MULTILINE)
+    if not match:
+        raise RuntimeError('pubspec.yaml deve usar version: A.B.C+build')
+    expected_base = '.'.join(version.split('.')[:3])
+    if match.group(1) != expected_base:
+        raise RuntimeError(
+            f'Base SemVer do pubspec ({match.group(1)}) diverge de VERSION ({expected_base})'
+        )
+    version_code = int(match.group(2))
+    if version_code <= 0:
+        raise RuntimeError('build number do pubspec deve ser inteiro positivo')
+
+    app_path = ROOT / 'app.json'
+    app = json.loads(app_path.read_text(encoding='utf-8')) if app_path.exists() else {}
+    return {
+        'version': version,
+        'android': {'versionName': version, 'versionCode': version_code},
+        'flutter': {'pubspecVersion': f'{expected_base}+{version_code}'},
+        'name': app.get('name', 'tatica_manager'),
+        'displayName': app.get('displayName', 'Tática Manager'),
+        'repository': app.get('repository', 'https://github.com/adriedsonlemoz/Tatica-Manager'),
+    }
 
 
 def replace_pubspec_version(expected: str) -> None:
-    path = ROOT / 'pubspec.yaml'
-    text = path.read_text(encoding='utf-8')
+    text = PUBSPEC_FILE.read_text(encoding='utf-8')
     if not re.search(r'^version:\s*.+$', text, flags=re.MULTILINE):
         raise RuntimeError('Campo version não encontrado no pubspec.yaml')
     text = re.sub(r'^version:\s*.+$', f'version: {expected}', text, count=1, flags=re.MULTILINE)
-    path.write_text(text, encoding='utf-8')
+    PUBSPEC_FILE.write_text(text, encoding='utf-8')
 
 
 def sync_simple_files(data: dict) -> None:
     version = data['version']
-    (ROOT / 'VERSION').write_text(version + '\n', encoding='utf-8')
+    VERSION_FILE.write_text(version + '\n', encoding='utf-8')
     app_path = ROOT / 'app.json'
     app = json.loads(app_path.read_text(encoding='utf-8')) if app_path.exists() else {}
     app.update({
-        'name': data.get('name', 'tatica_manager'),
-        'displayName': data.get('displayName', data['product']),
+        'name': data['name'],
+        'displayName': data['displayName'],
         'version': version,
         'type': 'flutter',
-        'repository': data.get('repository'),
+        'repository': data['repository'],
     })
     app_path.write_text(json.dumps(app, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     replace_pubspec_version(data['flutter']['pubspecVersion'])
-
 
 
 def patch_app_info(data: dict) -> None:
@@ -76,23 +90,33 @@ def patch_app_info(data: dict) -> None:
         raise RuntimeError(f'Não foi possível sincronizar AppInfo.version em {path}')
     path.write_text(text, encoding='utf-8')
 
+
 def patch_android(data: dict) -> None:
     version_name = data['android']['versionName']
     version_code = data['android']['versionCode']
-    candidates = [
-        ROOT / 'android/app/build.gradle.kts',
-        ROOT / 'android/app/build.gradle',
-    ]
+    candidates = [ROOT / 'android/app/build.gradle.kts', ROOT / 'android/app/build.gradle']
     path = next((p for p in candidates if p.exists()), None)
     if path is None:
         return
     text = path.read_text(encoding='utf-8')
     if path.suffix == '.kts':
-        text, n_code = re.subn(r'^\s*versionCode\s*=.*$', f'        versionCode = {version_code}', text, count=1, flags=re.MULTILINE)
-        text, n_name = re.subn(r'^\s*versionName\s*=.*$', f'        versionName = "{version_name}"', text, count=1, flags=re.MULTILINE)
+        text, n_code = re.subn(
+            r'^\s*versionCode\s*=.*$', f'        versionCode = {version_code}', text,
+            count=1, flags=re.MULTILINE,
+        )
+        text, n_name = re.subn(
+            r'^\s*versionName\s*=.*$', f'        versionName = "{version_name}"', text,
+            count=1, flags=re.MULTILINE,
+        )
     else:
-        text, n_code = re.subn(r'^\s*versionCode\s+.*$', f'        versionCode {version_code}', text, count=1, flags=re.MULTILINE)
-        text, n_name = re.subn(r'^\s*versionName\s+.*$', f'        versionName "{version_name}"', text, count=1, flags=re.MULTILINE)
+        text, n_code = re.subn(
+            r'^\s*versionCode\s+.*$', f'        versionCode {version_code}', text,
+            count=1, flags=re.MULTILINE,
+        )
+        text, n_name = re.subn(
+            r'^\s*versionName\s+.*$', f'        versionName "{version_name}"', text,
+            count=1, flags=re.MULTILINE,
+        )
     if n_code != 1 or n_name != 1:
         raise RuntimeError(f'Não foi possível sincronizar versionCode/versionName em {path}')
     path.write_text(text, encoding='utf-8')
@@ -104,11 +128,8 @@ def patch_ios(data: dict) -> None:
         return
     with path.open('rb') as handle:
         plist = plistlib.load(handle)
-    # Apple marketing version accepts up to three numeric components. Keep the
-    # exact four-part Tática release in its own deterministic metadata key.
     visible = data['version']
-    ios_marketing = '.'.join(visible.split('.')[:3])
-    plist['CFBundleShortVersionString'] = ios_marketing
+    plist['CFBundleShortVersionString'] = '.'.join(visible.split('.')[:3])
     plist['CFBundleVersion'] = str(data['android']['versionCode'])
     plist['TaticaReleaseVersion'] = visible
     with path.open('wb') as handle:
@@ -118,9 +139,11 @@ def patch_ios(data: dict) -> None:
 def verify(data: dict) -> None:
     errors: list[str] = []
     version = data['version']
-    version_file = (ROOT / 'VERSION').read_text(encoding='utf-8').strip() if (ROOT / 'VERSION').exists() else None
-    if version_file != version:
-        errors.append(f'VERSION={version_file!r}; esperado {version!r}')
+    version_code = data['android']['versionCode']
+    pubspec_version = data['flutter']['pubspecVersion']
+
+    if (ROOT / 'al-sistemas.json').exists():
+        errors.append('al-sistemas.json não deve existir nesta base')
 
     app_path = ROOT / 'app.json'
     if not app_path.exists():
@@ -132,11 +155,9 @@ def verify(data: dict) -> None:
         if app.get('type') != 'flutter':
             errors.append('app.json type deve ser flutter')
 
-    pubspec = (ROOT / 'pubspec.yaml').read_text(encoding='utf-8')
-    m = re.search(r'^version:\s*(\S+)\s*$', pubspec, flags=re.MULTILINE)
-    expected_pub = data['flutter']['pubspecVersion']
-    if not m or m.group(1) != expected_pub:
-        errors.append(f'pubspec version={m.group(1) if m else None!r}; esperado {expected_pub!r}')
+    pubspec = PUBSPEC_FILE.read_text(encoding='utf-8')
+    if f'version: {pubspec_version}' not in pubspec:
+        errors.append(f'pubspec version deve ser {pubspec_version!r}')
 
     app_info_path = ROOT / 'lib/core/config/app_info.dart'
     if app_info_path.exists():
@@ -145,8 +166,7 @@ def verify(data: dict) -> None:
             errors.append(f'AppInfo.version não está sincronizado em {app_info_path}')
         release_match = re.search(
             r"recentReleases\s*=\s*\[\s*ReleaseNote\(\s*version:\s*'([^']+)'",
-            app_info,
-            flags=re.DOTALL,
+            app_info, flags=re.DOTALL,
         )
         if not release_match or release_match.group(1) != version:
             errors.append(
@@ -154,24 +174,17 @@ def verify(data: dict) -> None:
                 f'{release_match.group(1) if release_match else None!r}; esperado {version!r}'
             )
 
-    version_parts = [int(part) for part in version.split('.')]
-    next_version = '.'.join(str(part) for part in [*version_parts[:-1], version_parts[-1] + 1])
-    next_code = data['android']['versionCode']
-
+    parts = [int(part) for part in version.split('.')]
+    next_version = '.'.join(str(part) for part in [*parts[:-1], parts[-1] + 1])
     documentation_checks = [
         (
             ROOT / 'README.md',
             [
                 f'**Release atual:** `{version}`',
-                f'**Android versionCode:** `{data["android"]["versionCode"]}`',
-                f'`VERSION` — versão visível simples (`{version}`)',
-                f'`pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`{data["flutter"]["pubspecVersion"]}`)',
-                f'Android — plataforma versionada no repositório, com `versionName {version}` e `versionCode {data["android"]["versionCode"]}`',
-                (
-                    f'release de quatro partes `{version}` é representada internamente como '
-                    f'`{data["flutter"]["pubspecVersion"]}`. A versão visível do aplicativo/Android '
-                    f'continua sendo `{version}`'
-                ),
+                f'**Android versionCode:** `{version_code}`',
+                f'`VERSION` — fonte canônica da versão visível (`{version}`)',
+                f'`pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`{pubspec_version}`)',
+                f'Android — plataforma versionada no repositório, com `versionName {version}` e `versionCode {version_code}`',
                 f'a próxima entrega normalmente será `{next_version}`',
             ],
         ),
@@ -179,19 +192,19 @@ def verify(data: dict) -> None:
             ROOT / 'AI_HANDOFF.md',
             [
                 f'**Release deste handoff:** `{version}`',
-                f'**Android versionCode:** `{data["android"]["versionCode"]}`',
-                f'pubspec:             {data["flutter"]["pubspecVersion"]}',
-                f'versionCode:         {data["android"]["versionCode"]}',
-                f'A próxima alteração/entrega normalmente deve virar `{next_version}` e usar um `versionCode` maior que {next_code}.',
+                f'**Android versionCode:** `{version_code}`',
+                f'pubspec:             {pubspec_version}',
+                f'versionCode:         {version_code}',
+                f'A próxima alteração/entrega normalmente deve virar `{next_version}` e usar um `versionCode` maior que {version_code}.',
             ],
         ),
         (
             ROOT / 'docs/PROMPT_CONTINUACAO_IA.md',
             [
                 f'Release visível: {version}',
-                f'Android versionCode: {data["android"]["versionCode"]}',
-                f'pubspec: {data["flutter"]["pubspecVersion"]}',
-                f'Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será {next_version} com versionCode > {next_code}.',
+                f'Android versionCode: {version_code}',
+                f'pubspec: {pubspec_version}',
+                f'Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será {next_version} com versionCode > {version_code}.',
             ],
         ),
     ]
@@ -208,22 +221,12 @@ def verify(data: dict) -> None:
     if not release_doc.exists():
         errors.append(f'Documentação da release ausente: {release_doc}')
 
-    release_meta = data.get('release', {})
-    if release_meta.get('version') != version:
-        errors.append(f'al-sistemas release.version={release_meta.get("version")!r}; esperado {version!r}')
-    if release_meta.get('androidVersionCode') != data['android']['versionCode']:
-        errors.append(
-            'al-sistemas release.androidVersionCode='
-            f'{release_meta.get("androidVersionCode")!r}; esperado {data["android"]["versionCode"]!r}'
-        )
-
     android_kts = ROOT / 'android/app/build.gradle.kts'
     android_groovy = ROOT / 'android/app/build.gradle'
     android = android_kts if android_kts.exists() else android_groovy if android_groovy.exists() else None
     if android is not None:
         text = android.read_text(encoding='utf-8')
-        code = str(data['android']['versionCode'])
-        if not re.search(rf'versionCode\s*(?:=\s*|\s+){re.escape(code)}\b', text):
+        if not re.search(rf'versionCode\s*(?:=\s*|\s+){version_code}\b', text):
             errors.append(f'Android versionCode não está sincronizado em {android}')
         if data['android']['versionName'] not in text:
             errors.append(f'Android versionName não está sincronizado em {android}')
@@ -233,7 +236,7 @@ def verify(data: dict) -> None:
 
 
 def main() -> int:
-    data = load_manifest()
+    data = load_release()
     mode = sys.argv[1] if len(sys.argv) > 1 else 'verify'
     if mode == 'sync':
         sync_simple_files(data)

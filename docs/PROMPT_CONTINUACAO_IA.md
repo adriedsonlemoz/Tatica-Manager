@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.108
-Android versionCode: 109
-pubspec: 0.1.1+109
+Release visível: 0.1.1.110
+Android versionCode: 111
+pubspec: 0.1.1+111
 
-Novidade desta base: corrige o único warning do flutter analyze da 0.1.1.107 removendo um parâmetro opcional de ícone que não era utilizado no cabeçalho de Classificação/Artilharia. O visual da Home e o Match Engine permanecem intactos.
+Novidade desta base: corrige o teste estrutural da Home para acompanhar o layout atual, sem recolocar componentes antigos nem alterar a interface. A playlist padrão continua com cinco faixas, al-sistemas.json continua removido e o Match Engine permanece inalterado.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -55,30 +55,25 @@ Bootstrap → Central de Carreiras → Nova carreira → Escolha do técnico (ex
 A carreira suporta múltiplos saves. Não reintroduza save único global.
 
 VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
-A fonte canônica é al-sistemas.json.
-O padrão visível é A.B.C.D, por exemplo 0.1.1.4.
-O pubspec usa uma representação SemVer compatível e o Android usa versionCode inteiro crescente.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.109 com versionCode > 109.
+A fonte canônica da versão visível é VERSION.
+O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
+O pubspec usa A.B.C+build; esse build é também o versionCode Android.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.111 com versionCode > 111.
 
-
-Depois de editar al-sistemas.json, execute:
+Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync
 python3 tool/versioning.py verify
 
 Nunca deixe:
-- al-sistemas.json com uma versão;
-- pubspec com outra;
-- Android/APK com versão antiga;
+- VERSION com uma versão;
+- app.json/AppInfo com outra;
+- pubspec/Android/APK com build ou versão antiga;
 - ZIP com metadados divergentes.
 
-AL SISTEMAS
-O gerenciador AL Sistemas lê al-sistemas.json para detectar produto/versão. Preserve na raiz:
-- al-sistemas.json
+O arquivo al-sistemas.json foi removido na 0.1.1.109 e não deve ser recriado. Preserve na raiz:
 - VERSION
 - app.json
 - pubspec.yaml
-
-Não crie um package.json falso para fazer o projeto Flutter parecer Node.js.
 
 CI / CRITÉRIO DE CONCLUSÃO
 Não considere a entrega pronta até passar:
@@ -117,7 +112,7 @@ BUGS/ALTERAÇÕES RECENTES QUE DEVEM SER PRESERVADOS
 - avanço diário com notícias, recuperação, propostas e alertas de contratos;
 - janelas de transferências;
 - narração e resumo com nomes completos dos clubes e tipos de eventos claros.
-- áudio modular com 11 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
+- áudio modular com 5 faixas OGG de menu, faixa atual/seleção/próxima música, efeitos de interface/partida, volumes separados e arquivos personalizados; o áudio reage aos MatchEvent somente na apresentação.
 - narração falada opcional por TTS do aparelho, com liga/desliga e volume próprios; apenas lances relevantes são falados e replay não repete a voz.
 - clubes padrão fictícios com IDs neutros permanentes `br-club-001` a `br-club-020`.
 - editor de nome, apelido e sigla na Central de Carreiras, por padrão global ou por save.

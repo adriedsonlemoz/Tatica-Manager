@@ -76,17 +76,17 @@ void main() {
     expect(AudioCatalog.cueForEvent(event(MatchEventType.possession)), isNull);
   });
 
-  test('catálogo padrão usa somente as 11 novas músicas OGG', () {
-    expect(AudioCatalog.menuTracks, hasLength(11));
-    expect(AudioCatalog.menuAssets, hasLength(11));
+  test('catálogo padrão usa somente as 5 músicas OGG selecionadas', () {
+    expect(AudioCatalog.menuTracks, hasLength(5));
+    expect(AudioCatalog.menuAssets, hasLength(5));
     expect(
       AudioCatalog.menuTracks.map((track) => track.displayName),
       containsAll([
-        "Ash O'Connor — Vibe",
-        'Electro-Light — Symbolism',
-        "Lensko — Let's Go",
         'Jim Yosef — Lights',
+        'Disfigure — Blank',
         'DEAF KEV — Invincible',
+        'Cormak — Flavors',
+        'David Bulla — Unexpected',
       ]),
     );
     for (final path in AudioCatalog.menuAssets) {
