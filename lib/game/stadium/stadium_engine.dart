@@ -60,6 +60,20 @@ extension StadiumFacilityX on StadiumFacility {
       };
 }
 
+
+extension StadiumProjectKindX on StadiumProjectKind {
+  String get label => switch (this) {
+        StadiumProjectKind.stands => 'Arquibancadas',
+        StadiumProjectKind.hospitality => 'Camarotes e hospitalidade',
+        StadiumProjectKind.retail => 'Lojas e produtos oficiais',
+        StadiumProjectKind.food => 'Alimentação',
+        StadiumProjectKind.advertising => 'Publicidade',
+        StadiumProjectKind.parking => 'Estacionamento',
+        StadiumProjectKind.museum => 'Museu do clube',
+        StadiumProjectKind.trainingCenter => 'Centro de treinamento',
+      };
+}
+
 abstract final class StadiumEngine {
   static const int maxFacilityLevel = 5;
 
@@ -220,6 +234,197 @@ abstract final class StadiumEngine {
       StadiumFacility.parking => stadium.copyWith(parkingLevel: next),
       StadiumFacility.museum => stadium.copyWith(museumLevel: next),
     };
+  }
+
+  static StadiumProjectKind projectKindForFacility(
+    StadiumFacility facility,
+  ) =>
+      StadiumProjectKind.values.firstWhere(
+        (kind) => kind.name == facility.name,
+      );
+
+  static StadiumFacility? facilityForProject(StadiumProjectKind kind) {
+    if (kind == StadiumProjectKind.trainingCenter) return null;
+    return StadiumFacility.values.firstWhere(
+      (facility) => facility.name == kind.name,
+    );
+  }
+
+  static int projectDurationDays(StadiumProjectKind kind) => switch (kind) {
+        StadiumProjectKind.stands => 120,
+        StadiumProjectKind.hospitality => 75,
+        StadiumProjectKind.retail => 60,
+        StadiumProjectKind.food => 45,
+        StadiumProjectKind.advertising => 40,
+        StadiumProjectKind.parking => 90,
+        StadiumProjectKind.museum => 120,
+        StadiumProjectKind.trainingCenter => 100,
+      };
+
+  static bool hasActiveProject(Stadium stadium, StadiumProjectKind kind) =>
+      stadium.projects.any(
+        (project) => project.kind == kind && project.isActive,
+      );
+
+  static int maintenanceScore(Stadium stadium) =>
+      ((stadium.pitchCondition +
+                  stadium.structureCondition +
+                  stadium.securityCondition +
+                  stadium.comfortCondition) /
+              4)
+          .round();
+
+  static String conditionLabel(int score) {
+    if (score >= 90) return 'Excelente';
+    if (score >= 82) return 'Muito Boa';
+    if (score >= 72) return 'Boa';
+    if (score >= 60) return 'Regular';
+    return 'Ruim';
+  }
+
+  static int maintenanceCost(Stadium stadium) {
+    final deficit = max(
+      0,
+      400 -
+          stadium.pitchCondition -
+          stadium.structureCondition -
+          stadium.securityCondition -
+          stadium.comfortCondition,
+    );
+    return 90000 + stadium.capacity * 2 + deficit * 2500;
+  }
+
+  static Stadium performMaintenance(Stadium stadium) => stadium.copyWith(
+        pitchCondition: 100,
+        structureCondition: 100,
+        securityCondition: 100,
+        comfortCondition: 100,
+      );
+
+  static int trainingCenterQuality(Stadium stadium) =>
+      (70 + stadium.trainingCenterLevel * 6).clamp(0, 100).toInt();
+
+  static String trainingCenterLabel(Stadium stadium) {
+    final level = stadium.trainingCenterLevel;
+    if (level >= 5) return 'Excelente';
+    if (level == 4) return 'Muito Bom';
+    if (level == 3) return 'Bom';
+    if (level == 2) return 'Regular';
+    return 'Básico';
+  }
+
+  static int trainingCenterUpgradeCost(Stadium stadium) {
+    final nextLevel = stadium.trainingCenterLevel + 1;
+    if (nextLevel > maxFacilityLevel) return 0;
+    return (1050000 * (1 + (nextLevel - 1) * .55)).round();
+  }
+
+  static Stadium startFacilityProject({
+    required Stadium stadium,
+    required StadiumFacility facility,
+    required int cost,
+    required DateTime startedAt,
+  }) {
+    final kind = projectKindForFacility(facility);
+    if (hasActiveProject(stadium, kind)) {
+      throw StateError('Já existe uma obra de ${facility.label} em andamento.');
+    }
+    final targetLevel = facilityLevel(stadium, facility) + 1;
+    if (targetLevel > maxFacilityLevel) {
+      throw StateError('${facility.label} já está no nível máximo.');
+    }
+    final duration = projectDurationDays(kind);
+    final project = StadiumProject(
+      id: 'stadium-${startedAt.millisecondsSinceEpoch}-${kind.name}-$targetLevel',
+      kind: kind,
+      targetLevel: targetLevel,
+      cost: cost,
+      startedAt: startedAt,
+      completesAt: startedAt.add(Duration(days: duration)),
+    );
+    return stadium.copyWith(projects: [...stadium.projects, project]);
+  }
+
+  static Stadium startTrainingCenterProject({
+    required Stadium stadium,
+    required int cost,
+    required DateTime startedAt,
+  }) {
+    const kind = StadiumProjectKind.trainingCenter;
+    if (hasActiveProject(stadium, kind)) {
+      throw StateError('Já existe uma obra do centro de treinamento em andamento.');
+    }
+    final targetLevel = stadium.trainingCenterLevel + 1;
+    if (targetLevel > maxFacilityLevel) {
+      throw StateError('O centro de treinamento já está no nível máximo.');
+    }
+    final project = StadiumProject(
+      id: 'stadium-${startedAt.millisecondsSinceEpoch}-${kind.name}-$targetLevel',
+      kind: kind,
+      targetLevel: targetLevel,
+      cost: cost,
+      startedAt: startedAt,
+      completesAt: startedAt.add(
+        Duration(days: projectDurationDays(kind)),
+      ),
+    );
+    return stadium.copyWith(projects: [...stadium.projects, project]);
+  }
+
+  static Stadium advanceDay({
+    required Stadium stadium,
+    required DateTime currentDate,
+  }) {
+    var next = stadium;
+    final updatedProjects = <StadiumProject>[];
+    for (final project in stadium.projects) {
+      if (project.isActive && !currentDate.isBefore(project.completesAt)) {
+        next = _completeProject(next, project);
+        updatedProjects.add(
+          project.copyWith(status: StadiumProjectStatus.completed),
+        );
+      } else {
+        updatedProjects.add(project);
+      }
+    }
+    next = next.copyWith(projects: updatedProjects);
+
+    final dayOfYear = currentDate
+            .difference(DateTime(currentDate.year, 1, 1))
+            .inDays +
+        1;
+    return next.copyWith(
+      pitchCondition: max(
+        0,
+        next.pitchCondition - (dayOfYear % 7 == 0 ? 1 : 0),
+      ),
+      structureCondition: max(
+        0,
+        next.structureCondition - (dayOfYear % 14 == 0 ? 1 : 0),
+      ),
+      securityCondition: max(
+        0,
+        next.securityCondition - (dayOfYear % 10 == 0 ? 1 : 0),
+      ),
+      comfortCondition: max(
+        0,
+        next.comfortCondition - (dayOfYear % 8 == 0 ? 1 : 0),
+      ),
+    );
+  }
+
+  static Stadium _completeProject(
+    Stadium stadium,
+    StadiumProject project,
+  ) {
+    if (project.kind == StadiumProjectKind.trainingCenter) {
+      if (stadium.trainingCenterLevel >= project.targetLevel) return stadium;
+      return stadium.copyWith(trainingCenterLevel: project.targetLevel);
+    }
+    final facility = facilityForProject(project.kind);
+    if (facility == null) return stadium;
+    if (facilityLevel(stadium, facility) >= project.targetLevel) return stadium;
+    return upgrade(stadium, facility);
   }
 
   static Stadium updateProfile({

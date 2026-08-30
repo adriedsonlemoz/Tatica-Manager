@@ -15,7 +15,7 @@ import 'package:tatica_manager/game/finance/sponsorship_engine.dart';
 import 'package:tatica_manager/game/stadium/stadium_engine.dart';
 
 void main() {
-  test('telas financeiras expõem estádio 2D e maiores salários clicáveis', () {
+  test('telas financeiras expõem novo painel do estádio e maiores salários clicáveis', () {
     final finances =
         File('lib/features/finances/finances_screen.dart').readAsStringSync();
     final financeManagement = File(
@@ -32,7 +32,13 @@ void main() {
     expect(finances, contains("title: 'Salários'"));
     expect(finances, contains('PlayerProfileScreen('));
     expect(finances, contains("title: 'Patrocínios'"));
-    expect(stadium, contains('CustomPaint('));
+    expect(stadium, contains('assets/images/stadium/stadium_night.webp'));
+    expect(stadium, contains('assets/images/stadium/covered_stands.webp'));
+    expect(File('assets/images/stadium/stadium_night.webp').existsSync(), isTrue);
+    expect(File('assets/images/stadium/covered_stands.webp').existsSync(), isTrue);
+    expect(stadium, contains('CENTRO DE TREINAMENTO'));
+    expect(stadium, contains('MANUTENÇÃO'));
+    expect(stadium, contains('MELHORIAS'));
     expect(financeManagement, contains('ORÇAMENTOS DEPARTAMENTAIS'));
     expect(financeManagement, contains('PROPOSTAS RECEBIDAS'));
     expect(stadiumEngine, contains('Camarotes'));
@@ -91,6 +97,12 @@ void main() {
     expect(restored.standsLevel, 1);
     expect(restored.parkingLevel, 0);
     expect(restored.museumLevel, 0);
+    expect(restored.pitchCondition, 88);
+    expect(restored.structureCondition, 85);
+    expect(restored.securityCondition, 90);
+    expect(restored.comfortCondition, 86);
+    expect(restored.trainingCenterLevel, 1);
+    expect(restored.projects, isEmpty);
   });
 
   test('contrato de patrocínio persiste e gera receita por rodada', () {
@@ -305,19 +317,64 @@ void main() {
       StadiumFacility.parking,
       negotiated: true,
     );
-    final restored = CareerState.fromJson(result.state.toJson());
+    final scheduled = CareerState.fromJson(result.state.toJson());
+    final project = scheduled.userClub.stadium.projects.singleWhere(
+      (item) => item.kind == StadiumProjectKind.parking && item.isActive,
+    );
 
-    expect(restored.userClub.stadium.parkingLevel, 1);
-    expect(restored.userClub.money, lessThan(beforeMoney));
+    expect(scheduled.userClub.stadium.parkingLevel, 0);
+    expect(scheduled.userClub.money, lessThan(beforeMoney));
     expect(
-      restored.clubAdministration.budgetPlan
+      scheduled.clubAdministration.budgetPlan
           .forDepartment(ClubDepartment.stadium),
       lessThan(beforeBudget),
     );
-    expect(
-      restored.finances.last.kind,
-      FinanceKind.stadiumInvestment,
+    expect(scheduled.finances.last.kind, FinanceKind.stadiumInvestment);
+    expect(project.completesAt.isAfter(project.startedAt), isTrue);
+
+    final completed = ClubAdministrationEngine.advanceDay(
+      scheduled.copyWith(currentDate: project.completesAt),
     );
+    expect(completed.userClub.stadium.parkingLevel, 1);
+    expect(
+      completed.userClub.stadium.projects
+          .singleWhere((item) => item.id == project.id)
+          .status,
+      StadiumProjectStatus.completed,
+    );
+  });
+
+  test('manutenção e centro de treinamento persistem no save', () {
+    final career = CareerFactory.create(
+      careerId: 'stadium-new-systems-test',
+      careerName: 'Novos sistemas do estádio',
+      manager: const ManagerProfile(displayName: 'Teste'),
+      userClubId: clubSeeds.first.id,
+      seed: 20260830,
+    );
+    final budget = {
+      for (final department in ClubDepartment.values) department: 0,
+      ClubDepartment.stadium: 15000000,
+    };
+    final allocated = ClubAdministrationEngine.allocateBudgets(career, budget).state;
+    final maintained = ClubAdministrationEngine.performStadiumMaintenance(allocated).state;
+    expect(maintained.userClub.stadium.pitchCondition, 100);
+    expect(maintained.userClub.stadium.structureCondition, 100);
+    expect(maintained.userClub.stadium.securityCondition, 100);
+    expect(maintained.userClub.stadium.comfortCondition, 100);
+
+    final training = ClubAdministrationEngine.upgradeTrainingCenter(maintained).state;
+    final restored = CareerState.fromJson(training.toJson());
+    final project = restored.userClub.stadium.projects.singleWhere(
+      (item) => item.kind == StadiumProjectKind.trainingCenter && item.isActive,
+    );
+    expect(restored.userClub.stadium.trainingCenterLevel, 1);
+    expect(project.targetLevel, 2);
+
+    final completed = ClubAdministrationEngine.advanceDay(
+      restored.copyWith(currentDate: project.completesAt),
+    );
+    expect(completed.userClub.stadium.trainingCenterLevel, 2);
   });
 
   test('patrocínio exige decisão e naming rights preserva nome original', () {

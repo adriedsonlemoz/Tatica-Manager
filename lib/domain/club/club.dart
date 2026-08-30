@@ -98,6 +98,88 @@ class ClubKit {
   }
 }
 
+enum StadiumProjectKind {
+  stands,
+  hospitality,
+  retail,
+  food,
+  advertising,
+  parking,
+  museum,
+  trainingCenter,
+}
+
+enum StadiumProjectStatus { planned, inProgress, completed }
+
+class StadiumProject {
+  const StadiumProject({
+    required this.id,
+    required this.kind,
+    required this.targetLevel,
+    required this.cost,
+    required this.startedAt,
+    required this.completesAt,
+    this.status = StadiumProjectStatus.inProgress,
+  });
+
+  final String id;
+  final StadiumProjectKind kind;
+  final int targetLevel;
+  final int cost;
+  final DateTime startedAt;
+  final DateTime completesAt;
+  final StadiumProjectStatus status;
+
+  bool get isActive => status == StadiumProjectStatus.inProgress;
+
+  int daysRemaining(DateTime currentDate) {
+    if (!isActive || !currentDate.isBefore(completesAt)) return 0;
+    return completesAt.difference(currentDate).inDays;
+  }
+
+  StadiumProject copyWith({
+    StadiumProjectStatus? status,
+    DateTime? completesAt,
+  }) =>
+      StadiumProject(
+        id: id,
+        kind: kind,
+        targetLevel: targetLevel,
+        cost: cost,
+        startedAt: startedAt,
+        completesAt: completesAt ?? this.completesAt,
+        status: status ?? this.status,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'kind': kind.name,
+        'targetLevel': targetLevel,
+        'cost': cost,
+        'startedAt': startedAt.toIso8601String(),
+        'completesAt': completesAt.toIso8601String(),
+        'status': status.name,
+      };
+
+  factory StadiumProject.fromJson(Map<String, dynamic> json) => StadiumProject(
+        id: json['id'] as String? ?? '',
+        kind: StadiumProjectKind.values.firstWhere(
+          (value) => value.name == json['kind'],
+          orElse: () => StadiumProjectKind.stands,
+        ),
+        targetLevel: json['targetLevel'] as int? ?? 1,
+        cost: json['cost'] as int? ?? 0,
+        startedAt: DateTime.tryParse(json['startedAt'] as String? ?? '') ??
+            DateTime(2000),
+        completesAt: DateTime.tryParse(json['completesAt'] as String? ?? '') ??
+            DateTime(2000),
+        status: StadiumProjectStatus.values.firstWhere(
+          (value) => value.name == json['status'],
+          orElse: () => StadiumProjectStatus.completed,
+        ),
+      );
+}
+
 class Stadium {
   const Stadium({
     required this.name,
@@ -111,6 +193,12 @@ class Stadium {
     this.advertisingLevel = 1,
     this.parkingLevel = 0,
     this.museumLevel = 0,
+    this.pitchCondition = 88,
+    this.structureCondition = 85,
+    this.securityCondition = 90,
+    this.comfortCondition = 86,
+    this.trainingCenterLevel = 1,
+    this.projects = const [],
   });
 
   final String name;
@@ -119,15 +207,29 @@ class Stadium {
   final String? baseName;
   final int standsLevel;
 
-  /// Níveis comerciais persistidos no próprio estádio. São intencionadamente
-  /// simples nesta primeira versão para permitir expansão posterior por setores
-  /// sem criar um segundo modelo de estádio em paralelo.
+  /// Níveis comerciais persistidos no próprio estádio. São intencadamente
+  /// simples para permitir expansão posterior sem criar um segundo modelo.
   final int hospitalityLevel;
   final int retailLevel;
   final int foodLevel;
   final int advertisingLevel;
   final int parkingLevel;
   final int museumLevel;
+
+  /// Condição persistente das quatro áreas exibidas no painel de manutenção.
+  /// Os valores variam de 0 a 100 e sofrem desgaste gradual no avanço de dias.
+  final int pitchCondition;
+  final int structureCondition;
+  final int securityCondition;
+  final int comfortCondition;
+
+  /// Centro de treinamento é uma infraestrutura própria, mas fica persistido
+  /// junto ao estádio para manter retrocompatibilidade simples dos saves.
+  final int trainingCenterLevel;
+
+  /// Histórico de obras. Obras em andamento só aplicam o nível quando chegam
+  /// à data de conclusão; concluídas permanecem no histórico da carreira.
+  final List<StadiumProject> projects;
 
   String get originalName => baseName?.trim().isNotEmpty == true
       ? baseName!.trim()
@@ -153,6 +255,12 @@ class Stadium {
     int? advertisingLevel,
     int? parkingLevel,
     int? museumLevel,
+    int? pitchCondition,
+    int? structureCondition,
+    int? securityCondition,
+    int? comfortCondition,
+    int? trainingCenterLevel,
+    List<StadiumProject>? projects,
   }) =>
       Stadium(
         name: name ?? this.name,
@@ -166,6 +274,12 @@ class Stadium {
         advertisingLevel: advertisingLevel ?? this.advertisingLevel,
         parkingLevel: parkingLevel ?? this.parkingLevel,
         museumLevel: museumLevel ?? this.museumLevel,
+        pitchCondition: pitchCondition ?? this.pitchCondition,
+        structureCondition: structureCondition ?? this.structureCondition,
+        securityCondition: securityCondition ?? this.securityCondition,
+        comfortCondition: comfortCondition ?? this.comfortCondition,
+        trainingCenterLevel: trainingCenterLevel ?? this.trainingCenterLevel,
+        projects: projects ?? this.projects,
       );
 
   Map<String, dynamic> toJson() => {
@@ -180,23 +294,50 @@ class Stadium {
         'advertisingLevel': advertisingLevel,
         'parkingLevel': parkingLevel,
         'museumLevel': museumLevel,
+        'pitchCondition': pitchCondition,
+        'structureCondition': structureCondition,
+        'securityCondition': securityCondition,
+        'comfortCondition': comfortCondition,
+        'trainingCenterLevel': trainingCenterLevel,
+        'projects': projects.map((project) => project.toJson()).toList(),
       };
 
   factory Stadium.fromJson(Map<String, dynamic> json) {
     final name = json['name'] as String? ?? 'Estádio';
+    final rawProjects = json['projects'];
+    final projects = rawProjects is List
+        ? rawProjects
+            .whereType<Map>()
+            .map(
+              (project) => StadiumProject.fromJson(
+                Map<String, dynamic>.from(project),
+              ),
+            )
+            .toList(growable: false)
+        : const <StadiumProject>[];
     return Stadium(
-        name: name,
-        capacity: json['capacity'] as int? ?? 25000,
-        ticketPrice: json['ticketPrice'] as int? ?? 50,
-        baseName: json['baseName'] as String? ?? name,
-        standsLevel: json['standsLevel'] as int? ?? 1,
-        hospitalityLevel: json['hospitalityLevel'] as int? ?? 1,
-        retailLevel: json['retailLevel'] as int? ?? 1,
-        foodLevel: json['foodLevel'] as int? ?? 1,
-        advertisingLevel: json['advertisingLevel'] as int? ?? 1,
-        parkingLevel: json['parkingLevel'] as int? ?? 0,
-        museumLevel: json['museumLevel'] as int? ?? 0,
-      );
+      name: name,
+      capacity: json['capacity'] as int? ?? 25000,
+      ticketPrice: json['ticketPrice'] as int? ?? 50,
+      baseName: json['baseName'] as String? ?? name,
+      standsLevel: json['standsLevel'] as int? ?? 1,
+      hospitalityLevel: json['hospitalityLevel'] as int? ?? 1,
+      retailLevel: json['retailLevel'] as int? ?? 1,
+      foodLevel: json['foodLevel'] as int? ?? 1,
+      advertisingLevel: json['advertisingLevel'] as int? ?? 1,
+      parkingLevel: json['parkingLevel'] as int? ?? 0,
+      museumLevel: json['museumLevel'] as int? ?? 0,
+      pitchCondition: (json['pitchCondition'] as int? ?? 88).clamp(0, 100).toInt(),
+      structureCondition:
+          (json['structureCondition'] as int? ?? 85).clamp(0, 100).toInt(),
+      securityCondition:
+          (json['securityCondition'] as int? ?? 90).clamp(0, 100).toInt(),
+      comfortCondition:
+          (json['comfortCondition'] as int? ?? 86).clamp(0, 100).toInt(),
+      trainingCenterLevel:
+          (json['trainingCenterLevel'] as int? ?? 1).clamp(1, 5).toInt(),
+      projects: projects,
+    );
   }
 }
 

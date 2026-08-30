@@ -168,6 +168,10 @@ abstract final class ClubAdministrationEngine {
   }) {
     final prepared = ensureInitialized(state);
     final club = prepared.userClub;
+    final kind = StadiumEngine.projectKindForFacility(facility);
+    if (StadiumEngine.hasActiveProject(club.stadium, kind)) {
+      throw StateError('Já existe uma obra de ${facility.label} em andamento.');
+    }
     final cost = negotiated
         ? StadiumEngine.negotiatedUpgradeCost(club: club, facility: facility)
         : StadiumEngine.upgradeCost(club.stadium, facility);
@@ -182,22 +186,29 @@ abstract final class ClubAdministrationEngine {
       throw StateError('O clube não possui saldo para esta melhoria.');
     }
 
-    final upgraded = StadiumEngine.upgrade(club.stadium, facility);
+    final scheduled = StadiumEngine.startFacilityProject(
+      stadium: club.stadium,
+      facility: facility,
+      cost: cost,
+      startedAt: prepared.currentDate,
+    );
     final plan = prepared.clubAdministration.budgetPlan.spend(
       ClubDepartment.stadium,
       cost,
     );
     final nextClub = club.copyWith(
       money: club.money - cost,
-      stadium: upgraded,
+      stadium: scheduled,
     );
+    final targetLevel = StadiumEngine.facilityLevel(club.stadium, facility) + 1;
+    final duration = StadiumEngine.projectDurationDays(kind);
     final transaction = FinanceTransaction(
-      id: 'stadium-${prepared.season}-${prepared.roundIndex}-${facility.name}-${StadiumEngine.facilityLevel(upgraded, facility)}',
+      id: 'stadium-${prepared.season}-${prepared.roundIndex}-${facility.name}-$targetLevel',
       season: prepared.season,
       round: prepared.currentRound,
       kind: FinanceKind.stadiumInvestment,
       description:
-          '${facility.label} — ${StadiumEngine.isLocked(club.stadium, facility) ? 'desbloqueio' : 'melhoria'} para o nível ${StadiumEngine.facilityLevel(upgraded, facility)}',
+          '${facility.label} — obra iniciada para o nível $targetLevel ($duration dias)',
       amount: -cost,
       createdAt: prepared.currentDate,
     );
@@ -209,8 +220,107 @@ abstract final class ClubAdministrationEngine {
             prepared.clubAdministration.copyWith(budgetPlan: plan),
       ),
       message: negotiated
-          ? '${facility.label}: obra negociada e iniciada com desconto.'
-          : '${facility.label} evoluiu para o nível ${StadiumEngine.facilityLevel(upgraded, facility)}.',
+          ? '${facility.label}: obra negociada iniciada por $duration dias.'
+          : '${facility.label}: obra iniciada por $duration dias.',
+    );
+  }
+
+  static ClubAdministrationResult upgradeTrainingCenter(CareerState state) {
+    final prepared = ensureInitialized(state);
+    final club = prepared.userClub;
+    if (StadiumEngine.hasActiveProject(
+      club.stadium,
+      StadiumProjectKind.trainingCenter,
+    )) {
+      throw StateError('Já existe uma obra do centro de treinamento em andamento.');
+    }
+    final cost = StadiumEngine.trainingCenterUpgradeCost(club.stadium);
+    if (cost <= 0) {
+      throw StateError('O centro de treinamento já está no nível máximo.');
+    }
+    final stadiumBudget = availableFor(prepared, ClubDepartment.stadium);
+    if (cost > stadiumBudget) {
+      throw StateError('O orçamento do Estádio não cobre esta melhoria.');
+    }
+    if (cost > club.money) {
+      throw StateError('O clube não possui saldo para esta melhoria.');
+    }
+    final scheduled = StadiumEngine.startTrainingCenterProject(
+      stadium: club.stadium,
+      cost: cost,
+      startedAt: prepared.currentDate,
+    );
+    final plan = prepared.clubAdministration.budgetPlan.spend(
+      ClubDepartment.stadium,
+      cost,
+    );
+    final nextClub = club.copyWith(
+      money: club.money - cost,
+      stadium: scheduled,
+    );
+    final targetLevel = club.stadium.trainingCenterLevel + 1;
+    final duration = StadiumEngine.projectDurationDays(
+      StadiumProjectKind.trainingCenter,
+    );
+    final transaction = FinanceTransaction(
+      id: 'stadium-${prepared.season}-${prepared.roundIndex}-training-$targetLevel',
+      season: prepared.season,
+      round: prepared.currentRound,
+      kind: FinanceKind.stadiumInvestment,
+      description:
+          'Centro de treinamento — obra iniciada para o nível $targetLevel ($duration dias)',
+      amount: -cost,
+      createdAt: prepared.currentDate,
+    );
+    return ClubAdministrationResult(
+      state: prepared.copyWith(
+        clubs: _replaceUserClub(prepared, nextClub),
+        finances: [...prepared.finances, transaction],
+        clubAdministration:
+            prepared.clubAdministration.copyWith(budgetPlan: plan),
+      ),
+      message: 'Centro de treinamento: obra iniciada por $duration dias.',
+    );
+  }
+
+  static ClubAdministrationResult performStadiumMaintenance(
+    CareerState state,
+  ) {
+    final prepared = ensureInitialized(state);
+    final club = prepared.userClub;
+    final cost = StadiumEngine.maintenanceCost(club.stadium);
+    final stadiumBudget = availableFor(prepared, ClubDepartment.stadium);
+    if (cost > stadiumBudget) {
+      throw StateError('O orçamento do Estádio não cobre a manutenção.');
+    }
+    if (cost > club.money) {
+      throw StateError('O clube não possui saldo para a manutenção.');
+    }
+    final plan = prepared.clubAdministration.budgetPlan.spend(
+      ClubDepartment.stadium,
+      cost,
+    );
+    final nextClub = club.copyWith(
+      money: club.money - cost,
+      stadium: StadiumEngine.performMaintenance(club.stadium),
+    );
+    final transaction = FinanceTransaction(
+      id: 'stadium-maintenance-${prepared.season}-${prepared.currentDate.millisecondsSinceEpoch}',
+      season: prepared.season,
+      round: prepared.currentRound,
+      kind: FinanceKind.stadiumInvestment,
+      description: 'Manutenção geral do estádio',
+      amount: -cost,
+      createdAt: prepared.currentDate,
+    );
+    return ClubAdministrationResult(
+      state: prepared.copyWith(
+        clubs: _replaceUserClub(prepared, nextClub),
+        finances: [...prepared.finances, transaction],
+        clubAdministration:
+            prepared.clubAdministration.copyWith(budgetPlan: plan),
+      ),
+      message: 'Manutenção concluída. As condições do estádio foram restauradas.',
     );
   }
 
@@ -326,8 +436,15 @@ abstract final class ClubAdministrationEngine {
     );
   }
 
-  static CareerState advanceDay(CareerState state) =>
-      expireProposals(ensureInitialized(state));
+  static CareerState advanceDay(CareerState state) {
+    final prepared = expireProposals(ensureInitialized(state));
+    final stadium = StadiumEngine.advanceDay(
+      stadium: prepared.userClub.stadium,
+      currentDate: prepared.currentDate,
+    );
+    final club = prepared.userClub.copyWith(stadium: stadium);
+    return prepared.copyWith(clubs: _replaceUserClub(prepared, club));
+  }
 
   static CareerState expireProposals(CareerState state) {
     var changed = false;

@@ -1,15 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
-import '../../app/widgets/management_dashboard_widgets.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/utils/formatters.dart';
-import '../../domain/finance/club_administration.dart';
-import '../../domain/finance/sponsorship.dart';
+import '../../domain/club/club.dart';
+import '../../domain/finance/finance.dart';
 import '../../game/stadium/stadium_engine.dart';
 import 'stadium_actions.dart';
 import 'stadium_components.dart';
@@ -23,7 +18,8 @@ class StadiumScreen extends ConsumerWidget {
     final career = ref.watch(gameControllerProvider).career!;
     final club = career.userClub;
     final stadium = club.stadium;
-    final tablePosition = career.standings.indexWhere((standing) => standing.clubId == club.id) + 1;
+    final tablePosition =
+        career.standings.indexWhere((standing) => standing.clubId == club.id) + 1;
     final projection = StadiumEngine.settleMatchday(
       club: club,
       tablePosition: tablePosition <= 0 ? 10 : tablePosition,
@@ -31,110 +27,160 @@ class StadiumScreen extends ConsumerWidget {
     final occupancy = stadium.capacity <= 0
         ? 0
         : (projection.attendance * 100 / stadium.capacity).round();
-    final stadiumBudget = career.clubAdministration.budgetPlan.forDepartment(ClubDepartment.stadium);
-    final availableForWorks = math.max(0, math.min(stadiumBudget, club.money));
-    final namingContracts = club.sponsorships
-        .where(
-          (contract) => contract.type == SponsorshipType.stadium && contract.isActiveIn(career.season),
-        )
-        .toList(growable: false);
-    final namingRights = namingContracts.isEmpty ? null : namingContracts.first;
-    final supporterImpact = StadiumEngine.supporterImpact(
-      club: club,
-      attendance: projection.attendance,
+    final ticketTransactions = career.finances.where(
+      (transaction) =>
+          transaction.amount > 0 &&
+          (transaction.kind == FinanceKind.matchIncome ||
+              transaction.kind == FinanceKind.matchday),
     );
+    final monthRevenue = ticketTransactions
+        .where(
+          (transaction) =>
+              transaction.createdAt.year == career.currentDate.year &&
+              transaction.createdAt.month == career.currentDate.month,
+        )
+        .fold<int>(0, (sum, transaction) => sum + transaction.amount);
+    final previousMonthDate = DateTime(
+      career.currentDate.year,
+      career.currentDate.month - 1,
+      1,
+    );
+    final previousMonthRevenue = ticketTransactions
+        .where(
+          (transaction) =>
+              transaction.createdAt.year == previousMonthDate.year &&
+              transaction.createdAt.month == previousMonthDate.month,
+        )
+        .fold<int>(0, (sum, transaction) => sum + transaction.amount);
+    final seasonRevenue = ticketTransactions
+        .where((transaction) => transaction.season == career.season)
+        .fold<int>(0, (sum, transaction) => sum + transaction.amount);
+    final monthDeltaPercent = previousMonthRevenue <= 0
+        ? (monthRevenue > 0 ? 100 : 0)
+        : (((monthRevenue - previousMonthRevenue) * 100) /
+                previousMonthRevenue)
+            .round();
+
+    final since = career.currentDate.subtract(const Duration(days: 365));
+    final invested = career.finances
+        .where(
+          (transaction) =>
+              transaction.kind == FinanceKind.stadiumInvestment &&
+              transaction.amount < 0 &&
+              !transaction.createdAt.isBefore(since),
+        )
+        .fold<int>(0, (sum, transaction) => sum + transaction.amount.abs());
+    final completed = stadium.projects
+        .where((project) => project.status == StadiumProjectStatus.completed)
+        .length;
+    final inProgress = stadium.projects
+        .where((project) => project.status == StadiumProjectStatus.inProgress)
+        .length;
+    final planned = stadium.projects
+        .where((project) => project.status == StadiumProjectStatus.planned)
+        .length;
+    final recommended = _recommendedFacility(stadium);
 
     return PremiumScaffold(
       safeBottom: true,
-      appBar: GameTopBar(
-        title: 'Estádio',
-        subtitle: stadium.name,
-        actions: [
-          IconButton(
-            tooltip: 'Editar informações',
-            onPressed: () => showEditStadiumDialog(context, ref),
-            icon: const Icon(Icons.edit_rounded),
-          ),
-        ],
-      ),
+      appBar: const GameTopBar(title: 'Estádio'),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 28),
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 28),
         children: [
-          StadiumSceneCard(
+          StadiumClubHeader(club: club, season: career.season),
+          const SizedBox(height: 10),
+          StadiumOverviewCard(
             club: club,
-            occupancy: occupancy,
-            namingSponsor: namingRights?.sponsorName,
+            projectedAttendance: projection.attendance,
+            onEdit: () => showEditStadiumDialog(context, ref),
           ),
           const SizedBox(height: 10),
-          StadiumSummaryGrid(
-            club: club,
-            projection: projection,
-            occupancy: occupancy,
-            supporterImpact: supporterImpact,
-          ),
-          const SizedBox(height: 10),
-          StadiumRevenueCard(projection: projection),
-          const SizedBox(height: 10),
-          SectionCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(
+            height: 292,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const DashboardSectionHeader(
-                  title: 'Administração',
-                  subtitle: 'Orçamento reservado; obras também respeitam o caixa atual',
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const DashboardIconBadge(icon: Icons.account_balance_wallet_outlined),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Orçamento do estádio', style: TextStyle(color: AppColors.muted, fontSize: 10)),
-                          Text(
-                            formatMoney(stadiumBudget),
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                          ),
-                        ],
-                      ),
+                Expanded(
+                  child: StadiumRevenuePanel(
+                    monthRevenue: monthRevenue,
+                    seasonRevenue: seasonRevenue,
+                    occupancy: occupancy,
+                    monthDeltaPercent: monthDeltaPercent,
+                    onDetails: () => showStadiumRevenueDetails(
+                      context,
+                      monthRevenue: monthRevenue,
+                      seasonRevenue: seasonRevenue,
+                      projection: projection,
                     ),
-                    DashboardStatusPill(
-                      label: 'Arquibancadas ${stadium.standsLevel}/${StadiumEngine.maxFacilityLevel}',
-                      color: AppColors.green,
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  namingRights == null
-                      ? 'O nome original do estádio está preservado. Propostas de naming rights continuam em Finanças.'
-                      : 'Naming rights ativo com ${namingRights.sponsorName}; o nome original permanece salvo.',
-                  style: const TextStyle(color: AppColors.muted, fontSize: 9.8, height: 1.35),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: StadiumMaintenancePanel(
+                    stadium: stadium,
+                    monthlyCost: StadiumEngine.operatingCost(stadium),
+                    onDetails: () => showStadiumMaintenanceDialog(context, ref),
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 14),
-          const DashboardSectionHeader(
-            title: 'Infraestrutura e melhorias',
-            subtitle: 'Estruturas já existentes no sistema do estádio',
-          ),
-          const SizedBox(height: 8),
-          StadiumFacilityGrid(
-            club: club,
-            projection: projection,
-            availableFunds: availableForWorks,
-            onUpgrade: (facility, negotiated) => showStadiumUpgradeDialog(
-              context,
-              ref,
-              facility,
-              negotiated: negotiated,
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 244,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: TrainingCenterPanel(
+                    stadium: stadium,
+                    onDetails: () => showTrainingCenterDialog(context, ref),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: StadiumImprovementsPanel(
+                    invested: invested,
+                    completed: completed,
+                    inProgress: inProgress,
+                    planned: planned,
+                    onDetails: () => showStadiumProjectsSheet(context, ref),
+                  ),
+                ),
+              ],
             ),
           ),
+          if (recommended != null) ...[
+            const SizedBox(height: 10),
+            SuggestedStadiumUpgradeCard(
+              facility: recommended,
+              cost: StadiumEngine.upgradeCost(stadium, recommended),
+              durationDays: StadiumEngine.projectDurationDays(
+                StadiumEngine.projectKindForFacility(recommended),
+              ),
+              onTap: () => showStadiumUpgradeDialog(
+                context,
+                ref,
+                recommended,
+                negotiated: false,
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+StadiumFacility? _recommendedFacility(Stadium stadium) {
+  for (final facility in StadiumFacility.values) {
+    final kind = StadiumEngine.projectKindForFacility(facility);
+    if (StadiumEngine.facilityLevel(stadium, facility) >=
+        StadiumEngine.maxFacilityLevel) {
+      continue;
+    }
+    if (StadiumEngine.hasActiveProject(stadium, kind)) continue;
+    return facility;
+  }
+  return null;
 }

@@ -8,12 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.115`
-- **Android versionCode:** `116`
+- **Release deste handoff:** `0.1.1.116`
+- **Android versionCode:** `117`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
+
+
+## Estado funcional da release 0.1.1.116
+
+- redesenha `StadiumScreen` conforme a referência visual aprovada, usando os assets WebP do estádio em vez do antigo `CustomPainter`;
+- mantém dados reais de clube, temporada, saldo, orçamento, estádio, capacidade, ingresso e projeção de público;
+- adiciona ao `Stadium` quatro condições persistentes (`pitchCondition`, `structureCondition`, `securityCondition`, `comfortCondition`), nível de centro de treinamento e histórico de `StadiumProject`;
+- `StadiumEngine.advanceDay` conclui obras vencidas e aplica desgaste gradual das condições;
+- `ClubAdministrationEngine.upgradeStadium` agora inicia uma obra e só aplica o nível quando o prazo termina;
+- adiciona manutenção geral e melhoria do centro de treinamento usando orçamento do departamento Estádio e transações financeiras existentes;
+- preserva retrocompatibilidade: saves antigos recebem valores padrão e lista de obras vazia;
+- mantém Match Engine, partidas, músicas e IDs existentes inalterados.
+
+Consulte `docs/RELEASE_0.1.1.116.md`.
 
 
 ## Estado funcional da release 0.1.1.115
@@ -814,11 +828,11 @@ Para esta release:
 
 ```text
 release/versionName: 0.1.1.110
-versionCode:         116
-pubspec:             0.1.1+116
+versionCode:         117
+pubspec:             0.1.1+117
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.116` e usar um `versionCode` maior que 116.
+A próxima alteração/entrega normalmente deve virar `0.1.1.117` e usar um `versionCode` maior que 117.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

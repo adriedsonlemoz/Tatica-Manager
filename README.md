@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.115`
-**Android versionCode:** `116`
+**Release atual:** `0.1.1.116`
+**Android versionCode:** `117`
 
 ## Fonte oficial de versão
 
@@ -13,15 +13,26 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.115`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.116`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+116`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.115` e `versionCode 116`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+117`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.116` e `versionCode 117`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.115`, o pubspec é `0.1.1+116`. a próxima entrega normalmente será `0.1.1.116`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.116`, o pubspec é `0.1.1+117`. a próxima entrega normalmente será `0.1.1.117`.
 
+
+## Estádio imersivo e três novos sistemas — 0.1.1.116
+
+- refaz a tela Estádio seguindo a referência aprovada, com cabeçalho do clube, visão geral com imagem real do asset, bilheteria, manutenção, centro de treinamento, melhorias e próxima melhoria sugerida;
+- adiciona os assets `stadium_night.webp` e `covered_stands.webp`, otimizados para cerca de 483 KiB no total;
+- cria condição persistente de Gramado, Estrutura, Segurança e Conforto, com desgaste gradual por avanço de dias e manutenção paga para restauração;
+- cria Centro de Treinamento com nível 1–5, qualidade derivada, custo de melhoria e obra com prazo;
+- transforma melhorias do estádio em obras persistentes com custo, início, data de conclusão, status em andamento/concluído e aplicação real do nível somente no término;
+- mantém as melhorias já existentes de arquibancadas, camarotes, lojas, alimentação, publicidade, estacionamento e museu, agora acessíveis em `Ver todas`;
+- usa somente Material Icons já disponíveis no Flutter; não adiciona pacote de ícones;
+- não altera Match Engine, regras de partidas, músicas ou IDs existentes.
 
 ## Correção do cabeçalho da Home — 0.1.1.115
 
