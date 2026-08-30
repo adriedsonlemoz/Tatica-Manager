@@ -100,7 +100,7 @@ Se um save contendo caminhos de áudio personalizados for movido para outro apar
 
 ## Assets incluídos e licença
 
-A partir da 0.1.1.74, a playlist padrão contém somente as 11 faixas OGG entregues para o projeto. `football.mp3` e os antigos `menu_01.m4a` a `menu_05.m4a` foram removidos dos assets e do catálogo. Os arquivos OGG não possuem metadados embutidos; a interface exibe nomes legíveis derivados exclusivamente dos nomes dos próprios arquivos, sem inventar informações.
+Na 0.1.1.109, a playlist padrão foi reduzida para somente as 5 faixas OGG selecionadas e fornecidas em `musicasmenu.zip`. Na 0.1.1.111, essas mesmas cinco faixas foram recomprimidas para **Opus em contêiner OGG**, estéreo, VBR em torno de 64 kbps, preservando a duração completa e reduzindo o conjunto em cerca de 14,8%. As outras seis faixas continuam removidas dos assets e do catálogo. Os arquivos não possuem metadados úteis à interface; os nomes legíveis continuam derivados dos próprios nomes dos arquivos.
 
 Os efeitos de interface e partida continuam podendo ser regenerados por:
 
@@ -108,13 +108,23 @@ Os efeitos de interface e partida continuam podendo ser regenerados por:
 python3 tool/generate_audio_assets.py
 ```
 
-Esse utilitário não gera mais músicas de menu, evitando que a playlist antiga volte ao projeto. As 11 faixas OGG são assets versionados e devem ser mantidos diretamente em `assets/audio/menu/`.
+Esse utilitário não gera mais músicas de menu, evitando que a playlist antiga volte ao projeto. As 5 faixas OGG atuais são assets versionados e devem ser mantidas diretamente em `assets/audio/menu/`.
 
 ## Música de menu
 
 A música de fundo inicia **desativada por padrão** em novas configurações/saves sem preferência explícita. Quando o jogador a ativa, o player escolhe uma faixa inicial variável e mantém shuffle + loop da playlist. Ao entrar em uma partida, a música é pausada. Ao sair da partida, a mesma camada de áudio retoma a reprodução.
 
-O player expõe a faixa atual, permite selecionar qualquer música da lista ativa e avançar manualmente para a próxima, mantendo shuffle e loop no mesmo `AudioManager`. Quando o usuário ativa uma playlist personalizada e existem arquivos válidos, ela substitui a lista padrão. Desativar a opção volta às 11 faixas OGG incluídas no jogo sem apagar os arquivos importados.
+O player expõe a faixa atual, permite selecionar qualquer música da lista ativa e avançar manualmente para a próxima, mantendo shuffle e loop no mesmo `AudioManager`. Quando o usuário ativa uma playlist personalizada e existem arquivos válidos, ela substitui a lista padrão. Desativar a opção volta às 5 faixas OGG incluídas no jogo sem apagar os arquivos importados.
+
+## Playlist reduzida — 0.1.1.109
+
+A lista padrão passa a conter exatamente cinco faixas: Jim Yosef — Lights, Disfigure — Blank, DEAF KEV — Invincible, Cormak — Flavors e David Bulla — Unexpected. O player, shuffle, loop, seleção manual, próxima faixa e playlist personalizada continuam usando o mesmo `AudioManager`; somente o catálogo padrão e os assets incluídos foram reduzidos.
+
+## Otimização das cinco faixas — 0.1.1.111
+
+As cinco músicas da playlist padrão permanecem exatamente as mesmas em catálogo, nome e duração. Somente a codificação interna dos assets foi alterada de Vorbis para Opus dentro do mesmo contêiner `.ogg`, mantendo estéreo e usando VBR em torno de 64 kbps. O conjunto caiu de 10.386.273 bytes para 8.852.371 bytes (aproximadamente 14,8% menor). O `AudioManager` e os caminhos em `AudioCatalog` não mudaram.
+
+A escolha por Opus mantém compatibilidade com o pipeline Android/ExoPlayer usado pelo projeto; não foram reduzidos canais, não foram cortados trechos e não houve alteração de volume ou duração intencional.
 
 ## Sons da interface
 

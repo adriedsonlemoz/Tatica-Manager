@@ -101,25 +101,25 @@ class HomeQuickAccess extends StatelessWidget {
           final useRow = items.length <= 6 && constraints.maxWidth >= 300;
           if (!useRow) {
             return SizedBox(
-              height: 62,
+              height: 72,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 5),
+                separatorBuilder: (_, _) => const SizedBox(width: 6),
                 itemBuilder: (context, index) => SizedBox(
-                  width: 80,
+                  width: 82,
                   child: _QuickAccessTile(item: items[index]),
                 ),
               ),
             );
           }
           return SizedBox(
-            height: 62,
+            height: 72,
             child: Row(
               children: [
                 for (var index = 0; index < items.length; index++) ...[
                   Expanded(child: _QuickAccessTile(item: items[index])),
-                  if (index != items.length - 1) const SizedBox(width: 5),
+                  if (index != items.length - 1) const SizedBox(width: 6),
                 ],
               ],
             ),
@@ -158,33 +158,37 @@ class _QuickAccessTile extends StatelessWidget {
             Positioned.fill(
               child: InkWell(
                 onTap: item.onTap,
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(12),
                 child: Ink(
-                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 7),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceRaised.withValues(alpha: .82),
-                    borderRadius: BorderRadius.circular(13),
-                    border: Border.all(color: AppColors.border.withValues(alpha: .75)),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF142838), Color(0xFF102330)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF29414E)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(item.icon, color: AppColors.white, size: 21),
-                      const SizedBox(height: 5),
+                      Icon(item.icon, color: AppColors.white, size: 28),
+                      const SizedBox(height: 7),
                       SizedBox(
-                        height: 16,
+                        height: 15,
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            item.label,
-                            maxLines: 2,
+                            item.label.toUpperCase(),
+                            maxLines: 1,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: AppColors.white,
-                              fontSize: 9.6,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: .1,
-                              height: 1.05,
+                              fontSize: 10.2,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: .05,
+                              height: 1,
                             ),
                           ),
                         ),
@@ -196,15 +200,15 @@ class _QuickAccessTile extends StatelessWidget {
             ),
             if (item.showDot)
               Positioned(
-                top: 5,
-                right: 5,
+                top: 6,
+                right: 6,
                 child: Container(
                   width: 7,
                   height: 7,
                   decoration: BoxDecoration(
                     color: item.accent,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.background, width: 1),
+                    border: Border.all(color: const Color(0xFF102330), width: 1),
                   ),
                 ),
               ),
@@ -308,90 +312,130 @@ class _NewsListTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
+  Widget build(BuildContext context) {
+    if (compact) {
+      return InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: compact ? 5.5 : 8, horizontal: 1),
+          padding: const EdgeInsets.symmetric(vertical: 5),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (!compact) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: player != null
-                      ? PlayerAvatar(player: player!, size: 38, accentColor: playerAccent)
-                      : Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: playerAccent.withValues(alpha: .16),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(_newsIcon(event.type), color: playerAccent, size: 19),
-                        ),
-                ),
-                const SizedBox(width: 8),
-              ] else ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Container(
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(color: playerAccent, shape: BoxShape.circle),
+              const Icon(
+                Icons.article_outlined,
+                color: AppColors.textSecondary,
+                size: 18,
+              ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  event.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 10.8,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(width: 4),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            event.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: compact ? 11 : 12.2,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          shortDate(event.date),
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: compact ? 9.3 : 10.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: compact ? 1 : 3),
-                    Text(
-                      event.message,
-                      maxLines: compact ? 1 : 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: compact ? 10 : 11.3,
-                        color: AppColors.muted,
-                        height: 1.15,
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(width: 8),
+              Text(
+                shortDate(event.date),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ),
       );
+    }
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(9),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: player != null
+                  ? PlayerAvatar(
+                      player: player!,
+                      size: 38,
+                      accentColor: playerAccent,
+                    )
+                  : Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: playerAccent.withValues(alpha: .16),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        _newsIcon(event.type),
+                        color: playerAccent,
+                        size: 19,
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          event.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12.2,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        shortDate(event.date),
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    event.message,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11.3,
+                      color: AppColors.muted,
+                      height: 1.15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   static IconData _newsIcon(CareerEventType type) => switch (type) {
-        CareerEventType.playerRecovered || CareerEventType.injuryEnded => Icons.healing_rounded,
+        CareerEventType.playerRecovered || CareerEventType.injuryEnded =>
+          Icons.healing_rounded,
         CareerEventType.suspensionEnded => Icons.gavel_rounded,
         CareerEventType.contractExpiring => Icons.description_rounded,
         CareerEventType.transferOffer => Icons.swap_horiz_rounded,

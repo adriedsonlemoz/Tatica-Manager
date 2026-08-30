@@ -39,47 +39,47 @@ class HomeLeagueAndScorers extends StatelessWidget {
           final forceCompact = compactSingleRow;
           final canSplit = forceCompact || constraints.maxWidth >= 330;
           final tableCard = _DashboardCard(
-            accent: AppColors.green,
             compact: forceCompact,
-            onTap: onStandingsTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
                   title: 'CLASSIFICAÇÃO',
-                  action: 'VER TABELA',
-                  onAction: onStandingsTap,
                   compact: forceCompact,
                 ),
-                SizedBox(height: forceCompact ? 4 : 8),
+                SizedBox(height: forceCompact ? 5 : 8),
                 HomeCompactStandings(
                   standings: standings,
                   clubs: clubs,
                   userClubId: userClubId,
                   compactColumns: true,
                   ultraCompact: false,
+                  maxRows: 4,
+                  pinUser: false,
                   onClubTap: onClubTap,
+                ),
+                SizedBox(height: forceCompact ? 5 : 7),
+                _DashboardFooter(
+                  label: 'Ver tabela completa',
+                  onTap: onStandingsTap,
+                  compact: forceCompact,
                 ),
               ],
             ),
           );
           final scorersCard = _DashboardCard(
-            accent: AppColors.green,
             compact: forceCompact,
-            onTap: onScorersTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _DashboardSectionHeader(
                   title: 'ARTILHARIA',
-                  action: 'VER TODOS',
-                  onAction: onScorersTap,
                   compact: forceCompact,
                 ),
-                SizedBox(height: forceCompact ? 3 : 5),
+                SizedBox(height: forceCompact ? 4 : 6),
                 if (scorers.isEmpty)
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: forceCompact ? 10 : 18),
+                    padding: EdgeInsets.symmetric(vertical: forceCompact ? 12 : 18),
                     child: Text(
                       'Sem gols.',
                       style: TextStyle(
@@ -91,25 +91,35 @@ class HomeLeagueAndScorers extends StatelessWidget {
                 else
                   for (var index = 0; index < scorers.length; index++)
                     _ScorerRow(
-                      position: index + 1,
                       entry: scorers[index],
-                      compact: canSplit,
-                      ultraCompact: forceCompact,
+                      compact: forceCompact,
                       onTap: () => onPlayerTap(scorers[index]),
                     ),
+                SizedBox(height: forceCompact ? 5 : 7),
+                _DashboardFooter(
+                  label: 'Ver artilharia completa',
+                  onTap: onScorersTap,
+                  compact: forceCompact,
+                ),
               ],
             ),
           );
           if (!canSplit) {
-            return Column(children: [tableCard, const SizedBox(height: 8), scorersCard]);
+            return Column(
+              children: [
+                tableCard,
+                const SizedBox(height: 8),
+                scorersCard,
+              ],
+            );
           }
           return IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(flex: forceCompact ? 14 : 18, child: tableCard),
-                SizedBox(width: forceCompact ? 5 : 7),
-                Expanded(flex: 10, child: scorersCard),
+                Expanded(child: tableCard),
+                SizedBox(width: forceCompact ? 6 : 8),
+                Expanded(child: scorersCard),
               ],
             ),
           );
@@ -133,44 +143,33 @@ class _DashboardCard extends StatelessWidget {
   const _DashboardCard({
     required this.child,
     required this.compact,
-    this.accent,
-    this.onTap,
   });
 
   final Widget child;
-  final Color? accent;
   final bool compact;
-  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(compact ? 14 : 18);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Ink(
-          padding: EdgeInsets.all(compact ? 8 : 10),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                (accent ?? AppColors.green).withValues(alpha: compact ? .10 : .12),
-                AppColors.surface,
-                AppColors.background,
-              ],
-            ),
-            borderRadius: radius,
-            border: Border.all(color: (accent ?? AppColors.border).withValues(alpha: .21)),
-            boxShadow: const [
-              BoxShadow(color: Color(0x1E000000), blurRadius: 9, offset: Offset(0, 4)),
-            ],
-          ),
-          child: child,
+    final radius = BorderRadius.circular(compact ? 14 : 16);
+    return Container(
+      padding: EdgeInsets.all(compact ? 8 : 10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF102536), Color(0xFF0D2130), Color(0xFF0B1C29)],
         ),
+        borderRadius: radius,
+        border: Border.all(color: const Color(0xFF29414E)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1E000000),
+            blurRadius: 9,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
+      child: child,
     );
   }
 }
@@ -179,72 +178,84 @@ class _DashboardSectionHeader extends StatelessWidget {
   const _DashboardSectionHeader({
     required this.title,
     required this.compact,
-    this.action,
-    this.onAction,
   });
 
   final String title;
-  final String? action;
-  final VoidCallback? onAction;
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: compact ? 11.5 : 12,
-                fontWeight: FontWeight.w900,
+  Widget build(BuildContext context) => Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: AppColors.green,
+          fontSize: compact ? 11.5 : 12.5,
+          fontWeight: FontWeight.w900,
+          letterSpacing: .2,
+        ),
+      );
+}
+
+class _DashboardFooter extends StatelessWidget {
+  const _DashboardFooter({
+    required this.label,
+    required this.onTap,
+    required this.compact,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(top: compact ? 5 : 7, bottom: 1),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: AppColors.border.withValues(alpha: .72),
               ),
             ),
           ),
-          if (action != null)
-            InkWell(
-              onTap: onAction,
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                child: Row(
-                  children: [
-                    Text(
-                      action!,
-                      style: TextStyle(
-                        color: AppColors.green,
-                        fontSize: compact ? 9.8 : 10,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(width: 1),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      size: compact ? 10 : 12,
-                      color: AppColors.green,
-                    ),
-                  ],
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: compact ? 10.2 : 11,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-        ],
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: compact ? 16 : 18,
+              ),
+            ],
+          ),
+        ),
       );
 }
 
 class _ScorerRow extends StatelessWidget {
   const _ScorerRow({
-    required this.position,
     required this.entry,
     required this.compact,
-    required this.ultraCompact,
     required this.onTap,
   });
 
-  final int position;
   final HomeScorerEntry entry;
   final bool compact;
-  final bool ultraCompact;
   final VoidCallback onTap;
 
   @override
@@ -252,42 +263,49 @@ class _ScorerRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(9),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: ultraCompact ? 4.5 : compact ? 5 : 7),
+          padding: EdgeInsets.symmetric(vertical: compact ? 4 : 6),
           child: Row(
             children: [
-              SizedBox(
-                width: ultraCompact ? 11 : compact ? 12 : 16,
-                child: Text(
-                  '$position',
-                  style: TextStyle(
-                    fontSize: ultraCompact ? 10.5 : 11,
-                    color: AppColors.muted,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
               PlayerAvatar(
                 player: entry.player,
-                size: ultraCompact ? 27 : compact ? 27 : 34,
+                size: compact ? 30 : 34,
                 accentColor: Color(entry.club.colors.primaryHex),
               ),
-              SizedBox(width: ultraCompact ? 3 : compact ? 4 : 7),
+              SizedBox(width: compact ? 5 : 7),
               Expanded(
-                child: Text(
-                  entry.player.displayName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: ultraCompact ? 10.8 : compact ? 11 : 12,
-                    fontWeight: FontWeight.w900,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.player.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: compact ? 10.7 : 11.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      entry.club.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: compact ? 9.3 : 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 2),
+              const SizedBox(width: 4),
               Text(
                 '${entry.stats.goals}',
                 style: TextStyle(
-                  fontSize: ultraCompact ? 12 : compact ? 14 : 16,
+                  color: AppColors.green,
+                  fontSize: compact ? 14 : 16,
                   fontWeight: FontWeight.w900,
                 ),
               ),

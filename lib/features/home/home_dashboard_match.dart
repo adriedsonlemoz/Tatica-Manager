@@ -58,7 +58,7 @@ class HomeNextMatchCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
+            padding: const EdgeInsets.fromLTRB(14, 13, 14, 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,7 +71,7 @@ class HomeNextMatchCard extends StatelessWidget {
                     letterSpacing: .3,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 IntrinsicHeight(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,7 +92,7 @@ class HomeNextMatchCard extends StatelessWidget {
                       Expanded(flex: 5, child: _MatchClub(club: awayClub)),
                       Container(
                         width: 1,
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 12),
                         color: AppColors.border,
                       ),
                       Expanded(
@@ -105,12 +105,12 @@ class HomeNextMatchCard extends StatelessWidget {
                               icon: Icons.emoji_events_rounded,
                               text: competitionName,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             _MatchInfoRow(
                               icon: Icons.calendar_today_rounded,
                               text: '${fullDate(nextFixture.date)} • ${nextFixture.kickoffLabel}',
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             _MatchInfoRow(
                               icon: Icons.stadium_rounded,
                               text: stadium,
@@ -146,7 +146,7 @@ class _HomeDashboardCard extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF12202A), Color(0xFF162229), Color(0xFF111A20)],
+            colors: [Color(0xFF102536), Color(0xFF0D2130), Color(0xFF0B1C29)],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),
@@ -167,16 +167,16 @@ class _MatchClub extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HomeClubCrest(club: club, size: 46),
+          HomeClubCrest(club: club, size: 54),
           const SizedBox(height: 5),
           Text(
-            club.shortName.toUpperCase(),
+            club.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.white,
-              fontSize: 10.5,
+              fontSize: 11.5,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -196,8 +196,8 @@ class _MatchInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Icon(icon, color: AppColors.green, size: 13),
-          const SizedBox(width: 6),
+          Icon(icon, color: AppColors.textSecondary, size: 15),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,

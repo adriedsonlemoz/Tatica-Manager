@@ -18,11 +18,11 @@ import '../../game/season/season_engine.dart';
 import '../calendar/calendar_screen.dart';
 import '../clubs/club_profile_screen.dart';
 import '../career/manager_job_market_screen.dart';
-import '../career/manager_profile_screen.dart';
 import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../market/incoming_transfer_offer_dialog.dart';
 import '../market/market_screen.dart';
+import '../more/more_screen.dart';
 import '../player/player_profile_screen.dart';
 import '../season/season_history_screen.dart';
 import '../squad/squad_screen.dart';
@@ -89,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
         return b.stats.assists.compareTo(a.stats.assists);
       });
     final topScorers = scorers.take(3).toList(growable: false);
-    final recentNews = career.news.reversed.take(4).toList(growable: false);
+    final recentNews = career.news.reversed.take(3).toList(growable: false);
     final lineupCompetitionId = fixture?.competitionId ?? career.primaryCompetitionId;
     final lineupNeedsAttention = !LineupEngine.validate(
       club.squad,
@@ -110,19 +110,41 @@ class HomeScreen extends ConsumerWidget {
           CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: HomeClubHeader(
-                club: club,
-                manager: career.manager,
-                season: career.season,
-                competitionName: competitionName,
-                balance: club.money,
-                unreadMessages: unreadMessages,
-                onInboxTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const InboxScreen()),
-                ),
-                onManagerTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ManagerProfileScreen()),
-                ),
+              child: Column(
+                children: [
+                  HomeTopBar(
+                    unreadMessages: unreadMessages,
+                    onMenuTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const MoreScreen(showBackButton: true)),
+                    ),
+                    onNotificationsTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => NewsHighlightsScreen(
+                          events: career.news.reversed.toList(growable: false),
+                          onEventTap: (newsContext, event) => _openCareerEvent(
+                            newsContext,
+                            ref,
+                            career,
+                            event,
+                            transferActionable: CpuUserOfferEngine.isOfferActive(
+                              state: career,
+                              event: event,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    onInboxTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const InboxScreen()),
+                    ),
+                  ),
+                  HomeClubHeader(
+                    club: club,
+                    season: career.season,
+                    balance: club.money,
+                    transferBudget: club.transferBudget,
+                  ),
+                ],
               ),
             ),
             SliverPadding(
@@ -177,7 +199,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: Icons.groups_2_rounded,
                         label: 'Elenco',
                         onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SquadScreen()),
+                          MaterialPageRoute(builder: (_) => const SquadScreen(showBackButton: true)),
                         ),
                       ),
                       HomeQuickAccessItem(
@@ -281,6 +303,7 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   HomeNewsHighlights(
                     events: recentNews,
+                    compact: true,
                     playerForEvent: (playerId) => _playerForEvent(career, playerId),
                     playerAccent: (player) => _playerAccent(career, player),
                     onEventTap: (event) => _openCareerEvent(

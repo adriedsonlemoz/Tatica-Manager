@@ -19,7 +19,9 @@ import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
-  const MoreScreen({super.key});
+  const MoreScreen({super.key, this.showBackButton = false});
+
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,7 +49,24 @@ class MoreScreen extends ConsumerWidget {
     ];
     return PremiumScaffold(
       body: ListView(padding: const EdgeInsets.fromLTRB(14, 18, 14, 110), children: [
-        Text('MAIS', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Row(
+          children: [
+            if (showBackButton) ...[
+              IconButton(
+                tooltip: 'Voltar',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+              const SizedBox(width: 2),
+            ],
+            Text(
+              'MAIS',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
+        ),
         Text(
           career.managerEmployed
               ? '${career.userClub.name} • temporada ${career.season}'

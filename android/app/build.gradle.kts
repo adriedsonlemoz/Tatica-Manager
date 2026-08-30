@@ -31,8 +31,8 @@ android {
         applicationId = "com.taticamanager.tatica_manager"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 109
-        versionName = "0.1.1.108"
+        versionCode = 115
+        versionName = "0.1.1.114"
     }
 
     signingConfigs {

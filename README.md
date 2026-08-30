@@ -4,34 +4,90 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.108`
-**Android versionCode:** `109`
+**Release atual:** `0.1.1.114`
+**Android versionCode:** `115`
 
 ## Fonte oficial de versão
 
-A versão visível da release é definida em `al-sistemas.json`. O arquivo `tool/versioning.py` mantém os demais metadados sincronizados e o CI falha quando encontra divergência.
+A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versioning.py` usa esse valor como fonte canônica, mantém os demais metadados sincronizados e o CI falha quando encontra divergência.
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `al-sistemas.json` — manifesto canônico para ferramentas externas e AL Sistemas;
-- `VERSION` — versão visível simples (`0.1.1.108`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.114`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+109`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.108` e `versionCode 109`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+115`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.114` e `versionCode 115`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`, por isso a release de quatro partes `0.1.1.108` é representada internamente como `0.1.1+109`. A versão visível do aplicativo/Android continua sendo `0.1.1.108`. a próxima entrega normalmente será `0.1.1.109`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.114`, o pubspec é `0.1.1+115`. a próxima entrega normalmente será `0.1.1.115`.
 
 
+## Home alinhada à referência — 0.1.1.114
 
+- usa novamente a referência visual aprovada da Home como base, em vez da interpretação mais verde da versão anterior;
+- restaura a barra superior com menu, nome Tática Manager, notificações e caixa de entrada;
+- amplia o cabeçalho do clube e remove o cartão do técnico de dentro desse cabeçalho;
+- troca o botão principal neon por um verde escuro próximo da referência, com texto branco e ação no extremo direito;
+- aumenta os ícones dos seis atalhos e mantém os cards em azul-grafite, sem fundo verde;
+- Próxima Partida ganha escudos maiores, nomes completos e mais espaçamento entre competição, data e estádio;
+- Resumo da Temporada mantém os seis indicadores em uma linha e recebe divisores verticais como na referência;
+- Classificação e Artilharia voltam a ter largura equilibrada, fundo azul-grafite e rodapés de acesso, sem o gradiente verde que dominava os cards;
+- Notícias na Home são compactadas para três linhas para preservar o primeiro enquadramento;
+- barra inferior perde o grande indicador verde em formato de cápsula e fica mais discreta;
+- corrige `player_avatar_identity_test.dart`, que ainda procurava `PlayerCard` no Elenco depois da tela ter sido redesenhada na 0.1.1.113;
+- não altera Match Engine, saves, IDs, regras, resultados, músicas ou assets.
 
-## Home alinhada ao mockup e correção do analyzer — 0.1.1.108
+## Elenco em lista compacta — 0.1.1.113
 
-- reorganiza a Home seguindo o mockup aprovado: cabeçalho com saldo, botão Jogar Partida/Avançar Dia, atalhos (Elenco, Táticas, Transferências, Finanças, Calendário, Base), Próxima Partida, Resumo da Temporada, Classificação/Artilharia e Notícias;
-- escudos dos clubes passam a ter fundo transparente em vez de uma caixa clara fixa, mantendo o esquema visual escuro em qualquer card;
-- corrige o único problema do `flutter analyze` da 0.1.1.107, removendo o parâmetro `icon` sem nenhum chamador em `_DashboardSectionHeader`;
-- não altera Match Engine, `CareerState` schema 13, saves, IDs ou fundação multi-competição.
+- redesenha somente a tela **Elenco** seguindo a referência fornecida: cabeçalho compacto do clube, lista única e resumo no rodapé;
+- remove a faixa de abas `Jogadores / Funções / Status` e não cria substitutos para essas abas;
+- mantém a busca e os filtros que já existiam, agora acessíveis pelos ícones do topo;
+- cada linha usa dados reais do jogador já existentes no save: número, avatar, nome, posição, GER e moral;
+- o cabeçalho usa apenas dados já existentes do clube/carreira: escudo, nome, temporada, reputação, saldo e orçamento de transferências;
+- o rodapé calcula total de jogadores, brasileiros e estrangeiros diretamente do elenco;
+- o atalho da Home abre o Elenco com retorno visível; a aba principal do GameShell continua sem botão de retorno;
+- não altera Match Engine, saves, IDs, regras, resultados, músicas ou assets.
+
+## Correção de Sobre / Novidades — 0.1.1.112
+
+- corrige o único teste que falhou no GitHub Actions da 0.1.1.111: `app_info_test.dart` esperava exatamente três releases recentes;
+- limita `AppInfo.recentReleases` às três versões mais recentes (`0.1.1.112`, `0.1.1.111` e `0.1.1.110`), mantendo o histórico antigo nos arquivos de documentação;
+- preserva integralmente as cinco músicas otimizadas da 0.1.1.111 e não altera player, Match Engine, saves, IDs, regras ou resultados;
+- `flutter analyze` já havia passado sem problemas no log da 0.1.1.111; a correção é restrita ao cadastro de novidades/versionamento.
+
+## Músicas do menu mais leves — 0.1.1.111
+
+- mantém as mesmas cinco músicas da playlist padrão e os mesmos nomes/caminhos dos assets;
+- troca internamente a codificação das faixas de Vorbis para **Opus em contêiner OGG**, suportado pelo ExoPlayer/Android;
+- preserva estéreo e duração completa, com VBR em torno de 64 kbps para reduzir tamanho sem perda perceptível no uso como música de fundo;
+- reduz o conjunto das cinco faixas de **10.386.273 bytes para 8.852.371 bytes**, economia de aproximadamente **14,8%**;
+- não altera `AudioCatalog`, fluxo do player, efeitos da partida, Match Engine, saves, IDs ou regras.
+
+## Teste da Home sincronizado — 0.1.1.110
+
+- corrige o único teste que falhou no GitHub Actions da 0.1.1.109: 282 testes passaram e 1 falhou;
+- atualiza `calendar_and_standings_ui_test.dart` para validar os componentes usados pela Home atual, em vez de procurar widgets removidos de layouts anteriores;
+- mantém a Home visualmente inalterada e preserva atalhos, próxima partida, resumo de seis indicadores, classificação/artilharia e notícias;
+- mantém `al-sistemas.json` removido e a playlist padrão reduzida para cinco faixas;
+- não altera Match Engine, saves, IDs, regras do jogo ou assets.
+
+## Playlist reduzida e versionamento simplificado — 0.1.1.109
+
+- reduz a playlist padrão do menu de 11 para **5 faixas OGG**, exatamente conforme `musicasmenu.zip`;
+- mantém apenas Jim Yosef — Lights, Disfigure — Blank, DEAF KEV — Invincible, Cormak — Flavors e David Bulla — Unexpected;
+- remove as outras seis faixas do diretório `assets/audio/menu/` e do `AudioCatalog`;
+- remove `al-sistemas.json` e elimina sua dependência no CI, testes e utilitário de versionamento;
+- passa `VERSION` a ser a fonte canônica da versão visível e mantém o build do `pubspec.yaml` como `versionCode` Android;
+- atualiza README, handoff, prompt de continuação, documentação de áudio e documento desta release;
+- não altera Match Engine, saves, IDs ou regras do jogo.
+
+## Correção do analyzer da Home — 0.1.1.108
+
+- remove o parâmetro opcional `icon` de `_DashboardSectionHeader`, que não era fornecido por nenhuma chamada e gerava `unused_element_parameter`;
+- mantém intacta a aparência atual dos cards de Classificação e Artilharia;
+- corrige o único problema reportado pelo `flutter analyze` no log da 0.1.1.107;
+- não altera Match Engine, saves, IDs, regras, imagens ou assets.
 
 
 ## Movimentação visual natural — 0.1.1.107
@@ -207,7 +263,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.109`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.115`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
@@ -339,7 +395,7 @@ A fundação já possui múltiplas carreiras, controladores separados e Match En
 
 Para continuar o projeto em outra IA, comece por `AI_HANDOFF.md` e `docs/PROMPT_CONTINUACAO_IA.md`.
 
-Consulte também `docs/RELEASE_0.1.1.37.md`, `docs/RELEASE_0.1.1.36.md`, `docs/AUDIO_SYSTEM.md`, `docs/RELEASE_0.1.1.35.md`, `docs/RELEASE_0.1.1.34.md`, `docs/RELEASE_0.1.1.33.md`, `docs/RELEASE_0.1.1.32.md`, `docs/RELEASE_0.1.1.31.md`, `docs/RELEASE_0.1.1.30.md`, `docs/RELEASE_0.1.1.29.md`, `docs/RELEASE_0.1.1.28.md`, `docs/RELEASE_0.1.1.27.md`, `docs/RELEASE_0.1.1.26.md`, `docs/RELEASE_0.1.1.25.md`, `docs/RELEASE_0.1.1.24.md`, `docs/RELEASE_0.1.1.23.md`, `docs/RELEASE_0.1.1.22.md`, `docs/RELEASE_0.1.1.21.md`, `docs/CPU_MARKET.md`, `docs/RELEASE_0.1.1.20.md`, `docs/RELEASE_0.1.1.19.md`, `docs/RELEASE_0.1.1.18.md`, `docs/RELEASE_0.1.1.17.md`, `docs/RELEASE_0.1.1.16.md`, `docs/RELEASE_0.1.1.15.md`, `docs/RELEASE_0.1.1.14.md`, `docs/RELEASE_0.1.1.13.md`, `docs/CLUB_IDENTITIES.md`, `docs/RELEASE_0.1.1.12.md`, `docs/RELEASE_0.1.1.11.md`, `docs/RELEASE_0.1.1.10.md`, `docs/RELEASE_0.1.1.9.md`, `docs/RELEASE_0.1.1.8.md`, `docs/RELEASE_0.1.1.7.md`, `docs/RELEASE_0.1.1.6.md`, `docs/RELEASE_0.1.1.5.md`, `docs/RELEASE_0.1.1.4.md`, `docs/RELEASE_0.1.1.3.md`, `docs/AL_SISTEMAS_FLUTTER.md`, `docs/ETAPA_1.md`, `docs/CARREIRAS_E_ESTADO.md`, `docs/REFATORACAO_CONTROLLERS.md` e `docs/REFATORACAO_MATCH_ENGINE.md`.
+Consulte também `docs/RELEASE_0.1.1.37.md`, `docs/RELEASE_0.1.1.36.md`, `docs/AUDIO_SYSTEM.md`, `docs/RELEASE_0.1.1.35.md`, `docs/RELEASE_0.1.1.34.md`, `docs/RELEASE_0.1.1.33.md`, `docs/RELEASE_0.1.1.32.md`, `docs/RELEASE_0.1.1.31.md`, `docs/RELEASE_0.1.1.30.md`, `docs/RELEASE_0.1.1.29.md`, `docs/RELEASE_0.1.1.28.md`, `docs/RELEASE_0.1.1.27.md`, `docs/RELEASE_0.1.1.26.md`, `docs/RELEASE_0.1.1.25.md`, `docs/RELEASE_0.1.1.24.md`, `docs/RELEASE_0.1.1.23.md`, `docs/RELEASE_0.1.1.22.md`, `docs/RELEASE_0.1.1.21.md`, `docs/CPU_MARKET.md`, `docs/RELEASE_0.1.1.20.md`, `docs/RELEASE_0.1.1.19.md`, `docs/RELEASE_0.1.1.18.md`, `docs/RELEASE_0.1.1.17.md`, `docs/RELEASE_0.1.1.16.md`, `docs/RELEASE_0.1.1.15.md`, `docs/RELEASE_0.1.1.14.md`, `docs/RELEASE_0.1.1.13.md`, `docs/CLUB_IDENTITIES.md`, `docs/RELEASE_0.1.1.12.md`, `docs/RELEASE_0.1.1.11.md`, `docs/RELEASE_0.1.1.10.md`, `docs/RELEASE_0.1.1.9.md`, `docs/RELEASE_0.1.1.8.md`, `docs/RELEASE_0.1.1.7.md`, `docs/RELEASE_0.1.1.6.md`, `docs/RELEASE_0.1.1.5.md`, `docs/RELEASE_0.1.1.4.md`, `docs/RELEASE_0.1.1.3.md`, `docs/ETAPA_1.md`, `docs/CARREIRAS_E_ESTADO.md`, `docs/REFATORACAO_CONTROLLERS.md` e `docs/REFATORACAO_MATCH_ENGINE.md`.
 
 
 ### Narração falada opcional

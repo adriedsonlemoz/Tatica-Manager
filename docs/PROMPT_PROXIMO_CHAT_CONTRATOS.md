@@ -23,7 +23,7 @@ Regras importantes:
 - lógica de negócio não deve ficar nas telas;
 - preserve o Match Engine e o Flame; esta tarefa não é visual;
 - o GitHub Actions deve continuar publicando somente o APK nos Artifacts; nunca publique `pubspec.lock`;
-- antes da entrega, incremente a versão a partir de 0.1.1.11, sincronize `al-sistemas.json`, `VERSION`, `app.json`, `pubspec.yaml` e Android, e execute/verifique `python3 tool/versioning.py verify`, `flutter pub get`, `flutter analyze`, `flutter test` e `flutter build apk --release` quando o ambiente permitir;
+- antes da entrega, incremente a versão a partir de 0.1.1.11, sincronize `VERSION`, `app.json`, `pubspec.yaml` e Android, e execute/verifique `python3 tool/versioning.py verify`, `flutter pub get`, `flutter analyze`, `flutter test` e `flutter build apk --release` quando o ambiente permitir;
 - não remova recursos funcionais apenas para fazer os testes passarem.
 
 Antes de implementar, faça uma análise curta de como contratos são armazenados e processados hoje, identifique riscos de duplicação ou regressão e diga quais arquivos serão alterados. Depois implemente a menor mudança coerente, atualize os testes e documente somente decisões relevantes.

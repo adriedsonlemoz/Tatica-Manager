@@ -138,7 +138,9 @@ void main() {
     final homeRankings = File('lib/features/home/home_dashboard_rankings.dart')
         .readAsStringSync();
 
-    expect(squad, contains('PlayerCard('));
+    expect(squad, contains('_SquadTable'));
+    expect(squad, contains('_SquadPlayerRow'));
+    expect(squad, contains('PlayerAvatar('));
     expect(playerCard, contains('PlayerAvatar('));
     expect(playerCard, contains('this.showStatus = true'));
     expect(profile, contains('PlayerAvatar('));

@@ -137,7 +137,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF12202A), Color(0xFF162229), Color(0xFF111A20)],
+            colors: [Color(0xFF102536), Color(0xFF0D2130), Color(0xFF0B1C29)],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border.withValues(alpha: .82)),
@@ -168,6 +168,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
                     label: 'Jogos',
                   ),
                 ),
+                const _SummaryDivider(),
                 Expanded(
                   child: _SummaryStat(
                     icon: Icons.check_rounded,
@@ -177,6 +178,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
                     filled: true,
                   ),
                 ),
+                const _SummaryDivider(),
                 Expanded(
                   child: _SummaryStat(
                     icon: Icons.drag_handle_rounded,
@@ -186,6 +188,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
                     filled: true,
                   ),
                 ),
+                const _SummaryDivider(),
                 Expanded(
                   child: _SummaryStat(
                     icon: Icons.close_rounded,
@@ -195,6 +198,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
                     filled: true,
                   ),
                 ),
+                const _SummaryDivider(),
                 Expanded(
                   child: _SummaryStat(
                     icon: Icons.stadium_rounded,
@@ -203,6 +207,7 @@ class HomeSeasonSummaryRow extends StatelessWidget {
                     label: 'Gols marcados',
                   ),
                 ),
+                const _SummaryDivider(),
                 Expanded(
                   child: _SummaryStat(
                     icon: Icons.shield_rounded,
@@ -238,14 +243,14 @@ class _SummaryStat extends StatelessWidget {
         children: [
           filled
               ? Container(
-                  width: 22,
-                  height: 22,
+                  width: 26,
+                  height: 26,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
-                  child: Icon(icon, color: AppColors.background, size: 14),
+                  child: Icon(icon, color: AppColors.background, size: 17),
                 )
-              : Icon(icon, color: iconColor, size: 20),
-          const SizedBox(height: 6),
+              : Icon(icon, color: iconColor, size: 24),
+          const SizedBox(height: 7),
           Text(
             value,
             style: const TextStyle(
@@ -271,6 +276,18 @@ class _SummaryStat extends StatelessWidget {
       );
 }
 
+
+class _SummaryDivider extends StatelessWidget {
+  const _SummaryDivider();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 1,
+        height: 62,
+        color: AppColors.border.withValues(alpha: .62),
+      );
+}
+
 class HomeCompactStandings extends StatelessWidget {
   const HomeCompactStandings({
     super.key,
@@ -280,6 +297,8 @@ class HomeCompactStandings extends StatelessWidget {
     this.onClubTap,
     this.compactColumns = false,
     this.ultraCompact = false,
+    this.maxRows = 5,
+    this.pinUser = true,
   });
 
   final List<Standing> standings;
@@ -288,12 +307,14 @@ class HomeCompactStandings extends StatelessWidget {
   final ValueChanged<String>? onClubTap;
   final bool compactColumns;
   final bool ultraCompact;
+  final int maxRows;
+  final bool pinUser;
 
   @override
   Widget build(BuildContext context) {
-    final topRows = standings.take(5).toList(growable: false);
+    final topRows = standings.take(maxRows).toList(growable: false);
     final userIndex = standings.indexWhere((row) => row.clubId == userClubId);
-    final showUserSeparately = userIndex >= 5;
+    final showUserSeparately = pinUser && userIndex >= maxRows;
 
     return Column(
       children: [

@@ -142,45 +142,52 @@ class HomePrimaryActionButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: isMatchDay ? onMatchDay : onAdvance,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(11),
           child: Ink(
-            height: 50,
-            padding: const EdgeInsets.only(left: 16, right: 6),
+            height: 54,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [AppColors.green, AppColors.greenDark],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xFF0B6A12), Color(0xFF0A5611)],
               ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: const [
-                BoxShadow(color: Color(0x3376D91B), blurRadius: 14, offset: Offset(0, 5)),
-              ],
+              borderRadius: BorderRadius.circular(11),
+              border: Border.all(color: const Color(0xFF15761D)),
             ),
-            child: Row(
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                Expanded(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: Text(
                     isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA',
+                    maxLines: 1,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: .4,
+                      color: AppColors.white,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: .25,
                     ),
                   ),
                 ),
-                Container(
-                  width: 36,
-                  height: 36,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: .16),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Icon(
-                    isMatchDay ? Icons.play_arrow_rounded : Icons.skip_next_rounded,
-                    color: Colors.black,
-                    size: 22,
+                Positioned(
+                  right: 7,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF58BE4D),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Icon(
+                      isMatchDay
+                          ? Icons.play_arrow_rounded
+                          : Icons.skip_next_rounded,
+                      color: const Color(0xFF072C0B),
+                      size: 23,
+                    ),
                   ),
                 ),
               ],

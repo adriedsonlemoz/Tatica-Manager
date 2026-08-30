@@ -1,125 +1,187 @@
 import 'package:flutter/material.dart';
 
-import '../../app/widgets/manager_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
-import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
 import 'home_visual_components.dart';
+
+class HomeTopBar extends StatelessWidget {
+  const HomeTopBar({
+    super.key,
+    required this.unreadMessages,
+    required this.onMenuTap,
+    required this.onNotificationsTap,
+    required this.onInboxTap,
+  });
+
+  final int unreadMessages;
+  final VoidCallback onMenuTap;
+  final VoidCallback onNotificationsTap;
+  final VoidCallback onInboxTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(14, 7, 14, 4),
+        child: SizedBox(
+          height: 42,
+          child: Row(
+            children: [
+              IconButton(
+                tooltip: 'Menu',
+                onPressed: onMenuTap,
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                icon: const Icon(
+                  Icons.menu_rounded,
+                  color: AppColors.white,
+                  size: 27,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Tática Manager',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Notícias',
+                onPressed: onNotificationsTap,
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.white,
+                  size: 25,
+                ),
+              ),
+              const SizedBox(width: 2),
+              _InboxButton(
+                unreadMessages: unreadMessages,
+                onTap: onInboxTap,
+              ),
+            ],
+          ),
+        ),
+      );
+}
 
 class HomeClubHeader extends StatelessWidget {
   const HomeClubHeader({
     super.key,
     required this.club,
-    required this.manager,
     required this.season,
-    required this.competitionName,
     required this.balance,
-    required this.unreadMessages,
-    required this.onInboxTap,
-    required this.onManagerTap,
+    required this.transferBudget,
   });
 
   final Club club;
-  final ManagerProfile manager;
   final int season;
-  final String competitionName;
   final int balance;
-  final int unreadMessages;
-  final VoidCallback onInboxTap;
-  final VoidCallback onManagerTap;
+  final int transferBudget;
 
   @override
-  Widget build(BuildContext context) {
-    final rawPrimary = Color(club.colors.primaryHex);
-    final rawSecondary = Color(club.colors.secondaryHex);
-    final accent = HSLColor.fromColor(rawSecondary).saturation >
-            HSLColor.fromColor(rawPrimary).saturation + .12
-        ? rawSecondary
-        : rawPrimary;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 6, 10, 3),
-      child: Container(
-        height: 70,
-        padding: const EdgeInsets.fromLTRB(9, 7, 8, 7),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.lerp(AppColors.surfaceRaised, accent, .11)!,
-              AppColors.surface.withValues(alpha: .98),
-              AppColors.background,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(10, 3, 10, 3),
+        child: Container(
+          minHeight: 104,
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF102536), Color(0xFF0D2130), Color(0xFF0B1C29)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFF203A49)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x32000000),
+                blurRadius: 14,
+                offset: Offset(0, 5),
+              ),
             ],
           ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.border.withValues(alpha: .82)),
-          boxShadow: const [
-            BoxShadow(color: Color(0x36000000), blurRadius: 16, offset: Offset(0, 6)),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            HomeClubCrest(club: club, size: 54, framed: true),
-            const SizedBox(width: 9),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      club.name.toUpperCase(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HomeClubCrest(club: club, size: 72),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      club.name,
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppColors.white,
-                        fontSize: 18.5,
+                        fontSize: 21,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: .18,
                         height: 1,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Temporada $season • $competitionName',
+                    const SizedBox(height: 8),
+                    Text(
+                      'Temporada $season',
                       maxLines: 1,
                       style: const TextStyle(
-                        color: AppColors.muted,
-                        fontSize: 11.8,
-                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
+                    const SizedBox(height: 6),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.public_rounded,
+                          color: AppColors.textSecondary,
+                          size: 17,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'Nível Mundial',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _HeaderValueLine(
+                    icon: Icons.account_balance_wallet_rounded,
+                    color: Color(0xFF4FC43F),
+                    value: compactMoney(balance),
+                  ),
+                  const SizedBox(height: 12),
+                  _HeaderValueLine(
+                    icon: Icons.monetization_on_rounded,
+                    color: Color(0xFFF0B323),
+                    value: compactMoney(transferBudget),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 6),
-            _HeaderBalanceBadge(balance: balance),
-            const SizedBox(width: 5),
-            _HeaderIconButton(
-              icon: Icons.mail_outline_rounded,
-              showDot: unreadMessages > 0,
-              badgeText: unreadMessages > 9
-                  ? '9+'
-                  : unreadMessages > 0
-                      ? '$unreadMessages'
-                      : null,
-              onTap: onInboxTap,
-            ),
-            const SizedBox(width: 5),
-            _ManagerCard(manager: manager, onTap: onManagerTap),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class HomeFinanceGrid extends StatelessWidget {
@@ -185,135 +247,80 @@ class HomeFinanceGrid extends StatelessWidget {
       );
 }
 
-class _HeaderBalanceBadge extends StatelessWidget {
-  const _HeaderBalanceBadge({required this.balance});
+class _InboxButton extends StatelessWidget {
+  const _InboxButton({required this.unreadMessages, required this.onTap});
 
-  final int balance;
+  final int unreadMessages;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.background.withValues(alpha: .54),
-          borderRadius: BorderRadius.circular(11),
-          border: Border.all(color: AppColors.green.withValues(alpha: .32)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context) => IconButton(
+        tooltip: 'Caixa de entrada',
+        onPressed: onTap,
+        visualDensity: VisualDensity.compact,
+        padding: EdgeInsets.zero,
+        icon: Stack(
+          clipBehavior: Clip.none,
           children: [
-            const Icon(Icons.payments_rounded, color: AppColors.green, size: 15),
-            const SizedBox(height: 2),
-            Text(
-              compactMoney(balance),
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 11.5,
-                fontWeight: FontWeight.w900,
-              ),
+            const Icon(
+              Icons.mail_outline_rounded,
+              color: AppColors.white,
+              size: 25,
             ),
+            if (unreadMessages > 0)
+              Positioned(
+                top: -7,
+                right: -8,
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.green,
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(color: const Color(0xFF0A151D), width: 1.2),
+                  ),
+                  child: Text(
+                    unreadMessages > 9 ? '9+' : '$unreadMessages',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       );
 }
 
-class _ManagerCard extends StatelessWidget {
-  const _ManagerCard({required this.manager, required this.onTap});
-
-  final ManagerProfile manager;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: 49,
-          padding: const EdgeInsets.fromLTRB(4, 4, 4, 3),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.green.withValues(alpha: .10),
-                AppColors.surfaceRaised,
-                AppColors.background,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.green.withValues(alpha: .55), width: 1),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ManagerAvatar(manager: manager, size: 34),
-              const SizedBox(height: 2),
-              const Text(
-                'TÉCNICO',
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 8.8,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
+class _HeaderValueLine extends StatelessWidget {
+  const _HeaderValueLine({
     required this.icon,
-    required this.showDot,
-    required this.onTap,
-    this.badgeText,
+    required this.color,
+    required this.value,
   });
 
   final IconData icon;
-  final bool showDot;
-  final String? badgeText;
-  final VoidCallback onTap;
+  final Color color;
+  final String value;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(11),
-        child: Container(
-          width: 34,
-          height: 38,
-          decoration: BoxDecoration(
-            color: AppColors.background.withValues(alpha: .54),
-            borderRadius: BorderRadius.circular(11),
-            border: Border.all(color: AppColors.border.withValues(alpha: .75)),
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              Icon(icon, size: 21, color: AppColors.white),
-              if (showDot)
-                Positioned(
-                  top: -5,
-                  right: -4,
-                  child: Container(
-                    constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.background, width: 1.2),
-                    ),
-                    child: Text(
-                      badgeText ?? '',
-                      style: const TextStyle(color: Colors.black, fontSize: 9.6, fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        ],
       );
 }
 
@@ -351,7 +358,11 @@ class _FinanceStatusCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: accent.withValues(alpha: .28)),
             boxShadow: const [
-              BoxShadow(color: Color(0x22000000), blurRadius: 8, offset: Offset(0, 3)),
+              BoxShadow(
+                color: Color(0x22000000),
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
             ],
           ),
           child: Column(
