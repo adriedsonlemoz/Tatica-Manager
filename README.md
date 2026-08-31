@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.122`
-**Android versionCode:** `123`
+**Release atual:** `0.1.1.123`
+**Android versionCode:** `124`
 
 ## Fonte oficial de versão
 
@@ -13,16 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.122`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.123`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+123`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.122` e `versionCode 123`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+124`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.123` e `versionCode 124`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.122`, o pubspec é `0.1.1+123`. a próxima entrega normalmente será `0.1.1.123`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.123`, o pubspec é `0.1.1+124`. a próxima entrega normalmente será `0.1.1.124`.
 
 
+
+## Correção dos testes de Finanças e Transferências — 0.1.1.123
+
+- restaura seções expansíveis funcionais de **Estádio** e **Patrocínios** dentro dos detalhes financeiros, sem reintroduzir rolagem na tela principal;
+- mantém o painel compacto de Finanças e reaproveita os módulos reais de estádio, patrocínios e orçamentos já existentes;
+- registra a renovação contratual com a data do estado atualizado da carreira (`next.currentDate`), preservando a consistência temporal do livro-caixa;
+- corrige os 3 testes restantes do log 77; o analyzer já estava limpo e 291 testes já passavam antes desta correção.
 
 ## Limpeza final do analyzer em Finanças — 0.1.1.122
 

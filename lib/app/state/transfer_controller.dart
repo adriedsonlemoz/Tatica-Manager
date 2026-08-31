@@ -646,18 +646,18 @@ class TransferController {
       }
       return updated;
     }).toList(growable: false);
-    var next = career.copyWith(
-      clubs: clubs,
+    var next = career.copyWith(clubs: clubs);
+    next = next.copyWith(
       finances: [
-        ...career.finances,
+        ...next.finances,
         FinanceTransaction(
           id: '${negotiation.id}-renewal',
-          season: career.season,
-          round: career.currentRound,
+          season: next.season,
+          round: next.currentRound,
           kind: FinanceKind.contractRenewal,
           description: 'Renovação de ${player.displayName}',
           amount: -result.signingCost,
-          createdAt: career.currentDate,
+          createdAt: next.currentDate,
         ),
       ],
     );

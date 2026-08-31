@@ -407,12 +407,35 @@ class _FinancesScreenState extends ConsumerState<FinancesScreen> {
                       onEdit: onEditBudgets,
                     ),
                     const SizedBox(height: 10),
-                    SponsorshipManagementSection(
-                      contracts: sponsors,
-                      proposals: career.clubAdministration.sponsorshipProposals,
-                      onProposal: (proposal) => onProposal(proposal.id),
+                    _FinanceExpansion(
+                      icon: Icons.stadium_outlined,
+                      title: 'Estádio',
+                      subtitle:
+                          '${career.userClub.stadium.name} • ${career.userClub.stadium.capacity} lugares',
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.of(sheetContext).pop();
+                            _openStadium(context);
+                          },
+                          icon: const Icon(Icons.open_in_new_rounded, size: 17),
+                          label: const Text('Abrir gestão do estádio'),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 10),
+                    _FinanceExpansion(
+                      icon: Icons.handshake_outlined,
+                      title: 'Patrocínios',
+                      subtitle:
+                          '${sponsors.length} contrato(s) ativo(s) • ${career.clubAdministration.sponsorshipProposals.where((proposal) => proposal.canRespond).length} proposta(s)',
+                      child: SponsorshipManagementSection(
+                        contracts: sponsors,
+                        proposals: career.clubAdministration.sponsorshipProposals,
+                        onProposal: (proposal) => onProposal(proposal.id),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
                     FinanceCategoryOverview(
                       title: 'Receitas do mês',
                       entries: incomeEntries,
@@ -1199,6 +1222,42 @@ class _FinanceSalaryPreview extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      );
+}
+
+class _FinanceExpansion extends StatelessWidget {
+  const _FinanceExpansion({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: SectionCard(
+          padding: EdgeInsets.zero,
+          child: ExpansionTile(
+            leading: Icon(icon, color: AppColors.green),
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
+            subtitle: Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+            children: [child],
           ),
         ),
       );
