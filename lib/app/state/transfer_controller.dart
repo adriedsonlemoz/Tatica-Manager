@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/formatters.dart';
-import '../../domain/club/club.dart';
 import '../../domain/finance/finance.dart';
-import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
+import '../../domain/season/career_state.dart';
 import '../../domain/transfer/market_career.dart';
 import '../../domain/transfer/transfer.dart';
 import '../../game/contract/contract_engine.dart';
@@ -150,6 +149,209 @@ class TransferController {
     }
   }
 
+  Future<TransferOperationResult> startRenewalNegotiation({
+    required String playerId,
+    required int salary,
+    required int years,
+  }) async {
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Nenhuma carreira ativa.',
+      );
+    }
+    try {
+      final negotiation = MarketCareerEngine.createRenewalNegotiation(
+        state: career,
+        playerId: playerId,
+        salary: salary,
+        years: years,
+      );
+      await _game.commitCareer(
+        career.copyWith(
+          transferNegotiations: [...career.transferNegotiations, negotiation],
+        ),
+        message: 'Proposta de renovação enviada. A resposta chegará ao avançar o dia.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Proposta de renovação enviada.',
+      );
+    } on StateError catch (error) {
+      return TransferOperationResult(
+        accepted: false,
+        message: error.message.toString(),
+      );
+    }
+  }
+
+  Future<TransferOperationResult> acceptReceivedNegotiation(
+    String negotiationId,
+  ) async {
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Nenhuma carreira ativa.',
+      );
+    }
+    try {
+      await _game.commitCareer(
+        MarketCareerEngine.acceptReceivedNegotiation(career, negotiationId),
+        message: 'Bases aceitas. Confirme a conclusão na Central de Negociações.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Bases aceitas. Falta concluir a negociação.',
+      );
+    } on StateError catch (error) {
+      return TransferOperationResult(
+        accepted: false,
+        message: error.message.toString(),
+      );
+    }
+  }
+
+  Future<TransferOperationResult> rejectReceivedNegotiation(
+    String negotiationId,
+  ) async {
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Nenhuma carreira ativa.',
+      );
+    }
+    try {
+      await _game.commitCareer(
+        MarketCareerEngine.rejectReceivedNegotiation(career, negotiationId),
+        message: 'Proposta recusada.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Proposta recusada.',
+      );
+    } on StateError catch (error) {
+      return TransferOperationResult(
+        accepted: false,
+        message: error.message.toString(),
+      );
+    }
+  }
+
+  Future<TransferOperationResult> setPlayerForSale({
+    required String playerId,
+    required bool listed,
+  }) async {
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Nenhuma carreira ativa.',
+      );
+    }
+    final player = career.userClub.squad
+        .where((item) => item.id == playerId)
+        .firstOrNull;
+    if (player == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Jogador não encontrado no elenco.',
+      );
+    }
+    if (player.loan != null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Um jogador emprestado não pode ser colocado à venda.',
+      );
+    }
+    final updatedClub = career.userClub.copyWith(
+      squad: career.userClub.squad
+          .map(
+            (item) => item.id == playerId
+                ? item.copyWith(
+                    listed: listed,
+                    availableForLoan: listed ? false : item.availableForLoan,
+                  )
+                : item,
+          )
+          .toList(growable: false),
+    );
+    await _game.commitCareer(
+      career.copyWith(
+        clubs: career.clubs
+            .map((club) => club.id == updatedClub.id ? updatedClub : club)
+            .toList(growable: false),
+      ),
+      message: listed
+          ? '${player.displayName} foi colocado à venda.'
+          : '${player.displayName} saiu da lista de transferências.',
+    );
+    return TransferOperationResult(
+      accepted: true,
+      message: listed
+          ? 'Jogador colocado à venda.'
+          : 'Jogador removido da lista de transferências.',
+    );
+  }
+
+  Future<TransferOperationResult> setPlayerAvailableForLoan({
+    required String playerId,
+    required bool available,
+  }) async {
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Nenhuma carreira ativa.',
+      );
+    }
+    final player = career.userClub.squad
+        .where((item) => item.id == playerId)
+        .firstOrNull;
+    if (player == null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Jogador não encontrado no elenco.',
+      );
+    }
+    if (player.loan != null) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Um jogador emprestado não pode receber nova proposta.',
+      );
+    }
+    final updatedClub = career.userClub.copyWith(
+      squad: career.userClub.squad
+          .map(
+            (item) => item.id == playerId
+                ? item.copyWith(
+                    availableForLoan: available,
+                    listed: available ? false : item.listed,
+                  )
+                : item,
+          )
+          .toList(growable: false),
+    );
+    await _game.commitCareer(
+      career.copyWith(
+        clubs: career.clubs
+            .map((club) => club.id == updatedClub.id ? updatedClub : club)
+            .toList(growable: false),
+      ),
+      message: available
+          ? '${player.displayName} foi disponibilizado para empréstimo.'
+          : '${player.displayName} saiu da lista de empréstimos.',
+    );
+    return TransferOperationResult(
+      accepted: true,
+      message: available
+          ? 'Jogador disponibilizado para empréstimo.'
+          : 'Jogador removido da lista de empréstimos.',
+    );
+  }
+
   Future<TransferOperationResult> closeMarketNegotiation(
     String negotiationId,
   ) async {
@@ -190,69 +392,13 @@ class TransferController {
         message: 'A negociação ainda não está pronta para conclusão.',
       );
     }
-    final upfront = MarketCareerEngine.upfrontAmount(
-      negotiation.fee,
-      negotiation.installments,
-    );
-    final signingCash = upfront + negotiation.signingBonus;
-    if (career.userClub.money < signingCash) {
-      return TransferOperationResult(
-        accepted: false,
-        message:
-            'Caixa insuficiente para entrada e bônus de assinatura (${formatMoney(signingCash)}).',
-      );
+    if (negotiation.kind == TransferNegotiationKind.permanentTransfer) {
+      return _completePermanentNegotiation(career, negotiation);
     }
-    final result = await buyPlayer(
-      playerId: negotiation.playerId,
-      fee: negotiation.fee,
-      salary: negotiation.salary,
-      years: negotiation.contractYears,
-      upfrontFee: upfront,
-    );
-    if (!result.accepted) return result;
-
-    final latest = ref.read(gameControllerProvider).career;
-    if (latest != null) {
-      var next = MarketCareerEngine.markCompleted(latest, negotiationId);
-      final futureInstallments = MarketCareerEngine.buildFutureInstallments(
-        negotiation,
-        latest.currentDate,
-      );
-      if (futureInstallments.isNotEmpty) {
-        next = next.copyWith(
-          transferInstallments: [
-            ...next.transferInstallments,
-            ...futureInstallments,
-          ],
-        );
-      }
-      if (negotiation.signingBonus > 0) {
-        final club = next.userClub;
-        final bonus = negotiation.signingBonus;
-        final updatedClub = club.copyWith(
-          money: club.money - bonus,
-        );
-        next = next.copyWith(
-          clubs: next.clubs
-              .map((item) => item.id == club.id ? updatedClub : item)
-              .toList(growable: false),
-          finances: [
-            ...next.finances,
-            FinanceTransaction(
-              id: '${next.season}_${next.roundIndex}_signing_${negotiation.playerId}',
-              season: next.season,
-              round: next.currentRound,
-              kind: FinanceKind.operations,
-              description: 'Bônus de assinatura',
-              amount: -bonus,
-              createdAt: next.currentDate,
-            ),
-          ],
-        );
-      }
-      await _game.commitCareer(next);
+    if (negotiation.kind == TransferNegotiationKind.contractRenewal) {
+      return _completeRenewalNegotiation(career, negotiation);
     }
-    return result;
+    return _completeLoanNegotiation(career, negotiation);
   }
 
   Future<TransferOperationResult> buyPlayer({
@@ -261,173 +407,327 @@ class TransferController {
     required int salary,
     required int years,
     int? upfrontFee,
-  }) async {
-    final career = ref.read(gameControllerProvider).career;
-    if (career == null) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'Nenhuma carreira ativa.',
+  }) =>
+      startMarketNegotiation(
+        playerId: playerId,
+        fee: fee,
+        salary: salary,
+        years: years,
+        signingBonus: 0,
+        installments: upfrontFee != null && upfrontFee < fee ? 2 : 1,
       );
-    }
+
+  Future<TransferOperationResult> renewPlayer({
+    required String playerId,
+    required int salary,
+    required int years,
+  }) => startRenewalNegotiation(
+        playerId: playerId,
+        salary: salary,
+        years: years,
+      );
+
+  Future<TransferOperationResult> _completePermanentNegotiation(
+    CareerState career,
+    TransferNegotiation negotiation,
+  ) async {
     if (!TransferWindowEngine.isOpen(career.currentDate)) {
       return TransferOperationResult(
         accepted: false,
         message: 'A janela de transferências está fechada. Períodos: ${TransferWindowEngine.rulesLabel}.',
       );
     }
-
-    Player? player;
-    Club? seller;
-    for (final club in career.clubs) {
-      for (final item in club.squad) {
-        if (item.id == playerId) {
-          player = item;
-          seller = club;
-          break;
-        }
-      }
-      if (player != null) break;
+    final buyer = career.clubs
+        .where((club) => club.id == negotiation.toClubId)
+        .firstOrNull;
+    final seller = negotiation.fromClubId == null
+        ? null
+        : career.clubs
+            .where((club) => club.id == negotiation.fromClubId)
+            .firstOrNull;
+    final player = seller == null
+        ? career.freeAgents
+            .where((item) => item.id == negotiation.playerId)
+            .firstOrNull
+        : seller.squad
+            .where((item) => item.id == negotiation.playerId)
+            .firstOrNull;
+    if (buyer == null || player == null ||
+        (negotiation.fromClubId != null && seller == null)) {
+      return _finalizationUnavailable(career, negotiation);
     }
-    player ??= career.freeAgents.where((item) => item.id == playerId).firstOrNull;
-    if (player == null) {
-      return const TransferOperationResult(
+    final upfront = MarketCareerEngine.upfrontAmount(
+      negotiation.fee,
+      negotiation.installments,
+    );
+    final userIsBuyer = buyer.id == career.userClubId;
+    final signingCash = userIsBuyer ? negotiation.signingBonus : 0;
+    if (userIsBuyer && buyer.money < upfront + signingCash) {
+      return TransferOperationResult(
         accepted: false,
-        message: 'Jogador não encontrado.',
+        message:
+            'Caixa insuficiente para entrada e bônus de assinatura (${formatMoney(upfront + signingCash)}).',
       );
     }
-    if (seller?.id == career.userClubId) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'O jogador já pertence ao seu clube.',
-      );
-    }
-
-    final buyer = career.userClub;
     final execution = TransferEngine.execute(
       player: player,
       buyer: buyer,
       seller: seller,
-      fee: fee,
-      salary: salary,
-      years: years,
+      fee: negotiation.fee,
+      salary: negotiation.salary,
+      years: negotiation.contractYears,
       season: career.season,
-      upfrontFee: upfrontFee,
+      requireSellerMinimum: seller?.id != career.userClubId,
+      upfrontFee: upfront,
     );
     if (!execution.decision.accepted) {
       final counter = execution.decision.counterOffer;
-      final message = counter == null
-          ? execution.decision.reason
-          : 'O clube pede pelo menos ${formatMoney(counter)}.';
+      final updated = negotiation.copyWith(
+        status: counter == null
+            ? TransferNegotiationStatus.rejected
+            : TransferNegotiationStatus.countered,
+        counterFee: counter,
+        clearCounterFee: counter == null,
+        message: execution.decision.reason,
+      );
+      await _game.commitCareer(
+        _replaceNegotiation(career, updated),
+        message: execution.decision.reason,
+      );
       return TransferOperationResult(
         accepted: false,
-        message: message,
+        message: execution.decision.reason,
         counterOffer: counter,
       );
     }
 
-    final clubs = career.clubs.map((club) {
+    var clubs = career.clubs.map((club) {
       if (club.id == buyer.id) return execution.buyer;
       if (seller != null && club.id == seller.id) return execution.seller!;
       return club;
-    }).toList();
-    final freeAgents =
-        career.freeAgents.where((item) => item.id != player!.id).toList();
-    final paidNow = upfrontFee ?? fee;
-    final transaction = FinanceTransaction(
-      id: '${career.season}_${career.roundIndex}_buy_${player.id}',
-      season: career.season,
-      round: career.currentRound,
-      kind: FinanceKind.playerPurchase,
-      description: upfrontFee != null && upfrontFee < fee
-          ? 'Entrada da contratação de ${player.displayName}'
-          : 'Contratação de ${player.displayName}',
-      amount: -paidNow,
-      createdAt: career.currentDate,
-    );
-    var starters = career.starterIds;
-    if (starters.length < 11) {
-      starters = LineupEngine.autoSelect(
-        execution.buyer.squad,
-        career.formation,
+    }).toList(growable: false);
+    final finances = [...career.finances];
+    if (userIsBuyer && negotiation.signingBonus > 0) {
+      final signedBuyer = execution.buyer.copyWith(
+        money: execution.buyer.money - negotiation.signingBonus,
+      );
+      clubs = clubs
+          .map((club) => club.id == buyer.id ? signedBuyer : club)
+          .toList(growable: false);
+      finances.add(
+        FinanceTransaction(
+          id: '${negotiation.id}-signing',
+          season: career.season,
+          round: career.currentRound,
+          kind: FinanceKind.signingBonus,
+          description: 'Bônus de assinatura de ${player.displayName}',
+          amount: -negotiation.signingBonus,
+          createdAt: career.currentDate,
+        ),
       );
     }
-
-    final next = career.copyWith(
+    if (buyer.id == career.userClubId && upfront > 0) {
+      finances.add(
+        FinanceTransaction(
+          id: '${negotiation.id}-purchase',
+          season: career.season,
+          round: career.currentRound,
+          kind: FinanceKind.playerPurchase,
+          description: negotiation.installments > 1
+              ? 'Entrada da contratação de ${player.displayName}'
+              : 'Contratação de ${player.displayName}',
+          amount: -upfront,
+          createdAt: career.currentDate,
+        ),
+      );
+    } else if (seller?.id == career.userClubId && upfront > 0) {
+      finances.add(
+        FinanceTransaction(
+          id: '${negotiation.id}-sale',
+          season: career.season,
+          round: career.currentRound,
+          kind: FinanceKind.playerSale,
+          description: 'Venda de ${player.displayName} para ${buyer.name}',
+          amount: upfront,
+          createdAt: career.currentDate,
+        ),
+      );
+    }
+    var starters = career.starterIds;
+    final updatedUserClub =
+        clubs.where((club) => club.id == career.userClubId).firstOrNull;
+    if (updatedUserClub != null &&
+        ((seller?.id == career.userClubId && starters.contains(player.id)) ||
+            (buyer.id == career.userClubId && starters.length < 11))) {
+      starters = LineupEngine.autoSelect(updatedUserClub.squad, career.formation);
+    }
+    var next = career.copyWith(
       clubs: clubs,
-      freeAgents: freeAgents,
-      finances: [...career.finances, transaction],
+      freeAgents:
+          career.freeAgents.where((item) => item.id != player.id).toList(),
+      finances: finances,
       starterIds: starters,
     );
-    await _game.commitCareer(next);
-    return TransferOperationResult(
+    next = MarketCareerEngine.markCompleted(next, negotiation.id);
+    final installments = MarketCareerEngine.buildFutureInstallments(
+      negotiation,
+      career.currentDate,
+    );
+    if (installments.isNotEmpty) {
+      next = next.copyWith(
+        transferInstallments: [...next.transferInstallments, ...installments],
+      );
+    }
+    await _game.commitCareer(
+      next,
+      message: seller?.id == career.userClubId
+          ? 'Venda concluída: ${player.displayName} → ${buyer.name} por ${formatMoney(negotiation.fee)}.'
+          : '${player.displayName} foi contratado por ${formatMoney(negotiation.fee)}.',
+    );
+    return const TransferOperationResult(
       accepted: true,
-      message: upfrontFee != null && upfrontFee < fee
-          ? '${player.displayName} foi contratado por ${formatMoney(fee)} (${formatMoney(paidNow)} pagos na assinatura).'
-          : '${player.displayName} foi contratado por ${formatMoney(fee)}.',
+      message: 'Negociação concluída.',
     );
   }
 
-  Future<TransferOperationResult> renewPlayer({
-    required String playerId,
-    required int salary,
-    required int years,
-  }) async {
-    final career = ref.read(gameControllerProvider).career;
-    if (career == null) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'Nenhuma carreira ativa.',
-      );
-    }
-
+  Future<TransferOperationResult> _completeRenewalNegotiation(
+    CareerState career,
+    TransferNegotiation negotiation,
+  ) async {
     final club = career.userClub;
-    final player = club.squad.firstWhere((item) => item.id == playerId);
-    final negotiation = ContractEngine.negotiate(
+    final location = MarketCareerEngine.userContractPlayerLocation(
+      career,
+      negotiation.playerId,
+    );
+    if (location == null) return _finalizationUnavailable(career, negotiation);
+    final player = location.player;
+    final holder = location.holder;
+    final result = ContractEngine.negotiate(
       player: player,
-      proposal: ContractProposal(salary: salary, years: years),
+      proposal: ContractProposal(
+        salary: negotiation.salary,
+        years: negotiation.contractYears,
+      ),
       season: career.season,
       clubMoney: club.money,
     );
-    if (!negotiation.accepted) {
-      final counter = negotiation.requiredSalary;
-      final message = counter == null
-          ? negotiation.message
-          : 'O jogador pede pelo menos ${formatMoney(counter)} por mês.';
+    if (!result.accepted) {
+      final counter = result.requiredSalary;
+      final updated = negotiation.copyWith(
+        status: counter == null
+            ? TransferNegotiationStatus.rejected
+            : TransferNegotiationStatus.countered,
+        counterSalary: counter,
+        clearCounterSalary: counter == null,
+        message: result.message,
+      );
+      await _game.commitCareer(
+        _replaceNegotiation(career, updated),
+        message: result.message,
+      );
       return TransferOperationResult(
         accepted: false,
-        message: message,
+        message: result.message,
         counterOffer: counter,
       );
     }
-
-    final updatedClub = club.copyWith(
-      money: club.money - negotiation.signingCost,
-      squad: club.squad
-          .map((item) => item.id == playerId ? negotiation.player : item)
-          .toList(),
+    final clubs = career.clubs.map((item) {
+      var updated = item;
+      if (item.id == holder.id) {
+        updated = updated.copyWith(
+          squad: item.squad
+              .map((candidate) =>
+                  candidate.id == player.id ? result.player : candidate)
+              .toList(growable: false),
+        );
+      }
+      if (item.id == club.id) {
+        updated = updated.copyWith(money: updated.money - result.signingCost);
+      }
+      return updated;
+    }).toList(growable: false);
+    var next = career.copyWith(
+      clubs: clubs,
+      finances: [
+        ...career.finances,
+        FinanceTransaction(
+          id: '${negotiation.id}-renewal',
+          season: career.season,
+          round: career.currentRound,
+          kind: FinanceKind.contractRenewal,
+          description: 'Renovação de ${player.displayName}',
+          amount: -result.signingCost,
+          createdAt: career.currentDate,
+        ),
+      ],
     );
-    final transaction = FinanceTransaction(
-      id: '${career.season}_${career.roundIndex}_renew_$playerId',
-      season: career.season,
-      round: career.currentRound,
-      kind: FinanceKind.contractRenewal,
-      description: 'Renovação de ${player.displayName}',
-      amount: -negotiation.signingCost,
-      createdAt: career.currentDate,
+    next = MarketCareerEngine.markCompleted(next, negotiation.id);
+    await _game.commitCareer(
+      next,
+      message: '${result.message} Luvas: ${formatMoney(result.signingCost)}.',
     );
-    final next = career.copyWith(
-      clubs: career.clubs
-          .map((item) => item.id == club.id ? updatedClub : item)
-          .toList(),
-      finances: [...career.finances, transaction],
-    );
-    await _game.commitCareer(next);
-    return TransferOperationResult(
+    return const TransferOperationResult(
       accepted: true,
-      message:
-          '${negotiation.message} Luvas: ${formatMoney(negotiation.signingCost)}.',
+      message: 'Renovação concluída.',
     );
   }
+
+  Future<TransferOperationResult> _completeLoanNegotiation(
+    CareerState career,
+    TransferNegotiation negotiation,
+  ) async {
+    if (!TransferWindowEngine.isOpen(career.currentDate)) {
+      return TransferOperationResult(
+        accepted: false,
+        message: 'A janela de transferências está fechada. Períodos: ${TransferWindowEngine.rulesLabel}.',
+      );
+    }
+    try {
+      var next = MarketCareerEngine.completeLoan(career, negotiation.id);
+      next = MarketCareerEngine.markCompleted(next, negotiation.id);
+      await _game.commitCareer(
+        next,
+        message: 'Empréstimo concluído. A folha salarial foi atualizada pelo elenco atual.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Empréstimo concluído.',
+      );
+    } on StateError catch (error) {
+      return TransferOperationResult(
+        accepted: false,
+        message: error.message.toString(),
+      );
+    }
+  }
+
+  Future<TransferOperationResult> _finalizationUnavailable(
+    CareerState career,
+    TransferNegotiation negotiation,
+  ) async {
+    const message = 'Os dados da negociação não estão mais disponíveis.';
+    await _game.commitCareer(
+      _replaceNegotiation(
+        career,
+        negotiation.copyWith(
+          status: TransferNegotiationStatus.withdrawn,
+          message: message,
+        ),
+      ),
+      message: message,
+    );
+    return const TransferOperationResult(accepted: false, message: message);
+  }
+
+  static CareerState _replaceNegotiation(
+    CareerState career,
+    TransferNegotiation updated,
+  ) =>
+      career.copyWith(
+        transferNegotiations: career.transferNegotiations
+            .map((item) => item.id == updated.id ? updated : item)
+            .toList(growable: false),
+      );
 
   PlayerSalePreview previewSale(String playerId) {
     final career = ref.read(gameControllerProvider).career;
@@ -544,15 +844,41 @@ class TransferController {
   }
 
   Future<TransferOperationResult> acceptIncomingOffer(String eventId) async {
-    final preview = previewIncomingOffer(eventId);
-    final offer = preview.offer;
-    if (!preview.available || offer == null) {
-      return TransferOperationResult(
+    final career = ref.read(gameControllerProvider).career;
+    if (career == null) {
+      return const TransferOperationResult(
         accepted: false,
-        message: preview.message,
+        message: 'Nenhuma carreira ativa.',
       );
     }
-    return _acceptSaleOffer(offer, sourceEventId: eventId);
+    try {
+      final staged = _ensureLegacyIncomingNegotiation(career, eventId);
+      final next = MarketCareerEngine.acceptReceivedNegotiation(
+        staged.$1,
+        staged.$2.id,
+      ).copyWith(
+        news: _resolveOfferEvent(
+          staged.$1.news,
+          eventId: eventId,
+          title: 'Bases aceitas',
+          message:
+              'A proposta por ${staged.$2.playerId} foi aceita nas bases e aguarda conclusão na Central de Negociações.',
+        ),
+      );
+      await _game.commitCareer(
+        next,
+        message: 'Bases aceitas. A transferência ainda precisa ser concluída.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Bases aceitas. Falta concluir a negociação.',
+      );
+    } on StateError catch (error) {
+      return TransferOperationResult(
+        accepted: false,
+        message: error.message.toString(),
+      );
+    }
   }
 
   Future<TransferOperationResult> rejectIncomingOffer(String eventId) async {
@@ -563,37 +889,30 @@ class TransferController {
         message: 'Nenhuma carreira ativa.',
       );
     }
-    final preview = previewIncomingOffer(eventId);
-    final offer = preview.offer;
-    if (!preview.available || offer == null) {
+    try {
+      final staged = _ensureLegacyIncomingNegotiation(career, eventId);
+      final next = MarketCareerEngine.rejectReceivedNegotiation(
+        staged.$1,
+        staged.$2.id,
+      ).copyWith(
+        news: _resolveOfferEvent(
+          staged.$1.news,
+          eventId: eventId,
+          title: 'Proposta recusada',
+          message: 'A proposta foi recusada pelo clube.',
+        ),
+      );
+      await _game.commitCareer(next, message: 'Proposta recusada.');
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Proposta recusada.',
+      );
+    } on StateError catch (error) {
       return TransferOperationResult(
         accepted: false,
-        message: preview.message,
+        message: error.message.toString(),
       );
     }
-    final player = career.userClub.squad
-        .where((item) => item.id == offer.playerId)
-        .firstOrNull;
-    if (player == null) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'O jogador não está mais no elenco.',
-      );
-    }
-    final next = career.copyWith(
-      news: _resolveOfferEvent(
-        career.news,
-        eventId: eventId,
-        title: 'Proposta recusada',
-        message:
-            'A proposta de ${offer.buyerClubName} por ${player.displayName} foi recusada.',
-      ),
-    );
-    await _game.commitCareer(next);
-    return const TransferOperationResult(
-      accepted: true,
-      message: 'Proposta recusada.',
-    );
   }
 
   Future<TransferOperationResult> counterIncomingOffer({
@@ -607,119 +926,53 @@ class TransferController {
         message: 'Nenhuma carreira ativa.',
       );
     }
-    final preview = previewIncomingOffer(eventId);
-    final offer = preview.offer;
-    if (!preview.available || offer == null) {
-      return TransferOperationResult(
-        accepted: false,
-        message: preview.message,
-      );
-    }
-    if (fee <= offer.fee) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'A contraproposta deve ser maior que a oferta atual.',
-      );
-    }
-    final sourceEvent = career.news
-        .where((event) => event.id == eventId)
-        .firstOrNull;
-
-    final player = career.userClub.squad
-        .where((item) => item.id == offer.playerId)
-        .firstOrNull;
-    final buyer = career.clubs
-        .where((club) => club.id == offer.buyerClubId)
-        .firstOrNull;
-    if (player == null || buyer == null) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'A negociação não está mais disponível.',
-      );
-    }
-    if (sourceEvent != null &&
-        CpuUserOfferEngine.isFinalCounterOffer(sourceEvent)) {
-      final next = career.copyWith(
-        news: _resolveOfferEvent(
-          career.news,
-          eventId: eventId,
-          title: 'Negociação encerrada',
-          message:
-              '${buyer.name} manteve o limite de ${formatMoney(offer.fee)} por ${player.displayName}.',
-        ),
-      );
-      await _game.commitCareer(next);
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'O clube manteve sua proposta final e encerrou a negociação.',
-      );
-    }
-
-    final decision = CpuUserOfferEngine.evaluateCounter(
-      buyer: buyer,
-      player: player,
-      currentFee: offer.fee,
-      proposedFee: fee,
-    );
-    if (decision.accepted) {
-      return _acceptSaleOffer(
-        PlayerSaleOffer(
-          playerId: player.id,
-          buyerClubId: buyer.id,
-          buyerClubName: buyer.name,
-          fee: fee,
-        ),
-        sourceEventId: eventId,
-      );
-    }
-
-    final counter = decision.counterOffer;
-    if (counter != null) {
-      final updated = career.news.map((event) {
-        if (event.id != eventId) return event;
-        return CareerEvent(
-          id: event.id,
-          date: event.date,
-          type: CareerEventType.transferOffer,
-          title: CpuUserOfferEngine.finalCounterOfferTitle,
-          message:
-              '${buyer.name} chegou ao limite de ${formatMoney(counter)} por ${player.displayName}.',
-          playerId: player.id,
-          clubId: buyer.id,
-          amount: counter,
+    try {
+      final staged = _ensureLegacyIncomingNegotiation(career, eventId);
+      final negotiation = staged.$2;
+      if (fee <= negotiation.fee) {
+        return const TransferOperationResult(
+          accepted: false,
+          message: 'A contraproposta deve ser maior que a oferta atual.',
         );
-      }).toList(growable: false);
-      await _game.commitCareer(career.copyWith(news: updated));
+      }
+      final revised = MarketCareerEngine.reviseNegotiation(
+        state: staged.$1,
+        negotiationId: negotiation.id,
+        fee: fee,
+        salary: negotiation.salary,
+        years: negotiation.contractYears,
+        signingBonus: 0,
+        installments: 1,
+      ).copyWith(
+        news: _resolveOfferEvent(
+          staged.$1.news,
+          eventId: eventId,
+          title: 'Contraproposta enviada',
+          message: 'A contraproposta foi enviada e aguarda resposta do clube.',
+        ),
+      );
+      await _game.commitCareer(
+        revised,
+        message: 'Contraproposta enviada. Aguarde a próxima resposta.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Contraproposta enviada.',
+      );
+    } on StateError catch (error) {
       return TransferOperationResult(
         accepted: false,
-        message: decision.message,
-        counterOffer: counter,
+        message: error.message.toString(),
       );
     }
-
-    final next = career.copyWith(
-      news: _resolveOfferEvent(
-        career.news,
-        eventId: eventId,
-        title: 'Negociação encerrada',
-        message:
-            '${buyer.name} recusou a contraproposta por ${player.displayName}.',
-      ),
-    );
-    await _game.commitCareer(next);
-    return TransferOperationResult(
-      accepted: false,
-      message: decision.message,
-    );
   }
 
   Future<TransferOperationResult> acceptSaleOffer(PlayerSaleOffer offer) =>
-      _acceptSaleOffer(offer);
+      startSaleNegotiation(offer);
 
-  Future<TransferOperationResult> _acceptSaleOffer(
-    PlayerSaleOffer offer, {
-    String? sourceEventId,
-  }) async {
+  Future<TransferOperationResult> startSaleNegotiation(
+    PlayerSaleOffer offer,
+  ) async {
     final career = ref.read(gameControllerProvider).career;
     if (career == null) {
       return const TransferOperationResult(
@@ -735,93 +988,100 @@ class TransferController {
       );
     }
 
-    final userClub = career.userClub;
-    if (userClub.squad.length <= TransferEngine.minimumSquadSize) {
+    final player = career.userClub.squad
+        .where((item) => item.id == offer.playerId)
+        .firstOrNull;
+    final buyer = career.clubs
+        .where((club) => club.id == offer.buyerClubId)
+        .firstOrNull;
+    if (player == null || buyer == null || buyer.id == career.userClubId) {
+      return const TransferOperationResult(
+        accepted: false,
+        message: 'Os dados da proposta não estão mais disponíveis.',
+      );
+    }
+    try {
+      final negotiation = MarketCareerEngine.createIncomingOffer(
+        state: career,
+        playerId: player.id,
+        buyerClubId: buyer.id,
+        fee: offer.fee,
+        salary: CpuRecruitmentEngine.salaryOffer(player, buyer),
+        years: CpuRecruitmentEngine.contractYears(player),
+      );
+      await _game.commitCareer(
+        career.copyWith(
+          transferNegotiations: [...career.transferNegotiations, negotiation],
+        ),
+        message: 'Proposta de ${buyer.name} incluída na Central de Negociações.',
+      );
+      return const TransferOperationResult(
+        accepted: true,
+        message: 'Proposta incluída em Negociações. Ela não foi concluída ainda.',
+      );
+    } on StateError catch (error) {
       return TransferOperationResult(
         accepted: false,
-        message: 'Mantenha pelo menos ${TransferEngine.minimumSquadSize} jogadores no elenco.',
+        message: error.message.toString(),
       );
     }
-    final players = userClub.squad.where((item) => item.id == offer.playerId);
-    if (players.isEmpty) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'O jogador não está mais disponível para venda.',
-      );
-    }
-    final buyers = career.clubs.where((club) => club.id == offer.buyerClubId);
-    if (buyers.isEmpty) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'O clube comprador não está mais disponível.',
-      );
-    }
+  }
 
-    final player = players.first;
-    final buyer = buyers.first;
-    if (buyer.squad.length >= TransferEngine.maximumSquadSize ||
-        buyer.money < offer.fee ||
-        buyer.transferBudget < offer.fee) {
-      return const TransferOperationResult(
-        accepted: false,
-        message: 'A proposta expirou porque a situação do comprador mudou.',
-      );
+  static (CareerState, TransferNegotiation) _ensureLegacyIncomingNegotiation(
+    CareerState career,
+    String eventId,
+  ) {
+    final event = career.news.where((item) => item.id == eventId).firstOrNull;
+    if (event == null) {
+      throw StateError('A proposta não foi encontrada.');
     }
-
-    final execution = TransferEngine.execute(
-      player: player,
-      buyer: buyer,
-      seller: userClub,
-      fee: offer.fee,
+    if (event.negotiationId != null) {
+      final linked = career.transferNegotiations
+          .where((item) => item.id == event.negotiationId)
+          .firstOrNull;
+      if (linked != null) return (career, linked);
+    }
+    if (!CpuUserOfferEngine.isOfferActive(state: career, event: event)) {
+      throw StateError('Esta proposta expirou ou não está mais disponível.');
+    }
+    final player = career.userClub.squad
+        .where((item) => item.id == event.playerId)
+        .firstOrNull;
+    final buyer = career.clubs
+        .where((club) => club.id == event.clubId)
+        .firstOrNull;
+    if (player == null || buyer == null || event.amount == null) {
+      throw StateError('Os dados da proposta não estão mais disponíveis.');
+    }
+    final negotiation = MarketCareerEngine.createIncomingOffer(
+      state: career,
+      playerId: player.id,
+      buyerClubId: buyer.id,
+      fee: event.amount!,
       salary: CpuRecruitmentEngine.salaryOffer(player, buyer),
       years: CpuRecruitmentEngine.contractYears(player),
-      season: career.season,
-      requireSellerMinimum: false,
     );
-    if (!execution.decision.accepted) {
-      return TransferOperationResult(
-        accepted: false,
-        message: execution.decision.reason,
+    final news = career.news.map((item) {
+      if (item.id != event.id) return item;
+      return CareerEvent(
+        id: item.id,
+        date: item.date,
+        type: item.type,
+        title: item.title,
+        message: item.message,
+        playerId: item.playerId,
+        clubId: item.clubId,
+        fixtureId: item.fixtureId,
+        negotiationId: negotiation.id,
+        amount: item.amount,
       );
-    }
-
-    final clubs = career.clubs.map((club) {
-      if (club.id == buyer.id) return execution.buyer;
-      if (club.id == userClub.id) return execution.seller!;
-      return club;
-    }).toList();
-    final updatedUser = clubs.firstWhere((club) => club.id == userClub.id);
-    final starters = career.starterIds.contains(player.id)
-        ? LineupEngine.autoSelect(updatedUser.squad, career.formation)
-        : career.starterIds;
-    final transaction = FinanceTransaction(
-      id: '${career.season}_${career.roundIndex}_sale_${player.id}',
-      season: career.season,
-      round: career.currentRound,
-      kind: FinanceKind.playerSale,
-      description: 'Venda de ${player.displayName} para ${buyer.name}',
-      amount: offer.fee,
-      createdAt: career.currentDate,
-    );
-    final next = career.copyWith(
-      clubs: clubs,
-      starterIds: starters,
-      finances: [...career.finances, transaction],
-      news: sourceEventId == null
-          ? career.news
-          : _resolveOfferEvent(
-              career.news,
-              eventId: sourceEventId,
-              title: 'Transferência concluída',
-              message:
-                  '${player.displayName} foi vendido para ${buyer.name} por ${formatMoney(offer.fee)}.',
-            ),
-    );
-    await _game.commitCareer(next);
-    return TransferOperationResult(
-      accepted: true,
-      message:
-          'Venda concluída: ${player.displayName} → ${buyer.name} por ${formatMoney(offer.fee)}.',
+    }).toList(growable: false);
+    return (
+      career.copyWith(
+        transferNegotiations: [...career.transferNegotiations, negotiation],
+        news: news,
+      ),
+      negotiation,
     );
   }
 

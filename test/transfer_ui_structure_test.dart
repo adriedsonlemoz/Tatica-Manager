@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('negociações permanecem em diálogos centralizados', () {
+  test('mercado centraliza propostas sem concluir acordos nas telas antigas', () {
     final profile =
         File('lib/features/player/player_profile_screen.dart').readAsStringSync();
     final playerDialogs =
@@ -29,9 +29,13 @@ void main() {
     final marketComponents = File(
       'lib/features/market/market_components.dart',
     ).readAsStringSync();
-    expect(home, contains('showIncomingTransferOfferDialog'));
-    expect(market, contains("Tab(text: 'Propostas recebidas')"));
-    expect(marketComponents, contains('showIncomingTransferOfferDialog'));
+    expect(home, contains('initialSection: MarketSection.negotiations'));
+    expect(market, contains("Tab(text: 'Mercado')"));
+    expect(market, contains("Tab(text: 'Observados')"));
+    expect(market, contains("Tab(text: 'Negociações')"));
+    expect(marketComponents, contains('TransferNegotiationStatus.received'));
+    expect(marketComponents, contains('completeMarketNegotiation'));
+    expect(marketComponents, contains('TransferNegotiationKind.loan'));
     expect(incomingOfferDialog, contains("Text('Contrapropor')"));
     expect(negotiation, contains('showDialog<bool>'));
     expect(negotiation, contains('maxWidth: 460'));

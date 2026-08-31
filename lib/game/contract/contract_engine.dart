@@ -119,6 +119,8 @@ abstract final class ContractEngine {
     return player.copyWith(
       clubId: clubId,
       listed: false,
+      availableForLoan: false,
+      clearLoan: true,
       contract: PlayerContract(
         salary: salary,
         endSeason: season + years,

@@ -45,7 +45,7 @@ abstract final class DailyCareerEngine {
       _addRecoveryEvents(events, before: simulated, after: next);
       _addContractAlerts(events, next);
       _addNextMatchAlert(events, next);
-      _addTransferOffer(events, next);
+      next = _addTransferOffer(events, next);
       _addTrainingSummary(events, simulated, next);
     }
     final marketAdvance = MarketCareerEngine.advanceDay(next);
@@ -147,12 +147,19 @@ abstract final class DailyCareerEngine {
     );
   }
 
-  static void _addTransferOffer(
+  static CareerState _addTransferOffer(
     List<CareerEvent> events,
     CareerState state,
   ) {
-    final offer = CpuUserOfferEngine.generateForDay(state);
-    if (offer != null) events.add(offer);
+    final generated = CpuUserOfferEngine.generateNegotiationForDay(state);
+    if (generated == null) return state;
+    events.add(generated.event);
+    return state.copyWith(
+      transferNegotiations: [
+        ...state.transferNegotiations,
+        generated.negotiation,
+      ],
+    );
   }
 
   static void _addTrainingSummary(

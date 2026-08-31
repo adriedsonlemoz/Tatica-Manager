@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.121`
-**Android versionCode:** `122`
+**Release atual:** `0.1.1.120`
+**Android versionCode:** `121`
 
 ## Fonte oficial de versão
 
@@ -13,30 +13,27 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.121`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.120`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+122`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.121` e `versionCode 122`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+121`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.120` e `versionCode 121`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.121`, o pubspec é `0.1.1+122`. a próxima entrega normalmente será `0.1.1.122`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.120`, o pubspec é `0.1.1+121`. a próxima entrega normalmente será `0.1.1.121`.
 
 
-## Análise estática de Finanças corrigida — 0.1.1.121
+## Transferências centralizadas e Finanças compactas — 0.1.1.120
 
-- importa `management_dashboard_widgets.dart` em `finances_screen.dart`, disponibilizando `DashboardSectionHeader` para a seção de receitas/despesas;
-- remove duas asserções `!` redundantes em `FinanceForecastCard`, eliminando os warnings `unnecessary_non_null_assertion` do `flutter analyze`;
-- preserva toda a lógica, persistência e integração financeira da carreira;
-- não altera Match Engine, resultados, saves, schema, IDs, estádio ou regras de mercado.
-
-
-## Correção da compilação de Finanças — 0.1.1.120
-
-- fecha corretamente `FinanceBalanceOverview` em `finances_dashboard_components.dart`, eliminando os erros em cascata de classes internas e símbolos indefinidos no `flutter analyze`;
-- mantém todos os componentes e integrações financeiras da 0.1.1.119 sem criar caminhos paralelos;
-- ajusta `AppInfo.recentReleases` para continuar exibindo exatamente três versões, conforme exige `app_info_test.dart`;
-- não altera Match Engine, resultados, saves, schema, IDs, estádio ou regras de mercado.
+- centraliza compra, venda, renovação e empréstimo em uma única lista persistida de **Negociações**; aceite de bases nunca altera imediatamente elenco, contrato, caixa ou folha;
+- adiciona as abas **Mercado**, **Observados** e **Negociações**, preservando busca, filtros, perfil do atleta e as opções antigas de venda;
+- permite observar e abrir perfis de atletas de outros clubes, iniciar proposta de compra, revisar contrapropostas, cancelar propostas, concluir acordos aceitos e acompanhar histórico;
+- permite colocar atletas próprios à venda ou disponíveis para empréstimo; o empréstimo move temporariamente o atleta e seu salário para o clube receptor, preserva o vínculo no clube de origem e devolve o atleta automaticamente no prazo;
+- reservas de propostas abertas impedem que a soma de transferências e luvas ultrapasse orçamento ou caixa antes da conclusão; parcelas só movimentam caixa quando liquidadas e ficam registradas no livro-caixa correto para compra e venda;
+- contratos de atletas emprestados pelo usuário continuam acessíveis para renovação, enquanto Finanças usa o elenco atual para exibir a folha vigente;
+- mantém a página principal de Finanças sem rolagem vertical: os indicadores e atalhos ficam compactos e os históricos, patrocínios e orçamentos abrem em painel de detalhes;
+- usa somente `CareerState`, `Club`, `Player`, contratos, `FinanceTransaction` e orçamentos já persistidos; não cria valores, categorias financeiras ou sistemas paralelos;
+- não altera Match Engine, resultados, calendário, IDs ou regras de partida.
 
 
 ## Finanças conectadas à carreira — 0.1.1.119

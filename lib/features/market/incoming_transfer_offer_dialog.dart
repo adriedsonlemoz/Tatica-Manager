@@ -18,7 +18,7 @@ Future<bool?> showIncomingTransferOfferDialog(
   var counterFee = currentFee > 0 ? (currentFee * 1.10).round() : 0;
   var sending = false;
   var resolved = false;
-  var sold = false;
+  var basesAccepted = false;
   String? feedback;
 
   return showDialog<bool>(
@@ -78,8 +78,8 @@ Future<bool?> showIncomingTransferOfferDialog(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              sold
-                                  ? 'Transferência concluída'
+                              basesAccepted
+                                  ? 'Bases aceitas'
                                   : resolved
                                       ? 'Negociação encerrada'
                                       : 'Proposta recebida',
@@ -96,7 +96,7 @@ Future<bool?> showIncomingTransferOfferDialog(
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(sold),
+                        onPressed: () => Navigator.of(dialogContext).pop(basesAccepted),
                         icon: const Icon(Icons.close_rounded),
                       ),
                     ],
@@ -176,22 +176,22 @@ Future<bool?> showIncomingTransferOfferDialog(
                                 ),
                       ),
                       Text(
-                        'A CPU pode aceitar, apresentar o limite financeiro do clube ou encerrar a negociação.',
+                      'A contraproposta entra na Central de Negociações e recebe resposta ao avançar os dias.',
                         style: TextStyle(color: AppColors.muted, height: 1.4),
                       ),
                     ],
                   ],
                   if (feedback != null) ...[
                     const SizedBox(height: 12),
-                    _OfferFeedback(text: feedback!, success: sold),
+                    _OfferFeedback(text: feedback!, success: basesAccepted),
                   ],
                   const SizedBox(height: 16),
-                  if (resolved || sold || !preview.available || offer == null)
+                  if (resolved || basesAccepted || !preview.available || offer == null)
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(sold),
-                        child: const Text('Concluir'),
+                        onPressed: () => Navigator.of(dialogContext).pop(basesAccepted),
+                        child: const Text('Fechar'),
                       ),
                     )
                   else ...[
@@ -234,7 +234,7 @@ Future<bool?> showIncomingTransferOfferDialog(
                                       setState(() {
                                         sending = false;
                                         feedback = result.message;
-                                        sold = result.accepted;
+                                        basesAccepted = result.accepted;
                                         if (result.counterOffer != null) {
                                           currentFee = result.counterOffer!;
                                           counterFee =
@@ -271,13 +271,13 @@ Future<bool?> showIncomingTransferOfferDialog(
                                 setState(() {
                                   sending = false;
                                   feedback = result.message;
-                                  sold = result.accepted;
+                                  basesAccepted = result.accepted;
                                   resolved = result.accepted;
                                 });
                               },
                         icon: const Icon(Icons.check_rounded),
                         label: Text(
-                          sending ? 'Processando...' : 'Aceitar oferta',
+                          sending ? 'Processando...' : 'Aceitar bases',
                         ),
                       ),
                     ),

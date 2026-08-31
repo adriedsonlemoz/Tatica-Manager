@@ -8,30 +8,24 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.121`
-- **Android versionCode:** `122`
+- **Release deste handoff:** `0.1.1.120`
+- **Android versionCode:** `121`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
-## Estado funcional da release 0.1.1.121
-
-- corrige o erro `undefined_method` de `DashboardSectionHeader` ao importar o widget compartilhado diretamente em `finances_screen.dart`;
-- remove as duas asserções não nulas redundantes apontadas pelo analisador na previsão financeira;
-- preserva integralmente regras, persistência e integrações de Finanças;
-- não altera Match Engine, resultados, schema, IDs ou saves.
-
-Consulte `docs/RELEASE_0.1.1.121.md`.
-
-
 ## Estado funcional da release 0.1.1.120
 
-- corrige o fechamento de `FinanceBalanceOverview`, que fazia o `flutter analyze` interpretar todos os componentes financeiros seguintes como classes internas;
-- preserva integralmente a interface e as integrações financeiras entregues na 0.1.1.119;
-- mantém `AppInfo.recentReleases` com três itens, evitando a falha que ocorreria em `app_info_test.dart` após a análise estática;
-- não altera Match Engine, resultados, schema, IDs ou saves.
+- `TransferNegotiation` passa a representar compra, venda, renovação e empréstimo, com status recebido, em análise, contraproposta, acordo possível, recusada, concluída ou encerrada;
+- `MarketCareerEngine` é a fonte de verdade para iniciar, revisar, responder, concluir e encerrar negociações; nenhuma proposta altera jogador, contrato, elenco ou caixa antes da conclusão explícita;
+- Mercado preserva busca, filtros e perfis, agora organizado nas abas Mercado, Observados e Negociações; Home e Caixa de entrada abrem a Central de Negociações para propostas e respostas;
+- `PlayerLoan` persiste clube de origem e prazo: o atleta emprestado sai temporariamente do elenco/folha da origem, entra no elenco/folha do receptor, permanece renovável pelo dono do contrato e retorna automaticamente no prazo;
+- compras, vendas, luvas e renovações gravam `FinanceTransaction` com `career.currentDate`; parcelas futuras não geram caixa negativo, ficam pendentes quando o comprador não pode pagar e registram compra ou venda no livro-caixa do usuário quando liquidadas;
+- propostas abertas reservam orçamento de transferências, entrada e luvas para impedir compromissos simultâneos acima dos valores reais disponíveis;
+- `FinancesScreen` mantém Resumo sem rolagem vertical; previsões, distribuição, histórico, patrocínios e orçamentos ficam em painéis de detalhes, usando somente os dados persistidos;
+- schema de carreira 14 mantém retrocompatibilidade com saves antigos sem campos de empréstimo ou tipo de negociação.
 
 Consulte `docs/RELEASE_0.1.1.120.md`.
 
@@ -886,11 +880,11 @@ Para esta release:
 
 ```text
 release/versionName: 0.1.1.120
-versionCode:         122
-pubspec:             0.1.1+122
+versionCode:         121
+pubspec:             0.1.1+121
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.122` e usar um `versionCode` maior que 122.
+A próxima alteração/entrega normalmente deve virar `0.1.1.121` e usar um `versionCode` maior que 121.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

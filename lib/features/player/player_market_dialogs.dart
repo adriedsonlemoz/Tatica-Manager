@@ -15,7 +15,7 @@ Future<void> showRenewPlayerDialog(
   var salary = expected.toDouble();
   var years = 2;
   var sending = false;
-  var completed = false;
+  var sent = false;
   String? feedback;
 
   await showDialog<void>(
@@ -40,7 +40,7 @@ Future<void> showRenewPlayerDialog(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            completed ? 'Renovação concluída' : 'Renovar contrato',
+                            sent ? 'Proposta enviada' : 'Renovar contrato',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -85,7 +85,7 @@ Future<void> showRenewPlayerDialog(
                     ],
                   ),
                 ),
-                if (!completed) ...[
+                if (!sent) ...[
                   const SizedBox(height: 16),
                   Text(
                     'Salário proposto: ${formatMoney(salary.round())}/mês',
@@ -151,13 +151,13 @@ Future<void> showRenewPlayerDialog(
                 ],
                 if (feedback != null) ...[
                   const SizedBox(height: 14),
-                  _DialogFeedback(text: feedback!, success: completed),
+                  _DialogFeedback(text: feedback!, success: sent),
                 ],
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: completed
+                    onPressed: sent
                         ? () => Navigator.of(dialogContext).pop()
                         : sending
                             ? null
@@ -165,7 +165,7 @@ Future<void> showRenewPlayerDialog(
                                 setState(() => sending = true);
                                 final result = await ref
                                     .read(transferControllerProvider)
-                                    .renewPlayer(
+                                    .startRenewalNegotiation(
                                       playerId: player.id,
                                       salary: salary.round(),
                                       years: years,
@@ -177,13 +177,13 @@ Future<void> showRenewPlayerDialog(
                                   if (result.counterOffer != null) {
                                     salary = result.counterOffer!.toDouble();
                                   }
-                                  completed = result.accepted;
+                                  sent = result.accepted;
                                 });
                               },
-                    icon: Icon(completed ? Icons.check_rounded : Icons.send_rounded),
+                    icon: Icon(sent ? Icons.check_rounded : Icons.send_rounded),
                     label: Text(
-                      completed
-                          ? 'Concluir'
+                      sent
+                          ? 'Fechar'
                           : sending
                               ? 'Enviando...'
                               : 'Enviar proposta',
@@ -206,7 +206,7 @@ Future<bool?> showPlayerSaleDialog(
 ) async {
   final preview = ref.read(transferControllerProvider).previewSale(player.id);
   var sending = false;
-  var completed = false;
+  var sent = false;
   String? feedback;
 
   return showDialog<bool>(
@@ -233,7 +233,7 @@ Future<bool?> showPlayerSaleDialog(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              completed ? 'Venda concluída' : 'Proposta de venda',
+                              sent ? 'Proposta enviada' : 'Proposta de venda',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge
@@ -247,7 +247,7 @@ Future<bool?> showPlayerSaleDialog(
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(completed),
+                        onPressed: () => Navigator.of(dialogContext).pop(sent),
                         icon: const Icon(Icons.close_rounded),
                       ),
                     ],
@@ -294,18 +294,18 @@ Future<bool?> showPlayerSaleDialog(
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Ao aceitar, o valor entra no saldo e no orçamento de transferências. Se o jogador estiver entre os titulares, a escalação será reorganizada automaticamente.',
+                      'A proposta será registrada em Negociações. Nenhum valor, salário ou jogador é alterado até você aceitar as bases e concluir o acordo.',
                       style: TextStyle(color: AppColors.muted, height: 1.4),
                     ),
                   ],
                   if (feedback != null) ...[
                     const SizedBox(height: 12),
-                    _DialogFeedback(text: feedback!, success: completed),
+                    _DialogFeedback(text: feedback!, success: sent),
                   ],
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      if (!completed) ...[
+                      if (!sent) ...[
                         Expanded(
                           child: OutlinedButton(
                             onPressed: sending
@@ -318,7 +318,7 @@ Future<bool?> showPlayerSaleDialog(
                       ],
                       Expanded(
                         child: FilledButton.icon(
-                          onPressed: completed
+                          onPressed: sent
                               ? () => Navigator.of(dialogContext).pop(true)
                               : !preview.available || offer == null || sending
                                   ? null
@@ -326,23 +326,23 @@ Future<bool?> showPlayerSaleDialog(
                                       setState(() => sending = true);
                                       final result = await ref
                                           .read(transferControllerProvider)
-                                          .acceptSaleOffer(offer);
+                                          .startSaleNegotiation(offer);
                                       if (!dialogContext.mounted) return;
                                       setState(() {
                                         sending = false;
                                         feedback = result.message;
-                                        completed = result.accepted;
+                                        sent = result.accepted;
                                       });
                                     },
                           icon: Icon(
-                            completed ? Icons.check_rounded : Icons.sell_outlined,
+                            sent ? Icons.check_rounded : Icons.sell_outlined,
                           ),
                           label: Text(
-                            completed
-                                ? 'Concluir'
+                            sent
+                                ? 'Fechar'
                                 : sending
                                     ? 'Processando...'
-                                    : 'Aceitar oferta',
+                                    : 'Enviar para Negociações',
                           ),
                         ),
                       ),
@@ -354,6 +354,114 @@ Future<bool?> showPlayerSaleDialog(
           ),
         );
       },
+    ),
+  );
+}
+
+Future<void> showPlayerMarketAvailabilityDialog(
+  BuildContext context,
+  WidgetRef ref,
+  Player player,
+) async {
+  var listed = player.listed;
+  var availableForLoan = player.availableForLoan;
+  var sending = false;
+  String? feedback;
+
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (sheetContext) => StatefulBuilder(
+      builder: (context, setState) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Mercado de ${player.displayName}',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Disponibilidades não concluem nenhum acordo. Propostas recebidas aparecem na Central de Negociações.',
+                style: TextStyle(color: AppColors.muted, fontSize: 12),
+              ),
+              const SizedBox(height: 10),
+              SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Colocar à venda'),
+                subtitle: const Text('Clubes podem enviar propostas de compra.'),
+                value: listed,
+                onChanged: sending
+                    ? null
+                    : (value) async {
+                        setState(() => sending = true);
+                        final result = await ref
+                            .read(transferControllerProvider)
+                            .setPlayerForSale(playerId: player.id, listed: value);
+                        if (!sheetContext.mounted) return;
+                        setState(() {
+                          sending = false;
+                          feedback = result.message;
+                          if (result.accepted) {
+                            listed = value;
+                            if (value) availableForLoan = false;
+                          }
+                        });
+                      },
+              ),
+              SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Disponibilizar para empréstimo'),
+                subtitle: const Text('A folha acompanha o clube que receber o atleta.'),
+                value: availableForLoan,
+                onChanged: sending
+                    ? null
+                    : (value) async {
+                        setState(() => sending = true);
+                        final result = await ref
+                            .read(transferControllerProvider)
+                            .setPlayerAvailableForLoan(
+                              playerId: player.id,
+                              available: value,
+                            );
+                        if (!sheetContext.mounted) return;
+                        setState(() {
+                          sending = false;
+                          feedback = result.message;
+                          if (result.accepted) {
+                            availableForLoan = value;
+                            if (value) listed = false;
+                          }
+                        });
+                      },
+              ),
+              if (listed) ...[
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: sending
+                        ? null
+                        : () => showPlayerSaleDialog(sheetContext, ref, player),
+                    icon: const Icon(Icons.request_quote_outlined),
+                    label: const Text('Ver proposta de venda disponível'),
+                  ),
+                ),
+              ],
+              if (feedback != null) ...[
+                const SizedBox(height: 10),
+                _DialogFeedback(text: feedback!, success: true),
+              ],
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }

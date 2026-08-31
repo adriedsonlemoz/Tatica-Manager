@@ -44,6 +44,12 @@ class PlayerProfileScreen extends ConsumerWidget {
     final isAcademy = matches.isEmpty && academyMatches.isNotEmpty;
     final player = isAcademy ? academyMatches.first : matches.first;
     final expected = ContractEngine.expectedSalary(player);
+    final canManageContract =
+        !isAcademy &&
+            ((ownerClub.id == career.userClubId && player.loan == null) ||
+                player.loan?.parentClubId == career.userClubId);
+    final canManageMarket =
+        !isAcademy && ownerClub.id == career.userClubId && player.loan == null;
     return PremiumScaffold(
       safeBottom: true,
       appBar: GameTopBar(
@@ -244,36 +250,50 @@ class PlayerProfileScreen extends ConsumerWidget {
                   'Contrato até ${player.contract.endSeason} • expectativa atual: ${formatMoney(expected)}/mês',
                   style: TextStyle(color: AppColors.muted),
                 ),
+                if (player.loan != null || player.listed || player.availableForLoan) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    player.loan != null
+                        ? player.loan!.parentClubId == career.userClubId
+                            ? 'Emprestado ao ${ownerClub.shortName} até ${player.loan!.endsAt.day.toString().padLeft(2, '0')}/${player.loan!.endsAt.month.toString().padLeft(2, '0')}/${player.loan!.endsAt.year}'
+                            : 'Emprestado até ${player.loan!.endsAt.day.toString().padLeft(2, '0')}/${player.loan!.endsAt.month.toString().padLeft(2, '0')}/${player.loan!.endsAt.year}'
+                        : player.listed
+                            ? 'Disponível para venda'
+                            : 'Disponível para empréstimo',
+                    style: const TextStyle(
+                      color: AppColors.green,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 14),
-                if (ownerClub.id == career.userClubId && !isAcademy)
-                  Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton.tonal(
-                        onPressed: () => showRenewPlayerDialog(
-                          context,
-                          ref,
-                          player,
-                          expected,
+                if (canManageContract || canManageMarket)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (canManageContract)
+                        FilledButton.tonal(
+                          onPressed: () => showRenewPlayerDialog(
+                                context,
+                                ref,
+                                player,
+                                expected,
+                              ),
+                          child: const Text('Renovar'),
                         ),
-                        child: const Text('Renovar'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () async {
-                          final sold = await showPlayerSaleDialog(context, ref, player);
-                          if (sold == true && context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        icon: const Icon(Icons.sell_outlined),
-                        label: const Text('Vender'),
-                      ),
-                    ),
-                  ],
-                ),
+                      if (canManageMarket)
+                        OutlinedButton.icon(
+                          onPressed: () => showPlayerMarketAvailabilityDialog(
+                                context,
+                                ref,
+                                player,
+                              ),
+                          icon: const Icon(Icons.sell_outlined),
+                          label: const Text('Mercado'),
+                        ),
+                    ],
+                  ),
               ],
             ),
           ),

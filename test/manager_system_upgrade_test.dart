@@ -67,7 +67,7 @@ void main() {
 
   test('schema de carreira inclui banco de técnicos e migração legada', () {
     final source = File('lib/domain/season/career_state.dart').readAsStringSync();
-    expect(CareerState.currentSchemaVersion, 13);
+    expect(CareerState.currentSchemaVersion, 14);
     expect(source, contains("'managers': managers.map"));
     expect(source, contains('_legacyManagerDatabase('));
     expect(source, contains("'manager-\${club.id}'"));

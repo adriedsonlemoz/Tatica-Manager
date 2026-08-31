@@ -64,6 +64,12 @@ abstract final class TransferEngine {
     bool requireSellerMinimum = true,
     int? upfrontFee,
   }) {
+    if (player.loan != null) {
+      return const TransferDecision(
+        false,
+        'O jogador está emprestado e não pode ser transferido neste momento.',
+      );
+    }
     if (buyer.squad.length >= maximumSquadSize) {
       return TransferDecision(
         false,
@@ -145,6 +151,8 @@ abstract final class TransferEngine {
     final moved = player.copyWith(
       clubId: buyer.id,
       listed: false,
+      availableForLoan: false,
+      clearLoan: true,
       contract: PlayerContract(salary: salary, endSeason: season + years),
       morale: min(100, player.morale + 7),
     );

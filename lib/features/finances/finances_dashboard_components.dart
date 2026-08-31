@@ -265,17 +265,21 @@ class FinanceBalanceOverview extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class FinanceBalanceChart extends StatelessWidget {
-  const FinanceBalanceChart({super.key, required this.months});
+  const FinanceBalanceChart({
+    super.key,
+    required this.months,
+    this.height = 166,
+  });
 
   final List<FinanceMonthSummary> months;
+  final double height;
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 166,
+        height: height,
         width: double.infinity,
         child: CustomPaint(
           painter: FinanceMonthlyBalancePainter(months),
@@ -291,8 +295,9 @@ class FinanceMonthlyBalancePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (months.isEmpty || size.width <= 0 || size.height <= 0) return;
-    const top = 12.0;
-    const bottom = 27.0;
+    final compact = size.height < 80;
+    final top = compact ? 4.0 : 12.0;
+    final bottom = compact ? 13.0 : 27.0;
     const side = 5.0;
     final chartHeight = math.max(1.0, size.height - top - bottom).toDouble();
     final chartWidth = math.max(1.0, size.width - side * 2).toDouble();
@@ -359,8 +364,9 @@ class FinanceMonthlyBalancePainter extends CustomPainter {
       _paintLabel(
         canvas,
         _monthLabel(months[index].month),
-        Offset(point.dx, size.height - 17),
+        Offset(point.dx, size.height - (compact ? 10 : 17)),
         alignCenter: true,
+        compact: compact,
       );
     }
   }
@@ -370,11 +376,12 @@ class FinanceMonthlyBalancePainter extends CustomPainter {
     String text,
     Offset offset, {
     bool alignCenter = false,
+    bool compact = false,
   }) {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: const TextStyle(color: AppColors.muted, fontSize: 9),
+        style: TextStyle(color: AppColors.muted, fontSize: compact ? 7 : 9),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -787,7 +794,7 @@ class FinanceForecastCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${projectedNet >= 0 ? '+' : ''}${compactMoney(projectedNet)}',
+                        '${projectedNet! >= 0 ? '+' : ''}${compactMoney(projectedNet!)}',
                         style: TextStyle(
                           color: color,
                           fontSize: 25,

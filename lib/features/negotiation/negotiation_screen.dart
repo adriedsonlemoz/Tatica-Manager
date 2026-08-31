@@ -38,7 +38,7 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
   double salary = 0;
   int years = 2;
   bool sending = false;
-  bool completed = false;
+  bool sent = false;
   int? counterOffer;
   String? feedback;
 
@@ -99,9 +99,9 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
           children: [
             _DialogHeader(
               icon: Icons.handshake_rounded,
-              title: completed ? 'Contratação concluída' : 'Negociar contratação',
+              title: sent ? 'Proposta enviada' : 'Negociar contratação',
               subtitle: currentPlayer.displayName,
-              onClose: () => Navigator.of(context).pop(completed),
+              onClose: () => Navigator.of(context).pop(sent),
             ),
             const Divider(height: 1),
             Flexible(
@@ -150,9 +150,9 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (completed) ...[
+                    if (sent) ...[
                       _FeedbackBanner(
-                        text: feedback ?? 'Contratação concluída.',
+                        text: feedback ?? 'Proposta enviada para a Central de Negociações.',
                         success: true,
                       ),
                     ] else ...[
@@ -305,7 +305,7 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
               padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
-                  if (!completed) ...[
+                  if (!sent) ...[
                     Expanded(
                       child: OutlinedButton(
                         onPressed: sending ? null : () => Navigator.of(context).pop(false),
@@ -316,15 +316,15 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
                   ],
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: completed
+                      onPressed: sent
                           ? () => Navigator.of(context).pop(true)
                           : sending
                               ? null
                               : _send,
-                      icon: Icon(completed ? Icons.check_rounded : Icons.send_rounded),
+                      icon: Icon(sent ? Icons.check_rounded : Icons.send_rounded),
                       label: Text(
-                        completed
-                            ? 'Concluir'
+                        sent
+                            ? 'Fechar'
                             : sending
                                 ? 'Negociando...'
                                 : 'Enviar proposta',
@@ -356,7 +356,7 @@ class _NegotiationDialogState extends ConsumerState<NegotiationDialog> {
       if (result.counterOffer != null) {
         fee = result.counterOffer!.toDouble();
       }
-      completed = result.accepted;
+      sent = result.accepted;
     });
   }
 }

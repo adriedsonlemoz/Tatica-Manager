@@ -7,6 +7,35 @@ enum PreferredFoot { right, left, both }
 
 enum PlayerAvailabilityStatus { available, injured, suspended, lowCondition }
 
+/// Vínculo temporário persistido no atleta enquanto ele está emprestado.
+/// O contrato continua pertencendo ao clube em [parentClubId].
+class PlayerLoan {
+  const PlayerLoan({
+    required this.parentClubId,
+    required this.endsAt,
+  });
+
+  final String parentClubId;
+  final DateTime endsAt;
+
+  bool isDueOn(DateTime date) {
+    final due = DateTime(endsAt.year, endsAt.month, endsAt.day);
+    final current = DateTime(date.year, date.month, date.day);
+    return !due.isAfter(current);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'parentClubId': parentClubId,
+        'endsAt': endsAt.toIso8601String(),
+      };
+
+  factory PlayerLoan.fromJson(Map<String, dynamic> json) => PlayerLoan(
+        parentClubId: json['parentClubId'] as String? ?? '',
+        endsAt: DateTime.tryParse(json['endsAt'] as String? ?? '') ??
+            DateTime(2026, 12, 31),
+      );
+}
+
 extension PlayerPositionX on PlayerPosition {
   String get label => switch (this) {
         PlayerPosition.gol => 'GOL',
@@ -204,6 +233,8 @@ class Player {
     this.injury,
     this.clubId,
     this.listed = false,
+    this.availableForLoan = false,
+    this.loan,
     this.customAvatarPath,
     this.recentRatings = const [],
   });
@@ -238,6 +269,8 @@ class Player {
   final List<PlayerHistoryEntry> history;
   final String? clubId;
   final bool listed;
+  final bool availableForLoan;
+  final PlayerLoan? loan;
   final VisualProfile visual;
 
   /// Caminho de uma cópia normalizada mantida no armazenamento privado do app.
@@ -297,6 +330,9 @@ class Player {
     String? clubId,
     bool clearClubId = false,
     bool? listed,
+    bool? availableForLoan,
+    PlayerLoan? loan,
+    bool clearLoan = false,
     VisualProfile? visual,
     String? customAvatarPath,
     bool clearCustomAvatar = false,
@@ -333,6 +369,8 @@ class Player {
         history: history ?? this.history,
         clubId: clearClubId ? null : (clubId ?? this.clubId),
         listed: listed ?? this.listed,
+        availableForLoan: availableForLoan ?? this.availableForLoan,
+        loan: clearLoan ? null : (loan ?? this.loan),
         visual: visual ?? this.visual,
         customAvatarPath:
             clearCustomAvatar ? null : (customAvatarPath ?? this.customAvatarPath),
@@ -370,6 +408,8 @@ class Player {
         'history': history.map((e) => e.toJson()).toList(),
         'clubId': clubId,
         'listed': listed,
+        'availableForLoan': availableForLoan,
+        if (loan != null) 'loan': loan!.toJson(),
         'visual': visual.toJson(),
         if (customAvatarPath != null) 'customAvatarPath': customAvatarPath,
         if (recentRatings.isNotEmpty) 'recentRatings': recentRatings,
@@ -438,6 +478,10 @@ class Player {
             .toList(),
         clubId: json['clubId'] as String?,
         listed: json['listed'] as bool? ?? false,
+        availableForLoan: json['availableForLoan'] as bool? ?? false,
+        loan: json['loan'] is Map
+            ? PlayerLoan.fromJson(Map<String, dynamic>.from(json['loan'] as Map))
+            : null,
         visual: VisualProfile.fromJson(
           Map<String, dynamic>.from(json['visual'] as Map? ?? const {}),
         ),

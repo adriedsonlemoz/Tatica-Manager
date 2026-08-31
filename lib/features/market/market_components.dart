@@ -76,142 +76,175 @@ class _ScoutingTab extends ConsumerWidget {
   }
 }
 
-class _NegotiationsTab extends ConsumerWidget {
-  const _NegotiationsTab({required this.negotiations, required this.entries});
+enum _NegotiationFilter { all, received, active, history }
 
-  final List<TransferNegotiation> negotiations;
-  final List<_MarketEntry> entries;
+class _NegotiationsTab extends ConsumerStatefulWidget {
+  const _NegotiationsTab({required this.career});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (negotiations.isEmpty) {
-      return const _EmptyMarketState(
-        icon: Icons.handshake_outlined,
-        title: 'Nenhuma negociação ativa',
-        message: 'Envie uma proposta por um jogador observado.',
-      );
-    }
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 110),
-      children: negotiations.map((negotiation) {
-        final entry = entries
-            .where((item) => item.player.id == negotiation.playerId)
-            .firstOrNull;
-        return _NegotiationCard(
-          negotiation: negotiation,
-          entry: entry,
-          onRevise: negotiation.status == TransferNegotiationStatus.countered
-              ? () => _showNegotiationDialog(
-                    context,
-                    ref,
-                    entry: entry,
-                    existing: negotiation,
-                  )
-              : null,
-          onComplete: negotiation.status == TransferNegotiationStatus.accepted
-              ? () async {
-                  final result = await ref
-                      .read(transferControllerProvider)
-                      .completeMarketNegotiation(negotiation.id);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(result.message)),
-                    );
-                  }
-                }
-              : null,
-          onClose: () => ref
-              .read(transferControllerProvider)
-              .closeMarketNegotiation(negotiation.id),
-        );
-      }).toList(growable: false),
-    );
-  }
-}
-
-class _IncomingOffersTab extends ConsumerWidget {
-  const _IncomingOffersTab({required this.events});
-
-  final List<CareerEvent> events;
+  final CareerState career;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (events.isEmpty) {
-      return const _EmptyMarketState(
-        icon: Icons.mark_email_read_outlined,
-        title: 'Sem propostas recebidas',
-        message: 'Ofertas da CPU pelo seu elenco aparecerão aqui.',
-      );
-    }
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 110),
-      children: events.map((event) {
-        return SectionCard(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            children: [
-              const Icon(Icons.mark_email_unread_rounded, color: AppColors.green),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(event.title,
-                        style: const TextStyle(fontWeight: FontWeight.w900)),
-                    const SizedBox(height: 3),
-                    Text(
-                      event.message,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 11),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              FilledButton(
-                onPressed: () => showIncomingTransferOfferDialog(
-                  context,
-                  ref,
-                  eventId: event.id,
-                ),
-                child: const Text('Analisar'),
-              ),
-            ],
-          ),
-        );
-      }).toList(growable: false),
-    );
-  }
+  ConsumerState<_NegotiationsTab> createState() => _NegotiationsTabState();
 }
 
-class _NegotiationHistoryTab extends StatelessWidget {
-  const _NegotiationHistoryTab({required this.negotiations, required this.entries});
-
-  final List<TransferNegotiation> negotiations;
-  final List<_MarketEntry> entries;
+class _NegotiationsTabState extends ConsumerState<_NegotiationsTab> {
+  _NegotiationFilter _filter = _NegotiationFilter.all;
 
   @override
   Widget build(BuildContext context) {
-    if (negotiations.isEmpty) {
-      return const _EmptyMarketState(
-        icon: Icons.history_rounded,
-        title: 'Histórico vazio',
-        message: 'Negociações concluídas, recusadas ou encerradas ficarão aqui.',
-      );
-    }
+    final negotiations = widget.career.transferNegotiations.where((item) {
+      return switch (_filter) {
+        _NegotiationFilter.all => true,
+        _NegotiationFilter.received =>
+          item.status == TransferNegotiationStatus.received,
+        _NegotiationFilter.active =>
+          item.status.isOpen && item.status != TransferNegotiationStatus.received,
+        _NegotiationFilter.history => !item.status.isOpen,
+      };
+    }).toList()
+      ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 110),
-      children: negotiations.map((negotiation) {
-        final entry = entries
-            .where((item) => item.player.id == negotiation.playerId)
-            .firstOrNull;
-        return _NegotiationCard(
-          negotiation: negotiation,
-          entry: entry,
-          compact: true,
-        );
-      }).toList(growable: false),
+      children: [
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: _NegotiationFilter.values.map((filter) {
+            final label = switch (filter) {
+              _NegotiationFilter.all => 'Todas',
+              _NegotiationFilter.received => 'Recebidas',
+              _NegotiationFilter.active => 'Em andamento',
+              _NegotiationFilter.history => 'Histórico',
+            };
+            return ChoiceChip(
+              label: Text(label),
+              selected: _filter == filter,
+              onSelected: (_) => setState(() => _filter = filter),
+            );
+          }).toList(growable: false),
+        ),
+        const SizedBox(height: 10),
+        if (negotiations.isEmpty)
+          _EmptyMarketState(
+            icon: _filter == _NegotiationFilter.history
+                ? Icons.history_rounded
+                : Icons.handshake_outlined,
+            title: _filter == _NegotiationFilter.received
+                ? 'Sem propostas recebidas'
+                : _filter == _NegotiationFilter.history
+                    ? 'Histórico vazio'
+                    : 'Nenhuma negociação aqui',
+            message: _filter == _NegotiationFilter.received
+                ? 'Ofertas por jogadores do seu elenco chegam nesta Central.'
+                : _filter == _NegotiationFilter.history
+                    ? 'Acordos concluídos, recusados ou cancelados aparecerão aqui.'
+                    : 'Compras, vendas, renovações e empréstimos usam esta mesma Central.',
+          )
+        else
+          ...negotiations.map((negotiation) {
+            final entry = _entryForNegotiation(widget.career, negotiation);
+            return _NegotiationCard(
+              career: widget.career,
+              negotiation: negotiation,
+              entry: entry,
+              compact: !negotiation.status.isOpen,
+              onAccept:
+                  negotiation.status == TransferNegotiationStatus.received
+                      ? () => _runAndShow(
+                            context,
+                            ref
+                                .read(transferControllerProvider)
+                                .acceptReceivedNegotiation(negotiation.id),
+                          )
+                      : null,
+              onReject:
+                  negotiation.status == TransferNegotiationStatus.received
+                      ? () => _runAndShow(
+                            context,
+                            ref
+                                .read(transferControllerProvider)
+                                .rejectReceivedNegotiation(negotiation.id),
+                          )
+                      : null,
+              onRevise: negotiation.status == TransferNegotiationStatus.countered
+                  ? () {
+                      if (negotiation.kind == TransferNegotiationKind.loan) return;
+                      if (negotiation.kind ==
+                          TransferNegotiationKind.contractRenewal) {
+                        _showRenewalNegotiationDialog(
+                          context,
+                          ref,
+                          player: entry?.player,
+                          existing: negotiation,
+                        );
+                      } else {
+                        _showNegotiationDialog(
+                          context,
+                          ref,
+                          entry: entry,
+                          existing: negotiation,
+                        );
+                      }
+                    }
+                  : null,
+              onComplete: negotiation.status == TransferNegotiationStatus.accepted
+                  ? () => _runAndShow(
+                        context,
+                        ref
+                            .read(transferControllerProvider)
+                            .completeMarketNegotiation(negotiation.id),
+                      )
+                  : null,
+              onClose: negotiation.status.isOpen &&
+                      negotiation.status != TransferNegotiationStatus.received
+                  ? () => _runAndShow(
+                        context,
+                        ref
+                            .read(transferControllerProvider)
+                            .closeMarketNegotiation(negotiation.id),
+                      )
+                  : null,
+            );
+          }),
+      ],
     );
   }
+
+  Future<void> _runAndShow(
+    BuildContext context,
+    Future<TransferOperationResult> result,
+  ) async {
+    final operation = await result;
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(operation.message)),
+    );
+  }
+}
+
+_MarketEntry? _entryForNegotiation(
+  CareerState career,
+  TransferNegotiation negotiation,
+) {
+  for (final club in career.clubs) {
+    final player = club.squad
+        .where((item) => item.id == negotiation.playerId)
+        .firstOrNull;
+    if (player != null) {
+      return _MarketEntry(
+        player: player,
+        club: club,
+        free: false,
+        seriesId: CompetitionCatalog.primarySeriesForClub(club.id).id,
+      );
+    }
+  }
+  final player = career.freeAgents
+      .where((item) => item.id == negotiation.playerId)
+      .firstOrNull;
+  if (player == null) return null;
+  return _MarketEntry(player: player, club: null, free: true, seriesId: null);
 }
 
 class _MarketPlayerCard extends StatelessWidget {
@@ -318,16 +351,22 @@ class _KnowledgeLine extends StatelessWidget {
 
 class _NegotiationCard extends StatelessWidget {
   const _NegotiationCard({
+    required this.career,
     required this.negotiation,
     required this.entry,
+    this.onAccept,
+    this.onReject,
     this.onRevise,
     this.onComplete,
     this.onClose,
     this.compact = false,
   });
 
+  final CareerState career;
   final TransferNegotiation negotiation;
   final _MarketEntry? entry;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
   final VoidCallback? onRevise;
   final VoidCallback? onComplete;
   final VoidCallback? onClose;
@@ -335,6 +374,32 @@ class _NegotiationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final source = career.clubs
+        .where((club) => club.id == negotiation.fromClubId)
+        .firstOrNull;
+    final target = career.clubs
+        .where((club) => club.id == negotiation.toClubId)
+        .firstOrNull;
+    final counterpart = switch (negotiation.kind) {
+      TransferNegotiationKind.contractRenewal => 'Seu elenco',
+      _ when negotiation.fromClubId == career.userClubId =>
+        target?.shortName ?? 'Clube interessado',
+      _ => source?.shortName ?? 'Agente livre',
+    };
+    final headlineValue = switch (negotiation.kind) {
+      TransferNegotiationKind.permanentTransfer => formatMoney(negotiation.fee),
+      TransferNegotiationKind.contractRenewal => 'Renovação',
+      TransferNegotiationKind.loan => negotiation.loanEndDate == null
+          ? 'Empréstimo'
+          : 'até ${_shortDate(negotiation.loanEndDate!)}',
+    };
+    final valueStyle = TextStyle(
+      color: negotiation.kind == TransferNegotiationKind.contractRenewal
+          ? AppColors.green
+          : null,
+      fontWeight: FontWeight.w900,
+      fontSize: 12,
+    );
     return SectionCard(
       margin: const EdgeInsets.only(bottom: 8),
       child: Column(
@@ -360,15 +425,18 @@ class _NegotiationCard extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
                     Text(
-                      '${negotiation.status.label} • ${entry?.club?.shortName ?? 'Sem clube'}',
+                      '${negotiation.kind.shortLabel} • ${negotiation.status.label} • $counterpart',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(color: AppColors.green, fontSize: 10),
                     ),
                   ],
                 ),
               ),
               Text(
-                formatMoney(negotiation.fee),
-                style: const TextStyle(fontWeight: FontWeight.w900),
+                headlineValue,
+                textAlign: TextAlign.end,
+                style: valueStyle,
               ),
             ],
           ),
@@ -382,10 +450,18 @@ class _NegotiationCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 6,
             children: [
-              _MiniTag('Salário ${formatMoney(negotiation.salary)}'),
-              _MiniTag('${negotiation.contractYears} ano(s)'),
-              _MiniTag('Bônus ${formatMoney(negotiation.signingBonus)}'),
-              _MiniTag('${negotiation.installments} parcela(s)'),
+              _MiniTag('Salário ${formatMoney(negotiation.salary)}/mês'),
+              if (negotiation.kind != TransferNegotiationKind.loan)
+                _MiniTag('${negotiation.contractYears} ano(s)'),
+              if (negotiation.kind == TransferNegotiationKind.loan &&
+                  negotiation.loanEndDate != null)
+                _MiniTag('Retorno ${_shortDate(negotiation.loanEndDate!)}'),
+              if (negotiation.kind != TransferNegotiationKind.loan &&
+                  negotiation.signingBonus > 0)
+                _MiniTag('Luvas ${formatMoney(negotiation.signingBonus)}'),
+              if (negotiation.kind == TransferNegotiationKind.permanentTransfer &&
+                  negotiation.installments > 1)
+                _MiniTag('${negotiation.installments} parcelas'),
               if (negotiation.otherClubsInterested > 0)
                 _MiniTag('${negotiation.otherClubsInterested} rival(is)'),
             ],
@@ -393,7 +469,7 @@ class _NegotiationCard extends StatelessWidget {
           if (negotiation.counterFee != null || negotiation.counterSalary != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Contraproposta: ${negotiation.counterFee == null ? '—' : formatMoney(negotiation.counterFee!)} • salário ${negotiation.counterSalary == null ? '—' : formatMoney(negotiation.counterSalary!)}',
+              _counterText(negotiation),
               style: const TextStyle(
                 color: AppColors.warning,
                 fontSize: 11,
@@ -401,17 +477,34 @@ class _NegotiationCard extends StatelessWidget {
               ),
             ),
           ],
-          if (!compact && (onRevise != null || onComplete != null || onClose != null)) ...[
+          if (!compact &&
+              (onAccept != null ||
+                  onReject != null ||
+                  onRevise != null ||
+                  onComplete != null ||
+                  onClose != null)) ...[
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
+                if (onAccept != null)
+                  FilledButton.icon(
+                    onPressed: onAccept,
+                    icon: const Icon(Icons.check_circle_outline_rounded),
+                    label: const Text('Aceitar bases'),
+                  ),
+                if (onReject != null)
+                  OutlinedButton.icon(
+                    onPressed: onReject,
+                    icon: const Icon(Icons.close_rounded),
+                    label: const Text('Recusar'),
+                  ),
                 if (onRevise != null)
                   OutlinedButton.icon(
                     onPressed: onRevise,
                     icon: const Icon(Icons.edit_rounded),
-                    label: const Text('Revisar'),
+                    label: const Text('Contrapropor'),
                   ),
                 if (onComplete != null)
                   FilledButton.icon(
@@ -422,7 +515,7 @@ class _NegotiationCard extends StatelessWidget {
                 if (onClose != null)
                   TextButton(
                     onPressed: onClose,
-                    child: const Text('Encerrar'),
+                    child: const Text('Cancelar'),
                   ),
               ],
             ),
@@ -430,6 +523,16 @@ class _NegotiationCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static String _shortDate(DateTime value) =>
+      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+
+  static String _counterText(TransferNegotiation negotiation) {
+    if (negotiation.kind == TransferNegotiationKind.contractRenewal) {
+      return 'Contraproposta salarial: ${negotiation.counterSalary == null ? '—' : '${formatMoney(negotiation.counterSalary!)}/mês'}';
+    }
+    return 'Contraproposta: ${negotiation.counterFee == null ? '—' : formatMoney(negotiation.counterFee!)} • salário ${negotiation.counterSalary == null ? '—' : '${formatMoney(negotiation.counterSalary!)}/mês'}';
   }
 }
 

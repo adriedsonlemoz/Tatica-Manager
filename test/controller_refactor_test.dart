@@ -17,9 +17,11 @@ import 'package:tatica_manager/domain/tactic/tactic.dart';
 import 'package:tatica_manager/domain/club/club_identity.dart';
 import 'package:tatica_manager/domain/season/career_event.dart';
 import 'package:tatica_manager/domain/season/career_state.dart';
+import 'package:tatica_manager/domain/transfer/market_career.dart';
 import 'package:tatica_manager/game/career/career_factory.dart';
 import 'package:tatica_manager/game/contract/contract_engine.dart';
 import 'package:tatica_manager/game/transfer/transfer_engine.dart';
+import 'package:tatica_manager/game/transfer/market_career_engine.dart';
 import 'package:tatica_manager/game/club/club_identity_engine.dart';
 
 void main() {
@@ -45,7 +47,7 @@ void main() {
     expect(container.read(gameControllerProvider).career?.careerId, matchDayCareer.careerId);
   });
 
-  test('transferência atualiza carreira pelo controlador dedicado', () async {
+  test('compra entra em Negociações antes de alterar elenco ou caixa', () async {
     final repository = _MemoryCareerRepository();
     final container = ProviderContainer(
       overrides: [careerRepositoryProvider.overrideWithValue(repository)],
@@ -62,9 +64,29 @@ void main() {
           years: 2,
         );
 
-    final updated = container.read(gameControllerProvider).career!;
+    final staged = container.read(gameControllerProvider).career!;
     expect(result.accepted, isTrue);
-    expect(result.message, contains('foi contratado'));
+    expect(result.message, contains('Proposta enviada'));
+    expect(staged.userClub.squad.any((player) => player.id == freeAgent.id), isFalse);
+    expect(staged.freeAgents.any((player) => player.id == freeAgent.id), isTrue);
+    expect(staged.finances, isEmpty);
+    final negotiation = staged.transferNegotiations.single;
+    expect(negotiation.status, TransferNegotiationStatus.waiting);
+
+    final responded = MarketCareerEngine.advanceDay(
+      staged.copyWith(currentDate: negotiation.nextActionDate),
+    ).state;
+    expect(
+      responded.transferNegotiations.single.status,
+      TransferNegotiationStatus.accepted,
+    );
+    container.read(gameControllerProvider.notifier).attachCareer(responded);
+    final completed = await container
+        .read(transferControllerProvider)
+        .completeMarketNegotiation(negotiation.id);
+    final updated = container.read(gameControllerProvider).career!;
+
+    expect(completed.accepted, isTrue);
     expect(updated.userClub.squad.any((player) => player.id == freeAgent.id), isTrue);
     expect(updated.freeAgents.any((player) => player.id == freeAgent.id), isFalse);
     expect(repository.saved[career.careerId]?.careerId, career.careerId);
@@ -113,7 +135,7 @@ void main() {
         .where((item) => item.id == player.id), hasLength(1));
   });
 
-  test('renovação pelo controlador aplica luvas e novo salário uma vez', () async {
+  test('renovação entra em Negociações antes de aplicar luvas e salário', () async {
     final repository = _MemoryCareerRepository();
     final container = ProviderContainer(
       overrides: [careerRepositoryProvider.overrideWithValue(repository)],
@@ -130,11 +152,35 @@ void main() {
           salary: salary,
           years: 2,
         );
+    final staged = container.read(gameControllerProvider).career!;
+
+    expect(result.accepted, isTrue);
+    expect(staged.userClub.money, moneyBefore);
+    expect(
+      staged.userClub.squad.singleWhere((item) => item.id == player.id).salary,
+      player.salary,
+    );
+    expect(staged.finances, isEmpty);
+    final negotiation = staged.transferNegotiations.single;
+    expect(negotiation.kind, TransferNegotiationKind.contractRenewal);
+    expect(negotiation.status, TransferNegotiationStatus.waiting);
+
+    final responded = MarketCareerEngine.advanceDay(
+      staged.copyWith(currentDate: negotiation.nextActionDate),
+    ).state;
+    expect(
+      responded.transferNegotiations.single.status,
+      TransferNegotiationStatus.accepted,
+    );
+    container.read(gameControllerProvider.notifier).attachCareer(responded);
+    final completed = await container
+        .read(transferControllerProvider)
+        .completeMarketNegotiation(negotiation.id);
     final updated = container.read(gameControllerProvider).career!;
     final renewed = updated.userClub.squad
         .singleWhere((item) => item.id == player.id);
 
-    expect(result.accepted, isTrue);
+    expect(completed.accepted, isTrue);
     expect(updated.userClub.money, moneyBefore - salary * 2);
     expect(renewed.salary, salary);
     expect(renewed.contract.endSeason, career.season + 2);
@@ -213,7 +259,7 @@ void main() {
     expect(repository.saved[second.careerId]!.userClub.name, second.userClub.name);
   });
 
-  test('proposta recebida da CPU só transfere jogador após aceite explícito', () async {
+  test('proposta recebida da CPU exige aceite das bases e conclusão separada', () async {
     final repository = _MemoryCareerRepository();
     final container = ProviderContainer(
       overrides: [careerRepositoryProvider.overrideWithValue(repository)],
@@ -257,18 +303,26 @@ void main() {
     final updated = container.read(gameControllerProvider).career!;
 
     expect(result.accepted, isTrue);
-    expect(updated.userClub.squad.any((item) => item.id == player.id), isFalse);
+    expect(updated.userClub.squad.any((item) => item.id == player.id), isTrue);
+    expect(updated.finances, isEmpty);
+    final negotiation = updated.transferNegotiations.single;
+    expect(negotiation.status, TransferNegotiationStatus.accepted);
+    final completion = await container
+        .read(transferControllerProvider)
+        .completeMarketNegotiation(negotiation.id);
+    final completed = container.read(gameControllerProvider).career!;
+
+    expect(completion.accepted, isTrue);
+    expect(completed.userClub.squad.any((item) => item.id == player.id), isFalse);
     expect(
-      updated.clubs
+      completed.clubs
           .firstWhere((club) => club.id == buyer.id)
           .squad
           .where((item) => item.id == player.id),
       hasLength(1),
     );
-    expect(updated.news.single.type, CareerEventType.info);
-    expect(updated.news.single.title, 'Transferência concluída');
     expect(
-      updated.finances.where((tx) => tx.description.contains(player.displayName)),
+      completed.finances.where((tx) => tx.description.contains(player.displayName)),
       hasLength(1),
     );
   });
@@ -322,9 +376,13 @@ void main() {
     expect(updated.news.single.type, CareerEventType.info);
     expect(updated.news.single.title, 'Proposta recusada');
     expect(updated.finances, isEmpty);
+    expect(
+      updated.transferNegotiations.single.status,
+      TransferNegotiationStatus.rejected,
+    );
   });
 
-  test('contraproposta do usuário atualiza a oferta quando a CPU chega ao limite', () async {
+  test('contraproposta entra em análise antes de qualquer conclusão', () async {
     final repository = _MemoryCareerRepository();
     final container = ProviderContainer(
       overrides: [careerRepositoryProvider.overrideWithValue(repository)],
@@ -368,26 +426,21 @@ void main() {
         .counterIncomingOffer(eventId: eventId, fee: fee * 2);
     final updated = container.read(gameControllerProvider).career!;
 
-    expect(result.accepted, isFalse);
-    expect(result.counterOffer, isNotNull);
-    expect(result.counterOffer, greaterThan(fee));
+    expect(result.accepted, isTrue);
     expect(updated.userClub.squad.any((item) => item.id == player.id), isTrue);
-    expect(updated.news.single.type, CareerEventType.transferOffer);
-    expect(updated.news.single.amount, result.counterOffer);
-    expect(updated.news.single.title, 'Contraproposta recebida');
+    expect(updated.transferNegotiations.single.status, TransferNegotiationStatus.waiting);
+    expect(updated.finances, isEmpty);
 
-    final finalResponse = await container
-        .read(transferControllerProvider)
-        .counterIncomingOffer(
-          eventId: eventId,
-          fee: result.counterOffer! + 1,
-        );
-    final closed = container.read(gameControllerProvider).career!;
-    expect(finalResponse.accepted, isFalse);
-    expect(finalResponse.counterOffer, isNull);
-    expect(closed.userClub.squad.any((item) => item.id == player.id), isTrue);
-    expect(closed.news.single.type, CareerEventType.info);
-    expect(closed.news.single.title, 'Negociação encerrada');
+    final advanced = MarketCareerEngine.advanceDay(
+      updated.copyWith(
+        currentDate: updated.transferNegotiations.single.nextActionDate,
+      ),
+    ).state;
+    expect(
+      advanced.transferNegotiations.single.status,
+      isNot(TransferNegotiationStatus.waiting),
+    );
+    expect(advanced.userClub.squad.any((item) => item.id == player.id), isTrue);
   });
 
 }

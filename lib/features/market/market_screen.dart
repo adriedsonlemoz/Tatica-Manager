@@ -10,26 +10,29 @@ import '../../core/utils/formatters.dart';
 import '../../data/competition_catalog.dart';
 import '../../domain/club/club.dart';
 import '../../domain/player/player.dart';
-import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/transfer/market_career.dart';
-import '../../game/cpu/cpu_user_offer_engine.dart';
 import '../../game/transfer/market_career_engine.dart';
 import '../../game/transfer/transfer_window_engine.dart';
 import '../player/player_profile_screen.dart';
-import 'incoming_transfer_offer_dialog.dart';
 
 part 'market_components.dart';
 part 'market_dialogs.dart';
 
+enum MarketSection { market, observed, negotiations }
+
 class MarketScreen extends ConsumerStatefulWidget {
   const MarketScreen({
     super.key,
-    this.initialTab = 0,
+    this.initialSection = MarketSection.market,
+    this.initialTab,
     this.showBackButton = false,
   });
 
-  final int initialTab;
+  /// Mantém rotas antigas funcionais: 0=Mercado, 1=Observados e qualquer
+  /// aba legada de negociação abre a nova Central de Negociações.
+  final int? initialTab;
+  final MarketSection initialSection;
   final bool showBackButton;
 
   @override
@@ -40,6 +43,21 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
   String query = '';
   PlayerPosition? position;
   _MarketFilters filters = const _MarketFilters();
+  bool _searchExpanded = false;
+  late int _activeTab;
+
+  @override
+  void initState() {
+    super.initState();
+    final legacy = widget.initialTab;
+    _activeTab = legacy == null
+        ? widget.initialSection.index
+        : legacy == 1
+            ? MarketSection.observed.index
+            : legacy >= 2
+                ? MarketSection.negotiations.index
+                : MarketSection.market.index;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +66,6 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
     final entries = _entries(career);
     final filtered = entries.where((entry) => _matchesFilters(entry, career.season)).toList()
       ..sort((a, b) => b.player.overall.compareTo(a.player.overall));
-    final incomingOffers = career.news
-        .where(
-          (event) => CpuUserOfferEngine.isOfferActive(
-            state: career,
-            event: event,
-          ),
-        )
-        .toList()
-        .reversed
-        .toList(growable: false);
     final observedEntries = entries
         .where(
           (entry) => career.scoutingReports.any(
@@ -71,32 +79,22 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
         final level = rb.level.index.compareTo(ra.level.index);
         return level != 0 ? level : b.player.overall.compareTo(a.player.overall);
       });
-    final activeNegotiations = career.transferNegotiations
-        .where((item) => item.status.isOpen)
-        .toList()
-        .reversed
-        .toList(growable: false);
-    final negotiationHistory = career.transferNegotiations
-        .where((item) => !item.status.isOpen)
-        .toList()
-        .reversed
-        .toList(growable: false);
 
     return DefaultTabController(
-      length: 5,
-      initialIndex: widget.initialTab.clamp(0, 4).toInt(),
+      length: 3,
+      initialIndex: _activeTab,
       child: PremiumScaffold(
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       if (widget.showBackButton) ...[
-                        IconButton.filledTonal(
+                        IconButton(
                           tooltip: 'Voltar',
                           onPressed: () => Navigator.of(context).pop(),
                           icon: const Icon(Icons.arrow_back_rounded),
@@ -108,20 +106,27 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'CENTRAL DE MERCADO',
+                              'Transferências',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
                                   ?.copyWith(fontWeight: FontWeight.w900),
                             ),
-                            Text(
-                              '${formatMoney(career.userClub.transferBudget)} disponíveis',
-                              style: const TextStyle(color: AppColors.green),
-                            ),
                           ],
                         ),
                       ),
-                      IconButton.filledTonal(
+                      IconButton(
+                        tooltip: 'Buscar jogadores',
+                        onPressed: () => setState(
+                          () => _searchExpanded = !_searchExpanded,
+                        ),
+                        icon: Icon(
+                          _searchExpanded
+                              ? Icons.search_off_rounded
+                              : Icons.search_rounded,
+                        ),
+                      ),
+                      IconButton(
                         tooltip: 'Filtros avançados',
                         onPressed: () async {
                           final next = await showModalBottomSheet<_MarketFilters>(
@@ -141,83 +146,42 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                             setState(() => filters = next);
                           }
                         },
-                        icon: const Icon(Icons.tune_rounded),
+                        icon: Badge(
+                          isLabelVisible: filters.isActive,
+                          child: const Icon(Icons.filter_alt_outlined),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  _WindowStatus(open: windowOpen, date: career.currentDate),
-                  const SizedBox(height: 10),
-                  TextField(
-                    onChanged: (value) => setState(() => query = value),
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search_rounded),
-                      hintText: 'Nome, clube, país ou posição',
+                  const SizedBox(height: 8),
+                  _TransferClubSummary(
+                    club: career.userClub,
+                    season: career.season,
+                    competitionName: CompetitionCatalog.displayNameForId(
+                      career.primaryCompetitionId,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  SizedBox(
-                    height: 38,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        ChoiceChip(
-                          label: const Text('Todas'),
-                          selected: position == null,
-                          onSelected: (_) => setState(() => position = null),
-                        ),
-                        const SizedBox(width: 6),
-                        ...PlayerPosition.values.map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.only(right: 6),
-                            child: ChoiceChip(
-                              label: Text(item.label),
-                              selected: position == item,
-                              onSelected: (_) => setState(() => position = item),
-                            ),
-                          ),
-                        ),
-                      ],
+                  _WindowStatus(open: windowOpen, date: career.currentDate),
+                  if (_searchExpanded && _activeTab == MarketSection.market.index)
+                    _MarketSearchControls(
+                      query: query,
+                      position: position,
+                      filters: filters,
+                      onQueryChanged: (value) => setState(() => query = value),
+                      onPositionChanged: (value) => setState(() => position = value),
+                      onClearFilters: () =>
+                          setState(() => filters = const _MarketFilters()),
                     ),
-                  ),
-                  if (filters.isActive) ...[
-                    const SizedBox(height: 7),
-                    Row(
-                      children: [
-                        const Icon(Icons.filter_alt_rounded,
-                            size: 16, color: AppColors.green),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            filters.summary,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.muted,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () =>
-                              setState(() => filters = const _MarketFilters()),
-                          child: const Text('Limpar'),
-                        ),
-                      ],
-                    ),
-                  ],
                 ],
               ),
             ),
-            const TabBar(
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
+            TabBar(
+              onTap: (value) => setState(() => _activeTab = value),
               tabs: [
-                Tab(text: 'Buscar'),
-                Tab(text: 'Observação'),
+                const Tab(text: 'Mercado'),
+                const Tab(text: 'Observados'),
                 Tab(text: 'Negociações'),
-                Tab(text: 'Propostas recebidas'),
-                Tab(text: 'Histórico'),
               ],
             ),
             Expanded(
@@ -228,15 +192,7 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                     windowOpen: windowOpen,
                   ),
                   _ScoutingTab(entries: observedEntries),
-                  _NegotiationsTab(
-                    negotiations: activeNegotiations,
-                    entries: entries,
-                  ),
-                  _IncomingOffersTab(events: incomingOffers),
-                  _NegotiationHistoryTab(
-                    negotiations: negotiationHistory,
-                    entries: entries,
-                  ),
+                  _NegotiationsTab(career: career),
                 ],
               ),
             ),
@@ -308,4 +264,161 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
     }
     return true;
   }
+}
+
+class _TransferClubSummary extends StatelessWidget {
+  const _TransferClubSummary({
+    required this.club,
+    required this.season,
+    required this.competitionName,
+  });
+
+  final Club club;
+  final int season;
+  final String competitionName;
+
+  @override
+  Widget build(BuildContext context) => SectionCard(
+        padding: const EdgeInsets.all(13),
+        child: Row(
+          children: [
+            ClubBadge(club: club, size: 58),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    club.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Temporada $season',
+                    style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                  ),
+                  Text(
+                    competitionName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Text(
+                  'ORÇAMENTO',
+                  style: TextStyle(color: AppColors.muted, fontSize: 9),
+                ),
+                Text(
+                  formatMoney(club.transferBudget),
+                  style: const TextStyle(
+                    color: AppColors.green,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'FOLHA MENSAL',
+                  style: TextStyle(color: AppColors.muted, fontSize: 9),
+                ),
+                Text(
+                  formatMoney(club.payroll),
+                  style: const TextStyle(
+                    color: AppColors.green,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+}
+
+class _MarketSearchControls extends StatelessWidget {
+  const _MarketSearchControls({
+    required this.query,
+    required this.position,
+    required this.filters,
+    required this.onQueryChanged,
+    required this.onPositionChanged,
+    required this.onClearFilters,
+  });
+
+  final String query;
+  final PlayerPosition? position;
+  final _MarketFilters filters;
+  final ValueChanged<String> onQueryChanged;
+  final ValueChanged<PlayerPosition?> onPositionChanged;
+  final VoidCallback onClearFilters;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 9),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: onQueryChanged,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search_rounded),
+                hintText: 'Nome, clube, país ou posição',
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 35,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  ChoiceChip(
+                    label: const Text('Todas'),
+                    selected: position == null,
+                    onSelected: (_) => onPositionChanged(null),
+                  ),
+                  const SizedBox(width: 6),
+                  ...PlayerPosition.values.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ChoiceChip(
+                        label: Text(item.label),
+                        selected: position == item,
+                        onSelected: (_) => onPositionChanged(item),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (filters.isActive) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.filter_alt_rounded,
+                    size: 16,
+                    color: AppColors.green,
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      filters.summary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                    ),
+                  ),
+                  TextButton(onPressed: onClearFilters, child: const Text('Limpar')),
+                ],
+              ),
+            ],
+          ],
+        ),
+      );
 }

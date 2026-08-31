@@ -28,9 +28,10 @@ abstract final class ContractLifecycleEngine {
   static bool expiresNextSeason(Player player, int season) =>
       player.contract.endSeason == season + 1;
 
-  static List<Player> expiringThisSeason(CareerState state) => state.userClub.squad
-      .where((player) => expiresThisSeason(player, state.season))
-      .toList();
+  static List<Player> expiringThisSeason(CareerState state) =>
+      _userContractPlayers(state)
+          .where((player) => expiresThisSeason(player, state.season))
+          .toList();
 
   /// Reconciles the single canonical expiration rule used everywhere:
   /// a contract is expired only when its end season is before the current
@@ -49,6 +50,8 @@ abstract final class ContractLifecycleEngine {
             player.copyWith(
               clearClubId: true,
               listed: true,
+              availableForLoan: false,
+              clearLoan: true,
             ),
           );
           changed = true;
@@ -103,5 +106,18 @@ abstract final class ContractLifecycleEngine {
       releasedPlayers: released,
       changed: changed,
     );
+  }
+
+  static List<Player> _userContractPlayers(CareerState state) {
+    final players = <Player>[];
+    for (final club in state.clubs) {
+      for (final player in club.squad) {
+        final belongsToUser =
+            (club.id == state.userClubId && player.loan == null) ||
+                player.loan?.parentClubId == state.userClubId;
+        if (belongsToUser) players.add(player);
+      }
+    }
+    return players;
   }
 }

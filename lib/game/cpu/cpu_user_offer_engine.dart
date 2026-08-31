@@ -4,6 +4,8 @@ import '../../domain/club/club.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
+import '../../domain/transfer/market_career.dart';
+import '../transfer/market_career_engine.dart';
 import '../transfer/transfer_engine.dart';
 import '../transfer/transfer_window_engine.dart';
 import 'cpu_financial_engine.dart';
@@ -21,6 +23,8 @@ class CpuIncomingOffer {
     required this.years,
     required this.maxFee,
     required this.score,
+    this.kind = TransferNegotiationKind.permanentTransfer,
+    this.loanEndDate,
   });
 
   final Player player;
@@ -31,6 +35,18 @@ class CpuIncomingOffer {
   final int years;
   final int maxFee;
   final int score;
+  final TransferNegotiationKind kind;
+  final DateTime? loanEndDate;
+}
+
+class CpuGeneratedNegotiation {
+  const CpuGeneratedNegotiation({
+    required this.negotiation,
+    required this.event,
+  });
+
+  final TransferNegotiation negotiation;
+  final CareerEvent event;
 }
 
 class CpuOfferCounterDecision {
@@ -77,11 +93,50 @@ abstract final class CpuUserOfferEngine {
       date: state.currentDate,
       type: CareerEventType.transferOffer,
       title: incomingOfferTitle,
-      message:
-          '${offer.buyer.name} enviou uma proposta de ${_money(offer.fee)} por ${offer.player.displayName}.',
+      message: _offerMessage(offer),
       playerId: offer.player.id,
       clubId: offer.buyer.id,
       amount: offer.fee,
+    );
+  }
+
+  /// Cria uma proposta persistente para a Central de Negociações. O evento
+  /// associado é somente uma notificação; a fonte de verdade é a negociação.
+  static CpuGeneratedNegotiation? generateNegotiationForDay(CareerState state) {
+    if (!TransferWindowEngine.isOpen(state.currentDate) ||
+        state.userClub.squad.length <= TransferEngine.minimumSquadSize ||
+        hasActiveOffer(state)) {
+      return null;
+    }
+    final seed = _stableSeed(
+      '${state.careerId}|${state.season}|${_dayKey(state.currentDate)}|incoming-negotiation',
+    );
+    if (Random(seed).nextInt(100) >= dailyOfferChancePercent) return null;
+    final offer = chooseOffer(state: state, randomSeed: seed + 41);
+    if (offer == null) return null;
+    final negotiation = MarketCareerEngine.createIncomingOffer(
+      state: state,
+      playerId: offer.player.id,
+      buyerClubId: offer.buyer.id,
+      fee: offer.fee,
+      salary: offer.salary,
+      years: offer.years,
+      kind: offer.kind,
+      loanEndDate: offer.loanEndDate,
+    );
+    return CpuGeneratedNegotiation(
+      negotiation: negotiation,
+      event: CareerEvent(
+        id: 'offer-${_dayKey(state.currentDate)}-${offer.player.id}-${offer.buyer.id}',
+        date: state.currentDate,
+        type: CareerEventType.transferOffer,
+        title: incomingOfferTitle,
+        message: _offerMessage(offer),
+        playerId: offer.player.id,
+        clubId: offer.buyer.id,
+        negotiationId: negotiation.id,
+        amount: offer.fee,
+      ),
     );
   }
 
@@ -122,13 +177,22 @@ abstract final class CpuUserOfferEngine {
       final need = strategy.need;
       for (final player in userClub.squad) {
         if (recentPlayerIds.contains(player.id) ||
+            player.loan != null ||
             !need.matches(player) ||
             !CpuRecruitmentEngine.isUsefulUpgrade(player, need)) {
           continue;
         }
 
-        final fee = TransferEngine.saleOfferFee(player: player, buyer: buyer);
-        final salary = CpuRecruitmentEngine.salaryOffer(player, buyer);
+        final isLoan = player.availableForLoan;
+        final kind = isLoan
+            ? TransferNegotiationKind.loan
+            : TransferNegotiationKind.permanentTransfer;
+        final fee = isLoan
+            ? 0
+            : TransferEngine.saleOfferFee(player: player, buyer: buyer);
+        final salary = isLoan
+            ? player.salary
+            : CpuRecruitmentEngine.salaryOffer(player, buyer);
         if (!CpuFinancialEngine.canAfford(
           buyer: buyer,
           need: need,
@@ -139,13 +203,15 @@ abstract final class CpuUserOfferEngine {
           continue;
         }
 
-        final maxFee = maximumOfferFee(
-          buyer: buyer,
-          need: need,
-          player: player,
-          salary: salary,
-          baseFee: fee,
-        );
+        final maxFee = isLoan
+            ? 0
+            : maximumOfferFee(
+                buyer: buyer,
+                need: need,
+                player: player,
+                salary: salary,
+                baseFee: fee,
+              );
         if (maxFee < fee) continue;
 
         final needFit = need.priority * 8;
@@ -167,9 +233,11 @@ abstract final class CpuUserOfferEngine {
             need: need,
             fee: fee,
             salary: salary,
-            years: CpuRecruitmentEngine.contractYears(player),
+            years: isLoan ? 1 : CpuRecruitmentEngine.contractYears(player),
             maxFee: maxFee,
             score: needFit + upgradeScore + affordability + jitter,
+            kind: kind,
+            loanEndDate: isLoan ? _defaultLoanEndDate(state.currentDate) : null,
           ),
         );
       }
@@ -308,14 +376,27 @@ abstract final class CpuUserOfferEngine {
       event.type == CareerEventType.transferOffer &&
       event.title == finalCounterOfferTitle;
 
-  static bool hasActiveOffer(CareerState state) => state.news.any(
-        (event) => isOfferActive(state: state, event: event),
-      );
+  static bool hasActiveOffer(CareerState state) =>
+      state.transferNegotiations.any(
+        (negotiation) =>
+            negotiation.fromClubId == state.userClubId &&
+            negotiation.kind != TransferNegotiationKind.contractRenewal &&
+            negotiation.status.isOpen,
+      ) ||
+      state.news.any((event) => isOfferActive(state: state, event: event));
 
   static bool isOfferActive({
     required CareerState state,
     required CareerEvent event,
   }) {
+    if (event.negotiationId != null) {
+      final negotiation = state.transferNegotiations
+          .where((item) => item.id == event.negotiationId)
+          .firstOrNull;
+      return negotiation != null &&
+          negotiation.status == TransferNegotiationStatus.received &&
+          !negotiation.nextActionDate.isBefore(state.currentDate);
+    }
     if (event.type != CareerEventType.transferOffer ||
         event.playerId == null ||
         event.clubId == null ||
@@ -370,6 +451,7 @@ abstract final class CpuUserOfferEngine {
   }) =>
       news.map((event) {
         if (event.type != CareerEventType.transferOffer ||
+            event.negotiationId != null ||
             isOfferActive(state: state, event: event)) {
           return event;
         }
@@ -408,4 +490,19 @@ abstract final class CpuUserOfferEngine {
     }
     return 'R\$ $buffer';
   }
+
+  static DateTime _defaultLoanEndDate(DateTime currentDate) {
+    final end = DateTime(currentDate.year, 12, 31);
+    return end.isAfter(currentDate)
+        ? end
+        : DateTime(currentDate.year + 1, 6, 30);
+  }
+
+  static String _offerMessage(CpuIncomingOffer offer) =>
+      offer.kind == TransferNegotiationKind.loan
+          ? '${offer.buyer.name} pediu ${offer.player.displayName} por empréstimo até ${_dateLabel(offer.loanEndDate!)}.'
+          : '${offer.buyer.name} enviou uma proposta de ${_money(offer.fee)} por ${offer.player.displayName}.';
+
+  static String _dateLabel(DateTime value) =>
+      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 }

@@ -24,7 +24,19 @@ class _ContractsScreenState extends ConsumerState<ContractsScreen> {
   @override
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
-    final players = [...career.userClub.squad]
+    final playerHolders = <String, String>{};
+    final players = <Player>[];
+    for (final club in career.clubs) {
+      for (final player in club.squad) {
+        final belongsToUser =
+            (club.id == career.userClubId && player.loan == null) ||
+                player.loan?.parentClubId == career.userClubId;
+        if (!belongsToUser) continue;
+        players.add(player);
+        playerHolders[player.id] = club.id;
+      }
+    }
+    players
       ..sort((a, b) => a.contract.endSeason.compareTo(b.contract.endSeason));
     final statuses = {
       for (final player in players)
@@ -88,21 +100,35 @@ class _ContractsScreenState extends ConsumerState<ContractsScreen> {
             )
           else
             ...visible.map(
-              (player) => ContractPlayerCard(
-                player: player,
-                status: statuses[player.id]!,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => PlayerProfileScreen(playerId: player.id),
+              (player) {
+                final holderId = playerHolders[player.id] ?? career.userClubId;
+                final holder = career.clubs.firstWhere(
+                  (club) => club.id == holderId,
+                );
+                final loanedOut =
+                    player.loan?.parentClubId == career.userClubId &&
+                        holder.id != career.userClubId;
+                return ContractPlayerCard(
+                  player: player,
+                  status: statuses[player.id]!,
+                  loanedOut: loanedOut,
+                  loanedTo: loanedOut ? holder.shortName : null,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PlayerProfileScreen(
+                        playerId: player.id,
+                        clubId: holderId,
+                      ),
+                    ),
                   ),
-                ),
-                onRenew: () => showRenewPlayerDialog(
-                  context,
-                  ref,
-                  player,
-                  ContractEngine.expectedSalary(player),
-                ),
-              ),
+                  onRenew: () => showRenewPlayerDialog(
+                    context,
+                    ref,
+                    player,
+                    ContractEngine.expectedSalary(player),
+                  ),
+                );
+              },
             ),
         ],
       ),

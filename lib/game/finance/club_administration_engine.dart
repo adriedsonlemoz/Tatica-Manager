@@ -134,7 +134,9 @@ abstract final class ClubAdministrationEngine {
   static ClubDepartment? departmentFor(FinanceKind kind) => switch (kind) {
         FinanceKind.playerPurchase || FinanceKind.transferOut =>
           ClubDepartment.transfers,
-        FinanceKind.wages || FinanceKind.contractRenewal =>
+        FinanceKind.wages ||
+        FinanceKind.contractRenewal ||
+        FinanceKind.signingBonus =>
           ClubDepartment.payroll,
         FinanceKind.stadiumInvestment => ClubDepartment.stadium,
         FinanceKind.operations => ClubDepartment.operations,

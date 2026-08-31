@@ -20,7 +20,6 @@ import '../clubs/club_profile_screen.dart';
 import '../career/manager_job_market_screen.dart';
 import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
-import '../market/incoming_transfer_offer_dialog.dart';
 import '../market/market_screen.dart';
 import '../more/more_screen.dart';
 import '../player/player_profile_screen.dart';
@@ -397,10 +396,13 @@ class HomeScreen extends ConsumerWidget {
     required bool transferActionable,
   }) {
     if (transferActionable) {
-      showIncomingTransferOfferDialog(
-        context,
-        ref,
-        eventId: event.id,
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const MarketScreen(
+            initialSection: MarketSection.negotiations,
+            showBackButton: true,
+          ),
+        ),
       );
       return;
     }
@@ -412,7 +414,12 @@ class HomeScreen extends ConsumerWidget {
     }
     if (event.negotiationId != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const MarketScreen(initialTab: 2, showBackButton: true)),
+        MaterialPageRoute(
+          builder: (_) => const MarketScreen(
+            initialSection: MarketSection.negotiations,
+            showBackButton: true,
+          ),
+        ),
       );
       return;
     }

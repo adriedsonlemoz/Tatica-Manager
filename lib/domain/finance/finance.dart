@@ -15,6 +15,7 @@ enum FinanceKind {
   transferOut,
   operations,
   contractRenewal,
+  signingBonus,
   stadiumInvestment,
 }
 
@@ -42,6 +43,7 @@ extension FinanceKindX on FinanceKind {
         FinanceKind.wages => 'Salários',
         FinanceKind.operations => 'Operações',
         FinanceKind.contractRenewal => 'Renovação contratual',
+        FinanceKind.signingBonus => 'Luvas e bônus de assinatura',
         FinanceKind.stadiumInvestment => 'Investimento no estádio',
       };
 
@@ -56,7 +58,9 @@ extension FinanceKindX on FinanceKind {
           FinanceCategory.stadium,
         FinanceKind.tvRights || FinanceKind.sponsorship =>
           FinanceCategory.commercial,
-        FinanceKind.wages || FinanceKind.contractRenewal =>
+        FinanceKind.wages ||
+        FinanceKind.contractRenewal ||
+        FinanceKind.signingBonus =>
           FinanceCategory.payroll,
         FinanceKind.playerSale ||
         FinanceKind.transferIn ||

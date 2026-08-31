@@ -224,12 +224,16 @@ class ContractPlayerCard extends StatelessWidget {
     required this.status,
     required this.onTap,
     required this.onRenew,
+    this.loanedOut = false,
+    this.loanedTo,
   });
 
   final Player player;
   final ContractVisualStatus status;
   final VoidCallback onTap;
   final VoidCallback onRenew;
+  final bool loanedOut;
+  final String? loanedTo;
 
   @override
   Widget build(BuildContext context) {
@@ -298,12 +302,19 @@ class ContractPlayerCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 7),
-                        Text(
-                          'Pede ${compactMoney(ContractEngine.expectedSalary(player))}',
-                          style: const TextStyle(
-                            color: AppColors.muted,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
+                        Flexible(
+                          child: Text(
+                            loanedOut
+                                ? 'Emprestado para ${loanedTo ?? 'outro clube'}'
+                                : 'Pede ${compactMoney(ContractEngine.expectedSalary(player))}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ],

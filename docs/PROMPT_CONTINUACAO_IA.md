@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.121
-Android versionCode: 122
-pubspec: 0.1.1+122
+Release visível: 0.1.1.120
+Android versionCode: 121
+pubspec: 0.1.1+121
 
-Novidade desta base: o último erro de análise estática da tela de Finanças foi corrigido, incluindo o import de `DashboardSectionHeader` e a remoção de duas asserções não nulas redundantes, sem alterar a arquitetura entregue. O gráfico, os cards, a distribuição, os filtros e a previsão usam somente `CareerState.finances`, caixa, orçamento e folha já persistidos; não existe segundo sistema financeiro. Estádio, Mercado, Contratos, Patrocínios e Orçamentos seguem ligados à mesma carreira. Transferências, renovações e bônus novos usam `career.currentDate`. Não criar categorias de despesa sem fluxo real, como Base ou Comissão técnica. Pré-jogo, Estádio, músicas e Match Engine permanecem preservados.
+Novidade desta base: Transferências foi centralizada nas abas Mercado, Observados e Negociações. Compra, venda, renovação e empréstimo usam `TransferNegotiation` persistida e nunca devem alterar elenco, contrato, caixa ou folha antes de o usuário concluir um acordo já aceito. Propostas abertas reservam orçamento, entrada e luvas; parcelas pendentes só movimentam caixa quando pagas. `PlayerLoan` mantém o contrato no clube de origem, transfere temporariamente o atleta e a folha ao receptor e devolve o jogador no prazo. Finanças mantém Resumo sem rolagem vertical e usa exclusivamente `CareerState.finances`, caixa, orçamento e folha persistidos; detalhes ficam em painéis expansíveis. Não criar categorias financeiras, dados ou sistemas paralelos. Pré-jogo, Estádio, músicas e Match Engine permanecem preservados.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.122 com versionCode > 122.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.121 com versionCode > 121.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

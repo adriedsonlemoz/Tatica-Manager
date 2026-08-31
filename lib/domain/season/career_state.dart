@@ -162,7 +162,7 @@ class CareerState {
     this.lastMatch,
   });
 
-  static const int currentSchemaVersion = 13;
+  static const int currentSchemaVersion = 14;
   static const int maxStoredNews = 80;
 
   final int schemaVersion;

@@ -64,7 +64,29 @@ class PlayerScoutingReport {
       );
 }
 
+/// Todas as operações passam pela mesma Central de Negociações persistida.
+enum TransferNegotiationKind {
+  permanentTransfer,
+  contractRenewal,
+  loan,
+}
+
+extension TransferNegotiationKindX on TransferNegotiationKind {
+  String get label => switch (this) {
+        TransferNegotiationKind.permanentTransfer => 'Transferência',
+        TransferNegotiationKind.contractRenewal => 'Renovação contratual',
+        TransferNegotiationKind.loan => 'Empréstimo',
+      };
+
+  String get shortLabel => switch (this) {
+        TransferNegotiationKind.permanentTransfer => 'Transferência',
+        TransferNegotiationKind.contractRenewal => 'Renovação',
+        TransferNegotiationKind.loan => 'Empréstimo',
+      };
+}
+
 enum TransferNegotiationStatus {
+  received,
   waiting,
   countered,
   accepted,
@@ -75,6 +97,7 @@ enum TransferNegotiationStatus {
 
 extension TransferNegotiationStatusX on TransferNegotiationStatus {
   String get label => switch (this) {
+        TransferNegotiationStatus.received => 'Proposta recebida',
         TransferNegotiationStatus.waiting => 'Em análise',
         TransferNegotiationStatus.countered => 'Contraproposta',
         TransferNegotiationStatus.accepted => 'Acordo possível',
@@ -84,6 +107,7 @@ extension TransferNegotiationStatusX on TransferNegotiationStatus {
       };
 
   bool get isOpen =>
+      this == TransferNegotiationStatus.received ||
       this == TransferNegotiationStatus.waiting ||
       this == TransferNegotiationStatus.countered ||
       this == TransferNegotiationStatus.accepted;
@@ -103,14 +127,17 @@ class TransferNegotiation {
     required this.nextActionDate,
     required this.status,
     required this.message,
+    this.kind = TransferNegotiationKind.permanentTransfer,
     this.fromClubId,
     this.counterFee,
     this.counterSalary,
     this.otherClubsInterested = 0,
+    this.loanEndDate,
   });
 
   final String id;
   final String playerId;
+  final TransferNegotiationKind kind;
   final String? fromClubId;
   final String toClubId;
   final int fee;
@@ -125,6 +152,7 @@ class TransferNegotiation {
   final int? counterFee;
   final int? counterSalary;
   final int otherClubsInterested;
+  final DateTime? loanEndDate;
 
   TransferNegotiation copyWith({
     int? fee,
@@ -140,10 +168,13 @@ class TransferNegotiation {
     int? counterSalary,
     bool clearCounterSalary = false,
     int? otherClubsInterested,
+    DateTime? loanEndDate,
+    bool clearLoanEndDate = false,
   }) =>
       TransferNegotiation(
         id: id,
         playerId: playerId,
+        kind: kind,
         fromClubId: fromClubId,
         toClubId: toClubId,
         fee: fee ?? this.fee,
@@ -161,11 +192,14 @@ class TransferNegotiation {
             clearCounterSalary ? null : (counterSalary ?? this.counterSalary),
         otherClubsInterested:
             otherClubsInterested ?? this.otherClubsInterested,
+        loanEndDate:
+            clearLoanEndDate ? null : (loanEndDate ?? this.loanEndDate),
       );
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'playerId': playerId,
+        'kind': kind.name,
         'fromClubId': fromClubId,
         'toClubId': toClubId,
         'fee': fee,
@@ -180,12 +214,17 @@ class TransferNegotiation {
         'counterFee': counterFee,
         'counterSalary': counterSalary,
         'otherClubsInterested': otherClubsInterested,
+        'loanEndDate': loanEndDate?.toIso8601String(),
       };
 
   factory TransferNegotiation.fromJson(Map<String, dynamic> json) =>
       TransferNegotiation(
         id: json['id'] as String? ?? '',
         playerId: json['playerId'] as String? ?? '',
+        kind: TransferNegotiationKind.values.firstWhere(
+          (value) => value.name == json['kind'],
+          orElse: () => TransferNegotiationKind.permanentTransfer,
+        ),
         fromClubId: json['fromClubId'] as String?,
         toClubId: json['toClubId'] as String? ?? '',
         fee: json['fee'] as int? ?? 0,
@@ -207,6 +246,7 @@ class TransferNegotiation {
         counterFee: json['counterFee'] as int?,
         counterSalary: json['counterSalary'] as int?,
         otherClubsInterested: json['otherClubsInterested'] as int? ?? 0,
+        loanEndDate: DateTime.tryParse(json['loanEndDate'] as String? ?? ''),
       );
 }
 

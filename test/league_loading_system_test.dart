@@ -41,7 +41,7 @@ void main() {
     final career = _career();
     final realClubIds = CompetitionCatalog.primarySeriesForClub(userClubId).clubIds.toSet();
 
-    expect(career.schemaVersion, 13);
+    expect(career.schemaVersion, CareerState.currentSchemaVersion);
     expect(career.leagueSetup.levelFor('br-series-a'), LeagueLoadLevel.full);
     expect(career.clubs.map((club) => club.id).toSet(), realClubIds);
     expect(career.fixtures, isNotEmpty);

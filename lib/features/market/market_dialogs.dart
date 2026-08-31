@@ -256,6 +256,13 @@ Future<void> _showPlayerMarketSheet(
                 style: const TextStyle(fontSize: 11),
               ),
             ],
+            if (player.loan != null) ...[
+              const SizedBox(height: 7),
+              Text(
+                'Este atleta está emprestado até ${player.loan!.endsAt.day.toString().padLeft(2, '0')}/${player.loan!.endsAt.month.toString().padLeft(2, '0')}/${player.loan!.endsAt.year} e não pode ser negociado agora.',
+                style: const TextStyle(color: AppColors.warning, fontSize: 11),
+              ),
+            ],
             const SizedBox(height: 14),
             Wrap(
               spacing: 8,
@@ -295,7 +302,7 @@ Future<void> _showPlayerMarketSheet(
                   ),
                 if (report != null)
                   FilledButton.icon(
-                    onPressed: !windowOpen
+                    onPressed: !windowOpen || player.loan != null
                         ? null
                         : () {
                             Navigator.of(sheetContext).pop();
@@ -304,9 +311,9 @@ Future<void> _showPlayerMarketSheet(
                               ref,
                               entry: entry,
                             );
-                          },
+                    },
                     icon: const Icon(Icons.handshake_rounded),
-                    label: const Text('Negociar'),
+                    label: Text(player.loan == null ? 'Negociar' : 'Emprestado'),
                   ),
               ],
             ),
@@ -453,6 +460,95 @@ Future<void> _showNegotiationDialog(
   feeController.dispose();
   salaryController.dispose();
   bonusController.dispose();
+}
+
+Future<void> _showRenewalNegotiationDialog(
+  BuildContext context,
+  WidgetRef ref, {
+  required Player? player,
+  required TransferNegotiation existing,
+}) async {
+  if (player == null) return;
+  final salaryController = TextEditingController(
+    text: '${existing.counterSalary ?? existing.salary}',
+  );
+  var years = existing.contractYears;
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => StatefulBuilder(
+      builder: (context, setDialogState) => AlertDialog(
+        title: const Text('Revisar renovação'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                player.displayName,
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: salaryController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Salário mensal'),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<int>(
+                initialValue: years,
+                decoration: const InputDecoration(labelText: 'Duração'),
+                items: List.generate(
+                  5,
+                  (index) => DropdownMenuItem(
+                    value: index + 1,
+                    child: Text('${index + 1} ano(s)'),
+                  ),
+                ),
+                onChanged: (value) =>
+                    setDialogState(() => years = value ?? years),
+              ),
+              const SizedBox(height: 9),
+              const Text(
+                'A nova proposta será respondida ao avançar os dias. As luvas são calculadas com base no salário combinado.',
+                style: TextStyle(color: AppColors.muted, fontSize: 11),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final salary = int.tryParse(
+                    salaryController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+                  ) ??
+                  0;
+              final result = await ref
+                  .read(transferControllerProvider)
+                  .reviseMarketNegotiation(
+                    negotiationId: existing.id,
+                    fee: 0,
+                    salary: salary,
+                    years: years,
+                    signingBonus: salary * 2,
+                    installments: 1,
+                  );
+              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result.message)),
+                );
+              }
+            },
+            child: const Text('Reenviar'),
+          ),
+        ],
+      ),
+    ),
+  );
+  salaryController.dispose();
 }
 
 extension _FirstOrNull<T> on Iterable<T> {
