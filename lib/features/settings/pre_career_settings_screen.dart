@@ -104,6 +104,29 @@ class _PreCareerSettingsScreenState
                 ),
                 const SizedBox(height: 8),
                 const Text(
+                  'Velocidade da partida',
+                  style: TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 7),
+                SegmentedButton<int>(
+                  segments: const [
+                    ButtonSegment<int>(value: 1, label: Text('1x')),
+                    ButtonSegment<int>(value: 2, label: Text('2x')),
+                    ButtonSegment<int>(value: 4, label: Text('4x')),
+                  ],
+                  selected: {_settings.matchSpeed},
+                  onSelectionChanged: (selection) => unawaited(
+                    _change(
+                      _settings.copyWith(matchSpeed: selection.first),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text(
                   'Duração por tempo',
                   style: TextStyle(
                     color: AppColors.muted,

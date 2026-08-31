@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.123`
-**Android versionCode:** `124`
+**Release atual:** `0.1.1.124`
+**Android versionCode:** `125`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.123`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.124`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+124`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.123` e `versionCode 124`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+125`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.124` e `versionCode 125`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.123`, o pubspec é `0.1.1+124`. a próxima entrega normalmente será `0.1.1.124`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.124`, o pubspec é `0.1.1+125`. a próxima entrega normalmente será `0.1.1.125`.
+
+## Calendário, Táticas e Configurações redesenhados — 0.1.1.124
+
+- refaz **Calendário** com cabeçalho do clube, abas Mês/Agenda/Resultados, calendário mensal, compromissos paginados e resumo, usando somente fixtures e eventos persistidos;
+- refaz **Táticas** com campo vertical, titulares, banco, formação e os cinco controles já usados pelo Match Engine, sem inventar Instruções ou Bolas paradas;
+- refaz **Configurações** em tela fixa com áudio, vibração, velocidade, duração, bola, perfil, carreira, novidades, contato e apoio;
+- conecta a velocidade 1x/2x/4x ao relógio visual da partida sem modificar resultado, estatísticas ou regras do Match Engine;
+- mantém as três páginas principais sem rolagem e usa redução responsiva apenas quando a altura disponível é menor.
 
 
 

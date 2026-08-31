@@ -127,14 +127,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         pitchGame.blocksClock) {
       return;
     }
-    final minutesPerHalf = ref
-        .read(gameControllerProvider)
-        .career!
-        .settings
-        .matchDurationMinutes;
+    final settings = ref.read(gameControllerProvider).career!.settings;
+    final minutesPerHalf = settings.matchDurationMinutes;
     final totalPresentationMinutes = minutesPerHalf * 2;
     final millisecondsPerMatchMinute = totalPresentationMinutes * 60000 / 90;
-    presentationElapsedMs += 100;
+    presentationElapsedMs += 100 * settings.matchSpeed;
     if (presentationElapsedMs < millisecondsPerMatchMinute) return;
     presentationElapsedMs -= millisecondsPerMatchMinute;
     if (minute >= 90) return;

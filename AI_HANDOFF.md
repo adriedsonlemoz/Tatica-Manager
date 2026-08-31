@@ -8,14 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.123`
-- **Android versionCode:** `124`
+- **Release deste handoff:** `0.1.1.124`
+- **Android versionCode:** `125`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.124
+
+## Calendário, Táticas e Configurações fiéis aos mockups
+
+- Calendário usa layout fixo com Mês, Agenda e Resultados; pagina listas maiores sem rolagem e mostra apenas partidas e eventos persistidos.
+- Táticas usa campo vertical, formação, titulares e banco reais; mantém apenas Mentalidade, Pressão, Linha defensiva, Ritmo e Construção, já suportados pelo Match Engine.
+- Configurações usa cartões compactos sem rolagem para áudio, vibração, velocidade, duração, bola, perfil, carreira e informações do jogo.
+- `matchSpeed` 1x/2x/4x volta a atuar no relógio de apresentação da partida, sem alterar simulação, resultado ou estatísticas.
+- As ações antigas de áudio avançado, aparência, novidades, contato, Pix, voltar às carreiras e exclusão continuam acessíveis.
+
+Consulte `docs/RELEASE_0.1.1.124.md`.
 
 ## Estado funcional da release 0.1.1.123
 
@@ -907,12 +919,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.120
-versionCode:         124
-pubspec:             0.1.1+124
+release/versionName: 0.1.1.124
+versionCode:         125
+pubspec:             0.1.1+125
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.124` e usar um `versionCode` maior que 124.
+A próxima alteração/entrega normalmente deve virar `0.1.1.125` e usar um `versionCode` maior que 125.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
