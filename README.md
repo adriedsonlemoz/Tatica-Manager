@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.120`
-**Android versionCode:** `121`
+**Release atual:** `0.1.1.121`
+**Android versionCode:** `122`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.120`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.121`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+121`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.120` e `versionCode 121`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+122`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.121` e `versionCode 122`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.120`, o pubspec é `0.1.1+121`. a próxima entrega normalmente será `0.1.1.121`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.121`, o pubspec é `0.1.1+122`. a próxima entrega normalmente será `0.1.1.122`.
+
+
+## Correção do build de Finanças e Transferências — 0.1.1.121
+
+- corrige o fechamento de `FinanceBalanceOverview` em `finances_dashboard_components.dart`, que fazia todos os widgets seguintes serem analisados como declarações internas e gerava centenas de erros em cascata;
+- adiciona o import explícito de `CareerState` em `finances_screen.dart`, necessário para os painéis de detalhes e folha salarial;
+- adiciona o import explícito de `TransferOperationResult` no arquivo principal de Mercado, tornando o tipo disponível ao `part` da Central de Negociações;
+- remove o aviso de cascade desnecessário na ordenação da tela de Contratos;
+- não altera regras de compra, venda, renovação, empréstimo, reservas de orçamento, contratos, salários, finanças, saves ou Match Engine.
 
 
 ## Transferências centralizadas e Finanças compactas — 0.1.1.120

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.120';
+  static const String version = '0.1.1.121';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.121',
+      title: 'Correção do build de Finanças e Transferências',
+      changes: [
+        'Corrige o fechamento de FinanceBalanceOverview que fazia os demais componentes financeiros serem interpretados como classes internas e bloqueava a análise estática.',
+        'Restaura os imports explícitos de CareerState em Finanças e TransferOperationResult na Central de Negociações.',
+        'Mantém intactas as regras e integrações da central de transferências, contratos, salários, orçamento e livro-caixa da 0.1.1.120.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.120',
       title: 'Transferências centralizadas e Finanças compactas',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Redesenha Finanças com Resumo, Receitas, Despesas e Salários, usando exclusivamente o livro-caixa real da carreira.',
         'Adiciona gráfico mensal, distribuição de gastos, filtros por categoria e previsão calculada a partir de meses fechados com lançamentos.',
         'Conecta Estádio, Mercado, Contratos, Patrocínios e Orçamentos; novos lançamentos de transferência e renovação passam a usar a data da carreira.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.118',
-      title: 'Pré-jogo alinhado à referência',
-      changes: [
-        'Redesenha o Pré-jogo com confronto tático, escalações prováveis, desfalques e os três atalhos Escalação, Tática e Uniformes.',
-        'Usa formação, tática, força, titulares, desfalques e forma recente derivados dos dados reais da carreira, sem técnico, clima ou árbitro inventados.',
-        'Adiciona simulação direta pelo mesmo LiveMatchController e move a escolha de uniformes para um pop-up centralizado.',
       ],
     ),
   ];

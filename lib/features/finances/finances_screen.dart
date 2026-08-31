@@ -9,6 +9,7 @@ import '../../core/utils/formatters.dart';
 import '../../domain/finance/finance.dart';
 import '../../domain/finance/sponsorship.dart';
 import '../../domain/player/player.dart';
+import '../../domain/season/career_state.dart';
 import '../../game/finance/club_administration_engine.dart';
 import '../../game/finance/finance_dashboard_engine.dart';
 import '../../game/finance/sponsorship_engine.dart';

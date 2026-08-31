@@ -265,6 +265,7 @@ class FinanceBalanceOverview extends StatelessWidget {
         ],
       ),
     );
+  }
 }
 
 class FinanceBalanceChart extends StatelessWidget {

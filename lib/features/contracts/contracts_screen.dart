@@ -36,8 +36,7 @@ class _ContractsScreenState extends ConsumerState<ContractsScreen> {
         playerHolders[player.id] = club.id;
       }
     }
-    players
-      ..sort((a, b) => a.contract.endSeason.compareTo(b.contract.endSeason));
+    players.sort((a, b) => a.contract.endSeason.compareTo(b.contract.endSeason));
     final statuses = {
       for (final player in players)
         player.id: _statusFor(player, career.season),

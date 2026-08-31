@@ -12,6 +12,7 @@ import '../../domain/club/club.dart';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/transfer/market_career.dart';
+import '../../domain/transfer/transfer.dart';
 import '../../game/transfer/market_career_engine.dart';
 import '../../game/transfer/transfer_window_engine.dart';
 import '../player/player_profile_screen.dart';
