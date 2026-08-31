@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.121`
-**Android versionCode:** `122`
+**Release atual:** `0.1.1.122`
+**Android versionCode:** `123`
 
 ## Fonte oficial de versão
 
@@ -13,15 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.121`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.122`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+122`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.121` e `versionCode 122`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+123`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.122` e `versionCode 123`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.121`, o pubspec é `0.1.1+122`. a próxima entrega normalmente será `0.1.1.122`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.122`, o pubspec é `0.1.1+123`. a próxima entrega normalmente será `0.1.1.123`.
 
+
+
+## Limpeza final do analyzer em Finanças — 0.1.1.122
+
+- remove duas asserções `!` redundantes no cálculo visual de saldo projetado em `finances_dashboard_components.dart`, sem alterar os valores ou a regra de projeção;
+- remove `_FinanceExpansion`, widget privado sem referências que permaneceu após a compactação da tela de Finanças;
+- elimina os três warnings registrados no log 76, que eram tratados pelo workflow como falha de `flutter analyze`;
+- não altera Transferências, contratos, salários, orçamento, caixa, saves, Match Engine ou regras do jogo.
 
 ## Correção do build de Finanças e Transferências — 0.1.1.121
 

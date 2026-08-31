@@ -1239,35 +1239,6 @@ class _FinanceSheetHeader extends StatelessWidget {
       );
 }
 
-class _FinanceExpansion extends StatelessWidget {
-  const _FinanceExpansion({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.child,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: SectionCard(
-          padding: EdgeInsets.zero,
-          child: ExpansionTile(
-            leading: Icon(icon, color: AppColors.green),
-            title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-            subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-            childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-            children: [child],
-          ),
-        ),
-      );
-}
-
 Future<void> _editBudgets(BuildContext context, WidgetRef ref) async {
   final career = ref.read(gameControllerProvider).career!;
   final allocation = await showBudgetAllocationDialog(context, career);

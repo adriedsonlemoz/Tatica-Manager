@@ -795,7 +795,7 @@ class FinanceForecastCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${projectedNet! >= 0 ? '+' : ''}${compactMoney(projectedNet!)}',
+                        '${projectedNet >= 0 ? '+' : ''}${compactMoney(projectedNet)}',
                         style: TextStyle(
                           color: color,
                           fontSize: 25,
