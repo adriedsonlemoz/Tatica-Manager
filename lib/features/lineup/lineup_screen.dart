@@ -3,22 +3,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
+import '../../app/widgets/player_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/player/player.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../player/player_profile_screen.dart';
+import '../shared/club_context_header.dart';
+import '../shared/compact_formation_pitch.dart';
 import '../tactics/tactics_screen.dart';
 import 'widgets/lineup_candidate_sheet.dart';
-import 'widgets/lineup_pitch.dart';
 
-class LineupScreen extends ConsumerWidget {
+class LineupScreen extends ConsumerStatefulWidget {
   const LineupScreen({super.key, this.showBackButton = false});
 
   final bool showBackButton;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LineupScreen> createState() => _LineupScreenState();
+}
+
+class _LineupScreenState extends ConsumerState<LineupScreen> {
+  int _benchPage = 0;
+
+  @override
+  Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final fixture = career.nextUserFixture;
     final suspended = fixture == null
@@ -42,231 +51,230 @@ class LineupScreen extends ConsumerWidget {
           );
     final availableBench = reserves.where(availableForNextMatch).toList()
       ..sort((a, b) => b.overall.compareTo(a.overall));
-    final unavailable = reserves.where((player) => !availableForNextMatch(player)).toList()
+    final unavailable = reserves
+        .where((player) => !availableForNextMatch(player))
+        .toList()
       ..sort((a, b) => b.overall.compareTo(a.overall));
-    final accent = Color(career.userClub.colors.primaryHex);
-    final improvised = assignments.where((assignment) => assignment.outOfPosition).length;
+    final benchPlayers = [...availableBench, ...unavailable];
+    final accent = AppColors.readableAccent(
+      Color(career.userClub.colors.primaryHex),
+    );
+    final improvised = assignments
+        .where((assignment) => assignment.outOfPosition)
+        .length;
 
     return PremiumScaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
-              child: Row(
+      appBar: GameTopBar(
+        title: 'Escalação',
+        subtitle:
+            'Força ${validation.averageStrength} • ${validation.isValid ? 'Pronta para jogar' : validation.message}',
+        actions: [
+          IconButton(
+            tooltip: 'Táticas',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const TacticsScreen()),
+            ),
+            icon: const Icon(Icons.tune_rounded),
+          ),
+        ],
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) => Padding(
+          padding: const EdgeInsets.fromLTRB(10, 4, 10, 8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: constraints.maxWidth - 20,
+              height: 710,
+              child: Column(
                 children: [
-                  if (showBackButton) ...[
-                    IconButton.filledTonal(
-                      tooltip: 'Voltar para o pré-jogo',
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back_rounded),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
+                  ClubContextHeader(
+                    club: career.userClub,
+                    season: career.season,
+                  ),
+                  const SizedBox(height: 8),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'ESCALAÇÃO',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        Text(
-                          'Força ${validation.averageStrength} • ${validation.isValid ? 'Pronta para jogar' : validation.message}',
-                          style: TextStyle(
-                            color: validation.isValid ? AppColors.green : AppColors.warning,
+                    child: SectionCard(
+                      padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'FORMAÇÃO ATUAL',
+                                      style: TextStyle(
+                                        color: AppColors.muted,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    Text(
+                                      career.formation.label,
+                                      style: const TextStyle(
+                                        color: AppColors.green,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              _LineupActionButton(
+                                icon: Icons.auto_awesome_rounded,
+                                label: 'Padrões',
+                                onTap: () => ref
+                                    .read(gameControllerProvider.notifier)
+                                    .autoSelectLineup(),
+                              ),
+                              const SizedBox(width: 7),
+                              _LineupActionButton(
+                                icon: Icons.edit_outlined,
+                                label: 'Editar',
+                                onTap: () => _showFormationPicker(
+                                  context,
+                                  career.formation,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              _SummaryPill(
+                                icon: Icons.groups_2_rounded,
+                                label: '${assignments.length}/11',
+                              ),
+                              const SizedBox(width: 6),
+                              _SummaryPill(
+                                icon: Icons.swap_horiz_rounded,
+                                label: improvised == 0
+                                    ? 'Posições naturais'
+                                    : '$improvised improvisado${improvised == 1 ? '' : 's'}',
+                                warning: improvised > 0,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Expanded(
+                            child: CompactFormationPitch(
+                              assignments: assignments,
+                              accent: accent,
+                              onPlayerTap: (assignment) => _chooseReplacement(
+                                context,
+                                career.userClub.squad,
+                                career.starterIds,
+                                assignment,
+                                accent,
+                              ),
+                              onPlayerLongPress: (assignment) =>
+                                  Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => PlayerProfileScreen(
+                                    playerId: assignment.player.id,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  IconButton.filledTonal(
-                    tooltip: 'Tática',
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const TacticsScreen()),
+                  const SizedBox(height: 5),
+                  const SizedBox(
+                    height: 18,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Toque para trocar • segure para abrir o perfil.',
+                        style: TextStyle(color: AppColors.muted, fontSize: 8.5),
+                      ),
                     ),
-                    icon: const Icon(Icons.tune_rounded),
+                  ),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 150,
+                    child: _BenchPager(
+                      players: benchPlayers,
+                      availableIds:
+                          availableBench.map((player) => player.id).toSet(),
+                      availableCount: availableBench.length,
+                      page: _benchPage,
+                      onPageChanged: (value) =>
+                          setState(() => _benchPage = value),
+                      onPlayerTap: (player) => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PlayerProfileScreen(
+                            playerId: player.id,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(14, 0, 14, 110),
-            sliver: SliverList.list(
-              children: [
-                SectionCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<FormationType>(
-                              initialValue: career.formation,
-                              decoration: const InputDecoration(labelText: 'Formação'),
-                              items: FormationType.values
-                                  .map(
-                                    (formation) => DropdownMenuItem(
-                                      value: formation,
-                                      child: Text(formation.label),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  ref.read(gameControllerProvider.notifier).setFormation(value);
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton.tonalIcon(
-                            onPressed: () => ref
-                                .read(gameControllerProvider.notifier)
-                                .autoSelectLineup(),
-                            icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-                            label: const Text('Autoescalação', style: TextStyle(fontSize: 10)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 9),
-                      Row(
-                        children: [
-                          _SummaryPill(
-                            icon: Icons.groups_2_rounded,
-                            label: '${assignments.length}/11',
-                          ),
-                          const SizedBox(width: 6),
-                          _SummaryPill(
-                            icon: Icons.swap_horiz_rounded,
-                            label: improvised == 0
-                                ? 'Posições naturais'
-                                : '$improvised improvisado${improvised == 1 ? '' : 's'}',
-                            warning: improvised > 0,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                LineupPitch(
-                  assignments: assignments,
-                  formationLabel: career.formation.label,
-                  accentColor: accent,
-                  onPlayerTap: (assignment) => _chooseReplacement(
-                    context,
-                    ref,
-                    career.userClub.squad,
-                    career.starterIds,
-                    assignment,
-                    accent,
-                  ),
-                  onPlayerLongPress: (assignment) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => PlayerProfileScreen(playerId: assignment.player.id),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 7),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    'Toque para trocar • segure para abrir o perfil. O número no campo é o OVR efetivo naquela posição.',
-                    style: TextStyle(color: AppColors.muted, fontSize: 9.5),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SectionCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'BANCO E ELENCO',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(fontWeight: FontWeight.w900),
-                          ),
-                          Text(
-                            '${availableBench.length} disponíveis',
-                            style: const TextStyle(color: AppColors.muted),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ..._benchGroups(availableBench).expand(
-                        (group) => [
-                          _GroupHeading(label: group.$1, count: group.$2.length),
-                          ...group.$2.map(
-                            (player) => _PlayerBenchRow(
-                              player: player,
-                              accent: accent,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PlayerProfileScreen(playerId: player.id),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 7),
-                        ],
-                      ),
-                      if (unavailable.isNotEmpty) ...[
-                        const Divider(height: 18),
-                        Row(
-                          children: [
-                            const Icon(Icons.block_rounded, color: AppColors.warning, size: 18),
-                            const SizedBox(width: 7),
-                            Text(
-                              'INELEGÍVEIS / INDISPONÍVEIS',
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: AppColors.warning,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${unavailable.length}',
-                              style: const TextStyle(color: AppColors.muted),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 7),
-                        ...unavailable.map(
-                          (player) => _PlayerBenchRow(
-                            player: player,
-                            accent: accent,
-                            unavailable: true,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => PlayerProfileScreen(playerId: player.id),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  static Future<void> _chooseReplacement(
+  Future<void> _showFormationPicker(
     BuildContext context,
-    WidgetRef ref,
+    FormationType selected,
+  ) async {
+    final value = await showModalBottomSheet<FormationType>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'ESCOLHER FORMAÇÃO',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final formation in FormationType.values)
+                    ChoiceChip(
+                      selected: formation == selected,
+                      label: SizedBox(
+                        width: 64,
+                        child: Text(
+                          formation.label,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onSelected: (_) => Navigator.pop(sheetContext, formation),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (value != null) {
+      await ref.read(gameControllerProvider.notifier).setFormation(value);
+      if (mounted) setState(() => _benchPage = 0);
+    }
+  }
+
+  Future<void> _chooseReplacement(
+    BuildContext context,
     List<Player> squad,
     List<String> starters,
     AssignedPlayer outgoing,
@@ -290,95 +298,250 @@ class LineupScreen extends ConsumerWidget {
               .read(gameControllerProvider.notifier)
               .replaceStarter(outgoing.player.id, incoming.id);
           if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+          if (mounted) setState(() => _benchPage = 0);
         },
       ),
     );
   }
 }
 
-List<(String, List<Player>)> _benchGroups(List<Player> players) {
-  const groups = <String, Set<PlayerPosition>>{
-    'GOLEIROS': {PlayerPosition.gol},
-    'DEFENSORES': {PlayerPosition.zag, PlayerPosition.ld, PlayerPosition.le},
-    'MEIO-CAMPISTAS': {PlayerPosition.vol, PlayerPosition.mc, PlayerPosition.mei},
-    'ATACANTES': {PlayerPosition.pe, PlayerPosition.pd, PlayerPosition.sa, PlayerPosition.ca},
-  };
-  return [
-    for (final entry in groups.entries)
-      if (players.any((player) => entry.value.contains(player.primaryPosition)))
-        (
-          entry.key,
-          players.where((player) => entry.value.contains(player.primaryPosition)).toList(),
-        ),
-  ];
-}
+class _LineupActionButton extends StatelessWidget {
+  const _LineupActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
-class _GroupHeading extends StatelessWidget {
-  const _GroupHeading({required this.label, required this.count});
-
+  final IconData icon;
   final String label;
-  final int count;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 6, 2, 4),
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.muted,
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .6,
-              ),
+  Widget build(BuildContext context) => OutlinedButton.icon(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(92, 39),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+        ),
+        icon: Icon(icon, size: 18),
+        label: Text(label, style: const TextStyle(fontSize: 11)),
+      );
+}
+
+class _BenchPager extends StatelessWidget {
+  const _BenchPager({
+    required this.players,
+    required this.availableIds,
+    required this.availableCount,
+    required this.page,
+    required this.onPageChanged,
+    required this.onPlayerTap,
+  });
+
+  static const int pageSize = 5;
+
+  final List<Player> players;
+  final Set<String> availableIds;
+  final int availableCount;
+  final int page;
+  final ValueChanged<int> onPageChanged;
+  final ValueChanged<Player> onPlayerTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final pageCount = players.isEmpty ? 1 : ((players.length - 1) ~/ pageSize) + 1;
+    final safePage = page.clamp(0, pageCount - 1).toInt();
+    final visible = players.skip(safePage * pageSize).take(pageSize).toList();
+    return SectionCard(
+      padding: const EdgeInsets.fromLTRB(9, 7, 9, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 27,
+            child: Row(
+              children: [
+                const Text(
+                  'BANCO E ELENCO',
+                  style: TextStyle(
+                    color: AppColors.green,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '$availableCount disponíveis',
+                  style: const TextStyle(color: AppColors.muted, fontSize: 8.5),
+                ),
+                if (pageCount > 1) ...[
+                  const SizedBox(width: 5),
+                  _PageButton(
+                    icon: Icons.chevron_left_rounded,
+                    enabled: safePage > 0,
+                    onTap: () => onPageChanged(safePage - 1),
+                  ),
+                  SizedBox(
+                    width: 28,
+                    child: Text(
+                      '${safePage + 1}/$pageCount',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 8),
+                    ),
+                  ),
+                  _PageButton(
+                    icon: Icons.chevron_right_rounded,
+                    enabled: safePage + 1 < pageCount,
+                    onTap: () => onPageChanged(safePage + 1),
+                  ),
+                ],
+              ],
             ),
-            const Spacer(),
-            Text('$count', style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-          ],
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: visible.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Nenhum jogador no banco.',
+                      style: TextStyle(color: AppColors.muted),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      for (var index = 0; index < visible.length; index++) ...[
+                        if (index > 0) const SizedBox(width: 5),
+                        Expanded(
+                          child: _BenchPlayerCard(
+                            player: visible[index],
+                            available: availableIds.contains(visible[index].id),
+                            onTap: () => onPlayerTap(visible[index]),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PageButton extends StatelessWidget {
+  const _PageButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(6),
+        child: Icon(
+          icon,
+          size: 19,
+          color: enabled ? AppColors.white : AppColors.muted.withValues(alpha: .35),
         ),
       );
 }
 
-class _PlayerBenchRow extends StatelessWidget {
-  const _PlayerBenchRow({
+class _BenchPlayerCard extends StatelessWidget {
+  const _BenchPlayerCard({
     required this.player,
-    required this.accent,
+    required this.available,
     required this.onTap,
-    this.unavailable = false,
   });
 
   final Player player;
-  final Color accent;
+  final bool available;
   final VoidCallback onTap;
-  final bool unavailable;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 3),
-        child: PlayerRow(
-          player: player,
-          showAvatar: true,
-          showCondition: true,
-          avatarAccentColor: accent,
-          onTap: onTap,
-          trailing: unavailable
-              ? Tooltip(
-                  message: _unavailableReason(player),
-                  child: const Icon(Icons.warning_amber_rounded, color: AppColors.warning),
-                )
-              : const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceRaised,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: available
+                  ? AppColors.border
+                  : AppColors.warning.withValues(alpha: .55),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  PlayerAvatar(player: player, size: 35),
+                  Positioned(
+                    top: -3,
+                    left: -3,
+                    child: Container(
+                      width: 17,
+                      height: 17,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: AppColors.greenDark,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${player.shirtNumber}',
+                        style: const TextStyle(
+                          fontSize: 6.5,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (!available)
+                    const Positioned(
+                      right: -3,
+                      top: -3,
+                      child: Icon(
+                        Icons.warning_amber_rounded,
+                        size: 15,
+                        color: AppColors.warning,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 3),
+              Text(
+                player.displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.w800),
+              ),
+              Text(
+                '${player.primaryPosition.label} • ${player.overall}',
+                style: TextStyle(
+                  color: available ? AppColors.green : AppColors.warning,
+                  fontSize: 7,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Cond. ${player.condition}%',
+                style: const TextStyle(color: AppColors.muted, fontSize: 6.5),
+              ),
+            ],
+          ),
         ),
       );
 }
-
-String _unavailableReason(Player player) => switch (player.availabilityStatus) {
-      PlayerAvailabilityStatus.injured => player.injury?.name ?? 'Lesionado',
-      PlayerAvailabilityStatus.suspended =>
-        'Suspenso por ${player.discipline.suspendedRounds} rodada(s)',
-      PlayerAvailabilityStatus.lowCondition => 'Condição física abaixo de 35%',
-      PlayerAvailabilityStatus.available => 'Disponível',
-    };
 
 class _SummaryPill extends StatelessWidget {
   const _SummaryPill({
@@ -396,7 +559,7 @@ class _SummaryPill extends StatelessWidget {
     final color = warning ? AppColors.warning : AppColors.green;
     return Flexible(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: color.withValues(alpha: .10),
           borderRadius: BorderRadius.circular(999),
@@ -405,14 +568,18 @@ class _SummaryPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: color),
+            Icon(icon, size: 11, color: color),
             const SizedBox(width: 4),
             Flexible(
               child: Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ],

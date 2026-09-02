@@ -20,13 +20,27 @@ void main() {
     final source =
         File('lib/features/tactics/tactics_screen.dart').readAsStringSync();
 
-    expect(source, contains('_TacticsPitch'));
+    expect(source, contains('CompactFormationPitch'));
     expect(source, contains('_TeamStyleBoard'));
     expect(source, contains('LineupEngine.validate'));
     expect(source, contains('Mentality.values'));
     expect(source, contains('BuildUp.values'));
     expect(source, isNot(contains('Instruções')));
     expect(source, isNot(contains('Bolas paradas')));
+    expect(source, isNot(contains('ListView')));
+  });
+
+  test('escalação compartilha o campo compacto e não rola verticalmente', () {
+    final source =
+        File('lib/features/lineup/lineup_screen.dart').readAsStringSync();
+
+    expect(source, contains("title: 'Escalação'"));
+    expect(source, contains('ClubContextHeader'));
+    expect(source, contains('CompactFormationPitch'));
+    expect(source, contains('LineupCandidateSheet'));
+    expect(source, contains('_BenchPager'));
+    expect(source, contains('BoxFit.scaleDown'));
+    expect(source, isNot(contains('CustomScrollView')));
     expect(source, isNot(contains('ListView')));
   });
 

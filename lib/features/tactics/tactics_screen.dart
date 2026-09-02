@@ -11,6 +11,7 @@ import '../../domain/tactic/tactic.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../player/player_profile_screen.dart';
 import '../shared/club_context_header.dart';
+import '../shared/compact_formation_pitch.dart';
 
 class TacticsScreen extends ConsumerWidget {
   const TacticsScreen({super.key});
@@ -127,15 +128,15 @@ class TacticsScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 6),
                           Expanded(
-                            child: _TacticsPitch(
+                            child: CompactFormationPitch(
                               assignments: assignments,
                               accent: AppColors.readableAccent(
                                 Color(career.userClub.colors.primaryHex),
                               ),
-                              onPlayerTap: (player) => Navigator.of(context).push(
+                              onPlayerTap: (assignment) => Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => PlayerProfileScreen(
-                                    playerId: player.id,
+                                    playerId: assignment.player.id,
                                   ),
                                 ),
                               ),
@@ -370,185 +371,6 @@ class _PitchActionButton extends StatelessWidget {
         icon: Icon(icon, size: 18),
         label: Text(label, style: const TextStyle(fontSize: 11)),
       );
-}
-
-class _TacticsPitch extends StatelessWidget {
-  const _TacticsPitch({
-    required this.assignments,
-    required this.accent,
-    required this.onPlayerTap,
-  });
-
-  final List<AssignedPlayer> assignments;
-  final Color accent;
-  final ValueChanged<Player> onPlayerTap;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: AppColors.pitch,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.green.withValues(alpha: .45)),
-          boxShadow: const [
-            BoxShadow(color: Color(0x33000000), blurRadius: 12),
-          ],
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            const markerWidth = 67.0;
-            const markerHeight = 43.0;
-            return Stack(
-              clipBehavior: Clip.hardEdge,
-              children: [
-                const Positioned.fill(child: CustomPaint(painter: _PitchPainter())),
-                for (final assignment in assignments)
-                  Positioned(
-                    left: (assignment.slot.x * constraints.maxWidth - markerWidth / 2)
-                        .clamp(2.0, constraints.maxWidth - markerWidth - 2)
-                        .toDouble(),
-                    top: (assignment.slot.y * constraints.maxHeight - markerHeight / 2)
-                        .clamp(2.0, constraints.maxHeight - markerHeight - 2)
-                        .toDouble(),
-                    child: _PitchPlayer(
-                      assignment: assignment,
-                      accent: accent,
-                      onTap: () => onPlayerTap(assignment.player),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-      );
-}
-
-class _PitchPlayer extends StatelessWidget {
-  const _PitchPlayer({
-    required this.assignment,
-    required this.accent,
-    required this.onTap,
-  });
-
-  final AssignedPlayer assignment;
-  final Color accent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: SizedBox(
-          width: 67,
-          height: 43,
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Positioned(
-                top: 0,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.greenDark,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: accent, width: 1.2),
-                  ),
-                  child: Text(
-                    '${assignment.player.shirtNumber}',
-                    style: const TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 24,
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    color: const Color(0xE8112029),
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: Colors.white12),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        assignment.player.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 7.5,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        '${assignment.slot.role.label} • ${assignment.effectiveOverall}',
-                        style: TextStyle(
-                          color: assignment.outOfPosition
-                              ? AppColors.warning
-                              : AppColors.green,
-                          fontSize: 6.5,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-class _PitchPainter extends CustomPainter {
-  const _PitchPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stripe = Paint()..color = const Color(0x102EDB4A);
-    for (var index = 0; index < 8; index += 2) {
-      canvas.drawRect(
-        Rect.fromLTWH(0, size.height * index / 8, size.width, size.height / 8),
-        stripe,
-      );
-    }
-    final line = Paint()
-      ..color = Colors.white.withValues(alpha: .28)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-    final field = Rect.fromLTWH(12, 10, size.width - 24, size.height - 20);
-    canvas.drawRect(field, line);
-    canvas.drawLine(
-      Offset(12, size.height / 2),
-      Offset(size.width - 12, size.height / 2),
-      line,
-    );
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 30, line);
-    final boxWidth = size.width * .48;
-    final boxHeight = size.height * .15;
-    canvas.drawRect(
-      Rect.fromLTWH((size.width - boxWidth) / 2, 10, boxWidth, boxHeight),
-      line,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(
-        (size.width - boxWidth) / 2,
-        size.height - 10 - boxHeight,
-        boxWidth,
-        boxHeight,
-      ),
-      line,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _TeamStyleBoard extends StatelessWidget {

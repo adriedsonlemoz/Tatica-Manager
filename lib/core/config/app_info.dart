@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.124';
+  static const String version = '0.1.1.125';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.125',
+      title: 'Escalação integrada ao novo design',
+      changes: [
+        'Redesenha a aba Escalação com o mesmo campo compacto da tela de Táticas e remove o título interno excessivo.',
+        'Mantém formação, autoescalação, troca de titulares, perfis e status reais dos jogadores.',
+        'Substitui a lista vertical por banco e elenco paginados, preservando acesso a todos sem rolagem na tela principal.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.124',
       title: 'Calendário, Táticas e Configurações redesenhados',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Restaura Estádio e Patrocínios como seções expansíveis funcionais dentro dos detalhes financeiros, sem voltar a rolar a tela principal.',
         'Mantém os módulos reais de estádio, patrocínios e orçamentos integrados à tela compacta de Finanças.',
         'Registra a renovação contratual com a data do estado atualizado da carreira para manter o livro-caixa temporalmente consistente.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.122',
-      title: 'Limpeza final do analyzer em Finanças',
-      changes: [
-        'Remove as duas asserções de não-nulo redundantes apontadas pelo Flutter analyzer no saldo projetado de Finanças.',
-        'Remove temporariamente o widget privado _FinanceExpansion que estava sem referência após a compactação da tela financeira.',
-        'Preserva integralmente Transferências, contratos, salários, orçamento, caixa, saves e Match Engine da release anterior.',
       ],
     ),
   ];
