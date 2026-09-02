@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.127`
-**Android versionCode:** `128`
+**Release atual:** `0.1.1.129`
+**Android versionCode:** `130`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,30 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.127`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.129`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+128`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.127` e `versionCode 128`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+130`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.129` e `versionCode 130`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.127`, o pubspec é `0.1.1+128`. a próxima entrega normalmente será `0.1.1.128`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.129`, o pubspec é `0.1.1+130`. a próxima entrega normalmente será `0.1.1.130`.
+
+## Confiabilidade da carreira, diretoria e CPU — 0.1.1.129
+
+- torna o commit da carreira seguro: a sessão ativa só muda após a confirmação da gravação local e falhas ficam registradas no diagnóstico;
+- preserva payloads de saves V1 que não puderem ser migrados em uma área de recuperação, sem apagá-los silenciosamente;
+- cria meta anual e confiança persistentes da diretoria, calculadas por reputação, tabela e caixa já existentes;
+- técnicos CPU passam a definir formação e estilo tático de seus clubes nas simulações, sem alterar o Match Engine;
+- amplia o feed recente para 120 eventos e arquiva até 400 notícias antigas persistidas;
+- adiciona verificação explícita de formatos de competição antes de ativá-los, mantendo copas/grupos bloqueados até regras reais existirem.
+
+## Notícias ampliadas e perfis de técnicos — 0.1.1.128
+
+- adiciona prévias da partida, panorama semanal da tabela e reportagens após jogos usando apenas resultados e dados reais da carreira;
+- substitui os técnicos padrão repetidos por perfis fictícios, variados e completos;
+- melhora a escolha e o perfil do técnico com origem, contrato, experiência, estilo e situação atual;
+- preserva a geração existente de jogadores, que já usa nomes fictícios, atributos, potencial, contrato e visual com seed estável.
 
 ## Retorno do pré-jogo e setores do elenco — 0.1.1.127
 

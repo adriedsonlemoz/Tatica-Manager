@@ -11,6 +11,7 @@ import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/cpu/cpu_manager_engine.dart';
 import '../../game/cpu/cpu_market_news_engine.dart';
+import '../../game/career/board_objective_engine.dart';
 import '../../game/competition/competition_simulation_engine.dart';
 import '../../game/competition/competition_state_engine.dart';
 import '../../game/finance/finance_engine.dart';
@@ -20,6 +21,8 @@ import '../../game/match/engine/match_engine.dart';
 import '../../game/match/live_substitution_rules.dart';
 import '../../game/match/match_career_impact_engine.dart';
 import '../../game/season/inbox_engine.dart';
+import '../../game/season/career_news_engine.dart';
+import '../../game/season/career_news_archive.dart';
 import 'game_controller.dart';
 
 final liveMatchControllerProvider =
@@ -111,16 +114,22 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final home = _club(career, fixture.homeClubId);
     final away = _club(career, fixture.awayClubId);
     final userAtHome = home.id == career.userClubId;
+    final homeManager = LiveRoundSimulator.managerFor(career, home.id);
+    final awayManager = LiveRoundSimulator.managerFor(career, away.id);
     final homeFormation = userAtHome
         ? career.formation
-        : LiveRoundSimulator.formationFor(home);
+        : LiveRoundSimulator.formationFor(home, manager: homeManager);
     final awayFormation = userAtHome
-        ? LiveRoundSimulator.formationFor(away)
+        ? LiveRoundSimulator.formationFor(away, manager: awayManager)
         : career.formation;
     final homeTactic =
-        userAtHome ? career.tactic : LiveRoundSimulator.tacticFor(home);
+        userAtHome
+            ? career.tactic
+            : LiveRoundSimulator.tacticFor(home, manager: homeManager);
     final awayTactic =
-        userAtHome ? LiveRoundSimulator.tacticFor(away) : career.tactic;
+        userAtHome
+            ? LiveRoundSimulator.tacticFor(away, manager: awayManager)
+            : career.tactic;
     final homeStarters = userAtHome
         ? career.starterIds
         : LineupEngine.autoSelect(
@@ -338,6 +347,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final home = _club(career, fixture.homeClubId);
     final away = _club(career, fixture.awayClubId);
     final userAtHome = home.id == career.userClubId;
+    final homeManager = LiveRoundSimulator.managerFor(career, home.id);
+    final awayManager = LiveRoundSimulator.managerFor(career, away.id);
     final prefix = [
       ...live.result.events.where(
         (event) =>
@@ -349,14 +360,18 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
     final score = _scoreFromEvents(prefix, home.id, away.id);
     final homeFormation = userAtHome
         ? live.userFormation
-        : LiveRoundSimulator.formationFor(home);
+        : LiveRoundSimulator.formationFor(home, manager: homeManager);
     final awayFormation = userAtHome
-        ? LiveRoundSimulator.formationFor(away)
+        ? LiveRoundSimulator.formationFor(away, manager: awayManager)
         : live.userFormation;
     final homeTactic =
-        userAtHome ? live.userTactic : LiveRoundSimulator.tacticFor(home);
+        userAtHome
+            ? live.userTactic
+            : LiveRoundSimulator.tacticFor(home, manager: homeManager);
     final awayTactic =
-        userAtHome ? LiveRoundSimulator.tacticFor(away) : live.userTactic;
+        userAtHome
+            ? LiveRoundSimulator.tacticFor(away, manager: awayManager)
+            : live.userTactic;
     final suspended = career.suspendedPlayerIdsForCompetition(
       fixture.competitionId,
     );
@@ -432,7 +447,10 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       (club) => club.id == live.fixture.awayClubId,
     );
     final opponent = liveHome.id == career.userClubId ? liveAway : liveHome;
-    final opponentFormation = LiveRoundSimulator.formationFor(opponent);
+    final opponentFormation = LiveRoundSimulator.formationFor(
+      opponent,
+      manager: LiveRoundSimulator.managerFor(career, opponent.id),
+    );
     final opponentStarters = LineupEngine.autoSelect(
       opponent.squad,
       opponentFormation,
@@ -576,14 +594,17 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       );
     }
 
-    final mergedNews = [
-      ...career.news,
-      ...availabilityEvents,
-      ...marketEvents,
-    ];
-    final news = mergedNews.length <= CareerState.maxStoredNews
-        ? mergedNews
-        : mergedNews.sublist(mergedNews.length - CareerState.maxStoredNews);
+    final matchNews = CareerNewsEngine.postMatchReports(
+      state: career,
+      fixture: live.fixture,
+      result: live.result,
+    );
+
+    final retainedNews = CareerNewsArchive.append(
+      recent: career.news,
+      archive: career.newsArchive,
+      events: [...availabilityEvents, ...marketEvents, ...matchNews],
+    );
     final nextBase = career.copyWith(
       clubs: clubs,
       freeAgents: freeAgents,
@@ -592,7 +613,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       starterIds: live.userStarterIds,
       tactic: live.userTactic,
       finances: [...career.finances, ...finance.transactions],
-      news: news,
+      news: retainedNews.recent,
+      newsArchive: retainedNews.archive,
       matchHistory: [...career.matchHistory, live.result],
       lastMatch: live.result,
     );
@@ -602,9 +624,12 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       throughDate: career.currentDate,
       protectUserFixtures: true,
     );
+    final withBoard = sameDayResolved.copyWith(
+      boardObjective: BoardObjectiveEngine.evaluate(sameDayResolved),
+    );
     final next = InboxEngine.appendEvents(
-      sameDayResolved,
-      [...availabilityEvents, ...marketEvents],
+      withBoard,
+      [...availabilityEvents, ...marketEvents, ...matchNews],
     );
     await _game.commitCareer(next, message: 'Partida concluída.');
     state = null;

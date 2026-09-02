@@ -6,6 +6,7 @@ enum CareerEventType {
   transferOffer,
   managerOffer,
   nextMatch,
+  matchReport,
   training,
   seasonStarted,
   info,

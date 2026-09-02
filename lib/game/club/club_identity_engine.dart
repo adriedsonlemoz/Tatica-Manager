@@ -9,6 +9,7 @@ import '../../domain/player/player.dart';
 import '../../domain/player/player_attributes.dart';
 import '../../domain/season/career_state.dart';
 import '../lineup/lineup_engine.dart';
+import '../career/manager_factory.dart';
 import '../player/player_factory.dart';
 import 'club_icon_validator.dart';
 import 'club_identity_migration_engine.dart';
@@ -53,27 +54,11 @@ abstract final class ClubIdentityEngine {
       final identity = clubs[index];
       final club =
           clubSeeds.firstWhere((seed) => seed.id == identity.clubId).toClub();
-      managers.add(
-        ManagerProfile(
-          id: 'manager-${identity.clubId}',
-          displayName: club.managerName,
-          nationality: 'Brasil',
-          ageAtStart: 42 + (index % 15),
-          careerStartSeason: 2026,
-          currentClubId: identity.clubId,
-          contractUntilSeason: 2027,
-          reputation: (club.reputation + 5).clamp(35, 95).toInt(),
-          overall: club.reputation.clamp(45, 90).toInt(),
-          experienceYears: 8 + (index % 18),
-          style: const [
-            'Equilibrado',
-            'Ofensivo',
-            'Posse',
-            'Transição',
-            'Defensivo',
-          ][index % 5],
-        ),
-      );
+      managers.add(ManagerFactory.forClub(
+        clubId: identity.clubId,
+        clubReputation: club.reputation,
+        season: 2026,
+      ));
     }
     return ClubIdentityPack(
       name: 'Banco padrão do Tática Manager',
@@ -134,15 +119,10 @@ abstract final class ClubIdentityEngine {
                 for (final club in state.clubs)
                   club.id == state.userClubId
                       ? state.manager.copyWith(currentClubId: club.id)
-                      : ManagerProfile(
-                          id: 'manager-${club.id}',
-                          displayName: club.managerName,
-                          nationality: 'Brasil',
-                          ageAtStart: 42,
-                          careerStartSeason: state.season,
-                          currentClubId: club.id,
-                          reputation: club.reputation.clamp(0, 100).toInt(),
-                          overall: club.reputation.clamp(1, 99).toInt(),
+                      : ManagerFactory.forClub(
+                          clubId: club.id,
+                          clubReputation: club.reputation,
+                          season: state.season,
                         ),
               ],
       );
@@ -284,6 +264,9 @@ abstract final class ClubIdentityEngine {
     final managerIds = <String>{};
     final managerClubIds = <String>{};
     final managers = <ManagerProfile>[];
+    final replaceLegacyDefaultManagers =
+        rawManagers.length == expected.length &&
+            rawManagers.every(ManagerFactory.isLegacyPlaceholder);
     for (var index = 0; index < rawManagers.length; index++) {
       final manager = rawManagers[index];
       final id = manager.id.trim().isEmpty ? 'manager-imported-$index' : manager.id.trim();
@@ -296,7 +279,20 @@ abstract final class ClubIdentityEngine {
       if (manager.currentClubId != null && !managerClubIds.add(manager.currentClubId!)) {
         throw FormatException('Há mais de um técnico associado ao clube ${manager.currentClubId}.');
       }
-      managers.add(manager.copyWith(id: id));
+      if (replaceLegacyDefaultManagers && manager.currentClubId != null) {
+        final seed = clubSeeds.firstWhere(
+          (item) => item.id == manager.currentClubId,
+        );
+        managers.add(
+          ManagerFactory.forClub(
+            clubId: manager.currentClubId!,
+            clubReputation: seed.reputation,
+            season: manager.careerStartSeason,
+          ).copyWith(id: id),
+        );
+      } else {
+        managers.add(manager.copyWith(id: id));
+      }
     }
     return ClubIdentityPack(
       name: packName.isEmpty ? 'Banco personalizado' : packName,

@@ -51,8 +51,16 @@ abstract final class CompetitionSimulationEngine {
         fixture.competitionId,
       );
       final suspended = competitionState.suspendedPlayerIds;
-      final homeFormation = LiveRoundSimulator.formationFor(home);
-      final awayFormation = LiveRoundSimulator.formationFor(away);
+      final homeManager = LiveRoundSimulator.managerFor(state, home.id);
+      final awayManager = LiveRoundSimulator.managerFor(state, away.id);
+      final homeFormation = LiveRoundSimulator.formationFor(
+        home,
+        manager: homeManager,
+      );
+      final awayFormation = LiveRoundSimulator.formationFor(
+        away,
+        manager: awayManager,
+      );
       final homeStarters = LineupEngine.autoSelect(
         home.squad,
         homeFormation,
@@ -70,8 +78,8 @@ abstract final class CompetitionSimulationEngine {
         away: away,
         homeFormation: homeFormation,
         awayFormation: awayFormation,
-        homeTactic: LiveRoundSimulator.tacticFor(home),
-        awayTactic: LiveRoundSimulator.tacticFor(away),
+        homeTactic: LiveRoundSimulator.tacticFor(home, manager: homeManager),
+        awayTactic: LiveRoundSimulator.tacticFor(away, manager: awayManager),
         homeStarterIds: homeStarters,
         awayStarterIds: awayStarters,
       );

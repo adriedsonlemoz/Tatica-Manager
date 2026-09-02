@@ -9,11 +9,13 @@ class HomeBoardConfidenceCard extends StatelessWidget {
     super.key,
     required this.confidence,
     required this.club,
+    required this.objective,
     this.onStadiumTap,
   });
 
   final int confidence;
   final Club club;
+  final String objective;
   final VoidCallback? onStadiumTap;
 
   @override
@@ -34,7 +36,7 @@ class HomeBoardConfidenceCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _ConfidenceGauge(confidence: confidence),
+            _ConfidenceGauge(confidence: confidence, objective: objective),
             const SizedBox(width: 8),
             Expanded(
               child: _StadiumSummary(
@@ -185,15 +187,16 @@ class _StadiumMetric extends StatelessWidget {
 }
 
 class _ConfidenceGauge extends StatelessWidget {
-  const _ConfidenceGauge({required this.confidence});
+  const _ConfidenceGauge({required this.confidence, required this.objective});
 
   final int confidence;
+  final String objective;
 
   @override
   Widget build(BuildContext context) {
     final value = confidence.clamp(0, 100).toInt();
     return SizedBox(
-      width: 68,
+      width: 86,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -240,6 +243,19 @@ class _ConfidenceGauge extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            objective,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 7.6,
+              height: 1.1,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

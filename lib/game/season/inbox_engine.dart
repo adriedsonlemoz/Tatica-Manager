@@ -86,6 +86,7 @@ abstract final class InboxEngine {
       CareerEventType.suspensionEnded ||
       CareerEventType.training => ('Comissão técnica', InboxSenderType.staff),
       CareerEventType.nextMatch => ('Comissão técnica', InboxSenderType.staff),
+      CareerEventType.matchReport => ('Imprensa esportiva', InboxSenderType.system),
       CareerEventType.managerOffer => ('Diretoria', InboxSenderType.board),
       CareerEventType.seasonStarted => ('Diretoria', InboxSenderType.board),
       CareerEventType.info => ('Central do clube', InboxSenderType.system),
@@ -96,7 +97,8 @@ abstract final class InboxEngine {
             ? InboxActionType.transferOffer
             : event.type == CareerEventType.contractExpiring
                 ? InboxActionType.contract
-                : event.type == CareerEventType.nextMatch
+                : event.type == CareerEventType.nextMatch ||
+                        event.type == CareerEventType.matchReport
                     ? InboxActionType.match
                     : event.type == CareerEventType.managerOffer
                         ? InboxActionType.managerOffer

@@ -1,4 +1,5 @@
 import '../career/manager_career.dart';
+import '../career/board_objective.dart';
 import '../career/manager_profile.dart';
 import '../club/club.dart';
 import '../finance/club_administration.dart';
@@ -131,6 +132,11 @@ class CareerState {
     required this.careerName,
     required this.manager,
     required this.managerCareer,
+    this.boardObjective = const BoardObjective(
+      season: 2026,
+      clubId: '',
+      targetPosition: 10,
+    ),
     this.managers = const [],
     required this.createdAt,
     required this.season,
@@ -148,6 +154,7 @@ class CareerState {
     required this.finances,
     required this.seasonHistory,
     required this.news,
+    this.newsArchive = const [],
     required this.matchHistory,
     required this.settings,
     this.managerHistory = const [],
@@ -162,14 +169,16 @@ class CareerState {
     this.lastMatch,
   });
 
-  static const int currentSchemaVersion = 14;
-  static const int maxStoredNews = 80;
+  static const int currentSchemaVersion = 15;
+  static const int maxStoredNews = 120;
+  static const int maxArchivedNews = 400;
 
   final int schemaVersion;
   final String careerId;
   final String careerName;
   final ManagerProfile manager;
   final ManagerCareerState managerCareer;
+  final BoardObjective boardObjective;
   final List<ManagerProfile> managers;
   final DateTime createdAt;
   final int season;
@@ -191,6 +200,7 @@ class CareerState {
   final List<FinanceTransaction> finances;
   final List<SeasonSummary> seasonHistory;
   final List<CareerEvent> news;
+  final List<CareerEvent> newsArchive;
   final List<MatchResult> matchHistory;
   final GameSettings settings;
   final List<ManagerCareerHistoryEntry> managerHistory;
@@ -203,6 +213,16 @@ class CareerState {
   final CareerLeagueSetup leagueSetup;
   final List<CompetitionSeasonState> competitionStates;
   final MatchResult? lastMatch;
+
+  List<CareerEvent> get allNews {
+    final byId = <String, CareerEvent>{
+      for (final event in newsArchive) event.id: event,
+      for (final event in news) event.id: event,
+    };
+    final timeline = byId.values.toList(growable: false)
+      ..sort((a, b) => a.date.compareTo(b.date));
+    return timeline;
+  }
 
   Club get userClub => clubs.firstWhere((club) => club.id == userClubId);
   bool get managerEmployed => managerCareer.isEmployed;
@@ -399,6 +419,7 @@ class CareerState {
     String? careerName,
     ManagerProfile? manager,
     ManagerCareerState? managerCareer,
+    BoardObjective? boardObjective,
     List<ManagerProfile>? managers,
     DateTime? createdAt,
     int? season,
@@ -416,6 +437,7 @@ class CareerState {
     List<FinanceTransaction>? finances,
     List<SeasonSummary>? seasonHistory,
     List<CareerEvent>? news,
+    List<CareerEvent>? newsArchive,
     List<MatchResult>? matchHistory,
     GameSettings? settings,
     List<ManagerCareerHistoryEntry>? managerHistory,
@@ -468,6 +490,7 @@ class CareerState {
       careerName: careerName ?? this.careerName,
       manager: manager ?? this.manager,
       managerCareer: managerCareer ?? this.managerCareer,
+      boardObjective: boardObjective ?? this.boardObjective,
       managers: managers ?? this.managers,
       createdAt: createdAt ?? this.createdAt,
       season: season ?? this.season,
@@ -485,6 +508,7 @@ class CareerState {
       finances: finances ?? this.finances,
       seasonHistory: seasonHistory ?? this.seasonHistory,
       news: news ?? this.news,
+      newsArchive: newsArchive ?? this.newsArchive,
       matchHistory: matchHistory ?? this.matchHistory,
       settings: settings ?? this.settings,
       managerHistory: managerHistory ?? this.managerHistory,
@@ -506,6 +530,7 @@ class CareerState {
         'careerName': careerName,
         'manager': manager.toJson(),
         'managerCareer': managerCareer.toJson(),
+        'boardObjective': boardObjective.toJson(),
         'managers': managers.map((e) => e.toJson()).toList(),
         'createdAt': createdAt.toIso8601String(),
         'season': season,
@@ -523,6 +548,7 @@ class CareerState {
         'finances': finances.map((e) => e.toJson()).toList(),
         'seasonHistory': seasonHistory.map((e) => e.toJson()).toList(),
         'news': news.map((e) => e.toJson()).toList(),
+        'newsArchive': newsArchive.map((e) => e.toJson()).toList(),
         'matchHistory': matchHistory.map((e) => e.toJson()).toList(),
         'settings': settings.toJson(),
         'managerHistory': managerHistory.map((e) => e.toJson()).toList(),
@@ -660,6 +686,15 @@ class CareerState {
             season: season,
             startedAt: fallbackManagerDate,
           );
+    final boardObjective = json['boardObjective'] is Map
+        ? BoardObjective.fromJson(
+            Map<String, dynamic>.from(json['boardObjective'] as Map),
+          )
+        : BoardObjective(
+            season: season,
+            clubId: userClubId,
+            targetPosition: 10,
+          );
 
     final storedManagers = ((json['managers'] as List?) ?? const [])
         .whereType<Map>()
@@ -689,6 +724,7 @@ class CareerState {
       careerName: careerName?.isNotEmpty == true ? careerName! : 'Carreira $season',
       manager: normalizedManager,
       managerCareer: managerCareer,
+      boardObjective: boardObjective,
       managers: managers,
       createdAt: DateTime.tryParse(createdAtValue ?? '') ?? DateTime(season),
       season: season,
@@ -718,6 +754,11 @@ class CareerState {
       news: ((json['news'] as List?) ?? const [])
           .map((e) => CareerEvent.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
+      newsArchive: ((json['newsArchive'] as List?) ?? const [])
+          .whereType<Map>()
+          .map((e) => CareerEvent.fromJson(Map<String, dynamic>.from(e)))
+          .where((event) => event.id.isNotEmpty)
+          .toList(growable: false),
       matchHistory: matchHistory,
       settings: GameSettings.fromJson(
         Map<String, dynamic>.from(json['settings'] as Map? ?? const {}),

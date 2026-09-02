@@ -14,6 +14,8 @@ import '../../domain/season/competition_state.dart';
 import '../../domain/season/league_loading.dart';
 import '../../domain/tactic/tactic.dart';
 import '../club/club_identity_engine.dart';
+import 'manager_factory.dart';
+import 'board_objective_engine.dart';
 import '../finance/club_administration_engine.dart';
 import '../competition/competition_calendar_engine.dart';
 import '../competition/competition_schedule_engine.dart';
@@ -180,15 +182,10 @@ abstract final class CareerFactory {
             .toList(growable: false)
         : clubs
             .map(
-              (club) => ManagerProfile(
-                id: 'manager-${club.id}',
-                displayName: club.managerName,
-                nationality: 'Brasil',
-                ageAtStart: 42,
-                careerStartSeason: season,
-                currentClubId: club.id,
-                reputation: club.reputation.clamp(1, 100).toInt(),
-                overall: club.reputation.clamp(1, 99).toInt(),
+              (club) => ManagerFactory.forClub(
+                clubId: club.id,
+                clubReputation: club.reputation,
+                season: season,
               ),
             )
             .toList(growable: false);
@@ -276,6 +273,9 @@ abstract final class CareerFactory {
         competitionStates: competitionStates,
       ),
     );
-    return ClubAdministrationEngine.ensureInitialized(career);
+    final initialized = ClubAdministrationEngine.ensureInitialized(career);
+    return initialized.copyWith(
+      boardObjective: BoardObjectiveEngine.create(initialized),
+    );
   }
 }

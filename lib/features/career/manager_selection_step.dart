@@ -239,6 +239,28 @@ class ExistingManagerSelectionStep extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(fontSize: 11.5),
                             ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${manager.preferredFormation.label} • ${manager.preferredMentality.label} • ${manager.experienceYears} anos de experiência',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.muted,
+                                fontSize: 10.5,
+                              ),
+                            ),
+                            if (manager.birthPlaceSummary().isNotEmpty) ...[
+                              const SizedBox(height: 1),
+                              Text(
+                                'Natural de ${manager.birthPlaceSummary(omitCountry: true)}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.muted,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

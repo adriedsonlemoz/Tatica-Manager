@@ -440,7 +440,7 @@ class _NewsListTile extends StatelessWidget {
         CareerEventType.contractExpiring => Icons.description_rounded,
         CareerEventType.transferOffer => Icons.swap_horiz_rounded,
         CareerEventType.managerOffer => Icons.business_center_rounded,
-        CareerEventType.nextMatch => Icons.sports_soccer_rounded,
+        CareerEventType.nextMatch || CareerEventType.matchReport => Icons.sports_soccer_rounded,
         CareerEventType.training => Icons.fitness_center_rounded,
         CareerEventType.seasonStarted => Icons.emoji_events_rounded,
         CareerEventType.info => Icons.info_outline_rounded,
@@ -452,5 +452,6 @@ Color _newsColor(CareerEventType type) => switch (type) {
       CareerEventType.training => const Color(0xFFE6A82C),
       CareerEventType.playerRecovered || CareerEventType.injuryEnded => const Color(0xFF41C8B4),
       CareerEventType.contractExpiring => AppColors.warning,
+      CareerEventType.matchReport => AppColors.green,
       _ => AppColors.green,
     };

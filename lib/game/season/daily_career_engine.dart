@@ -4,6 +4,7 @@ import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../career/manager_career_engine.dart';
+import '../career/board_objective_engine.dart';
 import '../competition/competition_simulation_engine.dart';
 import '../contract/contract_lifecycle_engine.dart';
 import '../cpu/cpu_user_offer_engine.dart';
@@ -12,6 +13,8 @@ import '../transfer/market_career_engine.dart';
 import '../youth/youth_academy_engine.dart';
 import 'inbox_engine.dart';
 import 'calendar_engine.dart';
+import 'career_news_engine.dart';
+import 'career_news_archive.dart';
 
 class DailyCareerAdvance {
   const DailyCareerAdvance({required this.state, required this.events});
@@ -42,8 +45,19 @@ abstract final class DailyCareerEngine {
     final events = <CareerEvent>[];
 
     if (next.managerEmployed) {
+      next = next.copyWith(
+        boardObjective: BoardObjectiveEngine.evaluate(next),
+      );
       _addRecoveryEvents(events, before: simulated, after: next);
       _addContractAlerts(events, next);
+      final preview = CareerNewsEngine.preMatchPreview(next);
+      if (preview != null && !next.news.any((item) => item.id == preview.id)) {
+        events.add(preview);
+      }
+      final tableBrief = CareerNewsEngine.weeklyTableBrief(next);
+      if (tableBrief != null) events.add(tableBrief);
+      final boardUpdate = BoardObjectiveEngine.weeklyUpdateEvent(next);
+      if (boardUpdate != null) events.add(boardUpdate);
       _addNextMatchAlert(events, next);
       next = _addTransferOffer(events, next);
       _addTrainingSummary(events, simulated, next);
@@ -58,11 +72,15 @@ abstract final class DailyCareerEngine {
 
     next = ClubAdministrationEngine.advanceDay(next);
 
-    final merged = [...next.news, ...events];
-    final trimmed = merged.length <= CareerState.maxStoredNews
-        ? merged
-        : merged.sublist(merged.length - CareerState.maxStoredNews);
-    next = next.copyWith(news: trimmed);
+    final retained = CareerNewsArchive.append(
+      recent: next.news,
+      archive: next.newsArchive,
+      events: events,
+    );
+    next = next.copyWith(
+      news: retained.recent,
+      newsArchive: retained.archive,
+    );
     next = InboxEngine.appendEvents(next, events);
     return DailyCareerAdvance(
       state: next,

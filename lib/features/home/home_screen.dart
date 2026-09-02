@@ -27,6 +27,7 @@ import '../season/season_history_screen.dart';
 import '../squad/squad_screen.dart';
 import '../standings/standings_screen.dart';
 import '../statistics/statistics_screen.dart';
+import '../stadium/stadium_screen.dart';
 import '../tactics/tactics_screen.dart';
 import '../youth/youth_academy_screen.dart';
 import 'home_dashboard_widgets.dart';
@@ -119,7 +120,7 @@ class HomeScreen extends ConsumerWidget {
                     onNotificationsTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => NewsHighlightsScreen(
-                          events: career.news.reversed.toList(growable: false),
+                          events: career.allNews.reversed.toList(growable: false),
                           onEventTap: (newsContext, event) => _openCareerEvent(
                             newsContext,
                             ref,
@@ -161,6 +162,15 @@ class HomeScreen extends ConsumerWidget {
                       MaterialPageRoute(
                         builder: (_) => const MatchDayPresentationScreen(),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  HomeBoardConfidenceCard(
+                    confidence: career.boardObjective.currentConfidence,
+                    club: club,
+                    objective: career.boardObjective.targetLabel,
+                    onStadiumTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const StadiumScreen()),
                     ),
                   ),
                   if (fixture == null) ...[
@@ -318,7 +328,7 @@ class HomeScreen extends ConsumerWidget {
                     onViewAll: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => NewsHighlightsScreen(
-                          events: career.news.reversed.toList(growable: false),
+                          events: career.allNews.reversed.toList(growable: false),
                           onEventTap: (newsContext, event) => _openCareerEvent(
                             newsContext,
                             ref,

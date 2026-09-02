@@ -18,13 +18,21 @@ class SqliteCareerRepository implements CareerRepository {
     final root = await getDatabasesPath();
     _database = await openDatabase(
       '$root/tatica_manager.db',
-      version: 3,
+      version: 4,
       onCreate: (db, version) async => _createSchema(db),
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
+        var migratedVersion = oldVersion;
+        if (migratedVersion < 2) {
           await _migrateV1ToV2(db);
-        } else if (oldVersion < 3) {
+          // A migração V1 recria a tabela já no formato V3.
+          migratedVersion = 3;
+        }
+        if (migratedVersion < 3) {
           await _migrateV2ToV3(db);
+          migratedVersion = 3;
+        }
+        if (migratedVersion < 4) {
+          await _migrateV3ToV4(db);
         }
       },
     );
@@ -59,7 +67,24 @@ class SqliteCareerRepository implements CareerRepository {
     ''');
     await db.execute('CREATE INDEX idx_career_saves_updated_at ON career_saves(updated_at DESC)');
     await db.execute('CREATE TABLE app_meta(key TEXT PRIMARY KEY, value TEXT)');
+    await db.execute('''
+      CREATE TABLE career_save_recovery(
+        legacy_id TEXT,
+        payload TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    ''');
   }
+
+  static Future<void> _migrateV3ToV4(Database db) => db.execute('''
+    CREATE TABLE IF NOT EXISTS career_save_recovery(
+      legacy_id TEXT,
+      payload TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  ''');
 
   static Future<void> _migrateV2ToV3(Database db) async {
     const columns = <String>[
@@ -129,8 +154,13 @@ class SqliteCareerRepository implements CareerRepository {
           {'key': 'last_active_career_id', 'value': careerId},
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
-      } catch (_) {
-        // Um save legado corrompido não deve impedir a atualização do banco.
+      } catch (error) {
+        await db.insert('career_save_recovery', {
+          'legacy_id': row['id']?.toString(),
+          'payload': payload,
+          'reason': 'Migração V1 falhou: $error',
+          'created_at': DateTime.now().millisecondsSinceEpoch,
+        });
       }
     }
 

@@ -16,9 +16,11 @@ import '../competition/competition_schedule_engine.dart';
 import '../finance/club_administration_engine.dart';
 import '../league/league_engine.dart';
 import '../lineup/lineup_engine.dart';
+import '../career/board_objective_engine.dart';
 import '../player/player_development_engine.dart';
 import '../player/player_factory.dart';
 import 'calendar_engine.dart';
+import 'career_news_archive.dart';
 
 abstract final class SeasonEngine {
   static SeasonSummary summaryFor(CareerState state) {
@@ -189,10 +191,11 @@ abstract final class SeasonEngine {
           'A temporada $nextSeason começou. A equipe já iniciou a preparação para a primeira rodada.',
       clubId: state.userClubId,
     );
-    final mergedNews = [...state.news, seasonStarted];
-    final news = mergedNews.length <= CareerState.maxStoredNews
-        ? mergedNews
-        : mergedNews.sublist(mergedNews.length - CareerState.maxStoredNews);
+    final retainedNews = CareerNewsArchive.append(
+      recent: state.news,
+      archive: state.newsArchive,
+      events: [seasonStarted],
+    );
     final managerHistoryBase = state.managerHistory.isEmpty
         ? [
             ManagerCareerHistoryEntry.fromProfile(
@@ -225,10 +228,14 @@ abstract final class SeasonEngine {
       starterIds: starters,
       seasonHistory: [...state.seasonHistory, summary],
       managerHistory: managerHistory,
-      news: news,
+      news: retainedNews.recent,
+      newsArchive: retainedNews.archive,
       matchHistory: const [],
       clearLastMatch: true,
     );
-    return ClubAdministrationEngine.ensureInitialized(next);
+    final initialized = ClubAdministrationEngine.ensureInitialized(next);
+    return initialized.copyWith(
+      boardObjective: BoardObjectiveEngine.create(initialized),
+    );
   }
 }

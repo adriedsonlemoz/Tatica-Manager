@@ -57,8 +57,15 @@ class _PreMatchScreenState extends ConsumerState<PreMatchScreen> {
     );
 
     final FormationType userFormation = career.formation;
-    final opponentFormation = LiveRoundSimulator.formationFor(opponent);
-    final opponentTactic = LiveRoundSimulator.tacticFor(opponent);
+    final opponentManager = LiveRoundSimulator.managerFor(career, opponent.id);
+    final opponentFormation = LiveRoundSimulator.formationFor(
+      opponent,
+      manager: opponentManager,
+    );
+    final opponentTactic = LiveRoundSimulator.tacticFor(
+      opponent,
+      manager: opponentManager,
+    );
 
     final userValidation = LineupEngine.validate(
       userClub.squad,

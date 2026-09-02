@@ -8,14 +8,38 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.127`
-- **Android versionCode:** `128`
+- **Release deste handoff:** `0.1.1.129`
+- **Android versionCode:** `130`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.129
+
+## Confiabilidade, diretoria e técnicos CPU
+
+- `GameController.commitCareer` só atualiza a sessão após a confirmação do SQLite e registra falhas de gravação no diagnóstico.
+- Migrações V1 preservam payloads inválidos em `career_save_recovery`; o upgrade também executa todas as etapas necessárias de forma sequencial.
+- `BoardObjective` persiste meta anual e confiança; a Home mostra a meta e o avanço diário produz avaliação semanal baseada na tabela e no caixa.
+- `LiveRoundSimulator` e as simulações de competição usam formação e estilo do `ManagerProfile` do clube CPU.
+- Notícias recentes ficam limitadas a 120 e o arquivo persistente retém até 400 eventos antigos; a tela de notícias consulta os dois conjuntos.
+- Formatos de copas/grupos continuam bloqueados por `CompetitionScheduleEngine.activationBlockReason` até que regras e dados reais sejam cadastrados.
+
+Consulte `docs/RELEASE_0.1.1.129.md`.
+
+## Estado funcional da release 0.1.1.128
+
+## Notícias e técnicos mais completos
+
+- `CareerNewsEngine` cria prévia de confronto, panorama semanal da tabela e reportagens pós-jogo exclusivamente a partir de fixtures, tabela, jogadores e Match Engine já persistidos.
+- O banco padrão passa a ter um técnico fictício e distinto por clube; o banco legado com todos os nomes `Técnico CPU` é reparado durante a normalização.
+- A escolha de técnico e `ManagerProfileScreen` exibem origem, contrato, experiência, estilo, formação, mentalidade, tempo no cargo e situação real.
+- A geração dos jogadores permanece a mesma: nomes fictícios, atributos e visual estáveis pelo seed, sem mudança nas regras.
+
+Consulte `docs/RELEASE_0.1.1.128.md`.
 
 ## Estado funcional da release 0.1.1.127
 
@@ -948,12 +972,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.127
-versionCode:         128
-pubspec:             0.1.1+128
+release/versionName: 0.1.1.129
+versionCode:         130
+pubspec:             0.1.1+130
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.128` e usar um `versionCode` maior que 128.
+A próxima alteração/entrega normalmente deve virar `0.1.1.130` e usar um `versionCode` maior que 130.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

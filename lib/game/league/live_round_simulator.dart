@@ -1,4 +1,5 @@
 import '../../domain/club/club.dart';
+import '../../domain/career/manager_profile.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/season/career_state.dart';
@@ -50,8 +51,10 @@ abstract final class LiveRoundSimulator {
   ) {
     final home = _club(career, fixture.homeClubId);
     final away = _club(career, fixture.awayClubId);
-    final homeFormation = formationFor(home);
-    final awayFormation = formationFor(away);
+    final homeManager = managerFor(career, home.id);
+    final awayManager = managerFor(career, away.id);
+    final homeFormation = formationFor(home, manager: homeManager);
+    final awayFormation = formationFor(away, manager: awayManager);
     final suspended = career.suspendedPlayerIdsForCompetition(
       fixture.competitionId,
     );
@@ -72,8 +75,8 @@ abstract final class LiveRoundSimulator {
       away: away,
       homeFormation: homeFormation,
       awayFormation: awayFormation,
-      homeTactic: tacticFor(home),
-      awayTactic: tacticFor(away),
+      homeTactic: tacticFor(home, manager: homeManager),
+      awayTactic: tacticFor(away, manager: awayManager),
       homeStarterIds: homeStarters,
       awayStarterIds: awayStarters,
     );
@@ -85,7 +88,11 @@ abstract final class LiveRoundSimulator {
     );
   }
 
-  static FormationType formationFor(Club club) {
+  static ManagerProfile? managerFor(CareerState career, String clubId) =>
+      career.managers.where((manager) => manager.currentClubId == clubId).firstOrNull;
+
+  static FormationType formationFor(Club club, {ManagerProfile? manager}) {
+    if (manager != null) return manager.preferredFormation;
     final code = club.id.codeUnits.fold<int>(0, (sum, item) => sum + item);
     const options = [
       FormationType.f433,
@@ -96,7 +103,40 @@ abstract final class LiveRoundSimulator {
     return options[code % options.length];
   }
 
-  static Tactic tacticFor(Club club) {
+  static Tactic tacticFor(Club club, {ManagerProfile? manager}) {
+    if (manager != null) {
+      return switch (manager.style) {
+        'Posse' => Tactic(
+            mentality: manager.preferredMentality,
+            pressing: Pressing.high,
+            tempo: MatchTempo.normal,
+            defensiveLine: DefensiveLine.high,
+            buildUp: BuildUp.short,
+          ),
+        'Transição' => Tactic(
+            mentality: manager.preferredMentality,
+            pressing: Pressing.medium,
+            tempo: MatchTempo.fast,
+            defensiveLine: DefensiveLine.medium,
+            buildUp: BuildUp.direct,
+          ),
+        'Defensivo' => Tactic(
+            mentality: Mentality.defensive,
+            pressing: Pressing.low,
+            tempo: MatchTempo.slow,
+            defensiveLine: DefensiveLine.low,
+            buildUp: BuildUp.direct,
+          ),
+        'Ofensivo' => Tactic(
+            mentality: Mentality.attacking,
+            pressing: Pressing.high,
+            tempo: MatchTempo.fast,
+            defensiveLine: DefensiveLine.high,
+            buildUp: BuildUp.balanced,
+          ),
+        _ => Tactic(mentality: manager.preferredMentality),
+      };
+    }
     if (club.reputation >= 84) {
       return const Tactic(
         mentality: Mentality.attacking,

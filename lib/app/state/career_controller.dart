@@ -6,6 +6,7 @@ import '../../domain/club/club_identity.dart';
 import '../../core/config/app_preferences.dart';
 import '../../core/diagnostics/diagnostic_service.dart';
 import '../../game/career/career_factory.dart';
+import '../../game/career/board_objective_engine.dart';
 import '../../game/club/club_identity_engine.dart';
 import '../../game/contract/contract_lifecycle_engine.dart';
 import '../../game/finance/club_administration_engine.dart';
@@ -131,7 +132,10 @@ class CareerController extends Notifier<CareerHubState> {
       final academyAdded = withAcademy.youthAcademy.length != reconciliation.state.youthAcademy.length;
       final withInbox = InboxEngine.appendEvents(withAcademy, withAcademy.news);
       final inboxBackfilled = withInbox.inbox.length != withAcademy.inbox.length;
-      final career = ClubAdministrationEngine.ensureInitialized(withInbox);
+      final administered = ClubAdministrationEngine.ensureInitialized(withInbox);
+      final career = administered.copyWith(
+        boardObjective: BoardObjectiveEngine.evaluate(administered),
+      );
       final administrationAdded =
           !withInbox.clubAdministration.budgetPlan.isConfigured ||
           withInbox.clubAdministration.budgetPlan.season != withInbox.season ||
@@ -142,11 +146,19 @@ class CareerController extends Notifier<CareerHubState> {
               withInbox.userClub.sponsorships.length ||
           career.userClub.stadium.name != withInbox.userClub.stadium.name ||
           career.inbox.length != withInbox.inbox.length;
+      final beforeBoard = withInbox.boardObjective;
+      final afterBoard = career.boardObjective;
+      final boardUpdated = beforeBoard.season != afterBoard.season ||
+          beforeBoard.clubId != afterBoard.clubId ||
+          beforeBoard.targetPosition != afterBoard.targetPosition ||
+          beforeBoard.currentConfidence != afterBoard.currentConfidence ||
+          beforeBoard.lastEvaluatedAt != afterBoard.lastEvaluatedAt;
       if (identityMigration.changed ||
           reconciliation.changed ||
           academyAdded ||
           inboxBackfilled ||
-          administrationAdded) {
+          administrationAdded ||
+          boardUpdated) {
         await repository.save(career);
       }
       await repository.saveLastActiveCareerId(careerId);

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/save/career_repository.dart';
+import '../../core/diagnostics/diagnostic_service.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/season/career_event.dart';
@@ -56,13 +57,27 @@ class GameController extends Notifier<GameState> {
     state = state.copyWith(message: message);
   }
 
-  Future<void> commitCareer(CareerState next, {String? message}) async {
-    state = state.copyWith(
-      career: next,
-      message: message,
-      clearMessage: message == null,
-    );
-    await _repository.save(next);
+  Future<bool> commitCareer(CareerState next, {String? message}) async {
+    try {
+      await _repository.save(next);
+      state = state.copyWith(
+        career: next,
+        message: message,
+        clearMessage: message == null,
+      );
+      return true;
+    } catch (error, stack) {
+      await DiagnosticService.instance.record(
+        'CAREER_SAVE_ERROR',
+        error,
+        stack,
+        'A alteração foi mantida fora da tela porque a gravação local falhou.',
+      );
+      state = state.copyWith(
+        message: 'Não foi possível salvar a alteração. Tente novamente.',
+      );
+      return false;
+    }
   }
 
   Future<void> setFormation(FormationType formation) async {

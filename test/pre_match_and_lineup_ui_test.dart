@@ -39,8 +39,8 @@ void main() {
       'lib/features/match/pre_match_reference_components.dart',
     ).readAsStringSync();
 
-    expect(screen, contains('LiveRoundSimulator.formationFor(opponent)'));
-    expect(screen, contains('LiveRoundSimulator.tacticFor(opponent)'));
+    expect(screen, contains('LiveRoundSimulator.formationFor('));
+    expect(screen, contains('LiveRoundSimulator.tacticFor('));
     expect(screen, contains('LineupEngine.autoSelect('));
     expect(screen, contains('MatchStrengthCalculator.calculate('));
     expect(screen, contains('opponentValidation.assignments'));

@@ -107,8 +107,9 @@ void main() {
       repository.indexOf('static Map<String, Object?> _summaryValues'),
     );
 
-    expect(repository, contains('version: 3'));
+    expect(repository, contains('version: 4'));
     expect(repository, contains('_migrateV2ToV3'));
+    expect(repository, contains('_migrateV3ToV4'));
     expect(listMethod, contains('columns: const ['));
     expect(listMethod, isNot(contains("'payload'")));
   });
