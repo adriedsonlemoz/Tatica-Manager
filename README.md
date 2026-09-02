@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.126`
-**Android versionCode:** `127`
+**Release atual:** `0.1.1.127`
+**Android versionCode:** `128`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,20 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.126`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.127`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+127`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.126` e `versionCode 127`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+128`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.127` e `versionCode 128`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.126`, o pubspec é `0.1.1+127`. a próxima entrega normalmente será `0.1.1.127`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.127`, o pubspec é `0.1.1+128`. a próxima entrega normalmente será `0.1.1.128`.
+
+## Retorno do pré-jogo e setores do elenco — 0.1.1.127
+
+- restaura o botão de voltar quando Escalação é aberta pelo pré-jogo;
+- organiza banco e elenco por setores e mantém indisponíveis separados na paginação compacta;
+- corrige os dois testes restantes do log 81 sem adicionar rolagem.
 
 ## Correção do analyzer no campo compartilhado — 0.1.1.126
 

@@ -50,7 +50,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
             fixture.competitionId,
           );
     final availableBench = reserves.where(availableForNextMatch).toList()
-      ..sort((a, b) => b.overall.compareTo(a.overall));
+      ..sort(_compareBenchPlayers);
     final unavailable = reserves
         .where((player) => !availableForNextMatch(player))
         .toList()
@@ -66,6 +66,13 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     return PremiumScaffold(
       appBar: GameTopBar(
         title: 'Escalação',
+        leading: widget.showBackButton
+            ? IconButton(
+                tooltip: 'Voltar ao pré-jogo',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back_rounded),
+              )
+            : null,
         subtitle:
             'Força ${validation.averageStrength} • ${validation.isValid ? 'Pronta para jogar' : validation.message}',
         actions: [
@@ -205,6 +212,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                       availableIds:
                           availableBench.map((player) => player.id).toSet(),
                       availableCount: availableBench.length,
+                      formationLabel: career.formation.label,
                       page: _benchPage,
                       onPageChanged: (value) =>
                           setState(() => _benchPage = value),
@@ -225,6 +233,21 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
       ),
     );
   }
+
+  static int _compareBenchPlayers(Player a, Player b) {
+    final sector = _sectorOrder(a).compareTo(_sectorOrder(b));
+    return sector != 0 ? sector : b.overall.compareTo(a.overall);
+  }
+
+  static int _sectorOrder(Player player) => switch (player.primaryPosition) {
+        PlayerPosition.gol => 0,
+        PlayerPosition.ld || PlayerPosition.le || PlayerPosition.zag => 1,
+        PlayerPosition.vol || PlayerPosition.mc || PlayerPosition.mei => 2,
+        PlayerPosition.pe ||
+        PlayerPosition.pd ||
+        PlayerPosition.sa ||
+        PlayerPosition.ca => 3,
+      };
 
   Future<void> _showFormationPicker(
     BuildContext context,
@@ -334,6 +357,7 @@ class _BenchPager extends StatelessWidget {
     required this.players,
     required this.availableIds,
     required this.availableCount,
+    required this.formationLabel,
     required this.page,
     required this.onPageChanged,
     required this.onPlayerTap,
@@ -344,6 +368,7 @@ class _BenchPager extends StatelessWidget {
   final List<Player> players;
   final Set<String> availableIds;
   final int availableCount;
+  final String formationLabel;
   final int page;
   final ValueChanged<int> onPageChanged;
   final ValueChanged<Player> onPlayerTap;
@@ -372,7 +397,7 @@ class _BenchPager extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '$availableCount disponíveis',
+                  '$formationLabel • $availableCount disponíveis',
                   style: const TextStyle(color: AppColors.muted, fontSize: 8.5),
                 ),
                 if (pageCount > 1) ...[
@@ -534,6 +559,12 @@ class _BenchPlayerCard extends StatelessWidget {
                 ),
               ),
               Text(
+                _sectorLabel(player, available),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColors.muted, fontSize: 5.8),
+              ),
+              Text(
                 'Cond. ${player.condition}%',
                 style: const TextStyle(color: AppColors.muted, fontSize: 6.5),
               ),
@@ -541,6 +572,21 @@ class _BenchPlayerCard extends StatelessWidget {
           ),
         ),
       );
+
+  static String _sectorLabel(Player player, bool available) {
+    if (!available) return 'INELEGÍVEIS / INDISPONÍVEIS';
+    return switch (player.primaryPosition) {
+      PlayerPosition.gol => 'GOLEIROS',
+      PlayerPosition.ld || PlayerPosition.le || PlayerPosition.zag =>
+        'DEFENSORES',
+      PlayerPosition.vol || PlayerPosition.mc || PlayerPosition.mei =>
+        'MEIO-CAMPISTAS',
+      PlayerPosition.pe ||
+      PlayerPosition.pd ||
+      PlayerPosition.sa ||
+      PlayerPosition.ca => 'ATACANTES',
+    };
+  }
 }
 
 class _SummaryPill extends StatelessWidget {

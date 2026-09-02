@@ -36,9 +36,16 @@ class PremiumScaffold extends StatelessWidget {
 }
 
 class GameTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const GameTopBar({super.key, required this.title, this.subtitle, this.actions = const []});
+  const GameTopBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.actions = const [],
+  });
   final String title;
   final String? subtitle;
+  final Widget? leading;
   final List<Widget> actions;
 
   @override
@@ -46,6 +53,7 @@ class GameTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
+        leading: leading,
         titleSpacing: 16,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),

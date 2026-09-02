@@ -8,14 +8,24 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.126`
-- **Android versionCode:** `127`
+- **Release deste handoff:** `0.1.1.127`
+- **Android versionCode:** `128`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.127
+
+## Correções do log 81
+
+- Escalação aberta pelo pré-jogo recebe retorno explícito, preservando as alterações feitas.
+- Banco e elenco continuam paginados, agora ordenados e identificados por setores, com indisponíveis ao final.
+- O analyzer passou no workflow 81; os dois testes estruturais restantes foram corrigidos.
+
+Consulte `docs/RELEASE_0.1.1.127.md`.
 
 ## Estado funcional da release 0.1.1.126
 
@@ -938,12 +948,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.126
-versionCode:         127
-pubspec:             0.1.1+127
+release/versionName: 0.1.1.127
+versionCode:         128
+pubspec:             0.1.1+128
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.127` e usar um `versionCode` maior que 127.
+A próxima alteração/entrega normalmente deve virar `0.1.1.128` e usar um `versionCode` maior que 128.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
