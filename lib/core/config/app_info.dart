@@ -7,11 +7,19 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.125';
+  static const String version = '0.1.1.126';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.126',
+      title: 'Correção do analyzer no campo compartilhado',
+      changes: [
+        'Importa a extensão de PlayerPosition usada para exibir a posição dos jogadores no campo compacto.',
+        'Corrige o único erro do log 80 sem alterar o visual, a escalação ou o Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.125',
       title: 'Escalação integrada ao novo design',
@@ -28,15 +36,6 @@ abstract final class AppInfo {
         'Adapta Calendário, Táticas e Configurações aos mockups em telas fixas e responsivas, sem rolagem nas páginas principais.',
         'Calendário usa somente partidas e eventos reais; Táticas mantém apenas formação e as cinco instruções já suportadas pelo Match Engine.',
         'Configurações preserva áudio, vibração, duração, bola e carreira, reativa a velocidade 1x/2x/4x e mantém as ações avançadas acessíveis.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.123',
-      title: 'Correção dos testes de Finanças e Transferências',
-      changes: [
-        'Restaura Estádio e Patrocínios como seções expansíveis funcionais dentro dos detalhes financeiros, sem voltar a rolar a tela principal.',
-        'Mantém os módulos reais de estádio, patrocínios e orçamentos integrados à tela compacta de Finanças.',
-        'Registra a renovação contratual com a data do estado atualizado da carreira para manter o livro-caixa temporalmente consistente.',
       ],
     ),
   ];

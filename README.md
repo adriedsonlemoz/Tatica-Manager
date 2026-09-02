@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.125`
-**Android versionCode:** `126`
+**Release atual:** `0.1.1.126`
+**Android versionCode:** `127`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,19 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.125`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.126`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+126`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.125` e `versionCode 126`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+127`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.126` e `versionCode 127`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.125`, o pubspec é `0.1.1+126`. a próxima entrega normalmente será `0.1.1.126`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.126`, o pubspec é `0.1.1+127`. a próxima entrega normalmente será `0.1.1.127`.
+
+## Correção do analyzer no campo compartilhado — 0.1.1.126
+
+- corrige o import da extensão de posição usada pelo campo compacto compartilhado entre Escalação e Táticas;
+- elimina o único erro do log 80 sem alterar design, dados ou regras do jogo.
 
 ## Escalação integrada ao novo design — 0.1.1.125
 
