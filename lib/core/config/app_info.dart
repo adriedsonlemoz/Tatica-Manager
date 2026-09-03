@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.131';
+  static const String version = '0.1.1.132';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.132',
+      title: 'Correção do teste da simulação CPU',
+      changes: [
+        'Atualiza o teste estrutural para a arquitetura realista vigente do Match Engine.',
+        'Mantém eventos completos e substituições automáticas nas partidas CPU em segundo plano.',
+        'Preserva o analyzer já aprovado e não altera a apresentação visual da partida.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.131',
       title: 'Correção do analyzer no cartão amarelo',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Usa atributos por setor, estado físico e técnica para gerar força, chances e finalizações.',
         'Recalibra faltas, cartões, lesões e reação tática ao placar durante a partida.',
         'Faz ligas de segundo plano registrar eventos, estatísticas individuais e suspensões reais.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.129',
-      title: 'Confiabilidade da carreira e diretoria',
-      changes: [
-        'Confirma o save antes de atualizar a sessão e preserva falhas de migração para recuperação.',
-        'Adiciona meta anual e confiança da diretoria com dados reais da tabela e caixa.',
-        'Usa perfis dos técnicos CPU nas formações e táticas e arquiva notícias antigas da carreira.',
       ],
     ),
   ];

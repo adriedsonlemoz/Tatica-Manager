@@ -8,14 +8,25 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.131`
-- **Android versionCode:** `132`
+- **Release deste handoff:** `0.1.1.132`
+- **Android versionCode:** `133`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.132
+
+## Correção do teste da simulação CPU
+
+- O log 85 confirmou `flutter analyze` limpo e 306 testes aprovados antes de uma única falha estrutural.
+- `live_match_broadcast_upgrade_test.dart` deixa de exigir `BackgroundFixtureResolver.resolve`, comportamento substituído pela simulação realista da 0.1.1.130.
+- O teste passa a proteger o uso do único `MatchEngine` e as substituições automáticas de ambos os times CPU.
+- Nenhuma regra de jogo ou tela foi alterada nesta microcorreção.
+
+Consulte `docs/RELEASE_0.1.1.132.md`.
 
 ## Estado funcional da release 0.1.1.131
 
@@ -994,12 +1005,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.131
-versionCode:         132
-pubspec:             0.1.1+132
+release/versionName: 0.1.1.132
+versionCode:         133
+pubspec:             0.1.1+133
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.132` e usar um `versionCode` maior que 132.
+A próxima alteração/entrega normalmente deve virar `0.1.1.133` e usar um `versionCode` maior que 133.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

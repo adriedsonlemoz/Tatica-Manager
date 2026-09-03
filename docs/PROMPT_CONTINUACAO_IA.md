@@ -12,9 +12,9 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.131
-Android versionCode: 132
-pubspec: 0.1.1+132
+Release visível: 0.1.1.132
+Android versionCode: 133
+pubspec: 0.1.1+133
 
 Novidade desta base: Calendário, Táticas e Configurações foram adaptados aos mockups em telas principais fixas e responsivas. Calendário usa somente fixtures e eventos persistidos; Táticas mantém apenas formação e as cinco escolhas já suportadas pelo Match Engine; Configurações preserva áudio, vibração, velocidade, duração, bola e ações reais da carreira. `matchSpeed` atua somente no relógio visual da apresentação. Transferências permanece centralizada e Finanças continua compacta e integrada aos dados persistidos. Não criar dados ou sistemas paralelos.
 
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.132 com versionCode > 132.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.133 com versionCode > 133.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

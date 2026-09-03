@@ -93,7 +93,9 @@ void main() {
     expect(round, contains('fixture.competitionId == competitionId'));
     expect(round, contains('PreparedRoundMatch'));
     expect(resolver, contains('MatchEngine.simulate'));
-    expect(resolver, contains('BackgroundFixtureResolver.resolve'));
+    expect(resolver, isNot(contains('BackgroundFixtureResolver.resolve')));
+    expect(resolver, contains('autoSubstituteHome: true'));
+    expect(resolver, contains('autoSubstituteAway: true'));
     expect(resolver, isNot(contains('class MatchEngine')));
   });
 }
