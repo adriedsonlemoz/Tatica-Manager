@@ -8,14 +8,27 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.132`
-- **Android versionCode:** `133`
+- **Release deste handoff:** `0.1.1.133`
+- **Android versionCode:** `134`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.133
+
+## Campo ao vivo mais dinâmico
+
+- `MatchPitchFormation` transforma os slots reais de `FormationCatalog` para mandante e visitante; `LiveMatchSession` preserva as duas formações usadas pelo Match Engine.
+- `LiveMatchStatistics` estabiliza a posse visível com a estatística oficial da partida e converge exatamente ao valor final no minuto 90.
+- `MatchPlayerMotion.phaseShape` desloca os setores como blocos conforme bola e posse, preservando distâncias e posições escolhidas.
+- Etiquetas passivas ficam menores; jogador ativo e participantes do lance recebem prioridade sem permitir sobreposição.
+- Bola, áreas e gols ganharam contraste e escala, enquanto `MatchPitchCameraState` aproxima suavemente somente lances importantes e replay.
+- Flame continua apenas representando os eventos já calculados; nenhuma probabilidade ou resultado foi movido para o renderer.
+
+Consulte `docs/RELEASE_0.1.1.133.md`.
 
 ## Estado funcional da release 0.1.1.132
 
@@ -1005,12 +1018,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.132
-versionCode:         133
-pubspec:             0.1.1+133
+release/versionName: 0.1.1.133
+versionCode:         134
+pubspec:             0.1.1+134
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.133` e usar um `versionCode` maior que 133.
+A próxima alteração/entrega normalmente deve virar `0.1.1.134` e usar um `versionCode` maior que 134.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

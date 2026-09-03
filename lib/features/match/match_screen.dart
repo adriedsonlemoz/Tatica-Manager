@@ -95,6 +95,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       awayClubId: away.id,
       homePlayerIds: live.homeStarterIds,
       awayPlayerIds: live.awayStarterIds,
+      homeFormation: live.homeFormation,
+      awayFormation: live.awayFormation,
       playerNames: playerNames,
       ballStyle: career.settings.matchBallStyle,
       onEventStarted: (event) {
@@ -386,6 +388,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                     minute: minute,
                     homeId: home.id,
                     awayId: away.id,
+                    targetHomePossession: result.statistics.homePossession,
                     throughSequence: currentSequence,
                   ),
                   const SizedBox(height: 8),

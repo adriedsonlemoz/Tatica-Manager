@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.132`
-**Android versionCode:** `133`
+**Release atual:** `0.1.1.133`
+**Android versionCode:** `134`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.132`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.133`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+133`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.132` e `versionCode 133`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+134`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.133` e `versionCode 134`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.132`, o pubspec é `0.1.1+133`. a próxima entrega normalmente será `0.1.1.133`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.133`, o pubspec é `0.1.1+134`. a próxima entrega normalmente será `0.1.1.134`.
+
+## Campo ao vivo mais dinâmico — 0.1.1.133
+
+- usa no renderer os onze pontos da formação real de cada time, incluindo os oito esquemas já existentes no jogo;
+- ancora a posse ao vivo na estatística do Match Engine, absorve gradualmente os eventos apresentados e elimina extremos causados por uma única jogada;
+- mantém o bloco de cada equipe acompanhando a bola e o domínio sem desfazer a formação após cada lance;
+- reduz as etiquetas passivas, prioriza os participantes da jogada e impede sobreposição entre os nomes exibidos;
+- aumenta bola, áreas, redes e profundidade dos gols e aplica aproximação suave somente em finalizações, defesas, pênaltis, gols e replay.
 
 ## Correção do teste da simulação CPU — 0.1.1.132
 

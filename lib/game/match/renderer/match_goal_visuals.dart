@@ -21,9 +21,9 @@ abstract final class MatchGoalVisuals {
     );
 
     final net = Paint()
-      ..color = const Color(0x96FFFFFF)
+      ..color = const Color(0xB8FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = .55;
+      ..strokeWidth = .68;
     for (var row = 1; row < 8; row++) {
       final progress = row / 8;
       canvas.drawLine(
@@ -44,7 +44,7 @@ abstract final class MatchGoalVisuals {
     final rear = Paint()
       ..color = const Color(0xB8FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = .82;
+      ..strokeWidth = 1.0;
     canvas.drawLine(geometry.backTop, geometry.backBottom, rear);
     canvas.drawLine(geometry.frontTop, geometry.backTop, rear);
     canvas.drawLine(geometry.frontBottom, geometry.backBottom, rear);
@@ -84,7 +84,7 @@ abstract final class MatchGoalVisuals {
         geometry.frontBottom,
         const [Color(0xFFFFFFFF), Color(0xFFD7E1DD), Color(0xFFFFFFFF)],
       )
-      ..strokeWidth = 1.75
+      ..strokeWidth = 2.05
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(geometry.frontTop, geometry.frontBottom, frame);
     canvas.drawLine(geometry.frontTop, geometry.backTop, frame);
@@ -145,16 +145,16 @@ abstract final class MatchGoalVisuals {
 
 class _GoalGeometry {
   _GoalGeometry(Rect field, {required bool left}) {
-    final goalHeight = field.height * .25;
-    final depth = math.min(10.5, field.height * .052).toDouble();
+    final goalHeight = field.height * .29;
+    final depth = math.min(15.0, field.height * .072).toDouble();
     final centerY = field.center.dy;
     final frontX = left ? field.left + 1.5 : field.right - 1.5;
     final top = centerY - goalHeight / 2;
     final backX = left ? frontX + depth : frontX - depth;
     frontTop = Offset(frontX, top);
     frontBottom = Offset(frontX, top + goalHeight);
-    backTop = Offset(backX, top + 3.0);
-    backBottom = Offset(backX, top + goalHeight - 3.0);
+    backTop = Offset(backX, top + 3.8);
+    backBottom = Offset(backX, top + goalHeight - 3.8);
   }
 
   late final Offset frontTop;

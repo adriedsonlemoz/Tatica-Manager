@@ -3,7 +3,10 @@ import 'dart:ui';
 
 import 'package:flame/game.dart';
 import '../../../domain/club/club.dart';
+import '../../../domain/formation/formation.dart';
 import '../../../domain/match/match_models.dart';
+import 'match_pitch_camera.dart';
+import 'match_pitch_formation.dart';
 import 'match_pitch_moment_state.dart';
 import 'match_pitch_visuals.dart';
 import 'match_player_labels.dart';
@@ -24,6 +27,8 @@ class MatchPitchGame extends FlameGame {
     required this.awayClubId,
     required List<String> homePlayerIds,
     required List<String> awayPlayerIds,
+    required FormationType homeFormation,
+    required FormationType awayFormation,
     required Map<String, String> playerNames,
     this.ballStyle = 0,
     this.onReplayChanged,
@@ -31,16 +36,18 @@ class MatchPitchGame extends FlameGame {
   })  : _homePlayerIds = [...homePlayerIds],
         _awayPlayerIds = [...awayPlayerIds],
         _playerNames = Map<String, String>.unmodifiable(playerNames),
-        _homePlayers = _homeBase.map(_copyPoint).toList(),
-        _awayPlayers = _awayBase.map(_copyPoint).toList(),
-        _homeTargets = _homeBase.map(_copyPoint).toList(),
-        _awayTargets = _awayBase.map(_copyPoint).toList(),
+        _homeBase = MatchPitchFormation.points(homeFormation, home: true),
+        _awayBase = MatchPitchFormation.points(awayFormation, home: false),
+        _homePlayers = MatchPitchFormation.points(homeFormation, home: true),
+        _awayPlayers = MatchPitchFormation.points(awayFormation, home: false),
+        _homeTargets = MatchPitchFormation.points(homeFormation, home: true),
+        _awayTargets = MatchPitchFormation.points(awayFormation, home: false),
         _homeMotionStates = List.generate(
-          _homeBase.length,
+          11,
           (index) => MatchPlayerMotionState(seed: 13 + index * 7),
         ),
         _awayMotionStates = List.generate(
-          _awayBase.length,
+          11,
           (index) => MatchPlayerMotionState(seed: 47 + index * 7),
         );
 
@@ -59,34 +66,8 @@ class MatchPitchGame extends FlameGame {
   List<String> _awayPlayerIds;
   final Map<String, String> _playerNames;
 
-  static const _homeBase = <FieldPoint>[
-    FieldPoint(.50, .90),
-    FieldPoint(.15, .75),
-    FieldPoint(.38, .78),
-    FieldPoint(.62, .78),
-    FieldPoint(.85, .75),
-    FieldPoint(.27, .58),
-    FieldPoint(.50, .54),
-    FieldPoint(.73, .58),
-    FieldPoint(.18, .35),
-    FieldPoint(.50, .29),
-    FieldPoint(.82, .35),
-  ];
-
-  static const _awayBase = <FieldPoint>[
-    FieldPoint(.50, .10),
-    FieldPoint(.15, .25),
-    FieldPoint(.38, .22),
-    FieldPoint(.62, .22),
-    FieldPoint(.85, .25),
-    FieldPoint(.27, .42),
-    FieldPoint(.50, .46),
-    FieldPoint(.73, .42),
-    FieldPoint(.18, .65),
-    FieldPoint(.50, .71),
-    FieldPoint(.82, .65),
-  ];
-
+  final List<FieldPoint> _homeBase;
+  final List<FieldPoint> _awayBase;
   final List<FieldPoint> _homePlayers;
   final List<FieldPoint> _awayPlayers;
   final List<FieldPoint> _homeTargets;
@@ -96,6 +77,8 @@ class MatchPitchGame extends FlameGame {
   final Map<String, MatchPlayerLabelPlacement> _labelPlacements = {};
   final List<MatchPresentationCue> _cueQueue = [];
   final MatchPitchMomentState _momentState = MatchPitchMomentState();
+  final MatchPitchCameraState _camera = MatchPitchCameraState();
+  final Set<String> _involvedPlayerIds = {};
 
   MatchPresentationCue? _currentCue;
   FieldPoint _ball = const FieldPoint(.5, .5);
@@ -111,6 +94,7 @@ class MatchPitchGame extends FlameGame {
   bool _replayActive = false;
   bool _replayPending = false;
   bool? _activeHome;
+  bool? _possessionHome;
   int? _activePlayerIndex;
   final Set<int> _dismissedHomeIndexes = {};
   final Set<int> _dismissedAwayIndexes = {};
@@ -156,14 +140,17 @@ class MatchPitchGame extends FlameGame {
     _currentCue = null;
     _eventRemaining = 0;
     _returnDelay = .24;
+    _camera.release();
     _resetTargets();
   }
 
   void _beginNextCue() {
     _clearMomentPoses();
+    _involvedPlayerIds.clear();
     if (_cueQueue.isEmpty) {
       _currentCue = null;
       _eventRemaining = 0;
+      _camera.release();
       return;
     }
 
@@ -177,9 +164,16 @@ class MatchPitchGame extends FlameGame {
       _resetTargets(staggered: false);
     }
 
-
     final event = cue.event;
-    if (event == null) return;
+    if (event == null) {
+      _camera.frame(null, _ballTarget, replay: cue.replay);
+      return;
+    }
+    _involvedPlayerIds.addAll([
+      if (event.playerId != null) event.playerId!,
+      if (event.secondaryPlayerId != null) event.secondaryPlayerId!,
+      if (event.assistPlayerId != null) event.assistPlayerId!,
+    ]);
     if (!cue.replay) onEventStarted?.call(event);
     _pulse = _isMajor(event.type) ? 1 : .45;
     _momentState.reactTo(event.type);
@@ -198,6 +192,11 @@ class MatchPitchGame extends FlameGame {
       _ballMove = 0;
       _ballMoveRate = replay ? 1.55 : 3.4;
     }
+    _camera.frame(
+      event.type,
+      event.end ?? event.start ?? _ballTarget,
+      replay: replay,
+    );
 
     final homeEvent = event.teamId == homeClubId
         ? true
@@ -207,6 +206,10 @@ class MatchPitchGame extends FlameGame {
     _activeHome = homeEvent;
     _activePlayerIndex = _playerIndex(event.playerId, homeEvent);
     if (homeEvent == null) return;
+    if (_eventControlsPossession(event.type)) {
+      _possessionHome = homeEvent;
+    }
+    _applyPhaseTargets(staggered: true);
 
     final eventTargets = homeEvent ? _homeTargets : _awayTargets;
     final oppositeTargets = homeEvent ? _awayTargets : _homeTargets;
@@ -358,6 +361,7 @@ class MatchPitchGame extends FlameGame {
     super.update(dt);
     _elapsed += dt;
     _momentState.update(dt);
+    _camera.update(dt);
 
     if (_ballDelay > 0) {
       _ballDelay = max(0.0, _ballDelay - dt);
@@ -429,6 +433,7 @@ class MatchPitchGame extends FlameGame {
     final clip = MatchPitchVisuals.pitchClip(width, height);
     canvas.save();
     canvas.clipRRect(clip);
+    _applyCameraTransform(canvas);
     MatchPitchVisuals.drawPitch(canvas, width, height);
     _drawPlayers(canvas, width, height);
     _drawBall(canvas, width, height);
@@ -526,6 +531,7 @@ class MatchPitchGame extends FlameGame {
             ),
             scale: playerScale,
             active: active,
+            involved: _involvedPlayerIds.contains(playerId),
             goalkeeper: index == 0,
           ),
         );
@@ -615,30 +621,54 @@ class MatchPitchGame extends FlameGame {
   }
 
   void _resetTargets({bool staggered = true}) {
+    _applyPhaseTargets(staggered: staggered);
+    _activeHome = null;
+    _activePlayerIndex = null;
+    _clearMomentPoses();
+  }
+
+  void _applyPhaseTargets({required bool staggered}) {
+    final homeShape = MatchPlayerMotion.phaseShape(
+      _homeBase,
+      _ball,
+      home: true,
+      inPossession: _possessionHome == null ? null : _possessionHome!,
+    );
+    final awayShape = MatchPlayerMotion.phaseShape(
+      _awayBase,
+      _ball,
+      home: false,
+      inPossession: _possessionHome == null ? null : !_possessionHome!,
+    );
     if (staggered) {
       MatchPlayerMotion.prepareFormationReturn(
         _homeMotionStates,
         home: true,
         current: _homePlayers,
-        formation: _homeBase,
+        formation: homeShape,
       );
       MatchPlayerMotion.prepareFormationReturn(
         _awayMotionStates,
         home: false,
         current: _awayPlayers,
-        formation: _awayBase,
+        formation: awayShape,
       );
     } else {
       MatchPlayerMotion.clearPreparedTransitions(_homeMotionStates);
       MatchPlayerMotion.clearPreparedTransitions(_awayMotionStates);
     }
     for (var index = 0; index < _homeTargets.length; index++) {
-      _homeTargets[index] = _copyPoint(_homeBase[index]);
-      _awayTargets[index] = _copyPoint(_awayBase[index]);
+      _homeTargets[index] = _copyPoint(homeShape[index]);
+      _awayTargets[index] = _copyPoint(awayShape[index]);
     }
-    _activeHome = null;
-    _activePlayerIndex = null;
-    _clearMomentPoses();
+  }
+
+  void _applyCameraTransform(Canvas canvas) {
+    if ((_camera.zoom - 1).abs() < .0001) return;
+    final focus = _toCanvasOffset(_camera.focus, size.x, size.y);
+    canvas.translate(focus.dx, focus.dy);
+    canvas.scale(_camera.zoom);
+    canvas.translate(-focus.dx, -focus.dy);
   }
 
   void _setReplayActive(bool active) {
@@ -677,6 +707,17 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.ownGoal ||
       type == MatchEventType.penalty;
 
+  static bool _eventControlsPossession(MatchEventType type) =>
+      type == MatchEventType.pass ||
+      type == MatchEventType.possession ||
+      type == MatchEventType.shot ||
+      type == MatchEventType.save ||
+      type == MatchEventType.woodwork ||
+      type == MatchEventType.goal ||
+      type == MatchEventType.ownGoal ||
+      type == MatchEventType.penalty ||
+      type == MatchEventType.penaltySaved;
+
   static bool _isMajor(MatchEventType type) =>
       type == MatchEventType.goal ||
       type == MatchEventType.ownGoal ||
@@ -687,9 +728,7 @@ class MatchPitchGame extends FlameGame {
       type == MatchEventType.penaltySaved ||
       type == MatchEventType.substitution ||
       type == MatchEventType.injury;
-
 }
-
 
 class _DepthPlayer {
   const _DepthPlayer({

@@ -249,6 +249,42 @@ abstract final class MatchPlayerMotion {
     }
   }
 
+  static List<FieldPoint> phaseShape(
+    List<FieldPoint> formation,
+    FieldPoint ball, {
+    required bool home,
+    required bool? inPossession,
+  }) {
+    final horizontalShift = ball.x - .5;
+    final verticalShift = ball.y - .5;
+    final possessionPush = inPossession == null
+        ? 0.0
+        : inPossession
+            ? (home ? -.026 : .026)
+            : (home ? .014 : -.014);
+
+    return List<FieldPoint>.generate(formation.length, (index) {
+      final base = formation[index];
+      final ownDepth = home ? base.y : 1 - base.y;
+      final sectorFollow = index == 0
+          ? .055
+          : ownDepth > .64
+              ? .145
+              : ownDepth > .35
+                  ? .215
+                  : .265;
+      final lateralFollow = index == 0 ? .055 : sectorFollow * .72;
+      return FieldPoint(
+        (base.x + horizontalShift * lateralFollow)
+            .clamp(.07, .93)
+            .toDouble(),
+        (base.y + verticalShift * sectorFollow + possessionPush)
+            .clamp(.06, .94)
+            .toDouble(),
+      );
+    }, growable: false);
+  }
+
   static void moveTeam(
     List<FieldPoint> current,
     List<FieldPoint> targets,

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tatica_manager/domain/match/match_models.dart';
 import 'package:tatica_manager/features/match/match_event_presentation.dart';
+import 'package:tatica_manager/game/match/renderer/match_pitch_camera.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_game.dart';
 import 'package:tatica_manager/game/match/renderer/match_pitch_visuals.dart';
 import 'package:tatica_manager/game/match/renderer/match_player_labels.dart';
@@ -207,9 +208,9 @@ void main() {
     expect(renderer, contains('skipReplay'));
     expect(renderer, contains('clearPresentationQueue'));
     expect(renderer, isNot(contains('MatchCameraDirector')));
-    expect(renderer, isNot(contains('_applyCamera(')));
-    expect(renderer, isNot(contains('canvas.translate(')));
-    expect(renderer, isNot(contains('canvas.scale(')));
+    expect(renderer, contains('_applyCameraTransform'));
+    expect(renderer, contains('canvas.translate('));
+    expect(renderer, contains('canvas.scale('));
     expect(renderer, isNot(contains('MatchEngine')));
     expect(renderer, isNot(contains('Random(')));
 
@@ -230,7 +231,7 @@ void main() {
     expect(visuals, contains('Rect.fromLTWH('));
     expect(visuals, contains('width - 28'));
     expect(visuals, contains('height - 36'));
-    expect(visuals, contains('field.width * .16'));
+    expect(visuals, contains('field.width * .17'));
     expect(visuals, isNot(contains('drawFieldImage(')));
     expect(renderer, contains('field.left + display.x * field.width'));
     expect(playerVisuals, contains('required ClubKit kit'));
@@ -241,6 +242,8 @@ void main() {
     expect(renderer, contains('MatchPitchVisuals.depthScale'));
     expect(renderer, contains('MatchPitchVisuals.interfaceScale'));
     expect(renderer, contains('MatchPlayerLabels.draw'));
+    expect(renderer, contains('MatchPitchFormation.points'));
+    expect(renderer, contains('MatchPlayerMotion.phaseShape'));
     expect(renderer, contains('_playerNames'));
     expect(renderer, contains('homeGoalkeeperKit'));
     expect(renderer, contains('awayGoalkeeperKit'));
@@ -259,5 +262,28 @@ void main() {
     expect(renderer, isNot(contains('assets/images/match/match_field.webp')));
     expect(renderer, isNot(contains('assets/images/match/stadium_crowd.webp')));
     expect(renderer, isNot(contains('fieldImage')));
+  });
+
+  test('câmera aproxima somente lances importantes e replay', () {
+    expect(
+      MatchPitchCamera.eventZoom(MatchEventType.pass, replay: false),
+      1,
+    );
+    expect(
+      MatchPitchCamera.eventZoom(MatchEventType.yellow, replay: false),
+      1,
+    );
+    expect(
+      MatchPitchCamera.eventZoom(MatchEventType.shot, replay: false),
+      greaterThan(1),
+    );
+    expect(
+      MatchPitchCamera.eventZoom(MatchEventType.pass, replay: true),
+      greaterThan(1),
+    );
+    expect(
+      MatchPitchCamera.eventZoom(MatchEventType.penalty, replay: true),
+      lessThanOrEqualTo(1.13),
+    );
   });
 }

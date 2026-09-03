@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../app/widgets/common.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../domain/match/match_models.dart';
+import '../live_match_statistics.dart';
 
 class LiveMatchControlBar extends StatelessWidget {
   const LiveMatchControlBar({
@@ -84,6 +85,7 @@ class LiveMatchStatsCard extends StatelessWidget {
     required this.minute,
     required this.homeId,
     required this.awayId,
+    required this.targetHomePossession,
     this.throughSequence,
   });
 
@@ -91,6 +93,7 @@ class LiveMatchStatsCard extends StatelessWidget {
   final int minute;
   final String homeId;
   final String awayId;
+  final int targetHomePossession;
   final int? throughSequence;
 
   @override
@@ -107,7 +110,14 @@ class LiveMatchStatsCard extends StatelessWidget {
       awayShots,
       awayGoals + _count(MatchEventType.save, homeId),
     );
-    final possession = _visiblePossession();
+    final possession = LiveMatchStatistics.possession(
+      events: events,
+      minute: minute,
+      homeId: homeId,
+      awayId: awayId,
+      targetHomePossession: targetHomePossession,
+      throughSequence: throughSequence,
+    );
     final yellowCards = _totalCount(MatchEventType.yellow);
     final redCards = _totalCount(MatchEventType.red);
 
@@ -181,31 +191,6 @@ class LiveMatchStatsCard extends StatelessWidget {
       event.minute < minute ||
       (event.minute == minute &&
           (throughSequence == null || event.sequence <= throughSequence!));
-
-  (int, int) _visiblePossession() {
-    final homeTouches = events
-        .where(
-          (event) =>
-              _isVisible(event) &&
-              event.teamId == homeId &&
-              (event.type == MatchEventType.pass ||
-                  event.type == MatchEventType.possession),
-        )
-        .length;
-    final awayTouches = events
-        .where(
-          (event) =>
-              _isVisible(event) &&
-              event.teamId == awayId &&
-              (event.type == MatchEventType.pass ||
-                  event.type == MatchEventType.possession),
-        )
-        .length;
-    final total = homeTouches + awayTouches;
-    if (total == 0) return (50, 50);
-    final homeShare = (homeTouches * 100 / total).round();
-    return (homeShare, 100 - homeShare);
-  }
 }
 
 class _MatchActionButton extends StatelessWidget {

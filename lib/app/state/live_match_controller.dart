@@ -37,6 +37,8 @@ class LiveMatchSession {
     required this.userStarterIds,
     required this.homeStarterIds,
     required this.awayStarterIds,
+    required this.homeFormation,
+    required this.awayFormation,
     required this.userTactic,
     required this.userFormation,
     this.otherMatches = const [],
@@ -47,6 +49,8 @@ class LiveMatchSession {
   final List<String> userStarterIds;
   final List<String> homeStarterIds;
   final List<String> awayStarterIds;
+  final FormationType homeFormation;
+  final FormationType awayFormation;
   final Tactic userTactic;
   final FormationType userFormation;
   final List<PreparedRoundMatch> otherMatches;
@@ -56,6 +60,8 @@ class LiveMatchSession {
     List<String>? userStarterIds,
     List<String>? homeStarterIds,
     List<String>? awayStarterIds,
+    FormationType? homeFormation,
+    FormationType? awayFormation,
     Tactic? userTactic,
     FormationType? userFormation,
     List<PreparedRoundMatch>? otherMatches,
@@ -66,6 +72,8 @@ class LiveMatchSession {
         userStarterIds: userStarterIds ?? this.userStarterIds,
         homeStarterIds: homeStarterIds ?? this.homeStarterIds,
         awayStarterIds: awayStarterIds ?? this.awayStarterIds,
+        homeFormation: homeFormation ?? this.homeFormation,
+        awayFormation: awayFormation ?? this.awayFormation,
         userTactic: userTactic ?? this.userTactic,
         userFormation: userFormation ?? this.userFormation,
         otherMatches: otherMatches ?? this.otherMatches,
@@ -165,6 +173,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       userStarterIds: [...career.starterIds],
       homeStarterIds: homeStarters,
       awayStarterIds: awayStarters,
+      homeFormation: homeFormation,
+      awayFormation: awayFormation,
       userTactic: career.tactic,
       userFormation: career.formation,
       otherMatches: LiveRoundSimulator.prepareOtherMatches(
@@ -413,6 +423,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       result: result,
       homeStarterIds: homeIds,
       awayStarterIds: awayIds,
+      homeFormation: homeFormation,
+      awayFormation: awayFormation,
     );
   }
 

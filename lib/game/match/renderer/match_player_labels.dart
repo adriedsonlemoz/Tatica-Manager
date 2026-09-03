@@ -8,6 +8,7 @@ class MatchPlayerLabelCandidate {
     required this.teamColor,
     required this.scale,
     required this.active,
+    required this.involved,
     required this.goalkeeper,
   });
 
@@ -17,6 +18,7 @@ class MatchPlayerLabelCandidate {
   final Color teamColor;
   final double scale;
   final bool active;
+  final bool involved;
   final bool goalkeeper;
 }
 
@@ -40,6 +42,9 @@ abstract final class MatchPlayerLabels {
       ..sort((first, second) {
         final byActive = (second.active ? 1 : 0) - (first.active ? 1 : 0);
         if (byActive != 0) return byActive;
+        final byInvolvement =
+            (second.involved ? 1 : 0) - (first.involved ? 1 : 0);
+        if (byInvolvement != 0) return byInvolvement;
         final byGoalkeeper =
             (second.goalkeeper ? 1 : 0) - (first.goalkeeper ? 1 : 0);
         if (byGoalkeeper != 0) return byGoalkeeper;
@@ -49,18 +54,31 @@ abstract final class MatchPlayerLabels {
     for (final candidate in ordered) {
       final label = compactName(candidate.name, active: candidate.active);
       if (label.isEmpty) continue;
-      final fontSize = (candidate.active ? 7.8 : 7.0) * interfaceScale;
-      final maxWidth = (candidate.active ? 70.0 : 55.0) * interfaceScale;
+      final emphasized = candidate.active || candidate.involved;
+      final fontSize = (candidate.active
+              ? 7.8
+              : candidate.involved
+                  ? 7.2
+                  : 6.25) *
+          interfaceScale;
+      final maxWidth = (candidate.active
+              ? 68.0
+              : candidate.involved
+                  ? 58.0
+                  : 45.0) *
+          interfaceScale;
       final paragraph = _paragraph(
         label,
         fontSize: fontSize,
         maxWidth: maxWidth,
-        active: candidate.active,
+        emphasized: emphasized,
       );
-      final width = (paragraph.longestLine + 9 * interfaceScale)
-          .clamp(24.0 * interfaceScale, maxWidth + 8 * interfaceScale)
+      final horizontalPadding = emphasized ? 8.0 : 5.5;
+      final width = (paragraph.longestLine + horizontalPadding * interfaceScale)
+          .clamp(20.0 * interfaceScale, maxWidth + 6 * interfaceScale)
           .toDouble();
-      final height = paragraph.height + 4.6 * interfaceScale;
+      final height =
+          paragraph.height + (emphasized ? 4.4 : 3.2) * interfaceScale;
       final placement = placementStates.putIfAbsent(
         candidate.playerId,
         MatchPlayerLabelPlacement.new,
@@ -73,7 +91,6 @@ abstract final class MatchPlayerLabels {
         playerScale: candidate.scale,
         interfaceScale: interfaceScale,
         occupied: accepted,
-        force: candidate.active,
         preferredAnchor: placement.anchorIndex,
       );
       if (result == null) continue;
@@ -115,7 +132,6 @@ abstract final class MatchPlayerLabels {
     required double playerScale,
     required double interfaceScale,
     required List<Rect> occupied,
-    required bool force,
     required int? preferredAnchor,
   }) {
     final above = 18.0 * playerScale + height / 2;
@@ -130,9 +146,6 @@ abstract final class MatchPlayerLabels {
       center.translate(width * .36, -above),
     ];
     final safeField = field.deflate(1.5 * interfaceScale);
-    Rect? bestEffort;
-    int? bestEffortAnchor;
-    var lowestOverlap = double.infinity;
     final anchorOrder = <int>[
       if (preferredAnchor != null &&
           preferredAnchor >= 0 &&
@@ -154,21 +167,8 @@ abstract final class MatchPlayerLabels {
       }
       final collisions = occupied.where(rect.overlaps).toList();
       if (collisions.isEmpty) return (rect, anchor);
-      if (force) {
-        final overlap = collisions.fold<double>(0, (sum, item) {
-          final intersection = rect.intersect(item);
-          return sum + intersection.width * intersection.height;
-        });
-        if (overlap < lowestOverlap) {
-          lowestOverlap = overlap;
-          bestEffort = rect;
-          bestEffortAnchor = anchor;
-        }
-      }
     }
-    return force && bestEffort != null && bestEffortAnchor != null
-        ? (bestEffort, bestEffortAnchor)
-        : null;
+    return null;
   }
 
   static void _drawLabel(
@@ -183,38 +183,58 @@ abstract final class MatchPlayerLabels {
       const Color(0xFFFFFFFF),
       candidate.active ? .34 : .20,
     )!;
+    final emphasized = candidate.active || candidate.involved;
     final radius = Radius.circular(4.8 * interfaceScale);
     final rrect = RRect.fromRectAndRadius(rect, radius);
-    canvas.drawRRect(
-      rrect.shift(Offset(0, 1.2 * interfaceScale)),
-      Paint()
-        ..color = const Color(0x85000000)
-        ..maskFilter = MaskFilter.blur(
-          BlurStyle.normal,
-          1.4 * interfaceScale,
-        ),
-    );
+    if (emphasized) {
+      canvas.drawRRect(
+        rrect.shift(Offset(0, 1.2 * interfaceScale)),
+        Paint()
+          ..color = const Color(0x85000000)
+          ..maskFilter = MaskFilter.blur(
+            BlurStyle.normal,
+            1.4 * interfaceScale,
+          ),
+      );
+    }
     canvas.drawRRect(
       rrect,
       Paint()
         ..shader = Gradient.linear(
           rect.topLeft,
           rect.bottomRight,
-          const [Color(0xE60A1115), Color(0xD917252B)],
+          emphasized
+              ? const [Color(0xE60A1115), Color(0xD917252B)]
+              : const [Color(0xA60A1115), Color(0x9A17252B)],
         ),
     );
     canvas.drawRRect(
       rrect,
       Paint()
-        ..color = border.withValues(alpha: candidate.active ? .90 : .52)
+        ..color = border.withValues(
+          alpha: candidate.active
+              ? .90
+              : candidate.involved
+                  ? .62
+                  : .24,
+        )
         ..style = PaintingStyle.stroke
-        ..strokeWidth = (candidate.active ? 1.05 : .70) * interfaceScale,
+        ..strokeWidth = (emphasized ? .90 : .52) * interfaceScale,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(
+        rect.left,
+        rect.top + 2 * interfaceScale,
+        (emphasized ? 2.0 : 1.3) * interfaceScale,
+        rect.height - 4 * interfaceScale,
+      ),
+      Paint()..color = candidate.teamColor.withValues(alpha: .88),
     );
     canvas.drawParagraph(
       paragraph,
       Offset(
         rect.center.dx - paragraph.width / 2,
-        rect.top + 2.0 * interfaceScale,
+        rect.top + (emphasized ? 2.0 : 1.4) * interfaceScale,
       ),
     );
   }
@@ -223,11 +243,11 @@ abstract final class MatchPlayerLabels {
     String text, {
     required double fontSize,
     required double maxWidth,
-    required bool active,
+    required bool emphasized,
   }) {
     final bucket = (fontSize * 10).round();
     final widthBucket = maxWidth.round();
-    final key = '$text|$bucket|$widthBucket|$active';
+    final key = '$text|$bucket|$widthBucket|$emphasized';
     final cached = _paragraphCache[key];
     if (cached != null) return cached;
     final builder = ParagraphBuilder(
@@ -240,7 +260,7 @@ abstract final class MatchPlayerLabels {
         TextStyle(
           color: const Color(0xFFFFFFFF),
           fontSize: fontSize,
-          fontWeight: active ? FontWeight.w800 : FontWeight.w700,
+          fontWeight: emphasized ? FontWeight.w800 : FontWeight.w600,
           letterSpacing: .05,
         ),
       );

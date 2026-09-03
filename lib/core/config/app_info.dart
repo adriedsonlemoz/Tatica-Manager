@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.132';
+  static const String version = '0.1.1.133';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.133',
+      title: 'Campo ao vivo mais dinâmico',
+      changes: [
+        'Representa no campo as formações reais escolhidas pelos dois times.',
+        'Estabiliza a posse ao vivo e movimenta os blocos conforme bola e domínio.',
+        'Melhora nomes, bola, áreas, gols e aproximações dos lances importantes.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.132',
       title: 'Correção do teste da simulação CPU',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Remove operadores nulos redundantes após a validação do jogador advertido.',
         'Elimina os três avisos fatais apontados pelo log 84 sem alterar a regra dos cartões.',
         'Documenta a análise visual do campo separadamente da correção técnica desta entrega.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.130',
-      title: 'Simulação de partidas mais realista',
-      changes: [
-        'Usa atributos por setor, estado físico e técnica para gerar força, chances e finalizações.',
-        'Recalibra faltas, cartões, lesões e reação tática ao placar durante a partida.',
-        'Faz ligas de segundo plano registrar eventos, estatísticas individuais e suspensões reais.',
       ],
     ),
   ];

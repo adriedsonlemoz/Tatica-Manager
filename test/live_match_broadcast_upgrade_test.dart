@@ -8,15 +8,20 @@ import 'package:tatica_manager/features/match/match_event_presentation.dart';
 import 'package:tatica_manager/game/league/live_round_simulator.dart';
 
 void main() {
-  test('campo permanece fixo e replay não transforma o canvas', () {
+  test('campo usa aproximação discreta sem criar motor visual paralelo', () {
     final renderer = File(
       'lib/game/match/renderer/match_pitch_game.dart',
     ).readAsStringSync();
+    final camera = File(
+      'lib/game/match/renderer/match_pitch_camera.dart',
+    ).readAsStringSync();
 
     expect(renderer, isNot(contains('MatchCameraDirector')));
-    expect(renderer, isNot(contains('_applyCamera(')));
-    expect(renderer, isNot(contains('canvas.translate(')));
-    expect(renderer, isNot(contains('canvas.scale(')));
+    expect(renderer, contains('_applyCameraTransform'));
+    expect(renderer, contains('canvas.translate('));
+    expect(renderer, contains('canvas.scale('));
+    expect(camera, contains('MatchEventType.shot'));
+    expect(camera, contains('required bool replay'));
   });
 
   test('feed revela gols dos outros jogos conforme o minuto', () {

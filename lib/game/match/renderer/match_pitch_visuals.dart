@@ -143,9 +143,9 @@ abstract final class MatchPitchVisuals {
   static void drawPitchMarkings(Canvas canvas, Rect field) {
     final lineWidth = (field.width / 360 * 1.12).clamp(.95, 1.55).toDouble();
     final line = Paint()
-      ..color = const Color(0xB8FFFFFF)
+      ..color = const Color(0xD8FFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = lineWidth;
+      ..strokeWidth = lineWidth * 1.08;
     final bounds = field.deflate(7);
     canvas.drawRect(bounds, line);
     canvas.drawLine(
@@ -160,10 +160,10 @@ abstract final class MatchPitchVisuals {
     );
     canvas.drawCircle(field.center, 1.8, Paint()..color = const Color(0xDFFFFFFF));
 
-    final boxWidth = field.width * .16;
-    final boxHeight = field.height * .56;
-    final smallWidth = field.width * .065;
-    final smallHeight = field.height * .29;
+    final boxWidth = field.width * .17;
+    final boxHeight = field.height * .60;
+    final smallWidth = field.width * .070;
+    final smallHeight = field.height * .32;
     final boxTop = field.center.dy - boxHeight / 2;
     final smallTop = field.center.dy - smallHeight / 2;
 
@@ -345,11 +345,28 @@ abstract final class MatchPitchVisuals {
       );
     }
 
+    canvas.drawCircle(
+      raisedBall,
+      6.1 * scale,
+      Paint()
+        ..color = const Color(0xB8000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.35 * scale,
+    );
+
     drawMatchBallGraphic(
       canvas,
       center: raisedBall,
-      radius: 4.3 * scale,
+      radius: 5.05 * scale,
       style: style,
+    );
+    canvas.drawCircle(
+      raisedBall,
+      5.15 * scale,
+      Paint()
+        ..color = const Color(0xB8FFFFFF)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .65 * scale,
     );
 
     if (lift > 1.5) {
