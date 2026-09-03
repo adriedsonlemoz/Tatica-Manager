@@ -224,9 +224,8 @@ abstract final class MatchEventGenerator {
           sequence: sequence,
           type: MatchEventType.yellow,
           teamId: club.id,
-          playerId: player?.id,
-          text:
-              player == null ? 'Cartão amarelo para ${club.name}.' : 'Cartão amarelo: ${player.displayName} (${club.name}).',
+          playerId: player.id,
+          text: 'Cartão amarelo: ${player.displayName} (${club.name}).',
         ),
       );
     }

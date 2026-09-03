@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.130`
-**Android versionCode:** `131`
+**Release atual:** `0.1.1.131`
+**Android versionCode:** `132`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,20 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.130`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.131`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+131`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.130` e `versionCode 131`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+132`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.131` e `versionCode 132`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.130`, o pubspec é `0.1.1+131`. a próxima entrega normalmente será `0.1.1.131`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.131`, o pubspec é `0.1.1+132`. a próxima entrega normalmente será `0.1.1.132`.
+
+## Correção do analyzer no cartão amarelo — 0.1.1.131
+
+- remove o uso redundante de `?.` e a comparação nula inalcançável depois que o jogador já foi validado;
+- elimina os três avisos fatais do log 84 sem mudar probabilidade, motivo ou aplicação dos cartões;
+- mantém a análise visual do campo fora desta correção técnica para evitar alterações de interface sem validação do design.
 
 ## Simulação de partidas mais realista — 0.1.1.130
 
