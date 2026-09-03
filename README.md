@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.133`
-**Android versionCode:** `134`
+**Release atual:** `0.1.1.134`
+**Android versionCode:** `135`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,20 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.133`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.134`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+134`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.133` e `versionCode 134`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+135`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.134` e `versionCode 135`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.133`, o pubspec é `0.1.1+134`. a próxima entrega normalmente será `0.1.1.134`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.134`, o pubspec é `0.1.1+135`; a próxima entrega normalmente será `0.1.1.135`.
+
+## Correção do analyzer do campo dinâmico — 0.1.1.134
+
+- corrige o único aviso fatal do log 87, substituindo a comparação nula redundante pelo valor anulável já aceito pelo renderer;
+- não altera regras, posições, animações, probabilidades nem o resultado das partidas;
+- preserva integralmente as cinco melhorias visuais da 0.1.1.133 e libera o pipeline para continuar até os testes e o APK.
 
 ## Campo ao vivo mais dinâmico — 0.1.1.133
 

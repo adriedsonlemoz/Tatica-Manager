@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.133';
+  static const String version = '0.1.1.134';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.134',
+      title: 'Correção do analyzer do campo dinâmico',
+      changes: [
+        'Corrige o único aviso fatal encontrado pelo GitHub Actions no renderer do campo.',
+        'Mantém intactas as formações reais, a posse estável e a movimentação por fases.',
+        'Libera novamente o pipeline para testes e geração do APK.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.133',
       title: 'Campo ao vivo mais dinâmico',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Atualiza o teste estrutural para a arquitetura realista vigente do Match Engine.',
         'Mantém eventos completos e substituições automáticas nas partidas CPU em segundo plano.',
         'Preserva o analyzer já aprovado e não altera a apresentação visual da partida.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.131',
-      title: 'Correção do analyzer no cartão amarelo',
-      changes: [
-        'Remove operadores nulos redundantes após a validação do jogador advertido.',
-        'Elimina os três avisos fatais apontados pelo log 84 sem alterar a regra dos cartões.',
-        'Documenta a análise visual do campo separadamente da correção técnica desta entrega.',
       ],
     ),
   ];

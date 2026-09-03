@@ -632,7 +632,7 @@ class MatchPitchGame extends FlameGame {
       _homeBase,
       _ball,
       home: true,
-      inPossession: _possessionHome == null ? null : _possessionHome!,
+      inPossession: _possessionHome,
     );
     final awayShape = MatchPlayerMotion.phaseShape(
       _awayBase,
