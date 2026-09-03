@@ -195,12 +195,13 @@ abstract final class MatchEventGenerator {
     required Club away,
     required List<AssignedPlayer> homeAssignments,
     required List<AssignedPlayer> awayAssignments,
+    required double homeFoulShare,
     required Random random,
   }) {
-    final homeSide = random.nextDouble() < .5;
+    final homeSide = random.nextDouble() < homeFoulShare;
     final club = homeSide ? home : away;
     final assignments = homeSide ? homeAssignments : awayAssignments;
-    final player = MatchPlayerSelector.pickAny(assignments, random);
+    final player = MatchPlayerSelector.pickFouler(assignments, random);
     final events = <MatchEvent>[
       MatchEvent(
         minute: minute,
@@ -214,7 +215,9 @@ abstract final class MatchEventGenerator {
       ),
     ];
 
-    if (random.nextDouble() < .80) {
+    if (player != null &&
+        random.nextDouble() <
+            MatchPlayerSelector.yellowRisk(player, minute: minute)) {
       events.add(
         MatchEvent(
           minute: minute,
@@ -243,7 +246,7 @@ abstract final class MatchEventGenerator {
     final homeSide = random.nextDouble() < .5;
     final club = homeSide ? home : away;
     final assignments = homeSide ? homeAssignments : awayAssignments;
-    final player = MatchPlayerSelector.pickAny(assignments, random);
+    final player = MatchPlayerSelector.pickFouler(assignments, random);
     AssignedPlayer? assignment;
     if (player != null) {
       for (final item in assignments) {

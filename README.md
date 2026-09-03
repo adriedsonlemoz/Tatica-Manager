@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.129`
-**Android versionCode:** `130`
+**Release atual:** `0.1.1.130`
+**Android versionCode:** `131`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.129`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.130`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+130`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.129` e `versionCode 130`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+131`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.130` e `versionCode 131`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.129`, o pubspec é `0.1.1+130`. a próxima entrega normalmente será `0.1.1.130`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.130`, o pubspec é `0.1.1+131`. a próxima entrega normalmente será `0.1.1.131`.
+
+## Simulação de partidas mais realista — 0.1.1.130
+
+- corrige os imports que impediam o analisador Flutter de compilar as telas de técnico;
+- calcula força de ataque, meio, defesa e goleiro com atributos relevantes, sem descartar overall, condição, fadiga, moral e posição;
+- gera volume de gols e finalizações conforme confronto, tática e placar, com reação após os 55 minutos;
+- recalibra faltas, amarelos, vermelhos e lesões, agora vinculados a função, atributos, pressão e carga física;
+- faz a CPU usar bônus discreto do técnico, trocar jogadores em partidas simuladas e registrar eventos completos também em competições de segundo plano.
 
 ## Confiabilidade da carreira, diretoria e CPU — 0.1.1.129
 

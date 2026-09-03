@@ -4,10 +4,12 @@ import '../../domain/match/match_models.dart';
 import '../../domain/season/league_loading.dart';
 import '../../domain/tactic/tactic.dart';
 import '../match/engine/match_engine.dart';
-import 'background_fixture_resolver.dart';
 
-/// Escolhe o custo da resolução de uma partida CPU conforme a configuração
-/// persistida da competição. Ligas completas continuam no MatchEngine atual.
+/// Resolve partidas CPU no mesmo motor de regras usado na carreira.
+///
+/// A configuração da liga continua controlando a apresentação/carregamento,
+/// mas nunca mais troca para um placar sem eventos: gols, cartões, artilharia,
+/// fadiga e suspensões precisam ter a mesma origem em todas as competições.
 abstract final class CpuFixtureResolver {
   static MatchResult resolve({
     required LeagueLoadLevel level,
@@ -20,14 +22,9 @@ abstract final class CpuFixtureResolver {
     Tactic awayTactic = const Tactic(),
     List<String>? homeStarterIds,
     List<String>? awayStarterIds,
+    int homeManagerOverall = 70,
+    int awayManagerOverall = 70,
   }) {
-    if (level == LeagueLoadLevel.background) {
-      return BackgroundFixtureResolver.resolve(
-        fixture: fixture,
-        home: home,
-        away: away,
-      );
-    }
     return MatchEngine.simulate(
       fixture: fixture,
       home: home,
@@ -38,6 +35,10 @@ abstract final class CpuFixtureResolver {
       awayTactic: awayTactic,
       homeStarterIds: homeStarterIds,
       awayStarterIds: awayStarterIds,
+      homeManagerOverall: homeManagerOverall,
+      awayManagerOverall: awayManagerOverall,
+      autoSubstituteHome: true,
+      autoSubstituteAway: true,
     );
   }
 }

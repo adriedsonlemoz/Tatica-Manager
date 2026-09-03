@@ -4,6 +4,8 @@ import '../../app/widgets/common.dart';
 import '../../app/widgets/manager_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/country_catalog.dart';
+import '../../domain/formation/formation.dart';
+import '../../domain/tactic/tactic.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club_identity.dart';
 

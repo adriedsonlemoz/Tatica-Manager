@@ -82,6 +82,8 @@ abstract final class CompetitionSimulationEngine {
         awayTactic: LiveRoundSimulator.tacticFor(away, manager: awayManager),
         homeStarterIds: homeStarters,
         awayStarterIds: awayStarters,
+        homeManagerOverall: homeManager?.overall ?? 70,
+        awayManagerOverall: awayManager?.overall ?? 70,
       );
 
       fixtures = fixtures

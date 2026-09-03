@@ -79,6 +79,8 @@ abstract final class LiveRoundSimulator {
       awayTactic: tacticFor(away, manager: awayManager),
       homeStarterIds: homeStarters,
       awayStarterIds: awayStarters,
+      homeManagerOverall: homeManager?.overall ?? 70,
+      awayManagerOverall: awayManager?.overall ?? 70,
     );
     return PreparedRoundMatch(
       fixture: fixture,

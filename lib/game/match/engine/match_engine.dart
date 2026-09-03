@@ -20,6 +20,10 @@ abstract final class MatchEngine {
     Tactic awayTactic = const Tactic(),
     List<String>? homeStarterIds,
     List<String>? awayStarterIds,
+    int homeManagerOverall = 70,
+    int awayManagerOverall = 70,
+    bool autoSubstituteHome = false,
+    bool autoSubstituteAway = false,
     int? seed,
     int startMinute = 1,
     MatchScore initialScore = const MatchScore(0, 0),
@@ -47,13 +51,13 @@ abstract final class MatchEngine {
       awayIds,
       awayFormation,
     );
-    final homeStrength = MatchStrengthCalculator.calculate(
-      homeAssignments,
-      homeTactic,
+    final homeStrength = MatchStrengthCalculator.applyManagerBonus(
+      MatchStrengthCalculator.calculate(homeAssignments, homeTactic),
+      homeManagerOverall,
     );
-    final awayStrength = MatchStrengthCalculator.calculate(
-      awayAssignments,
-      awayTactic,
+    final awayStrength = MatchStrengthCalculator.applyManagerBonus(
+      MatchStrengthCalculator.calculate(awayAssignments, awayTactic),
+      awayManagerOverall,
     );
     final homeAdvantage =
         (1.08 + home.fanBase * .10 - away.fanBase * .04)
@@ -65,8 +69,10 @@ abstract final class MatchEngine {
       away: away,
       homeAssignments: homeAssignments,
       awayAssignments: awayAssignments,
-      homeStrength: homeStrength,
-      awayStrength: awayStrength,
+      homeManagerOverall: homeManagerOverall,
+      awayManagerOverall: awayManagerOverall,
+      autoSubstituteHome: autoSubstituteHome,
+      autoSubstituteAway: autoSubstituteAway,
       homeTactic: homeTactic,
       awayTactic: awayTactic,
       homeAdvantage: homeAdvantage,

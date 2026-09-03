@@ -155,6 +155,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       awayTactic: awayTactic,
       homeStarterIds: homeStarters,
       awayStarterIds: awayStarters,
+      homeManagerOverall: homeManager?.overall ?? 70,
+      awayManagerOverall: awayManager?.overall ?? 70,
     );
 
     final live = LiveMatchSession(
@@ -400,6 +402,8 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       awayTactic: awayTactic,
       homeStarterIds: homeIds,
       awayStarterIds: awayIds,
+      homeManagerOverall: homeManager?.overall ?? 70,
+      awayManagerOverall: awayManager?.overall ?? 70,
       seed: live.result.seed,
       startMinute: min(90, minute + 1),
       initialScore: score,

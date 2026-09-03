@@ -16,6 +16,19 @@ class TeamMatchStrength {
   final double midfield;
   final double defense;
   final double goalkeeper;
+
+  TeamMatchStrength copyWith({
+    double? attack,
+    double? midfield,
+    double? defense,
+    double? goalkeeper,
+  }) =>
+      TeamMatchStrength(
+        attack: attack ?? this.attack,
+        midfield: midfield ?? this.midfield,
+        defense: defense ?? this.defense,
+        goalkeeper: goalkeeper ?? this.goalkeeper,
+      );
 }
 
 abstract final class MatchStrengthCalculator {
@@ -32,15 +45,24 @@ abstract final class MatchStrengthCalculator {
       );
     }
 
-    double average(Iterable<AssignedPlayer> source) {
+    double average(
+      Iterable<AssignedPlayer> source,
+      double Function(AssignedPlayer assignment) specialistScore,
+    ) {
       final list = source.toList();
       final selected = list.isEmpty ? assignments : list;
       return selected
               .map(
-                (assignment) => LineupEngine.effectiveOverall(
-                  assignment.player,
-                  assignment.slot.role,
-                ),
+                (assignment) {
+                  final effective = LineupEngine.effectiveOverall(
+                    assignment.player,
+                    assignment.slot.role,
+                  );
+                  // O overall continua importante, mas cada setor agora usa
+                  // os atributos que realmente explicam sua atuação em campo.
+                  // O ajuste é moderado para não tornar o overall irrelevante.
+                  return effective + (specialistScore(assignment) - effective) * .22;
+                },
               )
               .reduce((a, b) => a + b) /
           selected.length;
@@ -67,17 +89,58 @@ abstract final class MatchStrengthCalculator {
       PlayerPosition.vol,
     };
 
+    double attackSkill(AssignedPlayer item) {
+      final player = item.player;
+      return player.technical.finishing * .36 +
+          player.technical.control * .16 +
+          player.technical.dribbling * .12 +
+          player.mental.positioning * .20 +
+          player.mental.decision * .08 +
+          player.physical.acceleration * .08;
+    }
+
+    double midfieldSkill(AssignedPlayer item) {
+      final player = item.player;
+      return player.technical.passing * .30 +
+          player.technical.control * .20 +
+          player.mental.vision * .20 +
+          player.mental.decision * .15 +
+          player.physical.stamina * .15;
+    }
+
+    double defenseSkill(AssignedPlayer item) {
+      final player = item.player;
+      return player.technical.tackling * .32 +
+          player.mental.positioning * .25 +
+          player.mental.concentration * .16 +
+          player.physical.strength * .15 +
+          player.physical.speed * .12;
+    }
+
+    double goalkeeperSkill(AssignedPlayer item) {
+      final keeper = item.player.goalkeeper;
+      return keeper.reflexes * .30 +
+          keeper.saving * .28 +
+          keeper.positioning * .20 +
+          keeper.aerial * .12 +
+          keeper.rushingOut * .10;
+    }
+
     var attack = average(
       assignments.where((assignment) => attackRoles.contains(assignment.slot.role)),
+      attackSkill,
     );
     var midfield = average(
       assignments.where((assignment) => midfieldRoles.contains(assignment.slot.role)),
+      midfieldSkill,
     );
     var defense = average(
       assignments.where((assignment) => defenseRoles.contains(assignment.slot.role)),
+      defenseSkill,
     );
     final goalkeeper = average(
       assignments.where((assignment) => assignment.slot.role == PlayerPosition.gol),
+      goalkeeperSkill,
     );
 
     switch (tactic.mentality) {
@@ -135,6 +198,23 @@ abstract final class MatchStrengthCalculator {
     if (tactic.mentality == Mentality.defensive) value -= .04;
     if (tactic.buildUp == BuildUp.direct) value += .04;
     return value;
+  }
+
+  static TeamMatchStrength applyManagerBonus(
+    TeamMatchStrength strength,
+    int managerOverall,
+  ) {
+    // Técnico melhor organiza mais o conjunto, mas não apaga a diferença
+    // entre os elencos. A faixa máxima é deliberadamente pequena.
+    final factor = (1 + (managerOverall.clamp(45, 95) - 70) * .0012)
+        .clamp(.97, 1.03)
+        .toDouble();
+    return strength.copyWith(
+      attack: strength.attack * factor,
+      midfield: strength.midfield * factor,
+      defense: strength.defense * factor,
+      goalkeeper: strength.goalkeeper * factor,
+    );
   }
 
   static double possessionShare({

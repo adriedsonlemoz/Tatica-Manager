@@ -8,14 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.129`
-- **Android versionCode:** `130`
+- **Release deste handoff:** `0.1.1.130`
+- **Android versionCode:** `131`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.130
+
+## Simulação de partidas mais realista
+
+- Corrige os imports de `FormationTypeX` e `MentalityX` que bloqueavam `flutter analyze` nas telas de técnico.
+- `MatchStrengthCalculator` combina overall efetivo com finalização, criação, marcação, físico e atributos de goleiro por setor.
+- `MatchProbabilityCalculator` calcula volume de gols, chutes e faltas pelo confronto; quem perde passa a assumir mais risco após os 55 minutos.
+- Cartões, faltas e lesões respeitam perfil do atleta, pressão, minuto e carga física; a CPU também usa até três trocas em suas partidas de fundo.
+- O resolvedor CPU usa o Match Engine mesmo em competição de segundo plano, preservando gols, artilharia, cartões, suspensões, fadiga e lesões.
+
+Consulte `docs/RELEASE_0.1.1.130.md`.
 
 ## Estado funcional da release 0.1.1.129
 
@@ -972,12 +984,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.129
-versionCode:         130
-pubspec:             0.1.1+130
+release/versionName: 0.1.1.130
+versionCode:         131
+pubspec:             0.1.1+131
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.130` e usar um `versionCode` maior que 130.
+A próxima alteração/entrega normalmente deve virar `0.1.1.131` e usar um `versionCode` maior que 131.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
