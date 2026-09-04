@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.139`
-**Android versionCode:** `140`
+**Release atual:** `0.1.1.140`
+**Android versionCode:** `141`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,21 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.139`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.140`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+140`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.139` e `versionCode 140`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+141`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.140` e `versionCode 141`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.139`, o pubspec é `0.1.1+140`; a próxima entrega normalmente será `0.1.1.140`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.140`, o pubspec é `0.1.1+141`; a próxima entrega normalmente será `0.1.1.141`.
+
+## Correção do teste de recompensas — 0.1.1.140
+
+- corrige o único teste que falhou no workflow 93, depois de o `flutter analyze` concluir sem problemas;
+- informa ao segundo cálculo do teste que o marco global de 10 partidas já foi pago, reproduzindo o registro permanente existente no SQLite real;
+- preserva a regra de derrota: paga somente os 5 PM de conclusão e encerra a sequência de vitórias;
+- não altera o serviço, os valores, a persistência, a interface ou qualquer regra do jogo.
 
 ## Correção do provider de recompensas — 0.1.1.139
 
@@ -474,7 +481,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.140`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.141`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

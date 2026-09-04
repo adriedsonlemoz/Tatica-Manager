@@ -157,7 +157,7 @@ void main() {
           winStreak: 5,
           streakSequence: 2,
         ),
-        existingTransactionIds: const {},
+        existingTransactionIds: const {'matches-global:10'},
       );
       expect(defeat.careerProgress?.winStreak, 0);
       expect(

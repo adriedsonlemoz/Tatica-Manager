@@ -8,14 +8,25 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.139`
-- **Android versionCode:** `140`
+- **Release deste handoff:** `0.1.1.140`
+- **Android versionCode:** `141`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.140
+
+## Correção do teste de recompensas
+
+- O workflow 93 confirmou o `flutter analyze` sem problemas e executou a suíte de testes.
+- A única falha estava no próprio cenário do teste de derrota: ele reutilizava o progresso global de 10 partidas, mas não carregava o ID permanente `matches-global:10` concedido no cálculo anterior.
+- O teste agora reproduz o estado real persistido no SQLite; a derrota concede somente os 5 PM de conclusão e zera a sequência.
+- Nenhuma regra ou implementação de produção foi alterada.
+
+Consulte `docs/RELEASE_0.1.1.140.md`.
 
 ## Estado funcional da release 0.1.1.139
 
@@ -1092,12 +1103,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.139
-versionCode:         140
-pubspec:             0.1.1+140
+release/versionName: 0.1.1.140
+versionCode:         141
+pubspec:             0.1.1+141
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.140` e usar um `versionCode` maior que 140.
+A próxima alteração/entrega normalmente deve virar `0.1.1.141` e usar um `versionCode` maior que 141.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
