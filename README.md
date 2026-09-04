@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.135`
-**Android versionCode:** `136`
+**Release atual:** `0.1.1.136`
+**Android versionCode:** `137`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,25 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.135`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.136`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+136`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.135` e `versionCode 136`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+137`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.136` e `versionCode 137`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.135`, o pubspec é `0.1.1+136`; a próxima entrega normalmente será `0.1.1.136`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.136`, o pubspec é `0.1.1+137`; a próxima entrega normalmente será `0.1.1.137`.
+
+## Auxiliar técnico e treino assistido — 0.1.1.136
+
+- adiciona um Auxiliar técnico acessível em Mais e pela tela de Táticas, com composição fixa e responsiva no padrão azul-grafite do jogo;
+- implementa IA local e determinística que lê condição, fadiga, lesões, suspensões, cartões, potencial, calendário, adversário e força dos setores;
+- recomenda plano de treino, formação, titulares e os cinco parâmetros táticos já usados pelo Match Engine;
+- permite aplicar as recomendações em um toque, mantendo a decisão com o usuário;
+- oferece treino automático recalculado a cada dia e modo manual com foco e intensidade persistidos no save;
+- integra a carga de treino à recuperação, fadiga e moral dos titulares sem criar um Match Engine paralelo nem decidir resultados;
+- eleva o schema da carreira para 16 com migração automática de saves antigos para o plano equilibrado;
+- corrige o único teste obsoleto do workflow 89, que ainda exigia o título removido “INELEGÍVEIS / INDISPONÍVEIS”; o analyzer já havia passado e os outros 314 testes estavam aprovados.
 
 ## Transmissão legível e disciplina integrada — 0.1.1.135
 

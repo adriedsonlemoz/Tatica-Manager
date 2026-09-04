@@ -7,11 +7,14 @@ import '../../domain/formation/formation.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
+import '../../domain/training/training_plan.dart';
+import '../../game/assistant/technical_assistant_engine.dart';
 import '../../game/career/manager_career_engine.dart';
 import '../../game/finance/club_administration_engine.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../../game/season/daily_career_engine.dart';
 import '../../game/season/season_engine.dart';
+import '../../game/training/training_engine.dart';
 import 'providers.dart';
 
 final gameControllerProvider =
@@ -100,6 +103,50 @@ class GameController extends Notifier<GameState> {
     final career = state.career;
     if (career == null || career.managerUnemployed) return;
     await commitCareer(career.copyWith(tactic: tactic));
+  }
+
+  Future<void> setTrainingPlan(TrainingPlan plan) async {
+    final career = state.career;
+    if (career == null || career.managerUnemployed) return;
+    await commitCareer(
+      career.copyWith(trainingPlan: plan),
+      message:
+          'Plano de treino ${plan.focus.label.toLowerCase()} definido.',
+    );
+  }
+
+  Future<void> setAssistantTrainingAutomation(bool enabled) async {
+    final career = state.career;
+    if (career == null || career.managerUnemployed) return;
+    final recommended = TrainingEngine.recommend(career);
+    final plan = enabled
+        ? recommended.copyWith(managedByAssistant: true)
+        : career.trainingPlan.copyWith(managedByAssistant: false);
+    await commitCareer(
+      career.copyWith(trainingPlan: plan),
+      message: enabled
+          ? 'O auxiliar passou a ajustar a carga de treino a cada dia.'
+          : 'Gestão automática de treino desativada.',
+    );
+  }
+
+  Future<void> applyAssistantRecommendations() async {
+    final career = state.career;
+    if (career == null || career.managerUnemployed) return;
+    final report = TechnicalAssistantEngine.analyze(career);
+    final plan = report.recommendedTraining.copyWith(
+      managedByAssistant: career.trainingPlan.managedByAssistant,
+    );
+    await commitCareer(
+      career.copyWith(
+        formation: report.recommendedFormation,
+        starterIds: report.recommendedStarterIds,
+        tactic: report.recommendedTactic,
+        trainingPlan: plan,
+      ),
+      message:
+          'Recomendações aplicadas: treino, escalação e plano tático atualizados.',
+    );
   }
 
   Future<void> replaceStarter(String outgoingId, String incomingId) async {

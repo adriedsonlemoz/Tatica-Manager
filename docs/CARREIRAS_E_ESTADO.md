@@ -97,7 +97,7 @@ Lesões e suspensões continuam contadas por rodadas; a passagem de dias recuper
 
 ## Schema 4 — notícias e histórico de partidas da temporada
 
-A partir da `0.1.1.9`, `CareerState.currentSchemaVersion` é 4 e o payload também guarda:
+A partir da `0.1.1.9`, `CareerState.currentSchemaVersion` era 4 e o payload também passou a guardar:
 
 - `news`: acontecimentos persistentes do avanço diário e da disponibilidade do elenco;
 - `matchHistory`: resultados completos da temporada atual, usados para abrir detalhes de partidas já disputadas no calendário;

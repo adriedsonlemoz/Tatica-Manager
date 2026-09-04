@@ -11,6 +11,7 @@ import '../player/player.dart';
 import '../settings/audio_settings.dart';
 import '../settings/match_presentation_settings.dart';
 import '../tactic/tactic.dart';
+import '../training/training_plan.dart';
 import '../transfer/market_career.dart';
 import 'career_event.dart';
 import 'competition_state.dart';
@@ -166,10 +167,11 @@ class CareerState {
     this.clubAdministration = const ClubAdministrationState(),
     this.leagueSetup = const CareerLeagueSetup(),
     this.competitionStates = const [],
+    this.trainingPlan = const TrainingPlan(),
     this.lastMatch,
   });
 
-  static const int currentSchemaVersion = 15;
+  static const int currentSchemaVersion = 16;
   static const int maxStoredNews = 120;
   static const int maxArchivedNews = 400;
 
@@ -212,6 +214,7 @@ class CareerState {
   final ClubAdministrationState clubAdministration;
   final CareerLeagueSetup leagueSetup;
   final List<CompetitionSeasonState> competitionStates;
+  final TrainingPlan trainingPlan;
   final MatchResult? lastMatch;
 
   List<CareerEvent> get allNews {
@@ -449,6 +452,7 @@ class CareerState {
     ClubAdministrationState? clubAdministration,
     CareerLeagueSetup? leagueSetup,
     List<CompetitionSeasonState>? competitionStates,
+    TrainingPlan? trainingPlan,
     MatchResult? lastMatch,
     bool clearLastMatch = false,
   }) {
@@ -520,6 +524,7 @@ class CareerState {
       clubAdministration: clubAdministration ?? this.clubAdministration,
       leagueSetup: leagueSetup ?? this.leagueSetup,
       competitionStates: nextStates,
+      trainingPlan: trainingPlan ?? this.trainingPlan,
       lastMatch: clearLastMatch ? null : (lastMatch ?? this.lastMatch),
     );
   }
@@ -560,6 +565,7 @@ class CareerState {
         'clubAdministration': clubAdministration.toJson(),
         'leagueSetup': leagueSetup.toJson(),
         'competitionStates': competitionStates.map((e) => e.toJson()).toList(),
+        'trainingPlan': trainingPlan.toJson(),
         'lastMatch': lastMatch?.toJson(),
       };
 
@@ -795,6 +801,11 @@ class CareerState {
       ),
       leagueSetup: leagueSetup,
       competitionStates: competitionStates,
+      trainingPlan: TrainingPlan.fromJson(
+        Map<String, dynamic>.from(
+          json['trainingPlan'] as Map? ?? const {},
+        ),
+      ),
       lastMatch: lastMatch,
     );
   }

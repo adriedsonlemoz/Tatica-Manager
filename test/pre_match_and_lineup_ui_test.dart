@@ -79,14 +79,15 @@ void main() {
     expect(screen, contains('MatchScreen(kitSelection: kitSelection)'));
   });
 
-  test('escalação agrupa banco por setores e separa inelegíveis', () {
+  test('escalação agrupa banco por setores e explica indisponibilidade', () {
     final source =
         File('lib/features/lineup/lineup_screen.dart').readAsStringSync();
     expect(source, contains('GOLEIROS'));
     expect(source, contains('DEFENSORES'));
     expect(source, contains('MEIO-CAMPISTAS'));
     expect(source, contains('ATACANTES'));
-    expect(source, contains('INELEGÍVEIS / INDISPONÍVEIS'));
+    expect(source, contains('playerAvailabilityReason'));
+    expect(source, contains('availableIds'));
     expect(source, contains('formationLabel: career.formation.label'));
   });
 }

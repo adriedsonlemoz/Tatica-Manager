@@ -5,6 +5,7 @@ import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../calendar/calendar_screen.dart';
+import '../assistant/technical_assistant_screen.dart';
 import '../clubs/clubs_screen.dart';
 import '../contracts/contracts_screen.dart';
 import '../finances/finances_screen.dart';
@@ -32,6 +33,8 @@ class MoreScreen extends ConsumerWidget {
       (icon: Icons.leaderboard_rounded, label: 'Classificação', subtitle: 'Tabela completa da competição', page: const StandingsScreen()),
       if (career.managerEmployed)
         (icon: Icons.tune_rounded, label: 'Táticas', subtitle: 'Mentalidade, pressão e ritmo', page: const TacticsScreen()),
+      if (career.managerEmployed)
+        (icon: Icons.psychology_alt_rounded, label: 'Auxiliar técnico', subtitle: 'IA de treino, escalação e tática', page: const TechnicalAssistantScreen()),
       if (career.managerEmployed)
         (icon: Icons.description_rounded, label: 'Contratos', subtitle: 'Renovações e salários', page: const ContractsScreen()),
       if (career.managerEmployed)

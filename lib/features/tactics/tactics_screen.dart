@@ -10,6 +10,7 @@ import '../../domain/player/player.dart';
 import '../../domain/tactic/tactic.dart';
 import '../../game/lineup/lineup_engine.dart';
 import '../player/player_profile_screen.dart';
+import '../assistant/technical_assistant_screen.dart';
 import '../shared/club_context_header.dart';
 import '../shared/compact_formation_pitch.dart';
 
@@ -57,7 +58,20 @@ class TacticsScreen extends ConsumerWidget {
     final tactic = career.tactic;
 
     return PremiumScaffold(
-      appBar: const GameTopBar(title: 'Táticas'),
+      appBar: GameTopBar(
+        title: 'Táticas',
+        actions: [
+          IconButton(
+            tooltip: 'Auxiliar técnico',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const TechnicalAssistantScreen(),
+              ),
+            ),
+            icon: const Icon(Icons.psychology_alt_rounded),
+          ),
+        ],
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) => Padding(
           padding: const EdgeInsets.fromLTRB(10, 4, 10, 8),

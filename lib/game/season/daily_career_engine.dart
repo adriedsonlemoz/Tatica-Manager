@@ -3,6 +3,7 @@ import 'dart:math';
 import '../../domain/player/player.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
+import '../../domain/training/training_plan.dart';
 import '../career/manager_career_engine.dart';
 import '../career/board_objective_engine.dart';
 import '../competition/competition_simulation_engine.dart';
@@ -202,9 +203,9 @@ abstract final class DailyCareerEngine {
         id: 'training-${_dayKey(after.currentDate)}',
         date: after.currentDate,
         type: CareerEventType.training,
-        title: 'Treino e recuperação',
+        title: 'Treino: ${after.trainingPlan.focus.label.toLowerCase()}',
         message:
-            'Condição média ${afterCondition.round()}% (${afterCondition >= beforeCondition ? '+' : ''}${(afterCondition - beforeCondition).round()}), fadiga média ${afterFatigue.round()}%.',
+            '${after.trainingPlan.focus.label} • carga ${after.trainingPlan.intensity.label.toLowerCase()}. Condição média ${afterCondition.round()}% (${afterCondition >= beforeCondition ? '+' : ''}${(afterCondition - beforeCondition).round()}), fadiga média ${afterFatigue.round()}%.',
         clubId: after.userClubId,
       ),
     );

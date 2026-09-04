@@ -8,14 +8,28 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.135`
-- **Android versionCode:** `136`
+- **Release deste handoff:** `0.1.1.136`
+- **Android versionCode:** `137`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.136
+
+## Auxiliar técnico e treino assistido
+
+- `TechnicalAssistantEngine` gera um relatório determinístico usando condição, fadiga, lesões, disciplina por competição, potencial, calendário, adversário e força setorial real.
+- A recomendação escolhe treino, formação, titulares disponíveis e uma combinação dos cinco parâmetros existentes de `Tactic`.
+- A tela `TechnicalAssistantScreen` fica acessível em Mais e pela ação da tela de Táticas; mostra prontidão, alertas e permite aplicar tudo somente após comando do usuário.
+- `TrainingPlan` persiste foco, intensidade e gestão automática. O modo automático recalcula a carga no avanço diário; o modo manual preserva a decisão do usuário.
+- `TrainingEngine` integra o plano à recuperação, fadiga e moral sem criar outro Match Engine ou definir resultados.
+- O schema da carreira sobe para 16; saves antigos recebem por padrão plano equilibrado com gestão automática.
+- O workflow 89 teve analyzer limpo e 314 testes aprovados; a única falha era um teste estrutural que ainda procurava o cabeçalho removido de inelegíveis. A expectativa agora valida a explicação individual de indisponibilidade.
+
+Consulte `docs/RELEASE_0.1.1.136.md`.
 
 ## Estado funcional da release 0.1.1.135
 
@@ -1041,12 +1055,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.135
-versionCode:         136
-pubspec:             0.1.1+136
+release/versionName: 0.1.1.136
+versionCode:         137
+pubspec:             0.1.1+137
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.136` e usar um `versionCode` maior que 136.
+A próxima alteração/entrega normalmente deve virar `0.1.1.137` e usar um `versionCode` maior que 137.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 
