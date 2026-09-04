@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
+import '../../domain/formation/formation.dart';
+import '../../domain/tactic/tactic.dart';
 import '../../domain/training/training_plan.dart';
 import '../../game/assistant/technical_assistant_engine.dart';
 import '../player/player_profile_screen.dart';

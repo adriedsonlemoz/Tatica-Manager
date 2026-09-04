@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.136';
+  static const String version = '0.1.1.137';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.137',
+      title: 'Correção dos rótulos do auxiliar',
+      changes: [
+        'Importa diretamente os rótulos de formação e tática usados pela nova tela.',
+        'Corrige os quatro erros undefined_getter apontados pelo workflow 90.',
+        'Mantém inalteradas as regras da IA, do treino e do Match Engine.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.136',
       title: 'Auxiliar técnico e treino assistido',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Mantém campo, comandos, estatísticas e narração visíveis sem rolagem.',
         'Dá movimento contextual aos atletas e reduz etiquetas sobrepostas.',
         'Exibe cartões e suspensões na escalação, elenco, perfil e partida.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.134',
-      title: 'Correção do analyzer do campo dinâmico',
-      changes: [
-        'Corrige o único aviso fatal encontrado pelo GitHub Actions no renderer do campo.',
-        'Mantém intactas as formações reais, a posse estável e a movimentação por fases.',
-        'Libera novamente o pipeline para testes e geração do APK.',
       ],
     ),
   ];
