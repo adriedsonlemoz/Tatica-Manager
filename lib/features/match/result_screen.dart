@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
+import '../../app/state/reward_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/player_avatar.dart';
 import '../../core/theme/app_colors.dart';
@@ -9,6 +10,7 @@ import '../../core/utils/formatters.dart';
 import '../../domain/club/club.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
+import '../rewards/reward_widgets.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
   const ResultScreen({super.key, required this.result});
@@ -25,6 +27,9 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final result = widget.result;
+    final receipt = ref.watch(rewardControllerProvider).lastReceipt;
+    final matchEventKey = 'match:${career.careerId}:${result.fixtureId}';
+    final matchReceipt = receipt?.eventKey == matchEventKey ? receipt : null;
     final home = career.clubs.firstWhere((c) => c.id == result.homeClubId);
     final away = career.clubs.firstWhere((c) => c.id == result.awayClubId);
     final fixture = career.fixtures.firstWhere((f) => f.id == result.fixtureId);
@@ -113,6 +118,10 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
               ],
             ),
           ),
+          if (matchReceipt != null && matchReceipt.earned) ...[
+            const SizedBox(height: 10),
+            RewardReceiptCard(receipt: matchReceipt),
+          ],
           const SizedBox(height: 10),
           Center(
             child: SegmentedButton<int>(

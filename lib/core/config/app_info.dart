@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.137';
+  static const String version = '0.1.1.138';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.138',
+      title: 'Recompensas globais do Manager',
+      changes: [
+        'Adiciona carteira global de PM separada de clubes e carreiras.',
+        'Entrega recompensas atômicas após partidas e temporadas salvas.',
+        'Exibe desafios, histórico, saldo compacto e avisos de recompensa.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.137',
       title: 'Correção dos rótulos do auxiliar',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Adiciona IA local para treino, escalação e plano tático.',
         'Permite gestão automática diária ou plano de treino manual.',
         'Corrige o único teste obsoleto apontado pelo workflow 89.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.135',
-      title: 'Transmissão legível e disciplina integrada',
-      changes: [
-        'Mantém campo, comandos, estatísticas e narração visíveis sem rolagem.',
-        'Dá movimento contextual aos atletas e reduz etiquetas sobrepostas.',
-        'Exibe cartões e suspensões na escalação, elenco, perfil e partida.',
       ],
     ),
   ];

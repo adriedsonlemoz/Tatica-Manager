@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state/career_controller.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/state/providers.dart';
+import '../../app/state/reward_controller.dart';
 import '../../core/config/app_preferences.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/season/career_state.dart';
@@ -31,6 +32,7 @@ class _BootstrapScreenState extends ConsumerState<BootstrapScreen> {
 
   Future<void> _bootstrap() async {
     await ref.read(careerControllerProvider.notifier).bootstrap();
+    await ref.read(rewardControllerProvider.notifier).bootstrap();
     final repository = ref.read(careerRepositoryProvider);
     final accepted = await repository.loadAppValue(
       AppPreferences.termsAcceptedKey,

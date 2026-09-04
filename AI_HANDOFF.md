@@ -8,14 +8,30 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.137`
-- **Android versionCode:** `138`
+- **Release deste handoff:** `0.1.1.138`
+- **Android versionCode:** `139`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.138
+
+## Recompensas globais do Manager
+
+- `RewardController` é a única entrada de estado para recompensas; telas apenas consultam a carteira e solicitam ações ao controlador.
+- `SqliteCareerRepository` implementa `RewardRepository` e usa a versão 5 do banco, com carteira, eventos idempotentes, transações, progresso global e sequência por carreira em tabelas fora do payload dos saves.
+- `LiveMatchController.finishMatch` e `GameController.advanceSeason` gravam carreira e recompensa na mesma transação SQLite. A chave de partida é `match:<careerId>:<fixtureId>`; a de temporada é `season:<careerId>:<season>`.
+- `RewardRules` centraliza todos os valores. Partidas competitivas pagam base e resultado; sequências e marcos usam IDs permanentes. Empate e derrota zeram a sequência.
+- A Home e a Central de Carreiras mostram somente um chip compacto de saldo. A tela Recompensas reúne carteira, desafios e histórico; o pós-jogo detalha cada crédito.
+- Objetivos são premiados apenas no encerramento real da temporada, quando a posição final atende à meta persistida da diretoria, e geram a notificação “Objetivo concluído”.
+- PM não participa de `Club`, `FinanceEngine`, orçamento de transferências ou salários. Excluir uma carreira não apaga carteira nem histórico.
+- Copas, promoções, conquistas especiais e compras não têm gatilhos ativos enquanto o jogo não oferecer suas condições ou conteúdos reais.
+- A migração começa com carteira zero e não reconstrói PM retroativo a partir de partidas antigas, pois elas não tinham eventos idempotentes de recompensa.
+
+Consulte `docs/RELEASE_0.1.1.138.md`.
 
 ## Estado funcional da release 0.1.1.137
 
@@ -1065,12 +1081,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.137
-versionCode:         138
-pubspec:             0.1.1+138
+release/versionName: 0.1.1.138
+versionCode:         139
+pubspec:             0.1.1+139
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.138` e usar um `versionCode` maior que 138.
+A próxima alteração/entrega normalmente deve virar `0.1.1.139` e usar um `versionCode` maior que 139.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

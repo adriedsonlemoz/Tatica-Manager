@@ -6,6 +6,7 @@ import '../../domain/club/club.dart';
 import '../../domain/formation/formation.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
+import '../../domain/reward/reward_models.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
@@ -24,6 +25,7 @@ import '../../game/season/inbox_engine.dart';
 import '../../game/season/career_news_engine.dart';
 import '../../game/season/career_news_archive.dart';
 import 'game_controller.dart';
+import 'reward_controller.dart';
 
 final liveMatchControllerProvider =
     NotifierProvider<LiveMatchController, LiveMatchSession?>(
@@ -83,6 +85,7 @@ class LiveMatchSession {
 class LiveMatchController extends Notifier<LiveMatchSession?> {
   static const int maxSubstitutions = LiveSubstitutionRules.maxSubstitutions;
   static const int maxSubstitutionWindows = LiveSubstitutionRules.maxWindows;
+  bool _finalizing = false;
 
   @override
   LiveMatchSession? build() => null;
@@ -431,9 +434,11 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
   Future<MatchResult?> finishMatch() async {
     final career = _career;
     final live = state;
-    if (career == null || live == null) return null;
+    if (career == null || live == null || _finalizing) return null;
+    _finalizing = true;
 
-    final round = live.fixture.round;
+    try {
+      final round = live.fixture.round;
     var clubs = [...career.clubs];
     var fixtures = [...career.fixtures];
     var competitionStates = [...career.competitionStates];
@@ -647,9 +652,37 @@ class LiveMatchController extends Notifier<LiveMatchSession?> {
       withBoard,
       [...availabilityEvents, ...marketEvents, ...matchNews],
     );
-    await _game.commitCareer(next, message: 'Partida concluída.');
+    final userAtHome = live.result.homeClubId == career.userClubId;
+    final userGoals = userAtHome
+        ? live.result.score.home
+        : live.result.score.away;
+    final opponentGoals = userAtHome
+        ? live.result.score.away
+        : live.result.score.home;
+    final outcome = userGoals > opponentGoals
+        ? RewardMatchOutcome.win
+        : userGoals == opponentGoals
+            ? RewardMatchOutcome.draw
+            : RewardMatchOutcome.loss;
+    await ref.read(rewardControllerProvider.notifier).finalizeMatch(
+          nextCareer: next,
+          request: MatchRewardRequest(
+            careerId: career.careerId,
+            fixtureId: live.fixture.id,
+            outcome: outcome,
+          ),
+        );
+    _game.applyCommittedCareer(next, message: 'Partida concluída.');
     state = null;
     return live.result;
+    } catch (_) {
+      _game.showMessage(
+        'Não foi possível finalizar a partida. O resultado e o PM não foram gravados.',
+      );
+      return null;
+    } finally {
+      _finalizing = false;
+    }
   }
 
   static List<CareerEvent> _availabilityRecoveryEvents({

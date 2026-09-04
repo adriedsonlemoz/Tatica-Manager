@@ -11,6 +11,7 @@ import '../contracts/contracts_screen.dart';
 import '../finances/finances_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../medical/medical_department_screen.dart';
+import '../rewards/rewards_screen.dart';
 import '../season/season_history_screen.dart';
 import '../settings/settings_screen.dart';
 import '../standings/standings_screen.dart';
@@ -47,6 +48,7 @@ class MoreScreen extends ConsumerWidget {
         (icon: Icons.medical_services_rounded, label: 'Departamento médico', subtitle: 'Lesões, recuperação, fadiga e risco', page: const MedicalDepartmentScreen()),
       (icon: Icons.mail_rounded, label: 'Caixa de entrada', subtitle: 'Mensagens, propostas e avisos', page: const InboxScreen()),
       (icon: Icons.query_stats_rounded, label: 'Estatísticas', subtitle: 'Gols, assistências e desempenho', page: const StatisticsScreen()),
+      (icon: Icons.workspace_premium_rounded, label: 'Recompensas', subtitle: 'PM, desafios e conquistas', page: const RewardsScreen()),
       (icon: Icons.history_rounded, label: 'Carreira do técnico', subtitle: 'Trajetória, clubes, vagas e propostas', page: const SeasonHistoryScreen()),
       (icon: Icons.settings_rounded, label: 'Configurações', subtitle: 'Save e preferências', page: const SettingsScreen()),
     ];

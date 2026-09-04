@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/audio/audio_providers.dart';
 import '../../app/state/game_controller.dart';
+import '../../app/state/reward_controller.dart';
 import '../../core/audio/audio_catalog.dart';
 import '../../core/theme/app_colors.dart';
 import '../lineup/lineup_screen.dart';
@@ -23,6 +24,9 @@ class GameShell extends ConsumerStatefulWidget {
 class _GameShellState extends ConsumerState<GameShell> {
   int index = 0;
   String? _visibleMessage;
+  String _visibleTitle = 'Atualização do clube';
+  bool _rewardMessage = false;
+  String? _visibleRewardEventKey;
   Timer? _messageTimer;
 
   static const screens = [
@@ -42,9 +46,20 @@ class _GameShellState extends ConsumerState<GameShell> {
   @override
   Widget build(BuildContext context) {
     final game = ref.watch(gameControllerProvider);
+    ref.listen<RewardState>(rewardControllerProvider, (previous, next) {
+      final notice = next.notice;
+      if (notice == null || notice.eventKey == _visibleRewardEventKey) return;
+      _showMessage(
+        notice.message,
+        title: notice.title,
+        reward: true,
+        rewardEventKey: notice.eventKey,
+      );
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final message = game.message;
       if (!mounted || message == null || message == _visibleMessage) return;
+      if (ref.read(rewardControllerProvider).notice != null) return;
       _showMessage(message);
       ref.read(gameControllerProvider.notifier).clearMessage();
     });
@@ -68,7 +83,11 @@ class _GameShellState extends ConsumerState<GameShell> {
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 220),
                   opacity: _visibleMessage == null ? 0 : 1,
-                  child: _IntegratedMessageCard(message: _visibleMessage),
+                  child: _IntegratedMessageCard(
+                    title: _visibleTitle,
+                    message: _visibleMessage,
+                    reward: _rewardMessage,
+                  ),
                 ),
               ),
             ),
@@ -113,21 +132,45 @@ class _GameShellState extends ConsumerState<GameShell> {
     );
   }
 
-  void _showMessage(String message) {
+  void _showMessage(
+    String message, {
+    String title = 'Atualização do clube',
+    bool reward = false,
+    String? rewardEventKey,
+  }) {
     _messageTimer?.cancel();
     unawaited(ref.read(audioManagerProvider).playUi(UiAudioCue.confirm));
-    setState(() => _visibleMessage = message);
+    setState(() {
+      _visibleMessage = message;
+      _visibleTitle = title;
+      _rewardMessage = reward;
+      _visibleRewardEventKey = rewardEventKey;
+    });
     _messageTimer = Timer(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      setState(() => _visibleMessage = null);
+      final eventKey = _visibleRewardEventKey;
+      setState(() {
+        _visibleMessage = null;
+        _rewardMessage = false;
+        _visibleRewardEventKey = null;
+      });
+      if (eventKey != null) {
+        ref.read(rewardControllerProvider.notifier).consumeNotice(eventKey);
+      }
     });
   }
 }
 
 class _IntegratedMessageCard extends StatelessWidget {
-  const _IntegratedMessageCard({required this.message});
+  const _IntegratedMessageCard({
+    required this.title,
+    required this.message,
+    required this.reward,
+  });
 
+  final String title;
   final String? message;
+  final bool reward;
 
   @override
   Widget build(BuildContext context) {
@@ -163,9 +206,12 @@ class _IntegratedMessageCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Atualização do clube',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: reward ? AppColors.green : AppColors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: 3),
                   Text(

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/career_controller.dart';
+import '../../app/state/reward_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../core/config/app_info.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/career/career_save_summary.dart';
 import '../diagnostics/diagnostic_screen.dart';
 import '../legal/game_information_screen.dart';
+import '../rewards/reward_widgets.dart';
+import '../rewards/rewards_screen.dart';
 import '../settings/pre_career_settings_screen.dart';
 import 'career_hub_info_links.dart';
 import 'career_hub_save_cards.dart';
@@ -20,6 +23,7 @@ class CareerHubScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(careerControllerProvider);
+    final pmBalance = ref.watch(rewardControllerProvider).snapshot.wallet.balance;
 
     return PremiumScaffold(
       safeBottom: true,
@@ -29,7 +33,12 @@ class CareerHubScreen extends ConsumerWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
           children: [
-            _BrandHeader(),
+            _BrandHeader(
+              balance: pmBalance,
+              onRewardsTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const RewardsScreen()),
+              ),
+            ),
             const SizedBox(height: 22),
             if (state.message != null) ...[
               _MessageBanner(message: state.message!),
@@ -136,6 +145,11 @@ class CareerHubScreen extends ConsumerWidget {
 }
 
 class _BrandHeader extends StatelessWidget {
+  const _BrandHeader({required this.balance, required this.onRewardsTap});
+
+  final int balance;
+  final VoidCallback onRewardsTap;
+
   @override
   Widget build(BuildContext context) => Row(
         children: [
@@ -161,6 +175,7 @@ class _BrandHeader extends StatelessWidget {
               ],
             ),
           ),
+          RewardBalanceChip(balance: balance, onTap: onRewardsTap),
         ],
       );
 }

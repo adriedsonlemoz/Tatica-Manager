@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/state/game_controller.dart';
+import '../../app/state/reward_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../app/widgets/manager_avatar.dart';
 import '../../core/theme/app_colors.dart';
@@ -23,6 +24,8 @@ import '../inbox/inbox_screen.dart';
 import '../market/market_screen.dart';
 import '../more/more_screen.dart';
 import '../player/player_profile_screen.dart';
+import '../rewards/reward_widgets.dart';
+import '../rewards/rewards_screen.dart';
 import '../season/season_history_screen.dart';
 import '../squad/squad_screen.dart';
 import '../standings/standings_screen.dart';
@@ -48,6 +51,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final career = ref.watch(gameControllerProvider).career!;
+    final pmBalance = ref.watch(rewardControllerProvider).snapshot.wallet.balance;
     if (career.managerUnemployed) {
       return _UnemployedHome(career: career);
     }
@@ -114,8 +118,12 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   HomeTopBar(
                     unreadMessages: unreadMessages,
+                    pmBalance: pmBalance,
                     onMenuTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const MoreScreen(showBackButton: true)),
+                    ),
+                    onRewardsTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RewardsScreen()),
                     ),
                     onNotificationsTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
@@ -957,6 +965,8 @@ class _UnemployedHome extends ConsumerWidget {
     final offers = career.managerCareer.offers
         .where((offer) => offer.isActiveOn(career.currentDate))
         .length;
+    final pmBalance =
+        ref.watch(rewardControllerProvider).snapshot.wallet.balance;
     return PremiumScaffold(
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 110),
@@ -979,6 +989,12 @@ class _UnemployedHome extends ConsumerWidget {
                       style: const TextStyle(color: AppColors.green, fontSize: 12),
                     ),
                   ],
+                ),
+              ),
+              RewardBalanceChip(
+                balance: pmBalance,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RewardsScreen()),
                 ),
               ),
             ],

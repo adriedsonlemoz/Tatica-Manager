@@ -6,11 +6,14 @@ import '../../domain/career/career_save_summary.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/club/club.dart';
 import '../../domain/club/club_identity.dart';
+import '../../domain/reward/reward_models.dart';
 import '../../domain/season/career_state.dart';
 import '../../game/league/league_engine.dart';
+import '../../game/reward/reward_calculator.dart';
 import '../save/career_repository.dart';
+import '../save/reward_repository.dart';
 
-class SqliteCareerRepository implements CareerRepository {
+class SqliteCareerRepository implements CareerRepository, RewardRepository {
   Database? _database;
 
   Future<Database> _db() async {
@@ -18,7 +21,7 @@ class SqliteCareerRepository implements CareerRepository {
     final root = await getDatabasesPath();
     _database = await openDatabase(
       '$root/tatica_manager.db',
-      version: 4,
+      version: 5,
       onCreate: (db, version) async => _createSchema(db),
       onUpgrade: (db, oldVersion, newVersion) async {
         var migratedVersion = oldVersion;
@@ -33,6 +36,10 @@ class SqliteCareerRepository implements CareerRepository {
         }
         if (migratedVersion < 4) {
           await _migrateV3ToV4(db);
+          migratedVersion = 4;
+        }
+        if (migratedVersion < 5) {
+          await _migrateV4ToV5(db);
         }
       },
     );
@@ -75,7 +82,70 @@ class SqliteCareerRepository implements CareerRepository {
         created_at INTEGER NOT NULL
       )
     ''');
+    await _createRewardSchema(db);
   }
+
+  static Future<void> _createRewardSchema(DatabaseExecutor db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS pm_wallet(
+        profile_id TEXT PRIMARY KEY,
+        balance INTEGER NOT NULL DEFAULT 0 CHECK(balance >= 0),
+        lifetime_earned INTEGER NOT NULL DEFAULT 0 CHECK(lifetime_earned >= 0),
+        lifetime_spent INTEGER NOT NULL DEFAULT 0 CHECK(lifetime_spent >= 0),
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS reward_events(
+        event_key TEXT PRIMARY KEY,
+        event_type TEXT NOT NULL,
+        related_id TEXT NOT NULL,
+        career_id TEXT,
+        processed_at INTEGER NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS pm_transactions(
+        id TEXT PRIMARY KEY,
+        origin TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        created_at INTEGER NOT NULL,
+        related_id TEXT NOT NULL,
+        career_id TEXT,
+        balance_after INTEGER NOT NULL CHECK(balance_after >= 0),
+        description TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_pm_transactions_created_at '
+      'ON pm_transactions(created_at DESC)',
+    );
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS pm_progress(
+        profile_id TEXT PRIMARY KEY,
+        competitive_matches INTEGER NOT NULL DEFAULT 0 CHECK(competitive_matches >= 0),
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS pm_career_progress(
+        career_id TEXT PRIMARY KEY,
+        win_streak INTEGER NOT NULL DEFAULT 0 CHECK(win_streak >= 0),
+        streak_sequence INTEGER NOT NULL DEFAULT 0 CHECK(streak_sequence >= 0),
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS pm_unlocks(
+        item_id TEXT PRIMARY KEY,
+        transaction_id TEXT NOT NULL,
+        unlocked_at INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  static Future<void> _migrateV4ToV5(Database db) =>
+      _createRewardSchema(db);
 
   static Future<void> _migrateV3ToV4(Database db) => db.execute('''
     CREATE TABLE IF NOT EXISTS career_save_recovery(
@@ -419,6 +489,282 @@ class SqliteCareerRepository implements CareerRepository {
       'app_meta',
       {'key': key, 'value': pack.encode()},
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
+  Future<RewardSnapshot> loadRewards({int transactionLimit = 100}) async =>
+      _readRewardSnapshot(
+        await _db(),
+        transactionLimit: transactionLimit,
+      );
+
+  @override
+  Future<RewardCommitResult> finalizeMatch({
+    required CareerState nextCareer,
+    required MatchRewardRequest request,
+  }) async {
+    final db = await _db();
+    return db.transaction((transaction) async {
+      if (await _rewardEventExists(transaction, request.eventKey)) {
+        return _duplicateRewardResult(transaction, request.eventKey);
+      }
+      final snapshot = await _readRewardSnapshot(transaction);
+      final mutation = RewardCalculator.forMatch(
+        request: request,
+        globalProgress: snapshot.progress,
+        careerProgress: snapshot.progressForCareer(request.careerId),
+        existingTransactionIds: await _transactionIds(transaction),
+      );
+      return _commitRewardMutation(
+        transaction,
+        RewardCareerCommit(
+          nextCareer: nextCareer,
+          eventKey: request.eventKey,
+          eventType: 'match',
+          relatedId: request.fixtureId,
+          mutation: mutation,
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<RewardCommitResult> finalizeSeason({
+    required CareerState nextCareer,
+    required SeasonRewardRequest request,
+  }) async {
+    final db = await _db();
+    return db.transaction((transaction) async {
+      if (await _rewardEventExists(transaction, request.eventKey)) {
+        return _duplicateRewardResult(transaction, request.eventKey);
+      }
+      final snapshot = await _readRewardSnapshot(transaction);
+      final mutation = RewardCalculator.forSeason(
+        request: request,
+        globalProgress: snapshot.progress,
+        existingTransactionIds: await _transactionIds(transaction),
+      );
+      return _commitRewardMutation(
+        transaction,
+        RewardCareerCommit(
+          nextCareer: nextCareer,
+          eventKey: request.eventKey,
+          eventType: 'season',
+          relatedId: '${request.season}:${request.competitionId}',
+          mutation: mutation,
+        ),
+      );
+    });
+  }
+
+  static Future<RewardCommitResult> _commitRewardMutation(
+    Transaction transaction,
+    RewardCareerCommit commit,
+  ) async {
+    final now = DateTime.now();
+    await _insert(transaction, commit.nextCareer);
+    await transaction.insert('reward_events', {
+      'event_key': commit.eventKey,
+      'event_type': commit.eventType,
+      'related_id': commit.relatedId,
+      'career_id': commit.nextCareer.careerId,
+      'processed_at': now.millisecondsSinceEpoch,
+    });
+
+    final wallet = await _readWallet(transaction);
+    var balance = wallet.balance;
+    var earned = wallet.lifetimeEarned;
+    var spent = wallet.lifetimeSpent;
+    final created = <PmTransaction>[];
+    for (final grant in commit.mutation.grants) {
+      final nextBalance = balance + grant.amount;
+      if (nextBalance < 0) {
+        throw StateError('Saldo de PM insuficiente.');
+      }
+      balance = nextBalance;
+      if (grant.amount >= 0) {
+        earned += grant.amount;
+      } else {
+        spent += grant.amount.abs();
+      }
+      await transaction.insert('pm_transactions', {
+        'id': grant.id,
+        'origin': grant.origin.name,
+        'amount': grant.amount,
+        'created_at': now.millisecondsSinceEpoch,
+        'related_id': grant.relatedId,
+        'career_id': grant.careerId,
+        'balance_after': balance,
+        'description': grant.description,
+      });
+      created.add(
+        PmTransaction(
+          id: grant.id,
+          origin: grant.origin,
+          amount: grant.amount,
+          createdAt: now,
+          relatedId: grant.relatedId,
+          balanceAfter: balance,
+          description: grant.description,
+          careerId: grant.careerId,
+        ),
+      );
+    }
+
+    await transaction.insert(
+      'pm_wallet',
+      {
+        'profile_id': 'local-player',
+        'balance': balance,
+        'lifetime_earned': earned,
+        'lifetime_spent': spent,
+        'updated_at': now.millisecondsSinceEpoch,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    await transaction.insert(
+      'pm_progress',
+      {
+        'profile_id': 'local-player',
+        'competitive_matches':
+            commit.mutation.globalProgress.competitiveMatches,
+        'updated_at': now.millisecondsSinceEpoch,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    final careerProgress = commit.mutation.careerProgress;
+    if (careerProgress != null) {
+      await transaction.insert(
+        'pm_career_progress',
+        {
+          'career_id': careerProgress.careerId,
+          'win_streak': careerProgress.winStreak,
+          'streak_sequence': careerProgress.streakSequence,
+          'updated_at': now.millisecondsSinceEpoch,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    final snapshot = await _readRewardSnapshot(transaction);
+    return RewardCommitResult(
+      snapshot: snapshot,
+      receipt: RewardReceipt(
+        eventKey: commit.eventKey,
+        transactions: created,
+        balanceAfter: balance,
+      ),
+    );
+  }
+
+  static Future<RewardCommitResult> _duplicateRewardResult(
+    DatabaseExecutor db,
+    String eventKey,
+  ) async {
+    final snapshot = await _readRewardSnapshot(db);
+    return RewardCommitResult(
+      snapshot: snapshot,
+      receipt: RewardReceipt(
+        eventKey: eventKey,
+        transactions: const [],
+        balanceAfter: snapshot.wallet.balance,
+        duplicate: true,
+      ),
+    );
+  }
+
+  static Future<bool> _rewardEventExists(
+    DatabaseExecutor db,
+    String eventKey,
+  ) async {
+    final rows = await db.query(
+      'reward_events',
+      columns: const ['event_key'],
+      where: 'event_key = ?',
+      whereArgs: [eventKey],
+      limit: 1,
+    );
+    return rows.isNotEmpty;
+  }
+
+  static Future<Set<String>> _transactionIds(DatabaseExecutor db) async {
+    final rows = await db.query('pm_transactions', columns: const ['id']);
+    return rows.map((row) => row['id'] as String).toSet();
+  }
+
+  static Future<RewardWallet> _readWallet(DatabaseExecutor db) async {
+    final rows = await db.query(
+      'pm_wallet',
+      where: 'profile_id = ?',
+      whereArgs: const ['local-player'],
+      limit: 1,
+    );
+    if (rows.isEmpty) return const RewardWallet();
+    final row = rows.first;
+    return RewardWallet(
+      balance: row['balance'] as int? ?? 0,
+      lifetimeEarned: row['lifetime_earned'] as int? ?? 0,
+      lifetimeSpent: row['lifetime_spent'] as int? ?? 0,
+    );
+  }
+
+  static Future<RewardSnapshot> _readRewardSnapshot(
+    DatabaseExecutor db, {
+    int transactionLimit = 100,
+  }) async {
+    final wallet = await _readWallet(db);
+    final progressRows = await db.query(
+      'pm_progress',
+      where: 'profile_id = ?',
+      whereArgs: const ['local-player'],
+      limit: 1,
+    );
+    final progress = RewardGlobalProgress(
+      competitiveMatches: progressRows.isEmpty
+          ? 0
+          : progressRows.first['competitive_matches'] as int? ?? 0,
+    );
+    final careerRows = await db.query('pm_career_progress');
+    final careerProgress = <String, RewardCareerProgress>{};
+    for (final row in careerRows) {
+      final careerId = row['career_id'] as String? ?? '';
+      if (careerId.isEmpty) continue;
+      careerProgress[careerId] = RewardCareerProgress(
+        careerId: careerId,
+        winStreak: row['win_streak'] as int? ?? 0,
+        streakSequence: row['streak_sequence'] as int? ?? 0,
+      );
+    }
+    final transactionRows = await db.query(
+      'pm_transactions',
+      orderBy: 'created_at DESC, rowid DESC',
+      limit: transactionLimit,
+    );
+    final transactions = transactionRows.map((row) {
+      final originName = row['origin'] as String? ?? '';
+      final origin = RewardOrigin.values.firstWhere(
+        (item) => item.name == originName,
+        orElse: () => RewardOrigin.achievement,
+      );
+      return PmTransaction(
+        id: row['id'] as String? ?? '',
+        origin: origin,
+        amount: row['amount'] as int? ?? 0,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          row['created_at'] as int? ?? 0,
+        ),
+        relatedId: row['related_id'] as String? ?? '',
+        balanceAfter: row['balance_after'] as int? ?? 0,
+        description: row['description'] as String? ?? origin.label,
+        careerId: row['career_id'] as String?,
+      );
+    }).toList(growable: false);
+    return RewardSnapshot(
+      wallet: wallet,
+      progress: progress,
+      transactions: transactions,
+      careerProgress: careerProgress,
     );
   }
 }

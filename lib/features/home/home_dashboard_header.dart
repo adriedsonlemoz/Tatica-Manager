@@ -3,19 +3,24 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/club/club.dart';
+import '../rewards/reward_widgets.dart';
 import 'home_visual_components.dart';
 
 class HomeTopBar extends StatelessWidget {
   const HomeTopBar({
     super.key,
     required this.unreadMessages,
+    required this.pmBalance,
     required this.onMenuTap,
+    required this.onRewardsTap,
     required this.onNotificationsTap,
     required this.onInboxTap,
   });
 
   final int unreadMessages;
+  final int pmBalance;
   final VoidCallback onMenuTap;
+  final VoidCallback onRewardsTap;
   final VoidCallback onNotificationsTap;
   final VoidCallback onInboxTap;
 
@@ -50,6 +55,11 @@ class HomeTopBar extends StatelessWidget {
                   ),
                 ),
               ),
+              RewardBalanceChip(
+                balance: pmBalance,
+                onTap: onRewardsTap,
+              ),
+              const SizedBox(width: 2),
               IconButton(
                 tooltip: 'Notícias',
                 onPressed: onNotificationsTap,

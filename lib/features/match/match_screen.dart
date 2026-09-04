@@ -207,7 +207,10 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     timer?.cancel();
     final result =
         await ref.read(liveMatchControllerProvider.notifier).finishMatch();
-    if (result == null) return;
+    if (result == null) {
+      if (mounted) setState(() => finishing = false);
+      return;
+    }
     await _leaveMatchAudio();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(

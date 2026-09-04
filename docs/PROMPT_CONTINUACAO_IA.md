@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.137
-Android versionCode: 138
-pubspec: 0.1.1+138
+Release visível: 0.1.1.138
+Android versionCode: 139
+pubspec: 0.1.1+139
 
-Novidade desta base: o Auxiliar técnico usa uma IA local e determinística para recomendar treino, formação, titulares e os cinco parâmetros táticos existentes. `TrainingPlan` é persistido e pode operar em modo automático diário ou manual; `TrainingEngine` altera somente recuperação, fadiga e moral. A análise reutiliza `LineupEngine`, `MatchStrengthCalculator` e `LiveRoundSimulator`, sem serviço remoto ou Match Engine paralelo. O schema atual da carreira é 16 e saves antigos recebem o plano padrão automaticamente. O teste obsoleto encontrado no workflow 89 foi corrigido. A release 0.1.1.137 também corrige os quatro `undefined_getter` do workflow 90 importando diretamente as extensões de rótulo usadas por `TechnicalAssistantScreen`.
+Novidade desta base: existe uma carteira global de Pontos de Manager fora dos saves e das finanças dos clubes. `RewardController` centraliza o estado; `RewardRules` centraliza os valores; e `SqliteCareerRepository`, como `RewardRepository`, grava carreira, evento idempotente, transações, saldo e progresso na mesma transação SQLite. Partidas usam `match:<careerId>:<fixtureId>` e temporadas usam `season:<careerId>:<season>`. A Home exibe apenas um chip compacto, o pós-jogo detalha os créditos e objetivos confirmados no fechamento da temporada mostram “Objetivo concluído”. Não crie gatilhos para copa, promoção, conquistas ou compras sem que suas condições reais existam no jogo. A carteira começa em zero e não há pagamento retroativo de saves antigos.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.138 com versionCode > 138.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.139 com versionCode > 139.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

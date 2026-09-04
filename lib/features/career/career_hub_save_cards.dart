@@ -188,7 +188,7 @@ class CareerDeleteDialog extends StatelessWidget {
                 border: Border.all(color: AppColors.danger.withValues(alpha: .22)),
               ),
               child: const Text(
-                'O save será removido definitivamente deste aparelho. Esta ação não pode ser desfeita.',
+                'O save será removido definitivamente deste aparelho. O saldo global de PM será preservado. Esta ação não pode ser desfeita.',
                 textAlign: TextAlign.center,
                 style: TextStyle(height: 1.35),
               ),

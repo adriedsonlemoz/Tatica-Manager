@@ -4,6 +4,7 @@ import '../../core/save/career_repository.dart';
 import '../../core/diagnostics/diagnostic_service.dart';
 import '../../domain/career/manager_profile.dart';
 import '../../domain/formation/formation.dart';
+import '../../domain/reward/reward_models.dart';
 import '../../domain/season/career_event.dart';
 import '../../domain/season/career_state.dart';
 import '../../domain/tactic/tactic.dart';
@@ -16,6 +17,7 @@ import '../../game/season/daily_career_engine.dart';
 import '../../game/season/season_engine.dart';
 import '../../game/training/training_engine.dart';
 import 'providers.dart';
+import 'reward_controller.dart';
 
 final gameControllerProvider =
     NotifierProvider<GameController, GameState>(GameController.new);
@@ -58,6 +60,14 @@ class GameController extends Notifier<GameState> {
 
   void showMessage(String message) {
     state = state.copyWith(message: message);
+  }
+
+  void applyCommittedCareer(CareerState career, {String? message}) {
+    state = state.copyWith(
+      career: career,
+      message: message,
+      clearMessage: message == null,
+    );
   }
 
   Future<bool> commitCareer(CareerState next, {String? message}) async {
@@ -309,10 +319,29 @@ class GameController extends Notifier<GameState> {
   Future<void> advanceSeason() async {
     final career = state.career;
     if (career == null || !career.seasonComplete) return;
+    final summary = SeasonEngine.summaryFor(career);
     final next = SeasonEngine.advance(career);
-    await commitCareer(
-      next,
-      message: 'Temporada ${next.season} iniciada.',
-    );
+    try {
+      await ref.read(rewardControllerProvider.notifier).finalizeSeason(
+            nextCareer: next,
+            request: SeasonRewardRequest(
+              careerId: career.careerId,
+              season: career.season,
+              competitionId: career.primaryCompetitionId,
+              objectiveMet:
+                  summary.position > 0 &&
+                  summary.position <= career.boardObjective.targetPosition,
+              leagueChampion: summary.position == 1,
+            ),
+          );
+      applyCommittedCareer(
+        next,
+        message: 'Temporada ${next.season} iniciada.',
+      );
+    } catch (_) {
+      showMessage(
+        'Não foi possível concluir a temporada. Nenhum PM foi alterado.',
+      );
+    }
   }
 }
