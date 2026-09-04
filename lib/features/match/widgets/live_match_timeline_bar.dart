@@ -18,7 +18,9 @@ class LiveMatchTimelineBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visible = events.where(_isVisible).toList(growable: false);
+    final visible = events
+        .where((event) => _isVisible(event) && _isTimelineEvent(event.type))
+        .toList(growable: false);
     return SizedBox(
       height: 34,
       child: Row(
@@ -100,6 +102,19 @@ class LiveMatchTimelineBar extends StatelessWidget {
       event.minute < minute ||
       (event.minute == minute &&
           (throughSequence == null || event.sequence <= throughSequence!));
+
+  static bool _isTimelineEvent(MatchEventType type) => switch (type) {
+        MatchEventType.goal ||
+        MatchEventType.ownGoal ||
+        MatchEventType.yellow ||
+        MatchEventType.red ||
+        MatchEventType.woodwork ||
+        MatchEventType.penalty ||
+        MatchEventType.penaltySaved ||
+        MatchEventType.substitution ||
+        MatchEventType.injury => true,
+        _ => false,
+      };
 
   static Color _eventColor(MatchEventType type) => switch (type) {
         MatchEventType.goal || MatchEventType.ownGoal => AppColors.green,

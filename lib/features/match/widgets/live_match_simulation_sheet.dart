@@ -102,6 +102,9 @@ Future<LiveMatchSimulationOption?> showLiveMatchSimulationOptions(
   final option = await showModalBottomSheet<LiveMatchSimulationOption>(
     context: context,
     showDragHandle: true,
+    useSafeArea: true,
+    backgroundColor: AppColors.background,
+    barrierColor: Colors.black.withValues(alpha: .72),
     builder: (context) => LiveMatchSimulationSheet(minute: minute),
   );
   if (!context.mounted || option != LiveMatchSimulationOption.fulltime) {

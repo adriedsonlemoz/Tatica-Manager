@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../domain/player/player.dart';
 import '../../game/lineup/lineup_engine.dart';
+import 'player_discipline_indicator.dart';
 
 class CompactFormationPitch extends StatelessWidget {
   const CompactFormationPitch({
@@ -11,12 +12,14 @@ class CompactFormationPitch extends StatelessWidget {
     required this.accent,
     required this.onPlayerTap,
     this.onPlayerLongPress,
+    this.disciplines = const {},
   });
 
   final List<AssignedPlayer> assignments;
   final Color accent;
   final ValueChanged<AssignedPlayer> onPlayerTap;
   final ValueChanged<AssignedPlayer>? onPlayerLongPress;
+  final Map<String, PlayerDiscipline> disciplines;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -56,6 +59,8 @@ class CompactFormationPitch extends StatelessWidget {
                         .toDouble(),
                     child: _CompactPitchPlayer(
                       assignment: assignment,
+                      discipline: disciplines[assignment.player.id] ??
+                          const PlayerDiscipline(),
                       accent: accent,
                       onTap: () => onPlayerTap(assignment),
                       onLongPress: onPlayerLongPress == null
@@ -73,12 +78,14 @@ class CompactFormationPitch extends StatelessWidget {
 class _CompactPitchPlayer extends StatelessWidget {
   const _CompactPitchPlayer({
     required this.assignment,
+    required this.discipline,
     required this.accent,
     required this.onTap,
     this.onLongPress,
   });
 
   final AssignedPlayer assignment;
+  final PlayerDiscipline discipline;
   final Color accent;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
@@ -113,6 +120,18 @@ class _CompactPitchPlayer extends StatelessWidget {
                   ),
                 ),
               ),
+              if (discipline.yellowCards > 0 ||
+                  discipline.redCards > 0 ||
+                  discipline.isSuspended)
+                Positioned(
+                  right: 1,
+                  top: 1,
+                  child: PlayerDisciplineIndicator(
+                    discipline: discipline,
+                    compact: true,
+                    showClear: false,
+                  ),
+                ),
               Positioned(
                 left: 0,
                 right: 0,

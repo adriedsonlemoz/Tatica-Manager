@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.134`
-**Android versionCode:** `135`
+**Release atual:** `0.1.1.135`
+**Android versionCode:** `136`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.134`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.135`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+135`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.134` e `versionCode 135`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+136`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.135` e `versionCode 136`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.134`, o pubspec é `0.1.1+135`; a próxima entrega normalmente será `0.1.1.135`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.135`, o pubspec é `0.1.1+136`; a próxima entrega normalmente será `0.1.1.136`.
+
+## Transmissão legível e disciplina integrada — 0.1.1.135
+
+- mantém placar, campo, timeline, comandos, estatísticas e narração na mesma tela, sem rolagem vertical, com adaptação proporcional para aparelhos menores;
+- usa a formação real, acompanha a fase da jogada, separa jogadores próximos e mantém micro movimentos contextuais sem mover a bola parada artificialmente;
+- reduz a poluição de nomes: ao vivo aparecem jogador ativo, envolvidos e atletas próximos da bola; na pausa, todos podem ser identificados;
+- melhora hierarquia do placar, evento sobre o campo, contraste dos uniformes nas estatísticas e cartões separados por equipe;
+- mostra cartões, risco de suspensão e suspensão ativa na Escalação, no Elenco e no perfil do jogador, sempre pela competição da próxima partida;
+- uniformiza os modais da partida no fundo azul-grafite e preserva integralmente probabilidades, resultados e regras do Match Engine.
 
 ## Correção do analyzer do campo dinâmico — 0.1.1.134
 

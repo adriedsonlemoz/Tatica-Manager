@@ -96,7 +96,7 @@ class LiveRoundTicker extends StatelessWidget {
                     Icon(Icons.grid_view_rounded, size: 16, color: AppColors.green),
                     SizedBox(width: 6),
                     Text(
-                      'Rodada',
+                      'Placares',
                       style: TextStyle(
                         color: AppColors.green,
                         fontSize: 10.5,

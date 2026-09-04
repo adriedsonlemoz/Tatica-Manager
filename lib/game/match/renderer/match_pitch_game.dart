@@ -93,6 +93,7 @@ class MatchPitchGame extends FlameGame {
   double _elapsed = 0;
   bool _replayActive = false;
   bool _replayPending = false;
+  bool _showAllLabels = false;
   bool? _activeHome;
   bool? _possessionHome;
   int? _activePlayerIndex;
@@ -101,6 +102,10 @@ class MatchPitchGame extends FlameGame {
   bool get isReplayActive => _replayActive;
 
   bool get blocksClock => _replayPending || _replayActive;
+
+  void setPaused(bool paused) {
+    _showAllLabels = paused;
+  }
 
   void playEvent(MatchEvent event) => playEvents([event]);
 
@@ -274,6 +279,7 @@ class MatchPitchGame extends FlameGame {
       _ballTarget = event.start!;
       _ballMove = 1;
       _ballDelay = 0;
+      _separateTargets();
       return;
     }
 
@@ -296,6 +302,7 @@ class MatchPitchGame extends FlameGame {
         excluding: {activeIndex, receiver, ...dismissed},
         attackingHome: homeEvent,
       );
+      _separateTargets();
       return;
     }
 
@@ -336,6 +343,7 @@ class MatchPitchGame extends FlameGame {
       if (event.type == MatchEventType.woodwork) {
         _ballMoveRate = replay ? 1.45 : 2.25;
       }
+      _separateTargets();
       return;
     }
 
@@ -354,6 +362,7 @@ class MatchPitchGame extends FlameGame {
       _momentState.setKeeperDive(defendingHome: homeEvent, target: event.end!);
       _ballMoveRate = replay ? 1.3 : 2.0;
     }
+    _separateTargets();
   }
 
   @override
@@ -454,6 +463,7 @@ class MatchPitchGame extends FlameGame {
     final interfaceScale = MatchPitchVisuals.interfaceScale(field.width);
     final entries = <_DepthPlayer>[];
     final labels = <MatchPlayerLabelCandidate>[];
+    final contextualLabels = _contextualLabelIds();
     for (var index = 0; index < _homePlayers.length; index++) {
       if (_dismissedHomeIndexes.contains(index)) continue;
       entries.add(
@@ -494,12 +504,30 @@ class MatchPitchGame extends FlameGame {
       final movementAmount = motionState.movementAmount;
       final movementDirection = motionState.displayDirection;
       final baseCenter = _toCanvasOffset(entry.point, width, height);
-      final center = baseCenter;
       final active = _activeHome == home && _activePlayerIndex == index;
       final playerIds = home ? _homePlayerIds : _awayPlayerIds;
       final playerId = index < playerIds.length
           ? playerIds[index]
           : '${home ? 'home' : 'away'}-$index';
+      final involved = _involvedPlayerIds.contains(playerId);
+      final nearBall = contextualLabels.contains(playerId);
+      final ambientStrength = active
+          ? 1.45
+          : involved
+              ? 1.05
+              : nearBall
+                  ? .62
+                  : .16;
+      final ambient = Offset(
+        sin(_elapsed * (1.15 + index * .025) + index * 1.37) *
+            ambientStrength *
+            playerScale,
+        cos(_elapsed * (1.32 + index * .018) + index * .91) *
+            ambientStrength *
+            .48 *
+            playerScale,
+      );
+      final center = baseCenter + ambient;
 
       MatchPlayerVisuals.draw(
         canvas,
@@ -520,7 +548,8 @@ class MatchPitchGame extends FlameGame {
         diveDirection: _momentState.diveDirection(home),
       );
       final playerName = _playerNames[playerId]?.trim() ?? '';
-      if (playerName.isNotEmpty) {
+      if (playerName.isNotEmpty &&
+          (_showAllLabels || active || involved || nearBall)) {
         labels.add(
           MatchPlayerLabelCandidate(
             center: center,
@@ -531,7 +560,7 @@ class MatchPitchGame extends FlameGame {
             ),
             scale: playerScale,
             active: active,
-            involved: _involvedPlayerIds.contains(playerId),
+            involved: involved,
             goalkeeper: index == 0,
           ),
         );
@@ -560,9 +589,7 @@ class MatchPitchGame extends FlameGame {
         MatchPitchVisuals.interfaceScale(field.width) *
         .92;
     final base = _toCanvasOffset(_ball, width, height);
-    final idleOffset = _ballMove >= 1 && _currentCue == null
-        ? Offset(sin(_elapsed * 1.45) * 1.4, cos(_elapsed * 1.1) * .65)
-        : Offset.zero;
+    const idleOffset = Offset.zero;
     final eventType = _currentCue?.event?.type;
     final lift = _ballVisualHeight(eventType);
     MatchPitchVisuals.drawBall(
@@ -640,6 +667,7 @@ class MatchPitchGame extends FlameGame {
       home: false,
       inPossession: _possessionHome == null ? null : !_possessionHome!,
     );
+    MatchPlayerMotion.resolveCrowding(homeShape, awayShape);
     if (staggered) {
       MatchPlayerMotion.prepareFormationReturn(
         _homeMotionStates,
@@ -663,12 +691,49 @@ class MatchPitchGame extends FlameGame {
     }
   }
 
+  void _separateTargets() =>
+      MatchPlayerMotion.resolveCrowding(_homeTargets, _awayTargets);
+
+  Set<String> _contextualLabelIds() {
+    if (_showAllLabels || _currentCue != null) return const <String>{};
+    final selected = <String>{};
+
+    void addNearest(
+      List<FieldPoint> players,
+      List<String> ids,
+      Set<int> dismissed,
+    ) {
+      final indexes = List<int>.generate(players.length, (index) => index)
+        ..removeWhere(dismissed.contains)
+        ..sort(
+          (first, second) => MatchPlayerMotion.distanceSquared(
+            players[first],
+            _ball,
+          ).compareTo(
+            MatchPlayerMotion.distanceSquared(players[second], _ball),
+          ),
+        );
+      for (final index in indexes.take(2)) {
+        if (index < ids.length) selected.add(ids[index]);
+      }
+    }
+
+    addNearest(_homePlayers, _homePlayerIds, _dismissedHomeIndexes);
+    addNearest(_awayPlayers, _awayPlayerIds, _dismissedAwayIndexes);
+    return selected;
+  }
+
   void _applyCameraTransform(Canvas canvas) {
     if ((_camera.zoom - 1).abs() < .0001) return;
+    final field = MatchPitchVisuals.fieldRect(size.x, size.y);
     final focus = _toCanvasOffset(_camera.focus, size.x, size.y);
-    canvas.translate(focus.dx, focus.dy);
+    final focusWeight = (((_camera.zoom - 1) / .13) * .52)
+        .clamp(0.0, .52)
+        .toDouble();
+    final framed = Offset.lerp(field.center, focus, focusWeight)!;
+    canvas.translate(field.center.dx, field.center.dy);
     canvas.scale(_camera.zoom);
-    canvas.translate(-focus.dx, -focus.dy);
+    canvas.translate(-framed.dx, -framed.dy);
   }
 
   void _setReplayActive(bool active) {

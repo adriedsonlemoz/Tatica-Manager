@@ -43,6 +43,53 @@ class MatchPlayerMotionState {
 }
 
 abstract final class MatchPlayerMotion {
+  static void resolveCrowding(
+    List<FieldPoint> home,
+    List<FieldPoint> away,
+  ) {
+    _spreadTeam(home, direction: -1);
+    _spreadTeam(away, direction: 1);
+    for (var homeIndex = 1; homeIndex < home.length; homeIndex++) {
+      for (var awayIndex = 1; awayIndex < away.length; awayIndex++) {
+        final first = home[homeIndex];
+        final second = away[awayIndex];
+        if ((first.x - second.x).abs() >= .045 ||
+            (first.y - second.y).abs() >= .038) {
+          continue;
+        }
+        final direction = (homeIndex + awayIndex).isEven ? 1.0 : -1.0;
+        home[homeIndex] = FieldPoint(
+          (first.x - .018 * direction).clamp(.07, .93).toDouble(),
+          first.y,
+        );
+        away[awayIndex] = FieldPoint(
+          (second.x + .018 * direction).clamp(.07, .93).toDouble(),
+          second.y,
+        );
+      }
+    }
+  }
+
+  static void _spreadTeam(List<FieldPoint> players, {required int direction}) {
+    for (var firstIndex = 1; firstIndex < players.length; firstIndex++) {
+      for (var secondIndex = firstIndex + 1;
+          secondIndex < players.length;
+          secondIndex++) {
+        final first = players[firstIndex];
+        final second = players[secondIndex];
+        if ((first.x - second.x).abs() >= .038 ||
+            (first.y - second.y).abs() >= .032) {
+          continue;
+        }
+        final shift = direction * (secondIndex.isEven ? .014 : -.014);
+        players[secondIndex] = FieldPoint(
+          (second.x + shift).clamp(.07, .93).toDouble(),
+          second.y,
+        );
+      }
+    }
+  }
+
   static int nearestIndex(
     List<FieldPoint> points,
     FieldPoint target, {

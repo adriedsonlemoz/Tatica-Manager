@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.134';
+  static const String version = '0.1.1.135';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.135',
+      title: 'Transmissão legível e disciplina integrada',
+      changes: [
+        'Mantém campo, comandos, estatísticas e narração visíveis sem rolagem.',
+        'Dá movimento contextual aos atletas e reduz etiquetas sobrepostas.',
+        'Exibe cartões e suspensões na escalação, elenco, perfil e partida.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.134',
       title: 'Correção do analyzer do campo dinâmico',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Representa no campo as formações reais escolhidas pelos dois times.',
         'Estabiliza a posse ao vivo e movimenta os blocos conforme bola e domínio.',
         'Melhora nomes, bola, áreas, gols e aproximações dos lances importantes.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.132',
-      title: 'Correção do teste da simulação CPU',
-      changes: [
-        'Atualiza o teste estrutural para a arquitetura realista vigente do Match Engine.',
-        'Mantém eventos completos e substituições automáticas nas partidas CPU em segundo plano.',
-        'Preserva o analyzer já aprovado e não altera a apresentação visual da partida.',
       ],
     ),
   ];

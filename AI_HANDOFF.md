@@ -8,14 +8,27 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.134`
-- **Android versionCode:** `135`
+- **Release deste handoff:** `0.1.1.135`
+- **Android versionCode:** `136`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.135
+
+## Transmissão legível e disciplina integrada
+
+- A tela da partida mantém placar, campo, timeline, comandos, estatísticas e narração visíveis sem rolagem; `FittedBox.scaleDown` adapta o conjunto à altura disponível.
+- O campo usa movimento ambiente discreto, separação contra aglomerações e etiquetas contextuais; ao pausar, todas as identificações voltam a aparecer.
+- A bola parada não oscila artificialmente, a câmera reenquadra lances importantes e os eventos sobre o campo ocupam menos área.
+- Cartões e suspensões por competição aparecem na Escalação, no Elenco e no perfil; estatísticas ao vivo separam cartões do mandante e visitante.
+- Modais da transmissão usam o fundo azul-grafite do aplicativo.
+- Nenhuma probabilidade, resultado ou regra do Match Engine foi alterada nesta release.
+
+Consulte `docs/RELEASE_0.1.1.135.md`.
 
 ## Estado funcional da release 0.1.1.134
 
@@ -1028,12 +1041,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.134
-versionCode:         135
-pubspec:             0.1.1+135
+release/versionName: 0.1.1.135
+versionCode:         136
+pubspec:             0.1.1+136
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.135` e usar um `versionCode` maior que 135.
+A próxima alteração/entrega normalmente deve virar `0.1.1.136` e usar um `versionCode` maior que 136.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

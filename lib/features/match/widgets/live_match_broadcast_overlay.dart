@@ -98,21 +98,21 @@ class _LiveMatchBroadcastOverlayState extends State<LiveMatchBroadcastOverlay> {
                   : const SizedBox.shrink(key: ValueKey('live')),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
+          Positioned(
+            top: widget.replayActive ? 48 : 8,
+            left: 8,
+            right: 8,
             child: IgnorePointer(
               child: AnimatedSlide(
                 duration: const Duration(milliseconds: 240),
                 curve: Curves.easeOutCubic,
                 offset: _eventVisible && !widget.replayActive
                     ? Offset.zero
-                    : const Offset(0, .28),
+                    : const Offset(0, -.22),
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 190),
                   opacity: _eventVisible && !widget.replayActive ? 1 : 0,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 9),
-                    child: widget.event == null
+                  child: widget.event == null
                         ? const SizedBox.shrink()
                         : LiveMatchEventHero(
                             event: widget.event!,
@@ -121,7 +121,6 @@ class _LiveMatchBroadcastOverlayState extends State<LiveMatchBroadcastOverlay> {
                             secondaryPlayer: widget.secondaryPlayer,
                             assistPlayer: widget.assistPlayer,
                           ),
-                  ),
                 ),
               ),
             ),

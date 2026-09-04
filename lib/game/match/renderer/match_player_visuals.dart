@@ -225,6 +225,18 @@ abstract final class MatchPlayerVisuals {
           ..style = PaintingStyle.stroke
           ..strokeWidth = pulseReplay ? 1.7 : 1.35,
       );
+      final pointerY = headCenter.dy - 8.0 * scale;
+      final pointer = Path()
+        ..moveTo(center.dx, pointerY + 4.2 * scale)
+        ..lineTo(center.dx - 3.7 * scale, pointerY)
+        ..lineTo(center.dx + 3.7 * scale, pointerY)
+        ..close();
+      canvas.drawPath(
+        pointer,
+        Paint()
+          ..color = ringColor.withValues(alpha: .92)
+          ..style = PaintingStyle.fill,
+      );
     }
     canvas.restore();
   }

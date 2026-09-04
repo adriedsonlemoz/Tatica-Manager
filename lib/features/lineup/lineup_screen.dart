@@ -11,6 +11,7 @@ import '../../game/lineup/lineup_engine.dart';
 import '../player/player_profile_screen.dart';
 import '../shared/club_context_header.dart';
 import '../shared/compact_formation_pitch.dart';
+import '../shared/player_discipline_indicator.dart';
 import '../tactics/tactics_screen.dart';
 import 'widgets/lineup_candidate_sheet.dart';
 
@@ -30,9 +31,17 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final fixture = career.nextUserFixture;
-    final suspended = fixture == null
-        ? null
-        : career.suspendedPlayerIdsForCompetition(fixture.competitionId);
+    final competitionId =
+        fixture?.competitionId ?? career.primaryCompetitionId;
+    final disciplineByPlayer = <String, PlayerDiscipline>{
+      for (final player in career.userClub.squad)
+        player.id: career.playerDisciplineForCompetition(
+          competitionId,
+          player.id,
+        ),
+    };
+    final suspended =
+        career.suspendedPlayerIdsForCompetition(competitionId);
     final validation = LineupEngine.validate(
       career.userClub.squad,
       career.starterIds,
@@ -43,12 +52,8 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     final reserves = career.userClub.squad
         .where((player) => !career.starterIds.contains(player.id))
         .toList();
-    bool availableForNextMatch(Player player) => fixture == null
-        ? player.isAvailable
-        : career.isPlayerAvailableForCompetition(
-            player,
-            fixture.competitionId,
-          );
+    bool availableForNextMatch(Player player) =>
+        career.isPlayerAvailableForCompetition(player, competitionId);
     final availableBench = reserves.where(availableForNextMatch).toList()
       ..sort(_compareBenchPlayers);
     final unavailable = reserves
@@ -61,6 +66,12 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     );
     final improvised = assignments
         .where((assignment) => assignment.outOfPosition)
+        .length;
+    final suspendedCount = disciplineByPlayer.values
+        .where((discipline) => discipline.isSuspended)
+        .length;
+    final atRiskCount = disciplineByPlayer.values
+        .where((discipline) => discipline.isAtRisk)
         .length;
 
     return PremiumScaffold(
@@ -165,6 +176,18 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                                     : '$improvised improvisado${improvised == 1 ? '' : 's'}',
                                 warning: improvised > 0,
                               ),
+                              if (suspendedCount > 0 || atRiskCount > 0) ...[
+                                const SizedBox(width: 6),
+                                _SummaryPill(
+                                  icon: suspendedCount > 0
+                                      ? Icons.gavel_rounded
+                                      : Icons.style_rounded,
+                                  label: suspendedCount > 0
+                                      ? '$suspendedCount suspenso${suspendedCount == 1 ? '' : 's'}'
+                                      : '$atRiskCount pendurado${atRiskCount == 1 ? '' : 's'}',
+                                  warning: true,
+                                ),
+                              ],
                             ],
                           ),
                           const SizedBox(height: 6),
@@ -172,12 +195,14 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                             child: CompactFormationPitch(
                               assignments: assignments,
                               accent: accent,
+                              disciplines: disciplineByPlayer,
                               onPlayerTap: (assignment) => _chooseReplacement(
                                 context,
                                 career.userClub.squad,
                                 career.starterIds,
                                 assignment,
                                 accent,
+                                suspended,
                               ),
                               onPlayerLongPress: (assignment) =>
                                   Navigator.of(context).push(
@@ -212,6 +237,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                       availableIds:
                           availableBench.map((player) => player.id).toSet(),
                       availableCount: availableBench.length,
+                      disciplines: disciplineByPlayer,
                       formationLabel: career.formation.label,
                       page: _benchPage,
                       onPageChanged: (value) =>
@@ -302,11 +328,13 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     List<String> starters,
     AssignedPlayer outgoing,
     Color accent,
+    Set<String> suspendedIds,
   ) async {
     final candidates = LineupEngine.candidatesForRole(
       squad,
       outgoing.slot.role,
       excludedIds: starters.toSet(),
+      competitionSuspendedPlayerIds: suspendedIds,
     );
     await showModalBottomSheet<void>(
       context: context,
@@ -357,6 +385,7 @@ class _BenchPager extends StatelessWidget {
     required this.players,
     required this.availableIds,
     required this.availableCount,
+    required this.disciplines,
     required this.formationLabel,
     required this.page,
     required this.onPageChanged,
@@ -368,6 +397,7 @@ class _BenchPager extends StatelessWidget {
   final List<Player> players;
   final Set<String> availableIds;
   final int availableCount;
+  final Map<String, PlayerDiscipline> disciplines;
   final String formationLabel;
   final int page;
   final ValueChanged<int> onPageChanged;
@@ -441,6 +471,8 @@ class _BenchPager extends StatelessWidget {
                           child: _BenchPlayerCard(
                             player: visible[index],
                             available: availableIds.contains(visible[index].id),
+                            discipline: disciplines[visible[index].id] ??
+                                const PlayerDiscipline(),
                             onTap: () => onPlayerTap(visible[index]),
                           ),
                         ),
@@ -481,11 +513,13 @@ class _BenchPlayerCard extends StatelessWidget {
   const _BenchPlayerCard({
     required this.player,
     required this.available,
+    required this.discipline,
     required this.onTap,
   });
 
   final Player player;
   final bool available;
+  final PlayerDiscipline discipline;
   final VoidCallback onTap;
 
   @override
@@ -540,6 +574,19 @@ class _BenchPlayerCard extends StatelessWidget {
                         color: AppColors.warning,
                       ),
                     ),
+                  if (available &&
+                      (discipline.yellowCards > 0 ||
+                          discipline.redCards > 0 ||
+                          discipline.isSuspended))
+                    Positioned(
+                      right: -5,
+                      top: -4,
+                      child: PlayerDisciplineIndicator(
+                        discipline: discipline,
+                        compact: true,
+                        showClear: false,
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 3),
@@ -559,7 +606,9 @@ class _BenchPlayerCard extends StatelessWidget {
                 ),
               ),
               Text(
-                _sectorLabel(player, available),
+                available
+                    ? _sectorLabel(player)
+                    : playerAvailabilityReason(player, discipline),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(color: AppColors.muted, fontSize: 5.8),
@@ -573,8 +622,7 @@ class _BenchPlayerCard extends StatelessWidget {
         ),
       );
 
-  static String _sectorLabel(Player player, bool available) {
-    if (!available) return 'INELEGÍVEIS / INDISPONÍVEIS';
+  static String _sectorLabel(Player player) {
     return switch (player.primaryPosition) {
       PlayerPosition.gol => 'GOLEIROS',
       PlayerPosition.ld || PlayerPosition.le || PlayerPosition.zag =>

@@ -8,6 +8,7 @@ import '../../app/audio/audio_providers.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/state/live_match_controller.dart';
 import '../../app/widgets/common.dart';
+import '../../core/theme/app_colors.dart';
 import '../../domain/club/club.dart';
 import '../../domain/match/match_models.dart';
 import '../../domain/player/player.dart';
@@ -20,7 +21,6 @@ import 'live_match_playback.dart';
 import 'live_round_feed.dart';
 import 'result_screen.dart';
 import 'widgets/live_match_controls.dart';
-import 'widgets/live_match_event_widgets.dart';
 import 'widgets/live_match_narration_panel.dart';
 import 'widgets/live_match_pitch_panel.dart';
 import 'widgets/live_match_phase_transition_overlay.dart';
@@ -54,6 +54,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   bool pendingHalftime = false;
   bool pendingFullTime = false;
   MatchEvent? presentedEvent;
+  late final MatchVisualKitSelection _kits;
   late final AudioManager _audioManager;
   bool _audioExited = false;
   LiveRoundGoalAlert? roundAlert;
@@ -69,7 +70,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     final away = career.clubs.firstWhere(
       (club) => club.id == live.fixture.awayClubId,
     );
-    final kits = widget.kitSelection ??
+    _kits = widget.kitSelection ??
         MatchKitResolver.resolve(
           home: home,
           away: away,
@@ -87,10 +88,10 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     pitchGame = MatchPitchGame(
       homeColor: Color(home.colors.primaryHex),
       awayColor: Color(away.colors.primaryHex),
-      homeKit: kits.homeKit,
-      awayKit: kits.awayKit,
-      homeGoalkeeperKit: kits.homeGoalkeeperKit,
-      awayGoalkeeperKit: kits.awayGoalkeeperKit,
+      homeKit: _kits.homeKit,
+      awayKit: _kits.awayKit,
+      homeGoalkeeperKit: _kits.homeGoalkeeperKit,
+      awayGoalkeeperKit: _kits.awayGoalkeeperKit,
       homeClubId: home.id,
       awayClubId: away.id,
       homePlayerIds: live.homeStarterIds,
@@ -261,6 +262,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       for (final player in away.squad) player.id: player,
     };
     final userClub = career.userClub;
+    pitchGame.setPaused(paused || atHalftime || fullTime);
 
     return PopScope(
       canPop: false,
@@ -295,113 +297,126 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
               onOpenRound: () => _showRound(context, career, live),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 22),
-                children: [
-                  if (atHalftime) ...[
-                    MatchPhasePanel(
-                      icon: Icons.pause_circle_filled_rounded,
-                      title: 'Intervalo',
-                      message:
-                          'Ajuste a equipe antes de voltar. O placar e os comandos continuam sempre à mão.',
-                      buttonLabel: 'Começar segundo tempo',
-                      buttonIcon: Icons.play_arrow_rounded,
-                      onPressed: _startSecondHalf,
+              child: LayoutBuilder(
+                builder: (context, constraints) => Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: constraints.maxWidth - 24,
+                      height: (constraints.maxWidth - 24) * 68 / 105 + 289,
+                      child: Column(
+                        children: [
+                          LiveMatchPitchPanel(
+                            game: pitchGame,
+                            event: presentedEvent,
+                            teamName: presentedEvent == null
+                                ? 'Partida'
+                                : _eventTeamName(presentedEvent!, home, away),
+                            player: presentedEvent == null
+                                ? null
+                                : playersById[presentedEvent!.playerId],
+                            secondaryPlayer: presentedEvent == null
+                                ? null
+                                : playersById[presentedEvent!.secondaryPlayerId],
+                            assistPlayer: presentedEvent == null
+                                ? null
+                                : playersById[presentedEvent!.assistPlayerId],
+                            replayActive: replayActive,
+                            score: currentScore,
+                            phaseTransition: fullTime
+                                ? LiveMatchPhaseTransition.fulltime
+                                : atHalftime
+                                    ? LiveMatchPhaseTransition.halftime
+                                    : null,
+                          ),
+                          const SizedBox(height: 5),
+                          LiveMatchTimelineBar(
+                            events: result.events,
+                            minute: minute,
+                            throughSequence: currentSequence,
+                          ),
+                          const SizedBox(height: 5),
+                          LiveMatchControlBar(
+                            paused: paused,
+                            enabled: !fullTime,
+                            onPauseToggle: () {
+                              if (atHalftime) {
+                                _startSecondHalf();
+                              } else {
+                                setState(() => paused = !paused);
+                              }
+                            },
+                            onSimulate: () => _simulate(context, live),
+                            soundEnabled: career.settings.sound,
+                            onSoundToggle: () async {
+                              final settings = career.settings.copyWith(
+                                sound: !career.settings.sound,
+                              );
+                              await ref
+                                  .read(gameControllerProvider.notifier)
+                                  .updateSettings(settings);
+                              await _audioManager.applySettings(settings);
+                            },
+                            onTactic: () =>
+                                _liveTactic(context, ref, live.userTactic),
+                            onSubstitution: () => _substitution(
+                              context,
+                              ref,
+                              userClub.squad,
+                              live.userStarterIds,
+                              Color(userClub.colors.primaryHex),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          LiveMatchStatsCard(
+                            events: result.events,
+                            minute: minute,
+                            homeId: home.id,
+                            awayId: away.id,
+                            homeColor: Color(_kits.homeKit.primaryHex),
+                            awayColor: Color(_kits.awayKit.primaryHex),
+                            targetHomePossession:
+                                result.statistics.homePossession,
+                            throughSequence: currentSequence,
+                          ),
+                          const SizedBox(height: 6),
+                          SizedBox(
+                            height: 105,
+                            child: fullTime
+                                ? _MatchPhaseActionBar(
+                                    icon: Icons.sports_score_rounded,
+                                    title: 'Fim de jogo',
+                                    message:
+                                        '${home.name} ${currentScore.display} ${away.name}',
+                                    buttonLabel: 'Ver resumo',
+                                    onPressed: _finish,
+                                  )
+                                : atHalftime
+                                    ? _MatchPhaseActionBar(
+                                        icon: Icons.pause_circle_filled_rounded,
+                                        title: 'Intervalo',
+                                        message:
+                                            'Ajuste a equipe ou inicie o segundo tempo.',
+                                        buttonLabel: '2º tempo',
+                                        onPressed: _startSecondHalf,
+                                      )
+                                    : LiveMatchNarrationPanel(
+                                        events: result.events,
+                                        minute: minute,
+                                        throughSequence: currentSequence,
+                                        home: home,
+                                        away: away,
+                                        userClubId: userClub.id,
+                                        playersById: playersById,
+                                      ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (fullTime) ...[
-                    MatchPhasePanel(
-                      icon: Icons.sports_score_rounded,
-                      title: 'Fim de jogo',
-                      message:
-                          '${home.name} ${currentScore.display} ${away.name}',
-                      buttonLabel: 'Ver resumo da partida',
-                      buttonIcon: Icons.analytics_rounded,
-                      onPressed: _finish,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  LiveMatchPitchPanel(
-                    game: pitchGame,
-                    event: presentedEvent,
-                    teamName: presentedEvent == null
-                        ? 'Partida'
-                        : _eventTeamName(presentedEvent!, home, away),
-                    player: presentedEvent == null
-                        ? null
-                        : playersById[presentedEvent!.playerId],
-                    secondaryPlayer: presentedEvent == null
-                        ? null
-                        : playersById[presentedEvent!.secondaryPlayerId],
-                    assistPlayer: presentedEvent == null
-                        ? null
-                        : playersById[presentedEvent!.assistPlayerId],
-                    replayActive: replayActive,
-                    score: currentScore,
-                    phaseTransition: fullTime
-                        ? LiveMatchPhaseTransition.fulltime
-                        : atHalftime
-                            ? LiveMatchPhaseTransition.halftime
-                            : null,
                   ),
-                  const SizedBox(height: 5),
-                  LiveMatchTimelineBar(
-                    events: result.events,
-                    minute: minute,
-                    throughSequence: currentSequence,
-                  ),
-                  const SizedBox(height: 7),
-                  LiveMatchControlBar(
-                    paused: paused,
-                    enabled: !fullTime,
-                    onPauseToggle: () {
-                      if (atHalftime) {
-                        _startSecondHalf();
-                      } else {
-                        setState(() => paused = !paused);
-                      }
-                    },
-                    onSimulate: () => _simulate(context, live),
-                    soundEnabled: career.settings.sound,
-                    onSoundToggle: () async {
-                      final settings = career.settings.copyWith(
-                        sound: !career.settings.sound,
-                      );
-                      await ref
-                          .read(gameControllerProvider.notifier)
-                          .updateSettings(settings);
-                      await _audioManager.applySettings(settings);
-                    },
-                    onTactic: () => _liveTactic(context, ref, live.userTactic),
-                    onSubstitution: () => _substitution(
-                      context,
-                      ref,
-                      userClub.squad,
-                      live.userStarterIds,
-                      Color(userClub.colors.primaryHex),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  LiveMatchStatsCard(
-                    events: result.events,
-                    minute: minute,
-                    homeId: home.id,
-                    awayId: away.id,
-                    targetHomePossession: result.statistics.homePossession,
-                    throughSequence: currentSequence,
-                  ),
-                  const SizedBox(height: 8),
-                  LiveMatchNarrationPanel(
-                    events: result.events,
-                    minute: minute,
-                    throughSequence: currentSequence,
-                    home: home,
-                    away: away,
-                    userClubId: userClub.id,
-                    playersById: playersById,
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -421,7 +436,10 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       showDragHandle: true,
+      backgroundColor: AppColors.background,
+      barrierColor: Colors.black.withValues(alpha: .72),
       builder: (context) => LiveTacticSheet(
         current: current,
         onApply: (tactic) => ref
@@ -490,6 +508,8 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
+      backgroundColor: AppColors.background,
+      barrierColor: Colors.black.withValues(alpha: .72),
       builder: (context) => LiveSubstitutionSheet(
         squad: squad,
         starterIds: starters,
@@ -640,6 +660,9 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: AppColors.background,
+      barrierColor: Colors.black.withValues(alpha: .72),
       builder: (context) => LiveRoundSheet(
         career: career,
         live: live,
@@ -655,4 +678,65 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     return 'Partida';
   }
 
+}
+
+class _MatchPhaseActionBar extends StatelessWidget {
+  const _MatchPhaseActionBar({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.buttonLabel,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String buttonLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => SectionCard(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.green.withValues(alpha: .12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.green),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  Text(
+                    message,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: onPressed,
+              child: Text(buttonLabel),
+            ),
+          ],
+        ),
+      );
 }

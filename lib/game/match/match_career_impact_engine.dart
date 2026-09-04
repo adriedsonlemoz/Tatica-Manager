@@ -193,8 +193,8 @@ abstract final class MatchCareerImpactEngine {
         var yellowTotal = servedDiscipline.yellowCards + yellows;
         var suspension =
             servedDiscipline.suspendedRounds + (reds > 0 ? 1 : 0);
-        if (yellowTotal >= 3) {
-          yellowTotal -= 3;
+        if (yellowTotal >= PlayerDiscipline.yellowCardSuspensionThreshold) {
+          yellowTotal -= PlayerDiscipline.yellowCardSuspensionThreshold;
           suspension++;
         }
         final competitionDiscipline = servedDiscipline.copyWith(

@@ -74,12 +74,12 @@ class _StandardHero extends StatelessWidget {
           if (player != null)
             PlayerAvatar(
               player: player!,
-              size: goal ? 46 : 38,
+              size: goal ? 36 : 31,
               accentColor: color,
             )
           else
             _EventIconBox(type: event.type, color: color, large: goal),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -97,19 +97,19 @@ class _StandardHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: goal || woodwork || penaltySaved ? color : Colors.white,
-                    fontSize: goal ? 16.5 : 11,
+                    fontSize: goal ? 14 : 10.5,
                     fontWeight: FontWeight.w900,
                     letterSpacing: goal ? .6 : .25,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   _detail(),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 11.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     height: 1.25,
                   ),
@@ -165,8 +165,8 @@ class _CardHero extends StatelessWidget {
           Transform.rotate(
             angle: -.08,
             child: Container(
-              width: 24,
-              height: 34,
+              width: 19,
+              height: 27,
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.circular(3),
@@ -179,10 +179,10 @@ class _CardHero extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           if (player != null) ...[
-            PlayerAvatar(player: player!, size: 36, accentColor: color),
-            const SizedBox(width: 9),
+            PlayerAvatar(player: player!, size: 29, accentColor: color),
+            const SizedBox(width: 7),
           ],
           Flexible(
             child: Column(
@@ -194,7 +194,7 @@ class _CardHero extends StatelessWidget {
                   style: TextStyle(
                     color: color,
                     fontWeight: FontWeight.w900,
-                    fontSize: 11,
+                  fontSize: 10.5,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -204,7 +204,7 @@ class _CardHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 11.5,
+                  fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -247,7 +247,7 @@ class _SubstitutionHero extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -291,17 +291,17 @@ class _SubPlayer extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (player != null) PlayerAvatar(player: player!, size: 31, accentColor: color),
-          const SizedBox(width: 6),
+          if (player != null) PlayerAvatar(player: player!, size: 26, accentColor: color),
+          const SizedBox(width: 5),
           Icon(icon, color: color, size: 15),
           const SizedBox(width: 3),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 84),
+            constraints: const BoxConstraints(maxWidth: 74),
             child: Text(
               player?.displayName ?? fallback,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -341,7 +341,7 @@ class _HeroShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         constraints: const BoxConstraints(maxWidth: 440),
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        padding: const EdgeInsets.fromLTRB(9, 6, 9, 6),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: .82),
           borderRadius: BorderRadius.circular(16),

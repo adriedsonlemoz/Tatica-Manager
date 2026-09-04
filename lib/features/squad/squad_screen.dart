@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/player/player.dart';
 import '../player/player_profile_screen.dart';
+import '../shared/player_discipline_indicator.dart';
 
 class SquadScreen extends ConsumerStatefulWidget {
   const SquadScreen({super.key, this.showBackButton = false});
@@ -27,6 +28,17 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
   Widget build(BuildContext context) {
     final career = ref.watch(gameControllerProvider).career!;
     final club = career.userClub;
+    final competitionId =
+        career.nextUserFixture?.competitionId ?? career.primaryCompetitionId;
+    final disciplineByPlayer = <String, PlayerDiscipline>{
+      for (final player in club.squad)
+        player.id: career.playerDisciplineForCompetition(
+          competitionId,
+          player.id,
+        ),
+    };
+    bool available(Player player) =>
+        career.isPlayerAvailableForCompetition(player, competitionId);
     final normalizedQuery = query.trim().toLowerCase();
     final players = club.squad.where((player) {
       final matchesQuery = normalizedQuery.isEmpty ||
@@ -36,11 +48,11 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
       if (!matchesQuery) return false;
       return switch (filter) {
         _SquadFilter.all => true,
-        _SquadFilter.available => player.isAvailable,
-        _SquadFilter.attention => !player.isAvailable ||
+        _SquadFilter.available => available(player),
+        _SquadFilter.attention => !available(player) ||
             player.condition < 70 ||
             player.fatigue > 55 ||
-            player.discipline.yellowCards >= 2,
+            disciplineByPlayer[player.id]?.isAtRisk == true,
       };
     }).toList()
       ..sort(_comparePlayers);
@@ -133,6 +145,11 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
             total: club.squad.length,
             brazilians: brazilianCount,
             foreigners: foreignCount,
+            disciplines: disciplineByPlayer,
+            availableIds: club.squad
+                .where(available)
+                .map((player) => player.id)
+                .toSet(),
             onPlayerTap: (player) => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => PlayerProfileScreen(playerId: player.id),
@@ -318,6 +335,8 @@ class _SquadTable extends StatelessWidget {
     required this.total,
     required this.brazilians,
     required this.foreigners,
+    required this.disciplines,
+    required this.availableIds,
     required this.onPlayerTap,
   });
 
@@ -326,6 +345,8 @@ class _SquadTable extends StatelessWidget {
   final int total;
   final int brazilians;
   final int foreigners;
+  final Map<String, PlayerDiscipline> disciplines;
+  final Set<String> availableIds;
   final ValueChanged<Player> onPlayerTap;
 
   @override
@@ -355,6 +376,9 @@ class _SquadTable extends StatelessWidget {
                     for (var index = 0; index < players.length; index++) ...[
                       _SquadPlayerRow(
                         player: players[index],
+                        discipline: disciplines[players[index].id] ??
+                            const PlayerDiscipline(),
+                        available: availableIds.contains(players[index].id),
                         clubAccent: clubAccent,
                         onTap: () => onPlayerTap(players[index]),
                       ),
@@ -400,8 +424,8 @@ class _SquadTableHeader extends StatelessWidget {
               child: Center(child: Text('GER', style: _headerStyle)),
             ),
             SizedBox(
-              width: 78,
-              child: Text('MORAL', style: _headerStyle),
+              width: 68,
+              child: Center(child: Text('CARTÕES', style: _headerStyle)),
             ),
           ],
         ),
@@ -418,11 +442,15 @@ class _SquadTableHeader extends StatelessWidget {
 class _SquadPlayerRow extends StatelessWidget {
   const _SquadPlayerRow({
     required this.player,
+    required this.discipline,
+    required this.available,
     required this.clubAccent,
     required this.onTap,
   });
 
   final Player player;
+  final PlayerDiscipline discipline;
+  final bool available;
   final Color clubAccent;
   final VoidCallback onTap;
 
@@ -470,14 +498,29 @@ class _SquadPlayerRow extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      _positionName(player.primaryPosition),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        color: AppColors.muted,
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: morale.color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            '${_positionName(player.primaryPosition)} • ${morale.label}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 9.5,
+                              color: AppColors.muted,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -517,36 +560,20 @@ class _SquadPlayerRow extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 78,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: morale.color,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        morale.icon,
-                        size: 13,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        morale.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 9,
+                width: 68,
+                child: Center(
+                  child: available
+                      ? PlayerDisciplineIndicator(
+                          discipline: discipline,
+                          compact: true,
+                        )
+                      : Tooltip(
+                          message: playerAvailabilityReason(player, discipline),
+                          child: PlayerDisciplineIndicator(
+                            discipline: discipline,
+                            compact: true,
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],
@@ -575,32 +602,27 @@ class _MoraleVisual {
   const _MoraleVisual({
     required this.label,
     required this.color,
-    required this.icon,
   });
 
   final String label;
   final Color color;
-  final IconData icon;
 
   factory _MoraleVisual.fromValue(int morale) {
     if (morale >= 85) {
       return const _MoraleVisual(
         label: 'Excelente',
         color: AppColors.greenDark,
-        icon: Icons.arrow_upward_rounded,
       );
     }
     if (morale >= 70) {
       return const _MoraleVisual(
         label: 'Muito Bom',
         color: AppColors.greenDark,
-        icon: Icons.arrow_upward_rounded,
       );
     }
     return const _MoraleVisual(
       label: 'Regular',
       color: AppColors.warning,
-      icon: Icons.remove_rounded,
     );
   }
 }

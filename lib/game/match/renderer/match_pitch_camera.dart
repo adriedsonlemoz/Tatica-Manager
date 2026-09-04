@@ -17,8 +17,8 @@ class MatchPitchCameraState {
     _targetZoom = MatchPitchCamera.eventZoom(type, replay: replay);
     final next = point ?? const FieldPoint(.5, .5);
     _targetFocus = FieldPoint(
-      next.x.clamp(.10, .90).toDouble(),
-      next.y.clamp(.06, .94).toDouble(),
+      next.x.clamp(.12, .88).toDouble(),
+      next.y.clamp(.10, .90).toDouble(),
     );
   }
 
@@ -45,10 +45,10 @@ abstract final class MatchPitchCamera {
     required bool replay,
   }) {
     final liveZoom = switch (type) {
-      MatchEventType.shot => 1.075,
-      MatchEventType.save || MatchEventType.woodwork => 1.09,
-      MatchEventType.goal || MatchEventType.ownGoal => 1.105,
-      MatchEventType.penalty || MatchEventType.penaltySaved => 1.12,
+      MatchEventType.shot => 1.065,
+      MatchEventType.save || MatchEventType.woodwork => 1.08,
+      MatchEventType.goal || MatchEventType.ownGoal => 1.095,
+      MatchEventType.penalty || MatchEventType.penaltySaved => 1.105,
       _ => 1.0,
     };
     if (!replay) return liveZoom;

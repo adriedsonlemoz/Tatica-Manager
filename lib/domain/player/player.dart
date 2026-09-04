@@ -75,6 +75,8 @@ class PlayerInjury {
 }
 
 class PlayerDiscipline {
+  static const int yellowCardSuspensionThreshold = 3;
+
   const PlayerDiscipline({
     this.yellowCards = 0,
     this.redCards = 0,
@@ -84,6 +86,10 @@ class PlayerDiscipline {
   final int yellowCards;
   final int redCards;
   final int suspendedRounds;
+
+  bool get isSuspended => suspendedRounds > 0;
+  bool get isAtRisk =>
+      yellowCards == yellowCardSuspensionThreshold - 1 && !isSuspended;
 
   Map<String, dynamic> toJson() => {
         'yellowCards': yellowCards,

@@ -66,7 +66,7 @@ class LiveMatchScoreboard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 9),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -100,7 +100,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       Expanded(
@@ -112,8 +112,8 @@ class LiveMatchScoreboard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        constraints: const BoxConstraints(minWidth: 96),
-                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        constraints: const BoxConstraints(minWidth: 78),
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 240),
                           transitionBuilder: (child, animation) => ScaleTransition(
@@ -125,7 +125,7 @@ class LiveMatchScoreboard extends StatelessWidget {
                             key: ValueKey(score.display),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontSize: 44,
+                              fontSize: 36,
                               height: .95,
                               fontWeight: FontWeight.w900,
                               letterSpacing: -1.2,
@@ -215,7 +215,7 @@ class _ClubSide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badge = ClubBadge(club: club, size: 58);
+    final badge = ClubBadge(club: club, size: 44);
     final info = Expanded(
       child: Column(
         crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -223,12 +223,16 @@ class _ClubSide extends StatelessWidget {
         children: [
           Text(
             club.name.toUpperCase(),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: alignEnd ? TextAlign.right : TextAlign.left,
-            style: const TextStyle(fontSize: 13.2, fontWeight: FontWeight.w900, height: 1),
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w900,
+              height: 1.05,
+            ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 3),
           Row(
             mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [

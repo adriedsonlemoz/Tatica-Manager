@@ -101,10 +101,8 @@ void main() {
     expect(screen, contains('body: DecoratedBox('));
     expect(screen, contains('child: Column('));
     expect(screen, contains('LiveMatchPitchPanel('));
-    expect(
-      screen,
-      contains("import 'widgets/live_match_event_widgets.dart';"),
-    );
+    expect(screen, contains('child: FittedBox('));
+    expect(screen, isNot(contains('child: ListView(')));
     expect(pitchPanel, isNot(contains('LiveMatchMomentCard(')));
     expect(pitchPanel, contains('AspectRatio('));
     expect(pitchPanel, contains('aspectRatio: 105 / 68'));

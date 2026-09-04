@@ -6,8 +6,10 @@ import '../../app/widgets/common.dart';
 import '../../app/widgets/player_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
+import '../../data/competition_catalog.dart';
 import '../../domain/player/player.dart';
 import '../../game/contract/contract_engine.dart';
+import '../shared/player_discipline_indicator.dart';
 import 'player_market_dialogs.dart';
 
 class PlayerProfileScreen extends ConsumerWidget {
@@ -44,6 +46,13 @@ class PlayerProfileScreen extends ConsumerWidget {
     final isAcademy = matches.isEmpty && academyMatches.isNotEmpty;
     final player = isAcademy ? academyMatches.first : matches.first;
     final expected = ContractEngine.expectedSalary(player);
+    final competitionId = career.nextUserFixture?.competitionId ??
+        career.primaryCompetitionId;
+    final competition = CompetitionCatalog.seriesById(competitionId);
+    final competitionStats =
+        career.playerStatsForCompetition(competitionId, player.id);
+    final discipline =
+        career.playerDisciplineForCompetition(competitionId, player.id);
     final canManageContract =
         !isAcademy &&
             ((ownerClub.id == career.userClubId && player.loan == null) ||
@@ -146,6 +155,78 @@ class PlayerProfileScreen extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SectionCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.style_rounded,
+                      size: 17,
+                      color: AppColors.warning,
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        'DISCIPLINA • ${CompetitionCatalog.displayNameFor(competition).toUpperCase()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                    PlayerDisciplineIndicator(discipline: discipline),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Metric(
+                      label: 'Amarelos atuais',
+                      value:
+                          '${discipline.yellowCards}/${PlayerDiscipline.yellowCardSuspensionThreshold}',
+                    ),
+                    Metric(
+                      label: 'Amarelos no torneio',
+                      value: '${competitionStats.yellowCards}',
+                    ),
+                    Metric(
+                      label: 'Vermelhos',
+                      value: '${competitionStats.redCards}',
+                    ),
+                    Metric(
+                      label: 'Situação',
+                      value: discipline.isSuspended
+                          ? '${discipline.suspendedRounds}J'
+                          : discipline.isAtRisk
+                              ? 'Pendurado'
+                              : 'Regular',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  discipline.isSuspended
+                      ? 'O jogador está suspenso nesta competição.'
+                      : discipline.isAtRisk
+                          ? 'Um novo cartão amarelo gera suspensão de uma partida.'
+                          : 'A suspensão automática ocorre a cada ${PlayerDiscipline.yellowCardSuspensionThreshold} cartões amarelos.',
+                  style: TextStyle(
+                    color: discipline.isSuspended
+                        ? AppColors.danger
+                        : discipline.isAtRisk
+                            ? AppColors.warning
+                            : AppColors.muted,
+                    fontSize: 10.5,
+                  ),
                 ),
               ],
             ),
