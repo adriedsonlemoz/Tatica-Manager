@@ -8,6 +8,6 @@ final careerRepositoryProvider = Provider<CareerRepository>((ref) => SqliteCaree
 
 final rewardRepositoryProvider = Provider<RewardRepository>((ref) {
   final careers = ref.watch(careerRepositoryProvider);
-  if (careers is RewardRepository) return careers;
+  if (careers is RewardRepository) return careers as RewardRepository;
   return MemoryRewardRepository(careers);
 });

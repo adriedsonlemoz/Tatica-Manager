@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.138`
-**Android versionCode:** `139`
+**Release atual:** `0.1.1.139`
+**Android versionCode:** `140`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,21 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.138`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.139`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+139`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.138` e `versionCode 139`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+140`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.139` e `versionCode 140`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.138`, o pubspec é `0.1.1+139`; a próxima entrega normalmente será `0.1.1.139`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.139`, o pubspec é `0.1.1+140`; a próxima entrega normalmente será `0.1.1.140`.
+
+## Correção do provider de recompensas — 0.1.1.139
+
+- corrige o único erro do `flutter analyze` registrado pelo workflow 92;
+- mantém a verificação em tempo de execução que reutiliza o repositório SQLite quando ele também implementa `RewardRepository`;
+- torna explícita a conversão aceita pelo tipo de retorno do provider e preserva o fallback em memória usado pelos testes que substituem apenas `CareerRepository`;
+- não altera valores, saldo, histórico, banco, IDs, notificações, partidas, temporadas ou finanças.
 
 ## Recompensas globais do Manager — 0.1.1.138
 
@@ -467,7 +474,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.139`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.140`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

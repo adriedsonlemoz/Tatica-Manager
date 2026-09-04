@@ -8,14 +8,25 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.138`
-- **Android versionCode:** `139`
+- **Release deste handoff:** `0.1.1.139`
+- **Android versionCode:** `140`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.139
+
+## Correção do provider de recompensas
+
+- O workflow 92 chegou ao analyzer e encontrou somente `return_of_invalid_type_from_closure` em `providers.dart`.
+- A checagem `careers is RewardRepository` continua protegendo o caminho, mas o retorno agora usa a conversão explícita exigida pelo analyzer.
+- O repositório SQLite compartilhado continua sendo usado em produção e `MemoryRewardRepository` permanece como fallback para testes que sobrescrevem apenas `CareerRepository`.
+- Não houve mudança em regras, valores, persistência, IDs, interface ou integração financeira do PM.
+
+Consulte `docs/RELEASE_0.1.1.139.md`.
 
 ## Estado funcional da release 0.1.1.138
 
@@ -1081,12 +1092,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.138
-versionCode:         139
-pubspec:             0.1.1+139
+release/versionName: 0.1.1.139
+versionCode:         140
+pubspec:             0.1.1+140
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.139` e usar um `versionCode` maior que 139.
+A próxima alteração/entrega normalmente deve virar `0.1.1.140` e usar um `versionCode` maior que 140.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

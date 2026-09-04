@@ -263,4 +263,13 @@ void main() {
     expect(matchController, contains('fixtureId: live.fixture.id'));
     expect(matchController, contains('_finalizing'));
   });
+
+  test('provider preserva fallback de testes com conversão explícita', () {
+    final providers =
+        File('lib/app/state/providers.dart').readAsStringSync();
+
+    expect(providers, contains('careers is RewardRepository'));
+    expect(providers, contains('careers as RewardRepository'));
+    expect(providers, contains('MemoryRewardRepository(careers)'));
+  });
 }

@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.138';
+  static const String version = '0.1.1.139';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.139',
+      title: 'Correção do provider de recompensas',
+      changes: [
+        'Corrige a conversão entre os repositórios de carreira e recompensas.',
+        'Elimina o único erro de análise estática apontado pelo workflow 92.',
+        'Preserva carteira, cálculo, notificações e proteção contra duplicação.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.138',
       title: 'Recompensas globais do Manager',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Importa diretamente os rótulos de formação e tática usados pela nova tela.',
         'Corrige os quatro erros undefined_getter apontados pelo workflow 90.',
         'Mantém inalteradas as regras da IA, do treino e do Match Engine.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.136',
-      title: 'Auxiliar técnico e treino assistido',
-      changes: [
-        'Adiciona IA local para treino, escalação e plano tático.',
-        'Permite gestão automática diária ou plano de treino manual.',
-        'Corrige o único teste obsoleto apontado pelo workflow 89.',
       ],
     ),
   ];
