@@ -316,6 +316,30 @@ class GameController extends Notifier<GameState> {
     await commitCareer(career.copyWith(settings: settings));
   }
 
+  Future<void> markNewsRead(String eventId) async {
+    final career = state.career;
+    if (career == null || eventId.isEmpty) return;
+    final hasUnread = career.news.any(
+          (event) => event.id == eventId && !event.read,
+        ) ||
+        career.newsArchive.any(
+          (event) => event.id == eventId && !event.read,
+        );
+    if (!hasUnread) return;
+    await commitCareer(
+      career.copyWith(
+        news: [
+          for (final event in career.news)
+            event.id == eventId ? event.copyWith(read: true) : event,
+        ],
+        newsArchive: [
+          for (final event in career.newsArchive)
+            event.id == eventId ? event.copyWith(read: true) : event,
+        ],
+      ),
+    );
+  }
+
   Future<void> advanceSeason() async {
     final career = state.career;
     if (career == null || !career.seasonComplete) return;

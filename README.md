@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.140`
-**Android versionCode:** `141`
+**Release atual:** `0.1.1.141`
+**Android versionCode:** `142`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,25 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.140`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.141`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+141`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.140` e `versionCode 141`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+142`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.141` e `versionCode 142`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.140`, o pubspec é `0.1.1+141`; a próxima entrega normalmente será `0.1.1.141`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.141`, o pubspec é `0.1.1+142`; a próxima entrega normalmente será `0.1.1.142`.
+
+## Polimento visual e avisos globais — 0.1.1.141
+
+- move avisos para um host global acima do Navigator e faz recompensas interromperem notificações comuns, com entrada deslizante pelo topo e retorno ordenado da fila anterior;
+- elimina a sobreposição inferior antiga da Home e mantém o som de confirmação somente no aviso prioritário de recompensa;
+- define hierarquia tipográfica central e remove textos estáticos menores que 10 px, com reforço em cards de jogadores, painéis e informações secundárias;
+- impede toques repetidos no Avançar Dia e mantém a tela de processamento visível por pelo menos 1,5 segundo, sem duplicar o som de navegação;
+- reorganiza Dia de Jogo em composição fixa e responsiva, sem rolagem vertical;
+- persiste o estado lido/não lido das notícias, mostra o selo `NOVA` e diferencia contraste, borda e peso visual;
+- centraliza e moderniza a primeira apresentação da carreira, preservando escudo, técnico, clube, competição e exibição única;
+- não altera Match Engine, resultados, valores de PM, finanças ou orçamento dos clubes.
 
 ## Correção do teste de recompensas — 0.1.1.140
 
@@ -481,7 +492,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.141`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.142`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

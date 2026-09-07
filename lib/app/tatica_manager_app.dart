@@ -10,6 +10,7 @@ import 'audio/audio_providers.dart';
 import 'state/game_controller.dart';
 import 'state/providers.dart';
 import 'widgets/audio_interaction_layer.dart';
+import 'widgets/global_notice_host.dart';
 import '../core/config/app_preferences.dart';
 import '../core/platform/system_ui.dart';
 import '../core/theme/app_theme.dart';
@@ -25,14 +26,12 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
     with WidgetsBindingObserver {
   Timer? _systemUiRestoreTimer;
   late final AudioManager _audioManager;
-  late final AudioNavigationObserver _audioNavigationObserver;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _audioManager = ref.read(audioManagerProvider);
-    _audioNavigationObserver = AudioNavigationObserver(_audioManager);
     unawaited(_primeAudio());
   }
 
@@ -98,10 +97,11 @@ class _TaticaManagerAppState extends ConsumerState<TaticaManagerApp>
       debugShowCheckedModeBanner: false,
       title: 'Tática Manager',
       theme: AppTheme.dark,
-      navigatorObservers: [_audioNavigationObserver],
       builder: (context, child) => AudioInteractionLayer(
         audioManager: _audioManager,
-        child: child ?? const SizedBox.shrink(),
+        child: GlobalNoticeHost(
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
       home: const BootstrapScreen(),
     );

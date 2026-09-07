@@ -279,7 +279,7 @@ class _MilestoneCard extends StatelessWidget {
               completed ? 'Concluído' : '$visibleCurrent/$target',
               style: TextStyle(
                 color: completed ? AppColors.green : AppColors.muted,
-                fontSize: 9.5,
+                fontSize: 10,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -330,7 +330,7 @@ class _TransactionTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: AppColors.muted,
-                      fontSize: 9,
+                      fontSize: 10,
                     ),
                   ),
                 ],

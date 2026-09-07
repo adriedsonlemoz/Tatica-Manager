@@ -463,7 +463,10 @@ abstract final class CpuUserOfferEngine {
           message: 'A proposta anterior não está mais disponível.',
           playerId: event.playerId,
           clubId: event.clubId,
+          fixtureId: event.fixtureId,
+          negotiationId: event.negotiationId,
           amount: event.amount,
+          read: event.read,
         );
       }).toList(growable: false);
 

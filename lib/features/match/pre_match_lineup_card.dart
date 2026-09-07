@@ -46,7 +46,7 @@ class PreMatchLineupCard extends StatelessWidget {
                         'Titulares posicionados na formação. OVR efetivo considera posição, condição e fadiga.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 8.8,
+                          fontSize: 10,
                           height: 1.25,
                         ),
                       ),
@@ -126,7 +126,7 @@ class _ReadOnlyTacticalPitch extends StatelessWidget {
                         formation.label,
                         style: const TextStyle(
                           color: AppColors.green,
-                          fontSize: 7.2,
+                          fontSize: 10,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -190,7 +190,7 @@ class _TacticalPlayerMarker extends StatelessWidget {
                 assignment.slot.role.label,
                 style: TextStyle(
                   color: warning ? AppColors.warning : AppColors.green,
-                  fontSize: 6.1,
+                  fontSize: 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -233,7 +233,7 @@ class _TacticalPlayerMarker extends StatelessWidget {
                       shirt,
                       style: const TextStyle(
                         color: AppColors.white,
-                        fontSize: 8.2,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -250,7 +250,7 @@ class _TacticalPlayerMarker extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.white,
-                            fontSize: 6.9,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                             height: 1,
                           ),
@@ -260,7 +260,7 @@ class _TacticalPlayerMarker extends StatelessWidget {
                           'OVR ${assignment.effectiveOverall}',
                           style: TextStyle(
                             color: warning ? AppColors.warning : AppColors.textSecondary,
-                            fontSize: 6.4,
+                            fontSize: 10,
                             fontWeight: FontWeight.w700,
                             height: 1,
                           ),

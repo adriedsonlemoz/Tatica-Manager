@@ -99,7 +99,7 @@ class CareerSigningContractDocument extends StatelessWidget {
                     'ASSINATURA DO TREINADOR',
                     style: TextStyle(
                       color: AppColors.muted,
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: .7,
                     ),
@@ -169,7 +169,7 @@ class _ContractFact extends StatelessWidget {
               label,
               style: const TextStyle(
                 color: AppColors.muted,
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: FontWeight.w800,
               ),
             ),

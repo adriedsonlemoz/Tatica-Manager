@@ -128,7 +128,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                                       'FORMAÇÃO ATUAL',
                                       style: TextStyle(
                                         color: AppColors.muted,
-                                        fontSize: 9,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
@@ -225,7 +225,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Toque para trocar • segure para abrir o perfil.',
-                        style: TextStyle(color: AppColors.muted, fontSize: 8.5),
+                        style: TextStyle(color: AppColors.muted, fontSize: 10),
                       ),
                     ),
                   ),
@@ -428,7 +428,7 @@ class _BenchPager extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '$formationLabel • $availableCount disponíveis',
-                  style: const TextStyle(color: AppColors.muted, fontSize: 8.5),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
                 if (pageCount > 1) ...[
                   const SizedBox(width: 5),
@@ -442,7 +442,7 @@ class _BenchPager extends StatelessWidget {
                     child: Text(
                       '${safePage + 1}/$pageCount',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 8),
+                      style: const TextStyle(fontSize: 10),
                     ),
                   ),
                   _PageButton(
@@ -558,7 +558,7 @@ class _BenchPlayerCard extends StatelessWidget {
                       child: Text(
                         '${player.shirtNumber}',
                         style: const TextStyle(
-                          fontSize: 6.5,
+                          fontSize: 10,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -595,13 +595,13 @@ class _BenchPlayerCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
               ),
               Text(
                 '${player.primaryPosition.label} • ${player.overall}',
                 style: TextStyle(
                   color: available ? AppColors.green : AppColors.warning,
-                  fontSize: 7,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -611,11 +611,11 @@ class _BenchPlayerCard extends StatelessWidget {
                     : playerAvailabilityReason(player, discipline),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.muted, fontSize: 5.8),
+                style: const TextStyle(color: AppColors.muted, fontSize: 10),
               ),
               Text(
                 'Cond. ${player.condition}%',
-                style: const TextStyle(color: AppColors.muted, fontSize: 6.5),
+                style: const TextStyle(color: AppColors.muted, fontSize: 10),
               ),
             ],
           ),
@@ -671,7 +671,7 @@ class _SummaryPill extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: color,
-                  fontSize: 8.5,
+                  fontSize: 10,
                   fontWeight: FontWeight.w800,
                 ),
               ),

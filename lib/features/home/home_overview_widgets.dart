@@ -267,7 +267,7 @@ class _SummaryStat extends StatelessWidget {
               maxLines: 1,
               style: const TextStyle(
                 color: AppColors.muted,
-                fontSize: 9.2,
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
               ),
             ),

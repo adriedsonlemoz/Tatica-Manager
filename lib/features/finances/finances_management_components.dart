@@ -88,7 +88,7 @@ class DepartmentBudgetSection extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'Utilizado: ${compactMoney(spent)}',
-                    style: const TextStyle(fontSize: 9.5),
+                    style: const TextStyle(fontSize: 10),
                   ),
                 ],
               ),

@@ -8,14 +8,28 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.140`
-- **Android versionCode:** `141`
+- **Release deste handoff:** `0.1.1.141`
+- **Android versionCode:** `142`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.141
+
+## Polimento visual e avisos globais
+
+- `GlobalNoticeHost` fica acima do Navigator, centraliza avisos de qualquer tela e faz recompensas preemptarem mensagens comuns sem descartá-las.
+- A hierarquia tipográfica foi explicitada em `AppTheme`; textos estáticos menores que 10 px foram eliminados e componentes compartilhados receberam maior legibilidade.
+- O Avançar Dia usa bloqueio contra toques repetidos e duração mínima visível de 1,5 segundo; a duplicação sonora do observador de navegação foi removida.
+- Dia de Jogo usa `LayoutBuilder`, coluna fixa e grade não rolável; o modo compacto reduz detalhes sem esconder ações obrigatórias.
+- `CareerEvent.read` é persistido. Saves anteriores tratam notícias antigas como lidas, evitando criar centenas de pendências depois da migração.
+- A apresentação inicial da carreira usa o tema azul-grafite, conteúdo centralizado, escudo antes do técnico e mantém o gatilho de exibição única existente.
+- Match Engine, regras de resultado, valores de PM e finanças dos clubes não foram alterados.
+
+Consulte `docs/RELEASE_0.1.1.141.md`.
 
 ## Estado funcional da release 0.1.1.140
 
@@ -1103,12 +1117,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.140
-versionCode:         141
-pubspec:             0.1.1+141
+release/versionName: 0.1.1.141
+versionCode:         142
+pubspec:             0.1.1+142
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.141` e usar um `versionCode` maior que 141.
+A próxima alteração/entrega normalmente deve virar `0.1.1.142` e usar um `versionCode` maior que 142.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

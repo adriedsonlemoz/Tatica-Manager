@@ -42,7 +42,7 @@ class RewardBalanceChip extends StatelessWidget {
                   '$balance PM',
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -93,7 +93,7 @@ class RewardReceiptCard extends StatelessWidget {
                     ),
                     Text(
                       'Pontos de Manager adicionados à carteira global',
-                      style: TextStyle(color: AppColors.muted, fontSize: 10),
+                      style: TextStyle(color: AppColors.muted, fontSize: 11),
                     ),
                   ],
                 ),
@@ -139,7 +139,7 @@ class RewardReceiptCard extends StatelessWidget {
               'Saldo: ${receipt.balanceAfter} PM',
               style: const TextStyle(
                 color: AppColors.muted,
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
             ),

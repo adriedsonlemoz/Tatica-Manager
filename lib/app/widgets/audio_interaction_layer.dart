@@ -50,26 +50,3 @@ class _AudioInteractionLayerState extends State<AudioInteractionLayer> {
     _pointerStartTimes.remove(pointer);
   }
 }
-
-class AudioNavigationObserver extends NavigatorObserver {
-  AudioNavigationObserver(this.audioManager);
-
-  final AudioManager audioManager;
-  bool _hasPresentedFirstRoute = false;
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    if (!_hasPresentedFirstRoute) {
-      _hasPresentedFirstRoute = true;
-      return;
-    }
-    unawaited(audioManager.playUi(UiAudioCue.navigation));
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPop(route, previousRoute);
-    unawaited(audioManager.playUi(UiAudioCue.navigation));
-  }
-}

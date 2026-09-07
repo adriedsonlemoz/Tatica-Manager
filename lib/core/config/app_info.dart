@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.140';
+  static const String version = '0.1.1.141';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.141',
+      title: 'Polimento visual e avisos globais',
+      changes: [
+        'Prioriza recompensas em um card global que desliza pelo topo.',
+        'Melhora tipografia, leitura de notícias e apresentação da carreira.',
+        'Torna o avanço de dia natural e mantém o Dia de Jogo sem rolagem.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.140',
       title: 'Correção do teste de recompensas',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Corrige a conversão entre os repositórios de carreira e recompensas.',
         'Elimina o único erro de análise estática apontado pelo workflow 92.',
         'Preserva carteira, cálculo, notificações e proteção contra duplicação.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.138',
-      title: 'Recompensas globais do Manager',
-      changes: [
-        'Adiciona carteira global de PM separada de clubes e carreiras.',
-        'Entrega recompensas atômicas após partidas e temporadas salvas.',
-        'Exibe desafios, histórico, saldo compacto e avisos de recompensa.',
       ],
     ),
   ];

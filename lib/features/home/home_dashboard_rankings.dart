@@ -293,7 +293,7 @@ class _ScorerRow extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: compact ? 9.3 : 10,
+                        fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

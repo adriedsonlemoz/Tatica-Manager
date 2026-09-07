@@ -114,7 +114,7 @@ class _CompactPitchPlayer extends StatelessWidget {
                   child: Text(
                     '${assignment.player.shirtNumber}',
                     style: const TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -152,7 +152,7 @@ class _CompactPitchPlayer extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 7.5,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -162,7 +162,7 @@ class _CompactPitchPlayer extends StatelessWidget {
                           color: assignment.outOfPosition
                               ? AppColors.warning
                               : AppColors.green,
-                          fontSize: 6.5,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),

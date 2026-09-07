@@ -289,7 +289,7 @@ class ContractPlayerCard extends StatelessWidget {
                       '${player.age} anos • ${player.primaryPosition.label} • contrato até ${player.contract.endSeason}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 9.8),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 10),
                     ),
                     const SizedBox(height: 7),
                     Row(
@@ -312,7 +312,7 @@ class ContractPlayerCard extends StatelessWidget {
                             textAlign: TextAlign.end,
                             style: const TextStyle(
                               color: AppColors.muted,
-                              fontSize: 9,
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -376,7 +376,7 @@ class _OverviewCount extends StatelessWidget {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+                        style: const TextStyle(color: AppColors.muted, fontSize: 10),
                       ),
                     ),
                     const SizedBox(width: 2),
@@ -400,7 +400,7 @@ class _MoneyMetric extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9.5)),
+          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
           const SizedBox(height: 2),
           Text(
             value,

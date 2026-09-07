@@ -636,7 +636,7 @@ class _SettingRowShell extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.muted,
-                            fontSize: 8.5,
+                            fontSize: 10,
                           ),
                         ),
                     ],
@@ -716,7 +716,7 @@ class _VolumeSettingRow extends StatelessWidget {
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: enabled ? AppColors.green : AppColors.muted,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -775,7 +775,7 @@ class _SegmentSettingRow<T> extends StatelessWidget {
                       color: values[index] == selected
                           ? AppColors.green
                           : AppColors.muted,
-                      fontSize: 8.5,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                     ),
                   ),

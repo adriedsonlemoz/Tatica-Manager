@@ -143,7 +143,7 @@ class _PlayerCardInfo extends StatelessWidget {
                   style: const TextStyle(
                     color: AppColors.green,
                     fontWeight: FontWeight.w900,
-                    fontSize: 10,
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -154,7 +154,7 @@ class _PlayerCardInfo extends StatelessWidget {
             '${CountryCatalog.flagOf(player.nationality)} ${player.nationality} • ${player.age} anos',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.muted, fontSize: 10),
+            style: const TextStyle(color: AppColors.muted, fontSize: 11.5),
           ),
           if (showStatus) ...[
             const SizedBox(height: 7),
@@ -223,7 +223,7 @@ class _OverallBadge extends StatelessWidget {
               '$value',
               style: TextStyle(
                 color: baseValue == null ? null : AppColors.warning,
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -232,7 +232,8 @@ class _OverallBadge extends StatelessWidget {
                 '$baseValue',
                 style: const TextStyle(
                   color: AppColors.muted,
-                  fontSize: 7,
+                  fontSize: 10,
+                  height: 1,
                   decoration: TextDecoration.lineThrough,
                 ),
               ),
@@ -255,7 +256,7 @@ class _Chip extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
+          style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800),
         ),
       );
 }

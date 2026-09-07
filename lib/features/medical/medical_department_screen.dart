@@ -103,17 +103,17 @@ class _MedicalTableHeader extends StatelessWidget {
         children: [
           Expanded(
             flex: 5,
-            child: Text('JOGADOR', style: TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w900)),
+            child: Text('JOGADOR', style: TextStyle(color: AppColors.muted, fontSize: 10, fontWeight: FontWeight.w900)),
           ),
           SizedBox(width: 58),
           Expanded(
             flex: 3,
-            child: Text('COND.', style: TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w900)),
+            child: Text('COND.', style: TextStyle(color: AppColors.muted, fontSize: 10, fontWeight: FontWeight.w900)),
           ),
           SizedBox(width: 7),
           Expanded(
             flex: 3,
-            child: Text('RISCO', style: TextStyle(color: AppColors.muted, fontSize: 8.5, fontWeight: FontWeight.w900)),
+            child: Text('RISCO', style: TextStyle(color: AppColors.muted, fontSize: 10, fontWeight: FontWeight.w900)),
           ),
           SizedBox(width: 84),
         ],

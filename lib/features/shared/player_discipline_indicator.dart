@@ -52,7 +52,7 @@ class PlayerDisciplineIndicator extends StatelessWidget {
       '—',
       style: TextStyle(
         color: AppColors.muted.withValues(alpha: .65),
-        fontSize: compact ? 8 : 11,
+        fontSize: compact ? 10 : 11,
       ),
     );
   }
@@ -103,7 +103,7 @@ class _CardValue extends StatelessWidget {
               '$value',
               style: TextStyle(
                 color: emphasized ? color : AppColors.white,
-                fontSize: compact ? 7.5 : 10,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -145,7 +145,7 @@ class _StatusChip extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontSize: compact ? 7 : 9.5,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),
             ),

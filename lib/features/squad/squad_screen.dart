@@ -433,7 +433,7 @@ class _SquadTableHeader extends StatelessWidget {
 
   static const _headerStyle = TextStyle(
     color: AppColors.muted,
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: FontWeight.w800,
     letterSpacing: .35,
   );
@@ -515,7 +515,7 @@ class _SquadPlayerRow extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 9.5,
+                              fontSize: 10,
                               color: AppColors.muted,
                             ),
                           ),
@@ -715,7 +715,7 @@ class _TotalItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 9.5,
+                    fontSize: 10,
                   ),
                 ),
                 const SizedBox(height: 2),

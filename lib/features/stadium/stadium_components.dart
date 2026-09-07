@@ -128,7 +128,7 @@ class StadiumRevenuePanel extends StatelessWidget {
                         '${monthDeltaPercent >= 0 ? '+' : ''}$monthDeltaPercent% vs mês anterior',
                         style: const TextStyle(
                           color: AppColors.green,
-                          fontSize: 9,
+                          fontSize: 10,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -262,7 +262,7 @@ class TrainingCenterPanel extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 9.5,
+                        fontSize: 10,
                         height: 1.25,
                       ),
                     ),
@@ -414,7 +414,7 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
                   'RECOMENDADA',
                   style: TextStyle(
                     color: AppColors.green,
-                    fontSize: 8.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -461,7 +461,7 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: 9.2,
+                            fontSize: 10,
                             height: 1.25,
                           ),
                         ),
@@ -490,7 +490,7 @@ class SuggestedStadiumUpgradeCard extends StatelessWidget {
                             'Saldo/orçamento insuficiente',
                             style: TextStyle(
                               color: AppColors.warning,
-                              fontSize: 8.5,
+                              fontSize: 10,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -561,7 +561,7 @@ class StadiumFacilityGrid extends StatelessWidget {
                               : maxed
                                   ? 'Nível máximo'
                                   : 'Nível $level • ${compactMoney(cost)} • ${StadiumEngine.projectDurationDays(kind)} dias',
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 9),
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
                         ),
                       ],
                     ),
@@ -573,7 +573,7 @@ class StadiumFacilityGrid extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                         minimumSize: const Size(44, 32),
                       ),
-                      child: const Text('Melhorar', style: TextStyle(fontSize: 9)),
+                      child: const Text('Melhorar', style: TextStyle(fontSize: 10)),
                     )
                   else
                     Icon(
@@ -697,7 +697,7 @@ class _ValueRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
             ),
           ),
           Text(
@@ -724,7 +724,7 @@ class _ConditionLine extends StatelessWidget {
             const SizedBox(width: 5),
             SizedBox(
               width: 55,
-              child: Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 8.5)),
+              child: Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
             ),
             Expanded(
               child: ClipRRect(
@@ -743,7 +743,7 @@ class _ConditionLine extends StatelessWidget {
               child: Text(
                 '$value%',
                 textAlign: TextAlign.right,
-                style: const TextStyle(color: AppColors.green, fontSize: 8.5, fontWeight: FontWeight.w800),
+                style: const TextStyle(color: AppColors.green, fontSize: 10, fontWeight: FontWeight.w800),
               ),
             ),
           ],
@@ -771,7 +771,7 @@ class _DetailsButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(label, style: const TextStyle(fontSize: 8.7, fontWeight: FontWeight.w700)),
+              Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
               const Spacer(),
               const Icon(Icons.chevron_right_rounded, size: 17),
             ],
@@ -795,7 +795,7 @@ class _SmallFact extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 7.3, fontWeight: FontWeight.w700),
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 10, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 3),
           Row(
@@ -828,5 +828,5 @@ IconData _facilityIcon(StadiumFacility facility) => switch (facility) {
 
 const _smallMuted = TextStyle(
   color: AppColors.textSecondary,
-  fontSize: 9,
+  fontSize: 10,
 );

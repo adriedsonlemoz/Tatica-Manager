@@ -202,7 +202,7 @@ class _DurationChoiceCard extends StatelessWidget {
               const SizedBox(height: 1),
               const Text(
                 'min/tempo',
-                style: TextStyle(color: AppColors.muted, fontSize: 9),
+                style: TextStyle(color: AppColors.muted, fontSize: 10),
               ),
             ],
           ),
@@ -313,7 +313,7 @@ class _VisualChoiceCard<T> extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.muted,
-                  fontSize: 9,
+                  fontSize: 10,
                   height: 1.2,
                 ),
               ),

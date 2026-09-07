@@ -172,7 +172,7 @@ class _RecentMatchTile extends StatelessWidget {
                         shortDate(entry.date!),
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 8.8,
+                          fontSize: 10,
                           fontWeight: FontWeight.w700,
                           height: .9,
                         ),
@@ -198,7 +198,7 @@ class _RecentMatchTile extends StatelessWidget {
                       'RODADA',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 6.8,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
                         height: .9,
                       ),

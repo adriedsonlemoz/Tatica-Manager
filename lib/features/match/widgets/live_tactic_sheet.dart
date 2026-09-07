@@ -209,7 +209,7 @@ class _CompactTacticChoice<T> extends StatelessWidget {
                   Expanded(
                     child: Text(
                       helper(selected),
-                      style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+                      style: const TextStyle(color: AppColors.muted, fontSize: 10),
                     ),
                   ),
                 ],
@@ -266,7 +266,7 @@ class _TacticOption extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: selected ? AppColors.green : null,
-                    fontSize: 9.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),

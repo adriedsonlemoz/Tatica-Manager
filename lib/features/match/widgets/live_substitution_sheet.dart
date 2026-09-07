@@ -228,7 +228,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                       'TROCAS PREPARADAS',
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: 9.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
                         letterSpacing: .4,
                       ),
@@ -238,7 +238,7 @@ class _LiveSubstitutionSheetState extends State<LiveSubstitutionSheet> {
                       '${plannedChanges.length} nesta janela',
                       style: const TextStyle(
                         color: AppColors.muted,
-                        fontSize: 9.5,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -473,7 +473,7 @@ class _PreparedSwapChip extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 9.5,
+                  fontSize: 10,
                   fontWeight: FontWeight.w800,
                   height: 1.15,
                 ),
@@ -548,7 +548,7 @@ class _StarterChoice extends StatelessWidget {
               '${role.label} • $effective',
               style: TextStyle(
                 color: improvised ? AppColors.warning : AppColors.muted,
-                fontSize: 9,
+                fontSize: 10,
               ),
             ),
           ],
@@ -627,7 +627,7 @@ class _BenchChoice extends StatelessWidget {
                             'ADEQUADO',
                             style: TextStyle(
                               color: accentColor,
-                              fontSize: 8,
+                              fontSize: 10,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -725,7 +725,7 @@ class _PreviewPlayer extends StatelessWidget {
                   label,
                   style: TextStyle(
                     color: labelColor,
-                    fontSize: 8.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                     letterSpacing: .4,
                   ),

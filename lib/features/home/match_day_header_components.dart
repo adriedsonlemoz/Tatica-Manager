@@ -13,18 +13,20 @@ class MatchDayHeader extends StatelessWidget {
     required this.round,
     required this.onBack,
     required this.onAgenda,
+    this.compact = false,
   });
 
   final String competition;
   final int round;
   final VoidCallback onBack;
   final VoidCallback onAgenda;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Stack(
         children: [
           Container(
-            height: 190,
+            height: compact ? 124 : 190,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -58,28 +60,28 @@ class MatchDayHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: compact ? 2 : 20),
+                Text(
                   'HOJE É',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: compact ? 19 : 28,
                     height: .95,
                     fontWeight: FontWeight.w900,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                const Text(
+                Text(
                   'DIA DE JOGO',
                   style: TextStyle(
                     color: AppColors.green,
-                    fontSize: 38,
+                    fontSize: compact ? 28 : 38,
                     height: 1.0,
                     fontWeight: FontWeight.w900,
                     fontStyle: FontStyle.italic,
                     letterSpacing: -.6,
                   ),
                 ),
-                const SizedBox(height: 7),
+                SizedBox(height: compact ? 3 : 7),
                 Text(
                   competition,
                   textAlign: TextAlign.center,
@@ -100,6 +102,7 @@ class MatchDayVersusCard extends StatelessWidget {
     required this.fixture,
     required this.userClubId,
     required this.onStadiumTap,
+    this.compact = false,
   });
 
   final Club home;
@@ -107,10 +110,16 @@ class MatchDayVersusCard extends StatelessWidget {
   final MatchFixture fixture;
   final String userClubId;
   final VoidCallback onStadiumTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => SectionCard(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 10 : 14,
+          compact ? 9 : 14,
+          compact ? 10 : 14,
+          compact ? 8 : 12,
+        ),
         borderColor: AppColors.green.withValues(alpha: .60),
         child: Column(
           children: [
@@ -121,29 +130,30 @@ class MatchDayVersusCard extends StatelessWidget {
                   child: _ClubSide(
                     club: home,
                     label: home.id == userClubId ? 'SEU TIME • MANDANTE' : 'MANDANTE',
+                    compact: compact,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 9),
+                  padding: EdgeInsets.symmetric(horizontal: compact ? 5 : 9),
                   child: Column(
                     children: [
-                      const Icon(Icons.schedule_rounded, color: AppColors.green, size: 20),
+                      Icon(Icons.schedule_rounded, color: AppColors.green, size: compact ? 17 : 20),
                       const SizedBox(height: 3),
                       Text(
                         fixture.kickoffLabel,
-                        style: const TextStyle(color: AppColors.green, fontSize: 20, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: AppColors.green, fontSize: compact ? 16 : 20, fontWeight: FontWeight.w900),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: compact ? 4 : 8),
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: compact ? 36 : 48,
+                        height: compact ? 36 : 48,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: AppColors.surfaceRaised,
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.green.withValues(alpha: .35)),
                         ),
-                        child: const Text('VS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                        child: Text('VS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: compact ? 13 : 16)),
                       ),
                     ],
                   ),
@@ -152,13 +162,14 @@ class MatchDayVersusCard extends StatelessWidget {
                   child: _ClubSide(
                     club: away,
                     label: away.id == userClubId ? 'SEU TIME • VISITANTE' : 'VISITANTE',
+                    compact: compact,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: compact ? 7 : 14),
             const Divider(height: 1),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 4 : 10),
             Row(
               children: [
                 Expanded(
@@ -182,10 +193,11 @@ class MatchDayVersusCard extends StatelessWidget {
 }
 
 class _ClubSide extends StatelessWidget {
-  const _ClubSide({required this.club, required this.label});
+  const _ClubSide({required this.club, required this.label, required this.compact});
 
   final Club club;
   final String label;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -193,17 +205,17 @@ class _ClubSide extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.muted, fontSize: 8, fontWeight: FontWeight.w900),
+            style: const TextStyle(color: AppColors.muted, fontSize: 10, fontWeight: FontWeight.w900),
           ),
-          const SizedBox(height: 7),
-          ClubBadge(club: club, size: 72),
-          const SizedBox(height: 7),
+          SizedBox(height: compact ? 3 : 7),
+          ClubBadge(club: club, size: compact ? 48 : 72),
+          SizedBox(height: compact ? 3 : 7),
           Text(
             club.name,
-            maxLines: 2,
+            maxLines: compact ? 1 : 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: compact ? 11 : 12),
           ),
         ],
       );
@@ -234,7 +246,7 @@ class _FooterInfo extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
             ),
           ),
           if (onTap != null) ...[
@@ -300,4 +312,3 @@ class _MatchDayLightsPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

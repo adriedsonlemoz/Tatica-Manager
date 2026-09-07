@@ -164,7 +164,7 @@ class _OverviewMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 7.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     height: 1.15,
                   ),
@@ -220,7 +220,7 @@ class _ConditionMetric extends StatelessWidget {
                   'CONDIÇÃO',
                   style: TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 7.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

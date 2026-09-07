@@ -1074,6 +1074,7 @@ class TransferController {
         fixtureId: item.fixtureId,
         negotiationId: negotiation.id,
         amount: item.amount,
+        read: item.read,
       );
     }).toList(growable: false);
     return (
@@ -1104,6 +1105,7 @@ class TransferController {
           fixtureId: event.fixtureId,
           negotiationId: event.negotiationId,
           amount: event.amount,
+          read: event.read,
         );
       }).toList(growable: false);
 }

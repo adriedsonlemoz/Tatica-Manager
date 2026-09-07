@@ -306,7 +306,7 @@ class _Info extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9)),
+          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11)),
         ],

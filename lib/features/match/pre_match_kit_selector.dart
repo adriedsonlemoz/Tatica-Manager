@@ -72,7 +72,7 @@ class PreMatchKitSelector extends StatelessWidget {
                       'Escolha o seu. O rival será ajustado automaticamente.',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 8.8,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -133,7 +133,7 @@ class PreMatchKitSelector extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.white,
-                          fontSize: 9.5,
+                          fontSize: 10,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -148,7 +148,7 @@ class PreMatchKitSelector extends StatelessWidget {
                           color: selection.safetyFallbackUsed
                               ? AppColors.warning
                               : AppColors.green,
-                          fontSize: 8,
+                          fontSize: 10,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -166,7 +166,7 @@ class PreMatchKitSelector extends StatelessWidget {
                     'OK',
                     style: TextStyle(
                       color: AppColors.green,
-                      fontSize: 8,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -240,7 +240,7 @@ class _KitChoice extends StatelessWidget {
                   maxLines: 1,
                   style: TextStyle(
                     color: selected ? AppColors.white : AppColors.textSecondary,
-                    fontSize: 8.6,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -251,7 +251,7 @@ class _KitChoice extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.muted,
-                    fontSize: 7.2,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

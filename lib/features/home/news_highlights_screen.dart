@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/state/game_controller.dart';
 import '../../app/widgets/common.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/season/career_event.dart';
 
-class NewsHighlightsScreen extends StatefulWidget {
+class NewsHighlightsScreen extends ConsumerStatefulWidget {
   const NewsHighlightsScreen({
     super.key,
     required this.events,
@@ -16,22 +18,29 @@ class NewsHighlightsScreen extends StatefulWidget {
   final void Function(BuildContext context, CareerEvent event) onEventTap;
 
   @override
-  State<NewsHighlightsScreen> createState() => _NewsHighlightsScreenState();
+  ConsumerState<NewsHighlightsScreen> createState() => _NewsHighlightsScreenState();
 }
 
-class _NewsHighlightsScreenState extends State<NewsHighlightsScreen> {
+class _NewsHighlightsScreenState extends ConsumerState<NewsHighlightsScreen> {
   String _filter = 'Todos';
 
   @override
   Widget build(BuildContext context) {
-    final filtered = widget.events.where((event) {
+    final currentEvents = ref
+            .watch(gameControllerProvider)
+            .career
+            ?.allNews
+            .reversed
+            .toList(growable: false) ??
+        widget.events;
+    final filtered = currentEvents.where((event) {
       if (_filter == 'Todos') return true;
       return _category(event.type) == _filter;
     }).toList(growable: false);
 
     final categories = <String>{
       'Todos',
-      for (final event in widget.events) _category(event.type),
+      for (final event in currentEvents) _category(event.type),
     }.toList(growable: false);
 
     return PremiumScaffold(
@@ -72,7 +81,7 @@ class _NewsHighlightsScreenState extends State<NewsHighlightsScreen> {
                 padding: const EdgeInsets.only(bottom: 9),
                 child: _NewsEventCard(
                   event: event,
-                  onTap: () => widget.onEventTap(context, event),
+                  onTap: () => _openEvent(event),
                 ),
               ),
             ),
@@ -92,6 +101,12 @@ class _NewsHighlightsScreenState extends State<NewsHighlightsScreen> {
         CareerEventType.seasonStarted => 'Clube',
         CareerEventType.info => 'Geral',
       };
+
+  Future<void> _openEvent(CareerEvent event) async {
+    await ref.read(gameControllerProvider.notifier).markNewsRead(event.id);
+    if (!mounted) return;
+    widget.onEventTap(context, event.copyWith(read: true));
+  }
 }
 
 class _NewsEventCard extends StatelessWidget {
@@ -103,6 +118,7 @@ class _NewsEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = _accent(event.type);
+    final emphasis = event.read ? AppColors.textSecondary : accent;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -114,10 +130,16 @@ class _NewsEventCard extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [accent.withValues(alpha: .12), AppColors.surface],
+              colors: event.read
+                  ? [AppColors.surfaceRaised, AppColors.surface]
+                  : [accent.withValues(alpha: .16), AppColors.surface],
             ),
             borderRadius: BorderRadius.circular(17),
-            border: Border.all(color: accent.withValues(alpha: .22)),
+            border: Border.all(
+              color: event.read
+                  ? AppColors.border
+                  : accent.withValues(alpha: .52),
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,10 +149,10 @@ class _NewsEventCard extends StatelessWidget {
                 height: 42,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: .14),
+                  color: emphasis.withValues(alpha: .14),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(_icon(event.type), color: accent, size: 22),
+                child: Icon(_icon(event.type), color: emphasis, size: 22),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -142,20 +164,57 @@ class _NewsEventCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             _category(event.type).toUpperCase(),
-                            style: TextStyle(color: accent, fontSize: 8, fontWeight: FontWeight.w900),
+                            style: TextStyle(color: emphasis, fontSize: 10.5, fontWeight: FontWeight.w900),
                           ),
                         ),
-                        Text(shortDate(event.date), style: const TextStyle(color: AppColors.muted, fontSize: 8)),
+                        if (!event.read) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: accent.withValues(alpha: .16),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              'NOVA',
+                              style: TextStyle(
+                                color: accent,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                        Text(shortDate(event.date), style: const TextStyle(color: AppColors.muted, fontSize: 10)),
                       ],
                     ),
                     const SizedBox(height: 3),
-                    Text(event.title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
+                    Text(
+                      event.title,
+                      style: TextStyle(
+                        color: event.read
+                            ? AppColors.textSecondary
+                            : AppColors.white,
+                        fontSize: 13.5,
+                        fontWeight:
+                            event.read ? FontWeight.w700 : FontWeight.w900,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       event.message,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 10, color: AppColors.muted, height: 1.35),
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: event.read
+                            ? AppColors.muted.withValues(alpha: .78)
+                            : AppColors.muted,
+                        height: 1.35,
+                      ),
                     ),
                   ],
                 ),

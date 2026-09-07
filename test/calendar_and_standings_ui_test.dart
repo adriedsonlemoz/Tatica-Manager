@@ -74,7 +74,10 @@ void main() {
     expect(home, contains('MoreScreen(showBackButton: true)'));
 
     expect(controls, contains('class HomePrimaryActionButton'));
-    expect(controls, contains("isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA'"));
+    expect(controls, contains("'JOGAR PARTIDA'"));
+    expect(controls, contains("'AVANÇAR DIA'"));
+    expect(controls, contains("'PROCESSANDO...'"));
+    expect(controls, contains('this.enabled = true'));
     expect(controls, contains('Color(0xFF0B6A12)'));
     expect(controls, contains('Color(0xFF0A5611)'));
     expect(controls, contains('right: 7'));

@@ -185,7 +185,7 @@ class _QuickAccessTile extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: AppColors.white,
-                              fontSize: 10.2,
+                              fontSize: 11,
                               fontWeight: FontWeight.w700,
                               letterSpacing: .05,
                               height: 1,
@@ -282,7 +282,7 @@ class _DashboardSectionHeader extends StatelessWidget {
                       action!,
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: compact ? 9.8 : 10.4,
+                        fontSize: compact ? 10 : 10.4,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -327,15 +327,29 @@ class _NewsListTile extends StatelessWidget {
                 size: 18,
               ),
               const SizedBox(width: 7),
+              if (!event.read) ...[
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: playerAccent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
               Expanded(
                 child: Text(
                   event.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 10.8,
-                    fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    color: event.read
+                        ? AppColors.textSecondary
+                        : AppColors.white,
+                    fontSize: 11,
+                    fontWeight:
+                        event.read ? FontWeight.w600 : FontWeight.w900,
                   ),
                 ),
               ),
@@ -344,7 +358,7 @@ class _NewsListTile extends StatelessWidget {
                 shortDate(event.date),
                 style: const TextStyle(
                   color: AppColors.textSecondary,
-                  fontSize: 9.5,
+                  fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -396,12 +410,28 @@ class _NewsListTile extends StatelessWidget {
                           event.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            color: event.read
+                                ? AppColors.textSecondary
+                                : AppColors.white,
                             fontSize: 12.2,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: event.read
+                                ? FontWeight.w700
+                                : FontWeight.w900,
                           ),
                         ),
                       ),
+                      if (!event.read) ...[
+                        const SizedBox(width: 5),
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: playerAccent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
                       const SizedBox(width: 3),
                       Text(
                         shortDate(event.date),
@@ -418,9 +448,11 @@ class _NewsListTile extends StatelessWidget {
                     event.message,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11.3,
-                      color: AppColors.muted,
+                      color: event.read
+                          ? AppColors.muted.withValues(alpha: .76)
+                          : AppColors.muted,
                       height: 1.15,
                     ),
                   ),

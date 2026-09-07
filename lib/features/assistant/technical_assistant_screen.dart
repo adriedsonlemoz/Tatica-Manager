@@ -385,7 +385,7 @@ class _MetricItem extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 8),
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
             ),
           ],
         ),
@@ -430,7 +430,7 @@ class _TrainingRecommendation extends StatelessWidget {
                     automatic ? 'TREINO RECOMENDADO' : 'TREINO ATUAL • MANUAL',
                     style: const TextStyle(
                       color: AppColors.green,
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -443,7 +443,7 @@ class _TrainingRecommendation extends StatelessWidget {
                     displayedReason,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                    style: const TextStyle(color: AppColors.muted, fontSize: 10),
                   ),
                 ],
               ),
@@ -458,7 +458,7 @@ class _TrainingRecommendation extends StatelessWidget {
                   automatic ? 'AUTO' : 'MANUAL',
                   style: TextStyle(
                     color: automatic ? AppColors.green : AppColors.muted,
-                    fontSize: 7.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -493,7 +493,7 @@ class _MatchRecommendation extends StatelessWidget {
                     'PLANO PARA A PRÓXIMA PARTIDA',
                     style: TextStyle(
                       color: AppColors.info,
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -506,7 +506,7 @@ class _MatchRecommendation extends StatelessWidget {
                     '${report.recommendedTactic.pressing.label} pressão • ritmo ${report.recommendedTactic.tempo.label.toLowerCase()} • ${report.lineupChanges} troca${report.lineupChanges == 1 ? '' : 's'}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                    style: const TextStyle(color: AppColors.muted, fontSize: 10),
                   ),
                 ],
               ),
@@ -535,7 +535,7 @@ class _PrioritiesCard extends StatelessWidget {
             const Text(
               'PRIORIDADES DA COMISSÃO',
               style: TextStyle(
-                fontSize: 9.5,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -571,7 +571,7 @@ class _PrioritiesCard extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontSize: 9.5,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
@@ -581,7 +581,7 @@ class _PrioritiesCard extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       color: AppColors.muted,
-                                      fontSize: 8.5,
+                                      fontSize: 10,
                                     ),
                                   ),
                                 ],

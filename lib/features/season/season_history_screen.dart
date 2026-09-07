@@ -174,7 +174,7 @@ class SeasonHistoryScreen extends ConsumerWidget {
                           '$offers NOVA${offers == 1 ? '' : 'S'}',
                           style: const TextStyle(
                             color: AppColors.green,
-                            fontSize: 9,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -335,7 +335,7 @@ class _TenureTile extends StatelessWidget {
                 'ATUAL',
                 style: TextStyle(
                   color: AppColors.green,
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),

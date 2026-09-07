@@ -241,7 +241,7 @@ class _ClubSide extends StatelessWidget {
                   club.shortName.toUpperCase(),
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 9.2,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -285,7 +285,7 @@ class _CardCount extends StatelessWidget {
             '$value',
             style: const TextStyle(
               color: AppColors.white,
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: FontWeight.w900,
             ),
           ),

@@ -106,7 +106,7 @@ class TacticsScreen extends ConsumerWidget {
                                       'FORMAÇÃO ATUAL',
                                       style: TextStyle(
                                         color: AppColors.muted,
-                                        fontSize: 9,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
@@ -507,7 +507,7 @@ class _TacticChoiceCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.muted,
-                          fontSize: 6.5,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -549,14 +549,14 @@ class _BenchBoard extends StatelessWidget {
                     'BANCO DE RESERVAS',
                     style: TextStyle(
                       color: AppColors.green,
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
                 Text(
                   '${players.length}/5',
-                  style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
               ],
             ),
@@ -606,11 +606,11 @@ class _BenchPlayer extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 7, fontWeight: FontWeight.w700),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
             ),
             Text(
               player.primaryPosition.label,
-              style: const TextStyle(color: AppColors.muted, fontSize: 6.5),
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
             ),
           ],
         ),

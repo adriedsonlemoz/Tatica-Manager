@@ -171,7 +171,7 @@ class _RecentFormRow extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   color: AppColors.white,
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -316,7 +316,7 @@ class _FormationSide extends StatelessWidget {
             tactic.mentality.label,
             style: const TextStyle(
               color: AppColors.textSecondary,
-              fontSize: 9.6,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -456,7 +456,7 @@ class _StrengthComparison extends StatelessWidget {
                 maxLines: 1,
                 style: const TextStyle(
                   color: AppColors.textSecondary,
-                  fontSize: 8.6,
+                  fontSize: 10,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -625,7 +625,7 @@ class _LineupPlayerRow extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: numberColor,
-                fontSize: 9.3,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -638,7 +638,7 @@ class _LineupPlayerRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.white,
-                fontSize: 9.2,
+                fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -648,7 +648,7 @@ class _LineupPlayerRow extends StatelessWidget {
             assignment.slot.role.label,
             style: const TextStyle(
               color: AppColors.textSecondary,
-              fontSize: 8.4,
+              fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -725,7 +725,7 @@ class _AbsenceColumn extends StatelessWidget {
                 'Sem desfalques',
                 style: TextStyle(
                   color: AppColors.textSecondary,
-                  fontSize: 9.2,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -767,7 +767,7 @@ class _AbsenceColumn extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.white,
-                          fontSize: 9.3,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -778,7 +778,7 @@ class _AbsenceColumn extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 8.4,
+                          fontSize: 10,
                           height: 1.15,
                         ),
                       ),

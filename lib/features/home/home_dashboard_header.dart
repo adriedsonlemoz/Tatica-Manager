@@ -10,6 +10,7 @@ class HomeTopBar extends StatelessWidget {
   const HomeTopBar({
     super.key,
     required this.unreadMessages,
+    required this.unreadNews,
     required this.pmBalance,
     required this.onMenuTap,
     required this.onRewardsTap,
@@ -18,6 +19,7 @@ class HomeTopBar extends StatelessWidget {
   });
 
   final int unreadMessages;
+  final int unreadNews;
   final int pmBalance;
   final VoidCallback onMenuTap;
   final VoidCallback onRewardsTap;
@@ -60,15 +62,37 @@ class HomeTopBar extends StatelessWidget {
                 onTap: onRewardsTap,
               ),
               const SizedBox(width: 2),
-              IconButton(
-                tooltip: 'Notícias',
-                onPressed: onNotificationsTap,
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: AppColors.white,
-                  size: 25,
-                ),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    tooltip: 'Notícias',
+                    onPressed: onNotificationsTap,
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(
+                      Icons.notifications_none_rounded,
+                      color: AppColors.white,
+                      size: 25,
+                    ),
+                  ),
+                  if (unreadNews > 0)
+                    Positioned(
+                      right: 5,
+                      top: 3,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: AppColors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.background,
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 2),
               _InboxButton(
@@ -294,7 +318,7 @@ class _InboxButton extends StatelessWidget {
                     unreadMessages > 9 ? '9+' : '$unreadMessages',
                     style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 9.5,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -391,7 +415,7 @@ class _FinanceStatusCard extends StatelessWidget {
                         maxLines: 1,
                         style: TextStyle(
                           color: accent,
-                          fontSize: 9.8,
+                          fontSize: 10,
                           height: 1,
                           fontWeight: FontWeight.w900,
                         ),

@@ -220,7 +220,7 @@ class ExistingManagerSelectionStep extends StatelessWidget {
                                     style: const TextStyle(
                                       color: AppColors.green,
                                       fontWeight: FontWeight.w900,
-                                      fontSize: 9,
+                                      fontSize: 10,
                                     ),
                                   ),
                                 ),

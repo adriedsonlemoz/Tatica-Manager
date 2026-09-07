@@ -238,7 +238,7 @@ class _ClubSelectionCard extends StatelessWidget {
                   'ORÇ.',
                   style: TextStyle(
                     color: AppColors.muted,
-                    fontSize: 8,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

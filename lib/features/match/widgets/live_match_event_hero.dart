@@ -301,7 +301,7 @@ class _SubPlayer extends StatelessWidget {
               player?.displayName ?? fallback,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
             ),
           ),
         ],

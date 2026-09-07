@@ -192,7 +192,7 @@ class MedicalPlayerRow extends StatelessWidget {
                     player.injury?.name ?? player.primaryPosition.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.muted, fontSize: 9.3),
+                    style: const TextStyle(color: AppColors.muted, fontSize: 10),
                   ),
                 ],
               ),
@@ -260,7 +260,7 @@ class _MiniBar extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: color, fontSize: 9.5, fontWeight: FontWeight.w900)),
+          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
           DashboardProgress(value: value, color: color, height: 5),
         ],

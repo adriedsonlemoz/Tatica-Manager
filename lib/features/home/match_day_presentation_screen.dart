@@ -56,55 +56,90 @@ class MatchDayPresentationScreen extends ConsumerWidget {
       canPop: true,
       child: PremiumScaffold(
         safeBottom: true,
-        body: ListView(
-          padding: const EdgeInsets.fromLTRB(14, 8, 14, 28),
-          children: [
-            MatchDayHeader(
-              competition: competition,
-              round: fixture.round,
-              onBack: () => Navigator.of(context).pop(),
-              onAgenda: () => open(CalendarScreen(initialFixtureId: fixture.id)),
-            ),
-            MatchDayVersusCard(
-              home: home,
-              away: away,
-              fixture: fixture,
-              userClubId: career.userClubId,
-              onStadiumTap: () => open(
-                home.id == career.userClubId
-                    ? const StadiumScreen()
-                    : ClubProfileScreen(clubId: home.id),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxHeight < 940;
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                compact ? 10 : 14,
+                compact ? 4 : 8,
+                compact ? 10 : 14,
+                compact ? 8 : 14,
               ),
-            ),
-            const SizedBox(height: 14),
-            const DashboardSectionHeader(
-              title: 'Informações rápidas',
-              subtitle: 'Os cards com seta abrem os módulos já existentes',
-            ),
-            const SizedBox(height: 8),
-            MatchDayQuickInfoGrid(
-              position: position,
-              form: userClub.recentForm,
-              morale: MoraleEngine.teamMorale(userClub),
-              condition: condition,
-              pressure: career.tactic.pressing.label,
-              formation: career.formation.label,
-              onPosition: () => open(const StandingsScreen()),
-              onForm: () => open(CalendarScreen(initialFixtureId: fixture.id)),
-              onMorale: () => open(const SquadScreen(showBackButton: true)),
-              onCondition: () => open(const MedicalDepartmentScreen()),
-              onPressure: () => open(const TacticsScreen()),
-              onFormation: () => open(const LineupScreen(showBackButton: true)),
-            ),
-            const SizedBox(height: 10),
-            MatchDayPreparationCard(
-              unavailable: unavailable,
-              startersReady: availableStarters,
-              onContinue: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const PreMatchScreen()),
+              child: Column(
+                children: [
+                  MatchDayHeader(
+                    competition: competition,
+                    round: fixture.round,
+                    compact: compact,
+                    onBack: () => Navigator.of(context).pop(),
+                    onAgenda: () => open(
+                      CalendarScreen(initialFixtureId: fixture.id),
+                    ),
+                  ),
+                  MatchDayVersusCard(
+                    home: home,
+                    away: away,
+                    fixture: fixture,
+                    userClubId: career.userClubId,
+                    compact: compact,
+                    onStadiumTap: () => open(
+                      home.id == career.userClubId
+                          ? const StadiumScreen()
+                          : ClubProfileScreen(clubId: home.id),
+                    ),
+                  ),
+                  SizedBox(height: compact ? 6 : 12),
+                  DashboardSectionHeader(
+                    title: 'Informações rápidas',
+                    subtitle: compact
+                        ? null
+                        : 'Os cards com seta abrem os módulos já existentes',
+                  ),
+                  SizedBox(height: compact ? 4 : 8),
+                  Expanded(
+                    child: Center(
+                      child: MatchDayQuickInfoGrid(
+                        position: position,
+                        form: userClub.recentForm,
+                        morale: MoraleEngine.teamMorale(userClub),
+                        condition: condition,
+                        pressure: career.tactic.pressing.label,
+                        formation: career.formation.label,
+                        compact: compact,
+                        onPosition: () => open(const StandingsScreen()),
+                        onForm: () => open(
+                          CalendarScreen(initialFixtureId: fixture.id),
+                        ),
+                        onMorale: () => open(
+                          const SquadScreen(showBackButton: true),
+                        ),
+                        onCondition: () => open(
+                          const MedicalDepartmentScreen(),
+                        ),
+                        onPressure: () => open(const TacticsScreen()),
+                        onFormation: () => open(
+                          const LineupScreen(showBackButton: true),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: compact ? 5 : 10),
+                  MatchDayPreparationCard(
+                    unavailable: unavailable,
+                    startersReady: availableStarters,
+                    compact: compact,
+                    onContinue: () =>
+                        Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const PreMatchScreen(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

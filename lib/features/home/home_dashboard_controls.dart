@@ -79,7 +79,7 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 9.8,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .1,
                           ),
@@ -101,7 +101,7 @@ class HomeSeasonCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 9.5,
+                            fontSize: 10,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w700,
                           ),
@@ -131,17 +131,19 @@ class HomePrimaryActionButton extends StatelessWidget {
     required this.isMatchDay,
     required this.onAdvance,
     required this.onMatchDay,
+    this.enabled = true,
   });
 
   final bool isMatchDay;
   final VoidCallback onAdvance;
   final VoidCallback onMatchDay;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) => Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isMatchDay ? onMatchDay : onAdvance,
+          onTap: enabled ? (isMatchDay ? onMatchDay : onAdvance) : null,
           borderRadius: BorderRadius.circular(11),
           child: Ink(
             height: 54,
@@ -160,7 +162,9 @@ class HomePrimaryActionButton extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: Text(
-                    isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA',
+                    enabled
+                        ? (isMatchDay ? 'JOGAR PARTIDA' : 'AVANÇAR DIA')
+                        : 'PROCESSANDO...',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: const TextStyle(

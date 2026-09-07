@@ -251,7 +251,7 @@ class _MatchActionButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 8.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -284,7 +284,7 @@ class _PossessionStat extends StatelessWidget {
             maxLines: 1,
             style: TextStyle(
               color: AppColors.muted,
-              fontSize: 8.8,
+              fontSize: 10,
               fontWeight: FontWeight.w900,
               letterSpacing: .3,
             ),
@@ -368,7 +368,7 @@ class _VersusStat extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.muted,
-              fontSize: 8.5,
+              fontSize: 10,
               fontWeight: FontWeight.w900,
               letterSpacing: .25,
             ),
@@ -434,7 +434,7 @@ class _CardsStat extends StatelessWidget {
             'CARTÕES',
             style: TextStyle(
               color: AppColors.muted,
-              fontSize: 8.8,
+              fontSize: 10,
               fontWeight: FontWeight.w900,
               letterSpacing: .3,
             ),

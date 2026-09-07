@@ -273,7 +273,7 @@ class YouthPlayerCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppColors.muted,
-                        fontSize: 9.8,
+                        fontSize: 10,
                       ),
                     ),
                     const SizedBox(height: 7),
@@ -285,7 +285,7 @@ class YouthPlayerCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppColors.muted,
-                        fontSize: 9.5,
+                        fontSize: 10,
                         height: 1.25,
                       ),
                     ),
@@ -346,7 +346,7 @@ class _ProspectMetric extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 8.5)),
+            Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
             const SizedBox(height: 2),
             Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
           ],

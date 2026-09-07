@@ -38,6 +38,9 @@ import 'home_overview_widgets.dart';
 import 'match_day_presentation_screen.dart';
 import 'news_highlights_screen.dart';
 
+final _dayAdvanceBusyProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
+
 String _homeCompetitionLabel(String value) {
   const prefix = 'Campeonato Brasileiro ';
   return value.startsWith(prefix)
@@ -51,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final career = ref.watch(gameControllerProvider).career!;
+    final advancingDay = ref.watch(_dayAdvanceBusyProvider);
     final pmBalance = ref.watch(rewardControllerProvider).snapshot.wallet.balance;
     if (career.managerUnemployed) {
       return _UnemployedHome(career: career);
@@ -71,6 +75,7 @@ class HomeScreen extends ConsumerWidget {
     final unreadMessages = career.inbox
         .where((message) => !message.read && !message.archived && !message.deleted)
         .length;
+    final unreadNews = career.allNews.where((event) => !event.read).length;
     final userStanding = career.standings
         .where((s) => s.clubId == club.id)
         .firstOrNull;
@@ -118,6 +123,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   HomeTopBar(
                     unreadMessages: unreadMessages,
+                    unreadNews: unreadNews,
                     pmBalance: pmBalance,
                     onMenuTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const MoreScreen(showBackButton: true)),
@@ -129,16 +135,19 @@ class HomeScreen extends ConsumerWidget {
                       MaterialPageRoute(
                         builder: (_) => NewsHighlightsScreen(
                           events: career.allNews.reversed.toList(growable: false),
-                          onEventTap: (newsContext, event) => _openCareerEvent(
-                            newsContext,
-                            ref,
-                            career,
-                            event,
-                            transferActionable: CpuUserOfferEngine.isOfferActive(
-                              state: career,
-                              event: event,
-                            ),
-                          ),
+                          onEventTap: (newsContext, event) {
+                            _openCareerEvent(
+                              newsContext,
+                              ref,
+                              ref.read(gameControllerProvider).career!,
+                              event,
+                              transferActionable:
+                                  CpuUserOfferEngine.isOfferActive(
+                                state: ref.read(gameControllerProvider).career!,
+                                event: event,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -161,6 +170,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   HomePrimaryActionButton(
                     isMatchDay: career.isMatchDay,
+                    enabled: !advancingDay,
                     onAdvance: () => _advanceDayWithTransition(
                       context,
                       ref,
@@ -323,30 +333,42 @@ class HomeScreen extends ConsumerWidget {
                     compact: true,
                     playerForEvent: (playerId) => _playerForEvent(career, playerId),
                     playerAccent: (player) => _playerAccent(career, player),
-                    onEventTap: (event) => _openCareerEvent(
-                      context,
-                      ref,
-                      career,
-                      event,
-                      transferActionable: CpuUserOfferEngine.isOfferActive(
-                        state: career,
-                        event: event,
-                      ),
-                    ),
+                    onEventTap: (event) async {
+                      await ref
+                          .read(gameControllerProvider.notifier)
+                          .markNewsRead(event.id);
+                      if (!context.mounted) return;
+                      final current = ref.read(gameControllerProvider).career!;
+                      _openCareerEvent(
+                        context,
+                        ref,
+                        current,
+                        event,
+                        transferActionable: CpuUserOfferEngine.isOfferActive(
+                          state: current,
+                          event: event,
+                        ),
+                      );
+                    },
                     onViewAll: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => NewsHighlightsScreen(
                           events: career.allNews.reversed.toList(growable: false),
-                          onEventTap: (newsContext, event) => _openCareerEvent(
-                            newsContext,
-                            ref,
-                            career,
-                            event,
-                            transferActionable: CpuUserOfferEngine.isOfferActive(
-                              state: career,
-                              event: event,
-                            ),
-                          ),
+                          onEventTap: (newsContext, event) {
+                            final current =
+                                ref.read(gameControllerProvider).career!;
+                            _openCareerEvent(
+                              newsContext,
+                              ref,
+                              current,
+                              event,
+                              transferActionable:
+                                  CpuUserOfferEngine.isOfferActive(
+                                state: current,
+                                event: event,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -366,6 +388,10 @@ class HomeScreen extends ConsumerWidget {
     WidgetRef ref,
     DateTime currentDate,
   ) async {
+    if (ref.read(_dayAdvanceBusyProvider)) return;
+    ref.read(_dayAdvanceBusyProvider.notifier).state = true;
+    final startedAt = DateTime.now();
+    const minimumVisibleDuration = Duration(milliseconds: 1500);
     final nextDate = DateTime(
       currentDate.year,
       currentDate.month,
@@ -393,16 +419,27 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
-    await Future<void>.delayed(const Duration(milliseconds: 340));
-    await ref.read(gameControllerProvider.notifier).advanceDay();
-    await Future<void>.delayed(const Duration(milliseconds: 420));
-    if (!context.mounted) return;
-    Navigator.of(context, rootNavigator: true).pop();
-    final next = ref.read(gameControllerProvider).career;
-    if (next?.isMatchDay == true && context.mounted) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const MatchDayPresentationScreen()),
-      );
+    try {
+      await Future<void>.delayed(Duration.zero);
+      await ref.read(gameControllerProvider.notifier).advanceDay();
+      final elapsed = DateTime.now().difference(startedAt);
+      if (elapsed < minimumVisibleDuration) {
+        await Future<void>.delayed(minimumVisibleDuration - elapsed);
+      }
+      if (!context.mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      final next = ref.read(gameControllerProvider).career;
+      if (next?.isMatchDay == true && context.mounted) {
+        await Future<void>.delayed(const Duration(milliseconds: 220));
+        if (!context.mounted) return;
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const MatchDayPresentationScreen(),
+          ),
+        );
+      }
+    } finally {
+      ref.read(_dayAdvanceBusyProvider.notifier).state = false;
     }
   }
 
@@ -482,7 +519,14 @@ class HomeScreen extends ConsumerWidget {
           builder: (_) => ClubProfileScreen(clubId: event.clubId!),
         ),
       );
+      return;
     }
+    showGameNotice(
+      context,
+      title: event.title,
+      message: event.message,
+      icon: Icons.newspaper_rounded,
+    );
   }
 
   static Player? _playerForEvent(CareerState career, String? playerId) {
@@ -841,7 +885,7 @@ class _DayAdvanceTransition extends StatelessWidget {
                     children: [
                       Text(
                         'PROCESSANDO O DIA',
-                        style: TextStyle(color: AppColors.green, fontSize: 9, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: AppColors.green, fontSize: 10, fontWeight: FontWeight.w900),
                       ),
                       SizedBox(height: 7),
                       _AdvanceProcessRow(icon: Icons.favorite_rounded, text: 'Condição física e fadiga do elenco'),
@@ -887,7 +931,7 @@ class _AdvanceDateCard extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: AppColors.green, fontSize: 9, fontWeight: FontWeight.w900),
+              style: const TextStyle(color: AppColors.green, fontSize: 10, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 3),
             Text(
@@ -899,7 +943,7 @@ class _AdvanceDateCard extends StatelessWidget {
               weekdayLabel(date),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 9),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
             ),
           ],
         ),
@@ -922,13 +966,13 @@ class _AdvanceMetric extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.green, fontSize: 8.5, fontWeight: FontWeight.w900),
+            style: const TextStyle(color: AppColors.green, fontSize: 10, fontWeight: FontWeight.w900),
           ),
           Text(
             subtitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 7.5),
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
           ),
         ],
       );
@@ -948,7 +992,7 @@ class _AdvanceProcessRow extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(fontSize: 9.2, fontWeight: FontWeight.w700),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
             ),
           ),
         ],

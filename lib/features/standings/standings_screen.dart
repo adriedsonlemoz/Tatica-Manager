@@ -289,7 +289,7 @@ class _MovementIndicator extends StatelessWidget {
               '${movement.abs()}',
               style: TextStyle(
                 color: color,
-                fontSize: 8.5,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),
             ),

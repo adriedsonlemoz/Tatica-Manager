@@ -803,7 +803,7 @@ class _Weekday extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: AppColors.muted,
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -850,7 +850,7 @@ class _LegendDot extends StatelessWidget {
               decoration: BoxDecoration(shape: BoxShape.circle, color: color),
             ),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 9)),
+          Text(label, style: const TextStyle(fontSize: 10)),
         ],
       );
 }
@@ -949,13 +949,13 @@ class _FixtureCommitmentTile extends StatelessWidget {
               children: [
                 Text(
                   _shortWeekday(fixture.date),
-                  style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w800),
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
                 ),
                 Text(
                   '${fixture.date.day}',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
                 ),
-                Text(_shortMonth(fixture.date), style: const TextStyle(fontSize: 8)),
+                Text(_shortMonth(fixture.date), style: const TextStyle(fontSize: 10)),
               ],
             ),
           ),
@@ -971,7 +971,7 @@ class _FixtureCommitmentTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.green,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -987,7 +987,7 @@ class _FixtureCommitmentTile extends StatelessWidget {
                   '$stadium • ${fixture.kickoffLabel}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 8),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
               ],
             ),
@@ -1040,7 +1040,7 @@ class _EventCommitmentTile extends StatelessWidget {
                 training ? 'Treino' : 'Evento',
                 style: TextStyle(
                   color: training ? AppColors.green : AppColors.info,
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -1054,7 +1054,7 @@ class _EventCommitmentTile extends StatelessWidget {
                 event.message,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.muted, fontSize: 8),
+                style: const TextStyle(color: AppColors.muted, fontSize: 10),
               ),
             ],
           ),
@@ -1135,7 +1135,7 @@ class _SummaryItem extends StatelessWidget {
                 ),
                 Text(
                   label,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 7),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
               ],
             ),

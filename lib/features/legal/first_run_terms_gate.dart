@@ -121,7 +121,7 @@ class FirstRunTermsGate extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: AppColors.muted,
-                                fontSize: 9.5,
+                                fontSize: 10,
                                 height: 1.3,
                               ),
                             ),

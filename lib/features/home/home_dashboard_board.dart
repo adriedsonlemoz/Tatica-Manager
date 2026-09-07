@@ -20,7 +20,7 @@ class HomeBoardConfidenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 96,
+        height: 104,
         padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -80,7 +80,7 @@ class _StadiumSummary extends StatelessWidget {
                       'ESTÁDIO',
                       style: TextStyle(
                         color: AppColors.green,
-                        fontSize: 10,
+                      fontSize: 10.5,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -162,7 +162,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 8.1,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                     height: 1,
                   ),
@@ -174,7 +174,7 @@ class _StadiumMetric extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.white,
-                    fontSize: 9.5,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
                     height: 1,
                   ),
@@ -205,7 +205,7 @@ class _ConfidenceGauge extends StatelessWidget {
             maxLines: 1,
             style: TextStyle(
               color: AppColors.white,
-              fontSize: 9.4,
+              fontSize: 10.5,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -253,7 +253,7 @@ class _ConfidenceGauge extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: AppColors.textSecondary,
-              fontSize: 7.6,
+              fontSize: 10,
               height: 1.1,
               fontWeight: FontWeight.w700,
             ),

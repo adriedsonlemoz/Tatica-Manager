@@ -103,7 +103,10 @@ abstract final class ClubIdentityMigrationEngine {
             ),
             playerId: event.playerId,
             clubId: mapNullableId(event.clubId),
+            fixtureId: event.fixtureId,
+            negotiationId: event.negotiationId,
             amount: event.amount,
+            read: event.read,
           ),
         )
         .toList(growable: false);
@@ -370,7 +373,10 @@ abstract final class ClubIdentityMigrationEngine {
         ),
         playerId: event.playerId,
         clubId: event.clubId,
+        fixtureId: event.fixtureId,
+        negotiationId: event.negotiationId,
         amount: event.amount,
+        read: event.read,
       );
 
   static MatchResult renameMatchResult(

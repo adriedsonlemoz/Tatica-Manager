@@ -122,7 +122,7 @@ class _HeaderAmount extends StatelessWidget {
                 ),
                 Text(
                   label,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
               ],
             ),
@@ -382,7 +382,7 @@ class FinanceMonthlyBalancePainter extends CustomPainter {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: AppColors.muted, fontSize: compact ? 7 : 9),
+        style: const TextStyle(color: AppColors.muted, fontSize: 10),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -977,7 +977,7 @@ class FinanceQuickLinks extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: AppColors.muted,
-                                  fontSize: 9.5,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -1256,7 +1256,7 @@ class _SalaryMetric extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
             ),
             const SizedBox(height: 4),
             Text(

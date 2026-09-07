@@ -846,7 +846,7 @@ class _FinanceInlineMetric extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.muted, fontSize: 9),
+            style: const TextStyle(color: AppColors.muted, fontSize: 10),
           ),
           const SizedBox(height: 3),
           Text(
@@ -859,7 +859,7 @@ class _FinanceInlineMetric extends StatelessWidget {
             change == null ? 'sem base' : '${change >= 0 ? '+' : ''}$change%',
             style: TextStyle(
               color: change == null ? AppColors.muted : color,
-              fontSize: 8.5,
+              fontSize: 10,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -924,7 +924,7 @@ class _FinanceActionGrid extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         color: AppColors.muted,
-                                        fontSize: 9,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),

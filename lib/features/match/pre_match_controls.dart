@@ -101,7 +101,7 @@ class PreMatchPlanCard extends StatelessWidget {
                   validation.valid ? 'PRONTA' : 'REVISAR',
                   style: TextStyle(
                     color: validation.valid ? AppColors.green : AppColors.warning,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -132,7 +132,7 @@ class PreMatchPlanCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               validation.message,
-              style: const TextStyle(color: AppColors.warning, fontSize: 9.5),
+              style: const TextStyle(color: AppColors.warning, fontSize: 10),
             ),
           ],
           const SizedBox(height: 13),
@@ -194,7 +194,7 @@ class PreMatchPlanCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: canAutoSelect ? AppColors.green : AppColors.textSecondary,
-                          fontSize: 9.6,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -270,7 +270,7 @@ class _PanelHeading extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 8.6,
+                    fontSize: 10,
                     height: 1.2,
                   ),
                 ),
@@ -365,7 +365,7 @@ class _DurationOption extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: selected ? AppColors.green : AppColors.white,
-                      fontSize: 9.3,
+                      fontSize: 10,
                       fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
                     ),
                   ),
@@ -390,7 +390,7 @@ class _PlanMetric extends StatelessWidget {
             label,
             style: const TextStyle(
               color: AppColors.textSecondary,
-              fontSize: 9.2,
+              fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
           ),

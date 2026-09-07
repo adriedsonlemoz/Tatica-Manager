@@ -97,7 +97,7 @@ class PreMatchHeroCard extends StatelessWidget {
                           ready ? 'PRONTO PARA ENTRAR EM CAMPO' : 'AJUSTES PENDENTES',
                           style: TextStyle(
                             color: ready ? AppColors.green : AppColors.warning,
-                            fontSize: 8.6,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .2,
                           ),
@@ -278,7 +278,7 @@ class _StatusPill extends StatelessWidget {
               label,
               style: TextStyle(
                 color: active ? AppColors.green : AppColors.textSecondary,
-                fontSize: 8.3,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
                 letterSpacing: .25,
               ),
@@ -316,7 +316,7 @@ class _WideInfoPill extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.white,
-                  fontSize: 9.5,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
               ),

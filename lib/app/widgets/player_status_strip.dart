@@ -80,7 +80,7 @@ class PlayerStatusStrip extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontSize: compact ? 8.5 : 10,
+                fontSize: 10,
                 fontWeight: FontWeight.w800,
               ),
             ),

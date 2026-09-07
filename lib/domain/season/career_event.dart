@@ -24,6 +24,7 @@ class CareerEvent {
     this.fixtureId,
     this.negotiationId,
     this.amount,
+    this.read = false,
   });
 
   final String id;
@@ -36,6 +37,21 @@ class CareerEvent {
   final String? fixtureId;
   final String? negotiationId;
   final int? amount;
+  final bool read;
+
+  CareerEvent copyWith({bool? read}) => CareerEvent(
+        id: id,
+        date: date,
+        type: type,
+        title: title,
+        message: message,
+        playerId: playerId,
+        clubId: clubId,
+        fixtureId: fixtureId,
+        negotiationId: negotiationId,
+        amount: amount,
+        read: read ?? this.read,
+      );
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -48,6 +64,7 @@ class CareerEvent {
         'fixtureId': fixtureId,
         'negotiationId': negotiationId,
         'amount': amount,
+        'read': read,
       };
 
   factory CareerEvent.fromJson(Map<String, dynamic> json) => CareerEvent(
@@ -64,5 +81,8 @@ class CareerEvent {
         fixtureId: json['fixtureId'] as String?,
         negotiationId: json['negotiationId'] as String?,
         amount: json['amount'] as int?,
+        // Notícias de saves anteriores à introdução deste campo não devem
+        // reaparecer em massa como pendências.
+        read: json.containsKey('read') ? json['read'] == true : true,
       );
 }

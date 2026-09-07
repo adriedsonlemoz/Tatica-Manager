@@ -315,7 +315,7 @@ class _TransferClubSummary extends StatelessWidget {
               children: [
                 const Text(
                   'ORÇAMENTO',
-                  style: TextStyle(color: AppColors.muted, fontSize: 9),
+                  style: TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
                 Text(
                   formatMoney(club.transferBudget),
@@ -327,7 +327,7 @@ class _TransferClubSummary extends StatelessWidget {
                 const SizedBox(height: 5),
                 const Text(
                   'FOLHA MENSAL',
-                  style: TextStyle(color: AppColors.muted, fontSize: 9),
+                  style: TextStyle(color: AppColors.muted, fontSize: 10),
                 ),
                 Text(
                   formatMoney(club.payroll),

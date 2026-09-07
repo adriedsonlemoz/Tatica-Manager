@@ -36,7 +36,7 @@ class DashboardSectionHeader extends StatelessWidget {
                     subtitle!,
                     style: const TextStyle(
                       color: AppColors.muted,
-                      fontSize: 10,
+                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -113,7 +113,7 @@ class DashboardStatTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.muted,
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -125,7 +125,7 @@ class DashboardStatTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: color,
-                  fontSize: 9.5,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -169,7 +169,7 @@ class DashboardStatusPill extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: color,
-                  fontSize: 9.5,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w900,
                 ),
               ),

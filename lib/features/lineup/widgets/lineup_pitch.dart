@@ -60,7 +60,7 @@ class LineupPitch extends StatelessWidget {
                           'FORMAÇÃO $formationLabel',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 8.5,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .4,
                           ),
@@ -160,7 +160,7 @@ class _PlayerMarker extends StatelessWidget {
                           assignment.slot.role.label,
                           style: const TextStyle(
                             color: AppColors.muted,
-                            fontSize: 7.5,
+                            fontSize: 10,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -181,7 +181,7 @@ class _PlayerMarker extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.w800),
+                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
                     ),
                   ],
                 ),
