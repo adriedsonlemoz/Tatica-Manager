@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state/game_controller.dart';
 import '../../app/state/reward_controller.dart';
 import '../../app/widgets/common.dart';
+import '../../app/widgets/game_notice_dialog.dart';
 import '../../app/widgets/manager_avatar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
@@ -39,7 +40,16 @@ import 'match_day_presentation_screen.dart';
 import 'news_highlights_screen.dart';
 
 final _dayAdvanceBusyProvider =
-    StateProvider.autoDispose<bool>((ref) => false);
+    NotifierProvider<_DayAdvanceBusyController, bool>(
+  _DayAdvanceBusyController.new,
+);
+
+class _DayAdvanceBusyController extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setBusy(bool value) => state = value;
+}
 
 String _homeCompetitionLabel(String value) {
   const prefix = 'Campeonato Brasileiro ';
@@ -389,7 +399,7 @@ class HomeScreen extends ConsumerWidget {
     DateTime currentDate,
   ) async {
     if (ref.read(_dayAdvanceBusyProvider)) return;
-    ref.read(_dayAdvanceBusyProvider.notifier).state = true;
+    ref.read(_dayAdvanceBusyProvider.notifier).setBusy(true);
     final startedAt = DateTime.now();
     const minimumVisibleDuration = Duration(milliseconds: 1500);
     final nextDate = DateTime(
@@ -439,7 +449,7 @@ class HomeScreen extends ConsumerWidget {
         );
       }
     } finally {
-      ref.read(_dayAdvanceBusyProvider.notifier).state = false;
+      ref.read(_dayAdvanceBusyProvider.notifier).setBusy(false);
     }
   }
 

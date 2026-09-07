@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.141`
-**Android versionCode:** `142`
+**Release atual:** `0.1.1.142`
+**Android versionCode:** `143`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.141`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.142`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+142`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.141` e `versionCode 142`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+143`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.142` e `versionCode 143`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.141`, o pubspec é `0.1.1+142`; a próxima entrega normalmente será `0.1.1.142`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.142`, o pubspec é `0.1.1+143`; a próxima entrega normalmente será `0.1.1.143`.
+
+## Correção do analyzer do polimento — 0.1.1.142
+
+- corrige os erros do workflow 95 no `flutter analyze`;
+- substitui `StateProvider` por `NotifierProvider`, seguindo o padrão atual do Riverpod 3 e preservando o bloqueio contra múltiplos toques no Avançar Dia;
+- restaura o import explícito de `showGameNotice` usado ao abrir notícias sem destino de navegação;
+- corrige o parêntese excedente no teste estrutural da apresentação inicial da carreira;
+- não altera interface, Match Engine, recompensas, finanças ou regras de carreira da 0.1.1.141.
 
 ## Polimento visual e avisos globais — 0.1.1.141
 
@@ -492,7 +500,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.142`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.143`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

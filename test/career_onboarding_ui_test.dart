@@ -73,7 +73,10 @@ void main() {
     expect(arrival, contains('A partir daqui, a temporada começa oficialmente.'));
     expect(arrival, contains('mainAxisAlignment: MainAxisAlignment.center'));
     expect(arrival, contains('AppColors.surfaceRaised'));
-    expect(arrival.indexOf('ClubBadge('), lessThan(arrival.indexOf('ManagerAvatar('))));
+    expect(
+      arrival.indexOf('ClubBadge('),
+      lessThan(arrival.indexOf('ManagerAvatar(')),
+    );
     expect(arrival, isNot(contains('Color(0xFFE9E2D3)')));
     expect(arrival, isNot(contains('Icons.menu_rounded')));
   });
