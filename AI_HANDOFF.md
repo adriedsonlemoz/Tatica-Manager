@@ -8,14 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.142`
-- **Android versionCode:** `143`
+- **Release deste handoff:** `0.1.1.143`
+- **Android versionCode:** `144`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.143
+
+## Polimento visual orientado por vídeo
+
+- A transmissão usa a altura disponível para a narração, mas preserva a redução proporcional em aparelhos baixos e continua sem rolagem.
+- O placar prioriza `FIM DE JOGO` sobre o estado genérico de pausa; os controles sem função somem no encerramento e o histórico de narração permanece acessível antes do resumo.
+- As etiquetas dos jogadores mantêm uma margem visual maior no cálculo de colisão, sem alterar posições ou movimento.
+- A disciplina do perfil usa uma grade 2×2; prioridades do Auxiliar têm altura natural; e o menu Mais usa itens compactos com área de toque Material.
+- Match Engine, resultados, regras de PM, saves, finanças e Home não foram alterados.
+
+Consulte `docs/RELEASE_0.1.1.143.md`.
 
 ## Estado funcional da release 0.1.1.142
 
@@ -1129,12 +1141,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.142
-versionCode:         143
-pubspec:             0.1.1+143
+release/versionName: 0.1.1.143
+versionCode:         144
+pubspec:             0.1.1+144
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.143` e usar um `versionCode` maior que 143.
+A próxima alteração/entrega normalmente deve virar `0.1.1.144` e usar um `versionCode` maior que 144.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

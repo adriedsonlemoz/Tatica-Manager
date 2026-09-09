@@ -58,22 +58,21 @@ class TechnicalAssistantScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   _MatchRecommendation(report: report),
                   const SizedBox(height: 8),
-                  Expanded(
-                    child: _PrioritiesCard(
-                      priorities: report.priorities,
-                      onPriorityTap: (priority) {
-                        final playerId = priority.playerId;
-                        if (playerId == null) return;
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PlayerProfileScreen(
-                              playerId: playerId,
-                            ),
+                  _PrioritiesCard(
+                    priorities: report.priorities,
+                    onPriorityTap: (priority) {
+                      final playerId = priority.playerId;
+                      if (playerId == null) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PlayerProfileScreen(
+                            playerId: playerId,
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
+                  const Spacer(),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -540,66 +539,64 @@ class _PrioritiesCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Expanded(
-              child: Column(
-                children: [
-                  for (final priority in priorities)
-                    Expanded(
-                      child: InkWell(
-                        onTap: priority.playerId == null
-                            ? null
-                            : () => onPriorityTap(priority),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 5,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: _priorityColor(priority.level),
-                                borderRadius: BorderRadius.circular(99),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    priority.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                  Text(
-                                    priority.message,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: AppColors.muted,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (priority.playerId != null)
-                              const Icon(
-                                Icons.chevron_right_rounded,
-                                size: 16,
-                                color: AppColors.muted,
-                              ),
-                          ],
+            for (final priority in priorities)
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: InkWell(
+                  onTap: priority.playerId == null
+                      ? null
+                      : () => onPriorityTap(priority),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 7),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 5,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: _priorityColor(priority.level),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                priority.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              Text(
+                                priority.message,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.muted,
+                                  fontSize: 10.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (priority.playerId != null)
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            size: 16,
+                            color: AppColors.muted,
+                          ),
+                      ],
                     ),
-                ],
+                  ),
+                ),
               ),
-            ),
           ],
         ),
       );

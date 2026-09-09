@@ -12,11 +12,11 @@ STACK
 Flutter + Dart, Riverpod, SQLite (sqflite) e Flame apenas para a representação visual 2D da partida.
 
 VERSÃO ATUAL DESTE HANDOFF
-Release visível: 0.1.1.142
-Android versionCode: 143
-pubspec: 0.1.1+143
+Release visível: 0.1.1.143
+Android versionCode: 144
+pubspec: 0.1.1+144
 
-Novidade desta base: existe uma carteira global de Pontos de Manager fora dos saves e das finanças dos clubes. `RewardController` centraliza o estado; `RewardRules` centraliza os valores; e `SqliteCareerRepository`, como `RewardRepository`, grava carreira, evento idempotente, transações, saldo e progresso na mesma transação SQLite. Partidas usam `match:<careerId>:<fixtureId>` e temporadas usam `season:<careerId>:<season>`. A Home exibe apenas um chip compacto, o pós-jogo detalha os créditos e objetivos confirmados no fechamento da temporada mostram “Objetivo concluído”. Não crie gatilhos para copa, promoção, conquistas ou compras sem que suas condições reais existam no jogo. A carteira começa em zero e não há pagamento retroativo de saves antigos. Na 0.1.1.141, `GlobalNoticeHost` passou a exibir recompensas com prioridade pelo topo em qualquer tela; notícias persistem leitura; o Avançar Dia possui bloqueio e duração mínima; o Dia de Jogo não rola; tipografia e primeira apresentação da carreira foram revisadas. A 0.1.1.142 corrige somente os erros de análise estática apontados pelo workflow 95, sem mudar esses comportamentos. Preserve as integrações sem mover saldo de PM para os saves ou finanças dos clubes.
+Novidade desta base: existe uma carteira global de Pontos de Manager fora dos saves e das finanças dos clubes. `RewardController` centraliza o estado; `RewardRules` centraliza os valores; e `SqliteCareerRepository`, como `RewardRepository`, grava carreira, evento idempotente, transações, saldo e progresso na mesma transação SQLite. Partidas usam `match:<careerId>:<fixtureId>` e temporadas usam `season:<careerId>:<season>`. A Home exibe apenas um chip compacto, o pós-jogo detalha os créditos e objetivos confirmados no fechamento da temporada mostram “Objetivo concluído”. Não crie gatilhos para copa, promoção, conquistas ou compras sem que suas condições reais existam no jogo. A carteira começa em zero e não há pagamento retroativo de saves antigos. Na 0.1.1.141, `GlobalNoticeHost` passou a exibir recompensas com prioridade pelo topo em qualquer tela; notícias persistem leitura; o Avançar Dia possui bloqueio e duração mínima; o Dia de Jogo não rola; tipografia e primeira apresentação da carreira foram revisadas. A 0.1.1.142 corrige os erros de análise estática apontados pelo workflow 95. A 0.1.1.143 reorganiza somente as áreas confirmadas no vídeo: transmissão/fim de jogo, afastamento de nomes no campo, disciplina do jogador, prioridades do Auxiliar e menu Mais. Preserve essas integrações sem mover saldo de PM para os saves ou finanças dos clubes e sem alterar o Match Engine por motivos visuais.
 
 ANTES DE ALTERAR QUALQUER CÓDIGO
 1. Leia AI_HANDOFF.md.
@@ -58,7 +58,7 @@ VERSIONAMENTO — OBRIGATÓRIO EM TODA ENTREGA
 A fonte canônica da versão visível é VERSION.
 O padrão visível é A.B.C.D, por exemplo 0.1.1.110.
 O pubspec usa A.B.C+build; esse build é também o versionCode Android.
-Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.143 com versionCode > 143.
+Antes de qualquer nova entrega, incremente a versão. Partindo deste handoff, a próxima normalmente será 0.1.1.144 com versionCode > 144.
 
 Atualize VERSION e o build do pubspec.yaml, depois execute:
 python3 tool/versioning.py sync

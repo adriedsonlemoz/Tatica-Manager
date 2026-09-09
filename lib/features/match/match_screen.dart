@@ -291,6 +291,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                 events: result.events,
                 throughSequence: currentSequence,
                 paused: paused,
+                fullTime: fullTime,
               ),
             ),
             LiveRoundTicker(
@@ -301,16 +302,24 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
             ),
             Expanded(
               child: LayoutBuilder(
-                builder: (context, constraints) => Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: constraints.maxWidth - 24,
-                      height: (constraints.maxWidth - 24) * 68 / 105 + 289,
-                      child: Column(
-                        children: [
+                builder: (context, constraints) {
+                  final contentWidth = constraints.maxWidth - 24;
+                  final minimumHeight = contentWidth * 68 / 105 +
+                      (fullTime ? 320 : 289);
+                  final availableHeight = constraints.maxHeight - 8;
+                  final contentHeight = availableHeight > minimumHeight
+                      ? availableHeight
+                      : minimumHeight;
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: contentWidth,
+                        height: contentHeight,
+                        child: Column(
+                          children: [
                           LiveMatchPitchPanel(
                             game: pitchGame,
                             event: presentedEvent,
@@ -341,38 +350,39 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                             throughSequence: currentSequence,
                           ),
                           const SizedBox(height: 5),
-                          LiveMatchControlBar(
-                            paused: paused,
-                            enabled: !fullTime,
-                            onPauseToggle: () {
-                              if (atHalftime) {
-                                _startSecondHalf();
-                              } else {
-                                setState(() => paused = !paused);
-                              }
-                            },
-                            onSimulate: () => _simulate(context, live),
-                            soundEnabled: career.settings.sound,
-                            onSoundToggle: () async {
-                              final settings = career.settings.copyWith(
-                                sound: !career.settings.sound,
-                              );
-                              await ref
-                                  .read(gameControllerProvider.notifier)
-                                  .updateSettings(settings);
-                              await _audioManager.applySettings(settings);
-                            },
-                            onTactic: () =>
-                                _liveTactic(context, ref, live.userTactic),
-                            onSubstitution: () => _substitution(
-                              context,
-                              ref,
-                              userClub.squad,
-                              live.userStarterIds,
-                              Color(userClub.colors.primaryHex),
+                          if (!fullTime) ...[
+                            LiveMatchControlBar(
+                              paused: paused,
+                              onPauseToggle: () {
+                                if (atHalftime) {
+                                  _startSecondHalf();
+                                } else {
+                                  setState(() => paused = !paused);
+                                }
+                              },
+                              onSimulate: () => _simulate(context, live),
+                              soundEnabled: career.settings.sound,
+                              onSoundToggle: () async {
+                                final settings = career.settings.copyWith(
+                                  sound: !career.settings.sound,
+                                );
+                                await ref
+                                    .read(gameControllerProvider.notifier)
+                                    .updateSettings(settings);
+                                await _audioManager.applySettings(settings);
+                              },
+                              onTactic: () =>
+                                  _liveTactic(context, ref, live.userTactic),
+                              onSubstitution: () => _substitution(
+                                context,
+                                ref,
+                                userClub.squad,
+                                live.userStarterIds,
+                                Color(userClub.colors.primaryHex),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
+                            const SizedBox(height: 6),
+                          ],
                           LiveMatchStatsCard(
                             events: result.events,
                             minute: minute,
@@ -385,41 +395,64 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                             throughSequence: currentSequence,
                           ),
                           const SizedBox(height: 6),
-                          SizedBox(
-                            height: 105,
-                            child: fullTime
-                                ? _MatchPhaseActionBar(
-                                    icon: Icons.sports_score_rounded,
-                                    title: 'Fim de jogo',
-                                    message:
-                                        '${home.name} ${currentScore.display} ${away.name}',
-                                    buttonLabel: 'Ver resumo',
-                                    onPressed: _finish,
-                                  )
-                                : atHalftime
-                                    ? _MatchPhaseActionBar(
-                                        icon: Icons.pause_circle_filled_rounded,
-                                        title: 'Intervalo',
-                                        message:
-                                            'Ajuste a equipe ou inicie o segundo tempo.',
-                                        buttonLabel: '2º tempo',
-                                        onPressed: _startSecondHalf,
-                                      )
-                                    : LiveMatchNarrationPanel(
-                                        events: result.events,
-                                        minute: minute,
-                                        throughSequence: currentSequence,
-                                        home: home,
-                                        away: away,
-                                        userClubId: userClub.id,
-                                        playersById: playersById,
+                          if (fullTime) ...[
+                            Expanded(
+                              child: LiveMatchNarrationPanel(
+                                events: result.events,
+                                minute: minute,
+                                throughSequence: currentSequence,
+                                home: home,
+                                away: away,
+                                userClubId: userClub.id,
+                                playersById: playersById,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              height: 82,
+                              child: _MatchPhaseActionBar(
+                                icon: Icons.sports_score_rounded,
+                                title: 'Fim de jogo',
+                                message:
+                                    '${home.name} ${currentScore.display} ${away.name}',
+                                buttonLabel: 'Ver resumo',
+                                onPressed: _finish,
+                              ),
+                            ),
+                          ] else
+                            Expanded(
+                              child: atHalftime
+                                  ? Align(
+                                      alignment: Alignment.topCenter,
+                                      child: SizedBox(
+                                        height: 105,
+                                        child: _MatchPhaseActionBar(
+                                          icon:
+                                              Icons.pause_circle_filled_rounded,
+                                          title: 'Intervalo',
+                                          message:
+                                              'Ajuste a equipe ou inicie o segundo tempo.',
+                                          buttonLabel: '2º tempo',
+                                          onPressed: _startSecondHalf,
+                                        ),
                                       ),
-                          ),
-                        ],
-                      ),
+                                    )
+                                  : LiveMatchNarrationPanel(
+                                      events: result.events,
+                                      minute: minute,
+                                      throughSequence: currentSequence,
+                                      home: home,
+                                      away: away,
+                                      userClubId: userClub.id,
+                                      playersById: playersById,
+                                    ),
+                              ),
+                          ],
+                        ),
                     ),
                   ),
-                ),
+                );
+                },
               ),
             ),
           ],

@@ -11,7 +11,6 @@ class LiveMatchControlBar extends StatelessWidget {
   const LiveMatchControlBar({
     super.key,
     required this.paused,
-    required this.enabled,
     required this.onPauseToggle,
     required this.onSimulate,
     required this.soundEnabled,
@@ -21,7 +20,6 @@ class LiveMatchControlBar extends StatelessWidget {
   });
 
   final bool paused;
-  final bool enabled;
   final VoidCallback onPauseToggle;
   final VoidCallback onSimulate;
   final bool soundEnabled;
@@ -48,22 +46,22 @@ class LiveMatchControlBar extends StatelessWidget {
               icon: paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
               label: paused ? 'CONTINUAR' : 'PAUSAR',
               selected: paused,
-              onTap: enabled ? onPauseToggle : null,
+              onTap: onPauseToggle,
             ),
             _MatchActionButton(
               icon: Icons.fast_forward_rounded,
               label: 'SIMULAR',
-              onTap: enabled ? onSimulate : null,
+              onTap: onSimulate,
             ),
             _MatchActionButton(
               icon: Icons.tune_rounded,
               label: 'TÁTICA',
-              onTap: enabled ? onTactic : null,
+              onTap: onTactic,
             ),
             _MatchActionButton(
               icon: Icons.swap_horiz_rounded,
               label: 'TROCAR',
-              onTap: enabled ? onSubstitution : null,
+              onTap: onSubstitution,
             ),
             _MatchActionButton(
               icon: soundEnabled

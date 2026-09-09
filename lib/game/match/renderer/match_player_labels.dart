@@ -96,7 +96,12 @@ abstract final class MatchPlayerLabels {
       if (result == null) continue;
       final rect = result.$1;
       placement.anchorIndex = result.$2;
-      accepted.add(rect.inflate(1.2 * interfaceScale));
+      // Mantém uma margem real entre etiquetas. O retângulo de colisão antigo
+      // evitava interseção matemática, mas ainda deixava nomes visualmente
+      // colados quando vários jogadores terminavam o lance na mesma região.
+      accepted.add(
+        rect.inflate((emphasized ? 2.4 : 4.0) * interfaceScale),
+      );
       _drawLabel(
         canvas,
         rect: rect,

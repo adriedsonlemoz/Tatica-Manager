@@ -187,30 +187,50 @@ class PlayerProfileScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Metric(
-                      label: 'Amarelos atuais',
-                      value:
-                          '${discipline.yellowCards}/${PlayerDiscipline.yellowCardSuspensionThreshold}',
-                    ),
-                    Metric(
-                      label: 'Amarelos no torneio',
-                      value: '${competitionStats.yellowCards}',
-                    ),
-                    Metric(
-                      label: 'Vermelhos',
-                      value: '${competitionStats.redCards}',
-                    ),
-                    Metric(
-                      label: 'Situação',
-                      value: discipline.isSuspended
-                          ? '${discipline.suspendedRounds}J'
-                          : discipline.isAtRisk
-                              ? 'Pendurado'
-                              : 'Regular',
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    const spacing = 8.0;
+                    final itemWidth = (constraints.maxWidth - spacing) / 2;
+                    return Wrap(
+                      spacing: spacing,
+                      runSpacing: spacing,
+                      children: [
+                        SizedBox(
+                          width: itemWidth,
+                          child: _DisciplineMetric(
+                            label: 'Amarelos atuais',
+                            value:
+                                '${discipline.yellowCards}/${PlayerDiscipline.yellowCardSuspensionThreshold}',
+                          ),
+                        ),
+                        SizedBox(
+                          width: itemWidth,
+                          child: _DisciplineMetric(
+                            label: 'Amarelos no torneio',
+                            value: '${competitionStats.yellowCards}',
+                          ),
+                        ),
+                        SizedBox(
+                          width: itemWidth,
+                          child: _DisciplineMetric(
+                            label: 'Vermelhos',
+                            value: '${competitionStats.redCards}',
+                          ),
+                        ),
+                        SizedBox(
+                          width: itemWidth,
+                          child: _DisciplineMetric(
+                            label: 'Situação',
+                            value: discipline.isSuspended
+                                ? '${discipline.suspendedRounds}J'
+                                : discipline.isAtRisk
+                                    ? 'Pendurado'
+                                    : 'Regular',
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -424,6 +444,48 @@ class _RatingPill extends StatelessWidget {
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
               ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _DisciplineMetric extends StatelessWidget {
+  const _DisciplineMetric({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        constraints: const BoxConstraints(minHeight: 62),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceRaised,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.muted,
+                    height: 1.15,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
           ],
         ),

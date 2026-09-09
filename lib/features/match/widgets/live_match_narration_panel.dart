@@ -30,74 +30,87 @@ class LiveMatchNarrationPanel extends StatelessWidget {
   final Map<String, Player> playersById;
 
   @override
-  Widget build(BuildContext context) {
-    final narration = MatchEventPresentation.visible(
-      events,
-      minute,
-      limit: 2,
-      throughSequence: throughSequence,
-      filter: MatchNarrationFilter.important,
-      userClubId: userClubId,
-    );
-    return SectionCard(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 7),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.graphic_eq_rounded,
-                size: 15,
-                color: AppColors.green,
-              ),
-              const SizedBox(width: 6),
-              const Text(
-                'NARRAÇÃO AO VIVO',
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .35,
-                ),
-              ),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: () => _openHistory(context),
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 7),
-                  minimumSize: const Size(0, 27),
-                ),
-                icon: const Icon(Icons.history_rounded, size: 14),
-                label: const Text('Histórico', style: TextStyle(fontSize: 10)),
-              ),
-            ],
-          ),
-          Expanded(
-            child: narration.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Aguardando o primeiro lance importante.',
-                      style: TextStyle(color: AppColors.muted, fontSize: 10),
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          final visibleLines = constraints.maxHeight >= 190
+              ? 4
+              : constraints.maxHeight >= 145
+                  ? 3
+                  : 2;
+          final narration = MatchEventPresentation.visible(
+            events,
+            minute,
+            limit: visibleLines,
+            throughSequence: throughSequence,
+            filter: MatchNarrationFilter.important,
+            userClubId: userClubId,
+          );
+          return SectionCard(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 7),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.graphic_eq_rounded,
+                      size: 15,
+                      color: AppColors.green,
                     ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (final event in narration)
-                        Expanded(
-                          child: _CompactNarrationLine(
-                            event: event,
-                            teamName: _teamName(event),
-                            player: playersById[event.playerId],
+                    const SizedBox(width: 6),
+                    const Text(
+                      'NARRAÇÃO AO VIVO',
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: .35,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton.icon(
+                      onPressed: () => _openHistory(context),
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        minimumSize: const Size(0, 27),
+                      ),
+                      icon: const Icon(Icons.history_rounded, size: 14),
+                      label: const Text(
+                        'Histórico',
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: narration.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Aguardando o primeiro lance importante.',
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 10,
+                            ),
                           ),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (final event in narration)
+                              Expanded(
+                                child: _CompactNarrationLine(
+                                  event: event,
+                                  teamName: _teamName(event),
+                                  player: playersById[event.playerId],
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
+                ),
+              ],
+            ),
+          );
+        },
+      );
 
   String _teamName(MatchEvent event) {
     if (event.teamId == home.id) return home.name;

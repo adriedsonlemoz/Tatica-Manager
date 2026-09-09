@@ -53,7 +53,7 @@ class MoreScreen extends ConsumerWidget {
       (icon: Icons.settings_rounded, label: 'Configurações', subtitle: 'Save e preferências', page: const SettingsScreen()),
     ];
     return PremiumScaffold(
-      body: ListView(padding: const EdgeInsets.fromLTRB(14, 18, 14, 110), children: [
+      body: ListView(padding: const EdgeInsets.fromLTRB(14, 12, 14, 96), children: [
         Row(
           children: [
             if (showBackButton) ...[
@@ -78,22 +78,25 @@ class MoreScreen extends ConsumerWidget {
               : '${career.manager.preferredName} • sem clube • temporada ${career.season}',
           style: const TextStyle(color: AppColors.muted),
         ),
-        const SizedBox(height: 14),
-        SectionCard(child: Row(children: [
-          Image.asset('assets/brand/tatica-manager-icon.png', width: 52, height: 52),
-          const SizedBox(width: 12),
+        const SizedBox(height: 10),
+        SectionCard(padding: const EdgeInsets.all(12), child: Row(children: [
+          Image.asset('assets/brand/tatica-manager-icon.png', width: 42, height: 42),
+          const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Tática Manager', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)), Text('Gerencie. Escala. Vence.', style: TextStyle(color: AppColors.green))])),
         ])),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         ...items.map((item) => SectionCard(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 6),
           padding: EdgeInsets.zero,
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-            leading: Container(width: 42, height: 42, alignment: Alignment.center, decoration: BoxDecoration(color: AppColors.green.withValues(alpha: .10), borderRadius: BorderRadius.circular(12)), child: Icon(item.icon, color: AppColors.green)),
-            title: Text(item.label, style: const TextStyle(fontWeight: FontWeight.w800)),
-            subtitle: Text(item.subtitle),
-            trailing: const Icon(Icons.chevron_right_rounded),
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            minTileHeight: 52,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            leading: Container(width: 36, height: 36, alignment: Alignment.center, decoration: BoxDecoration(color: AppColors.green.withValues(alpha: .10), borderRadius: BorderRadius.circular(10)), child: Icon(item.icon, size: 22, color: AppColors.green)),
+            title: Text(item.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
+            subtitle: Text(item.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+            trailing: const Icon(Icons.chevron_right_rounded, size: 22),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => item.page)),
           ),
         )),

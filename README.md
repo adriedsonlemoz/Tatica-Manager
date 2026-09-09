@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.142`
-**Android versionCode:** `143`
+**Release atual:** `0.1.1.143`
+**Android versionCode:** `144`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,24 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.142`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.143`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+143`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.142` e `versionCode 143`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+144`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.143` e `versionCode 144`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.142`, o pubspec é `0.1.1+143`; a próxima entrega normalmente será `0.1.1.143`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.143`, o pubspec é `0.1.1+144`; a próxima entrega normalmente será `0.1.1.144`.
+
+## Polimento visual orientado por vídeo — 0.1.1.143
+
+- faz a transmissão ao vivo ocupar a altura disponível e amplia responsivamente a quantidade de lances úteis na narração;
+- cria um estado visual explícito de fim de jogo, sem exibir `PAUSADO` ao mesmo tempo, remove os comandos já indisponíveis e mantém narração, estatísticas e ação de resumo;
+- aumenta a margem de colisão entre etiquetas de jogadores para evitar nomes visualmente colados em regiões congestionadas do campo;
+- reorganiza a disciplina do perfil em uma grade responsiva de duas colunas, evitando quatro textos comprimidos na mesma linha;
+- faz o card de prioridades do Auxiliar técnico acompanhar apenas a altura do conteúdo e preserva as ações principais no rodapé da composição;
+- compacta os atalhos do menu Mais sem remover destinos ou descrições;
+- não altera Match Engine, placares, probabilidades, recompensas, persistência, finanças nem o layout da Home.
 
 ## Correção do analyzer do polimento — 0.1.1.142
 
@@ -500,7 +510,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.143`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.144`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

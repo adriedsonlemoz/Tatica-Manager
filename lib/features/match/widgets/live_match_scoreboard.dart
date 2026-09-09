@@ -16,6 +16,7 @@ class LiveMatchScoreboard extends StatelessWidget {
     required this.events,
     this.throughSequence,
     required this.paused,
+    required this.fullTime,
   });
 
   final Club home;
@@ -26,6 +27,7 @@ class LiveMatchScoreboard extends StatelessWidget {
   final List<MatchEvent> events;
   final int? throughSequence;
   final bool paused;
+  final bool fullTime;
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +74,20 @@ class LiveMatchScoreboard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _LiveStatus(paused: paused),
+                      _LiveStatus(paused: paused, fullTime: fullTime),
                       const Spacer(),
-                      Text(
-                        '$phaseLabel  •',
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: .3,
+                      if (!fullTime) ...[
+                        Text(
+                          '$phaseLabel  •',
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: .3,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 5),
+                        const SizedBox(width: 5),
+                      ],
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 180),
                         child: Text(
@@ -173,31 +177,47 @@ class LiveMatchScoreboard extends StatelessWidget {
 }
 
 class _LiveStatus extends StatelessWidget {
-  const _LiveStatus({required this.paused});
+  const _LiveStatus({required this.paused, required this.fullTime});
 
   final bool paused;
+  final bool fullTime;
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            paused ? Icons.pause_rounded : Icons.circle,
-            color: paused ? AppColors.warning : AppColors.green,
-            size: paused ? 14 : 8,
+  Widget build(BuildContext context) {
+    final color = fullTime
+        ? AppColors.green
+        : paused
+            ? AppColors.warning
+            : AppColors.green;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          fullTime
+              ? Icons.sports_score_rounded
+              : paused
+                  ? Icons.pause_rounded
+                  : Icons.circle,
+          color: color,
+          size: fullTime || paused ? 14 : 8,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          fullTime
+              ? 'FIM DE JOGO'
+              : paused
+                  ? 'PAUSADO'
+                  : 'AO VIVO',
+          style: TextStyle(
+            color: color,
+            fontSize: 11.5,
+            fontWeight: FontWeight.w900,
+            letterSpacing: .55,
           ),
-          const SizedBox(width: 6),
-          Text(
-            paused ? 'PAUSADO' : 'AO VIVO',
-            style: TextStyle(
-              color: paused ? AppColors.warning : AppColors.green,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w900,
-              letterSpacing: .55,
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 }
 
 class _ClubSide extends StatelessWidget {
