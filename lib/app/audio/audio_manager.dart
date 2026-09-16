@@ -361,7 +361,7 @@ class AudioManager {
           .clamp(0.0, 1.0)
           .toDouble();
   double get _ambienceVolume =>
-      (_matchVolume * .18).clamp(0.0, 1.0).toDouble();
+      (_matchVolume * .16).clamp(0.0, 1.0).toDouble();
   bool get _narrationEnabled =>
       _masterEnabled && _settings.audio.narrationEnabled;
   double get _narrationVolume =>

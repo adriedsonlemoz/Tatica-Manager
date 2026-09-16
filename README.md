@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.144`
-**Android versionCode:** `145`
+**Release atual:** `0.1.1.145`
+**Android versionCode:** `146`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,22 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.144`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.145`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+145`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.144` e `versionCode 145`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+146`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.145` e `versionCode 146`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.144`, o pubspec é `0.1.1+145`; a próxima entrega normalmente será `0.1.1.145`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.145`, o pubspec é `0.1.1+146`; a próxima entrega normalmente será `0.1.1.146`.
+
+## Áudio de partida renovado — 0.1.1.145
+
+- substitui o ambiente contínuo anterior por uma faixa de estádio gerada pelo usuário, tratada em WAV 48 kHz e preparada com costura de loop para reduzir cortes e artefatos de compressão;
+- integra novos efeitos tratados de chute, bola na trave, defesa do goleiro, gol e pênalti defendido sem alterar o Match Engine nem a ordem dos eventos;
+- mantém os demais efeitos existentes quando os clipes novos não ficaram suficientemente isolados, evitando trocar sons por trechos ambíguos;
+- reduz o ambiente de 18% para 16% do volume efetivo da partida, mantendo torcida ao fundo e liberando espaço para efeitos e narração;
+- preserva personalização de sons, opção de áudio limpo, TTS, músicas do menu e controles existentes.
 
 ## Elenco organizado e menu ajustado — 0.1.1.144
 
@@ -519,7 +527,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.145`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.146`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 

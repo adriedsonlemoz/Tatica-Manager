@@ -64,7 +64,7 @@ class MenuTrackInfo {
 
 abstract final class AudioCatalog {
   static const matchAmbienceAsset =
-      'assets/audio/match/stadium_ambience.m4a';
+      'assets/audio/match/stadium_ambience_field.wav';
 
   static const cleanMatchCues = {
     MatchAudioCue.kickoff,
@@ -130,7 +130,7 @@ abstract final class AudioCatalog {
     MatchAudioCue.halftime: 'assets/audio/match/halftime.mp3',
     MatchAudioCue.secondHalf: 'assets/audio/match/kickoff.mp3',
     MatchAudioCue.fulltime: 'assets/audio/match/fulltime.mp3',
-    MatchAudioCue.goal: 'assets/audio/match/goal.mp3',
+    MatchAudioCue.goal: 'assets/audio/match/goal_field.wav',
     MatchAudioCue.yellowCard: 'assets/audio/match/yellow_card.mp3',
     MatchAudioCue.redCard: 'assets/audio/match/red_card.mp3',
     MatchAudioCue.foul: 'assets/audio/match/foul.mp3',
@@ -139,11 +139,11 @@ abstract final class AudioCatalog {
     MatchAudioCue.corner: 'assets/audio/match/corner.mp3',
     MatchAudioCue.offside: 'assets/audio/match/offside.mp3',
     MatchAudioCue.goalKick: 'assets/audio/match/goal_kick.mp3',
-    MatchAudioCue.shot: 'assets/audio/match/shot.mp3',
-    MatchAudioCue.save: 'assets/audio/match/save.mp3',
-    MatchAudioCue.woodwork: 'assets/audio/match/woodwork.wav',
+    MatchAudioCue.shot: 'assets/audio/match/shot_field.wav',
+    MatchAudioCue.save: 'assets/audio/match/save_field.wav',
+    MatchAudioCue.woodwork: 'assets/audio/match/woodwork_field.wav',
     MatchAudioCue.penalty: 'assets/audio/match/penalty.wav',
-    MatchAudioCue.penaltySaved: 'assets/audio/match/penalty_saved.wav',
+    MatchAudioCue.penaltySaved: 'assets/audio/match/penalty_saved_field.wav',
     MatchAudioCue.injury: 'assets/audio/match/injury.wav',
   };
 

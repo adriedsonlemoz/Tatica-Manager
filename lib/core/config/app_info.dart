@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.144';
+  static const String version = '0.1.1.145';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.145',
+      title: 'Áudio de partida renovado',
+      changes: [
+        'Substitui o ambiente contínuo por uma torcida tratada e preparada para loop.',
+        'Integra novos sons de chute, trave, defesa, gol e pênalti defendido.',
+        'Reduz o ganho do ambiente para manter efeitos e narração claros sem chiado constante.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.144',
       title: 'Elenco organizado e menu ajustado',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Aproveita melhor a altura da transmissão e organiza o fim de jogo.',
         'Aumenta a separação visual entre nomes no campo e corrige a disciplina.',
         'Compacta as prioridades do auxiliar e os atalhos da tela Mais.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.142',
-      title: 'Correção do analyzer do polimento',
-      changes: [
-        'Adapta o controle do Avançar Dia ao NotifierProvider do Riverpod 3.',
-        'Restaura o import explícito do diálogo de notícias.',
-        'Corrige a sintaxe do teste da apresentação inicial da carreira.',
       ],
     ),
   ];

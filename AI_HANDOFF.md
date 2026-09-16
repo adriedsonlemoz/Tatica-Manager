@@ -8,14 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.144`
-- **Android versionCode:** `145`
+- **Release deste handoff:** `0.1.1.145`
+- **Android versionCode:** `146`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.145
+
+## Áudio de partida renovado
+
+- O ambiente da partida usa `stadium_ambience_field.wav`, derivado do clipe fornecido pelo usuário e preparado para loop com filtragem leve de extremos de frequência.
+- Chute, trave, defesa, gol e pênalti defendido apontam para os novos assets `*_field.wav`; os demais eventos mantêm os efeitos anteriores por segurança.
+- A camada de áudio continua independente do Match Engine. O ambiente usa 16% do volume efetivo da partida e sofre ducking durante eventos importantes.
+- Os clipes que não ofereceram separação confiável não foram ligados ao runtime, evitando efeitos incorretos ou fora de sincronia.
+- Personalização de sons, áudio limpo, TTS e playlist de menu continuam preservados.
+
+Consulte `docs/RELEASE_0.1.1.145.md`.
 
 ## Estado funcional da release 0.1.1.144
 
@@ -1155,11 +1167,11 @@ Para esta release:
 
 ```text
 release/versionName: 0.1.1.144
-versionCode:         145
-pubspec:             0.1.1+145
+versionCode:         146
+pubspec:             0.1.1+146
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.145` e usar um `versionCode` maior que 145.
+A próxima alteração/entrega normalmente deve virar `0.1.1.146` e usar um `versionCode` maior que 146.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

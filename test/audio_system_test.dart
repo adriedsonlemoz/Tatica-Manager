@@ -109,6 +109,15 @@ void main() {
       isTrue,
       reason: AudioCatalog.matchAmbienceAsset,
     );
+    expect(AudioCatalog.matchAmbienceAsset, endsWith('stadium_ambience_field.wav'));
+    expect(AudioCatalog.matchAssets[MatchAudioCue.goal], endsWith('goal_field.wav'));
+    expect(AudioCatalog.matchAssets[MatchAudioCue.shot], endsWith('shot_field.wav'));
+    expect(AudioCatalog.matchAssets[MatchAudioCue.save], endsWith('save_field.wav'));
+    expect(AudioCatalog.matchAssets[MatchAudioCue.woodwork], endsWith('woodwork_field.wav'));
+    expect(
+      AudioCatalog.matchAssets[MatchAudioCue.penaltySaved],
+      endsWith('penalty_saved_field.wav'),
+    );
     expect(
       AudioCatalog.uiAssets[UiAudioCue.navigation],
       'assets/audio/ui/navigation.mp3',
@@ -142,6 +151,13 @@ void main() {
     final generator = File('tool/generate_audio_assets.py').readAsStringSync();
     expect(generator, isNot(contains('menu_{idx:02d}.m4a')));
     expect(generator, isNot(contains('5 original menu loops')));
+  });
+
+  test('mixagem de estádio usa ambiente tratado em volume de fundo', () {
+    final manager = File('lib/app/audio/audio_manager.dart').readAsStringSync();
+    expect(manager, contains('_matchVolume * .16'));
+    expect(manager, contains('setLoopMode(LoopMode.one)'));
+    expect(manager, contains('_duckAmbience'));
   });
 
   test('duração, velocidade legada e bola recebem defaults retrocompatíveis', () {
