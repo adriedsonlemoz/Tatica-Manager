@@ -8,14 +8,27 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.143`
-- **Android versionCode:** `144`
+- **Release deste handoff:** `0.1.1.144`
+- **Android versionCode:** `145`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.144
+
+## Elenco organizado e menu ajustado
+
+- O Elenco agrupa os jogadores por goleiros, defensores, meio-campistas e atacantes dentro da mesma tabela e mantém busca, filtros e acesso ao perfil.
+- A segunda linha de cada atleta usa `Player.age` e um estado derivado somente de dados existentes; a posição permanece apenas na coluna POS.
+- Lesão e suspensão têm prioridade sobre condição, fadiga e moral e recebem fundo, contorno, cor e texto de atenção sem aumentar a altura da linha.
+- O resumo do clube fica menor sem perder identidade, temporada, reputação, saldo e orçamento; POS, GER e Cartões permanecem visíveis.
+- A tela Mais reduz somente o padding inferior após Configurações, sem criar opções e sem desfazer a compactação da release anterior.
+- Não foram alterados modelos persistidos, regras de disponibilidade, Match Engine, recompensas, finanças ou detalhes do perfil do jogador.
+
+Consulte `docs/RELEASE_0.1.1.144.md`.
 
 ## Estado funcional da release 0.1.1.143
 
@@ -1141,12 +1154,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.143
-versionCode:         144
-pubspec:             0.1.1+144
+release/versionName: 0.1.1.144
+versionCode:         145
+pubspec:             0.1.1+145
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.144` e usar um `versionCode` maior que 144.
+A próxima alteração/entrega normalmente deve virar `0.1.1.145` e usar um `versionCode` maior que 145.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

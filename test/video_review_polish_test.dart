@@ -64,6 +64,6 @@ void main() {
     expect(more, contains('visualDensity: VisualDensity.compact'));
     expect(more, contains('minTileHeight: 52'));
     expect(more, contains('width: 36, height: 36'));
-    expect(more, contains('EdgeInsets.fromLTRB(14, 12, 14, 96)'));
+    expect(more, contains('EdgeInsets.fromLTRB(14, 12, 14, 20)'));
   });
 }

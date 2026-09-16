@@ -53,7 +53,7 @@ class MoreScreen extends ConsumerWidget {
       (icon: Icons.settings_rounded, label: 'Configurações', subtitle: 'Save e preferências', page: const SettingsScreen()),
     ];
     return PremiumScaffold(
-      body: ListView(padding: const EdgeInsets.fromLTRB(14, 12, 14, 96), children: [
+      body: ListView(padding: const EdgeInsets.fromLTRB(14, 12, 14, 20), children: [
         Row(
           children: [
             if (showBackButton) ...[

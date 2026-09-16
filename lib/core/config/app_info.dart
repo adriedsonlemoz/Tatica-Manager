@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.143';
+  static const String version = '0.1.1.144';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.144',
+      title: 'Elenco organizado e menu ajustado',
+      changes: [
+        'Organiza o elenco por goleiros, defensores, meio-campistas e atacantes.',
+        'Mostra idade e situação real sem repetir a posição do jogador.',
+        'Destaca lesões e suspensões e elimina a folga excessiva após Configurações.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.143',
       title: 'Polimento visual orientado por vídeo',
@@ -28,15 +37,6 @@ abstract final class AppInfo {
         'Adapta o controle do Avançar Dia ao NotifierProvider do Riverpod 3.',
         'Restaura o import explícito do diálogo de notícias.',
         'Corrige a sintaxe do teste da apresentação inicial da carreira.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.141',
-      title: 'Polimento visual e avisos globais',
-      changes: [
-        'Prioriza recompensas em um card global que desliza pelo topo.',
-        'Melhora tipografia, leitura de notícias e apresentação da carreira.',
-        'Torna o avanço de dia natural e mantém o Dia de Jogo sem rolagem.',
       ],
     ),
   ];

@@ -136,7 +136,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
             reputation: club.reputation,
             balance: club.money,
             transferBudget: club.transferBudget,
-            badge: ClubBadge(club: club, size: 64),
+            badge: ClubBadge(club: club, size: 56),
           ),
           const SizedBox(height: 10),
           _SquadTable(
@@ -203,6 +203,34 @@ extension on _SquadFilter {
       };
 }
 
+enum _SquadPositionGroup {
+  goalkeepers('Goleiros'),
+  defenders('Defensores'),
+  midfielders('Meio-campistas'),
+  attackers('Atacantes');
+
+  const _SquadPositionGroup(this.label);
+
+  final String label;
+
+  bool includes(PlayerPosition position) => switch (this) {
+        _SquadPositionGroup.goalkeepers => position == PlayerPosition.gol,
+        _SquadPositionGroup.defenders =>
+          position == PlayerPosition.ld ||
+              position == PlayerPosition.zag ||
+              position == PlayerPosition.le,
+        _SquadPositionGroup.midfielders =>
+          position == PlayerPosition.vol ||
+              position == PlayerPosition.mc ||
+              position == PlayerPosition.mei,
+        _SquadPositionGroup.attackers =>
+          position == PlayerPosition.pd ||
+              position == PlayerPosition.pe ||
+              position == PlayerPosition.sa ||
+              position == PlayerPosition.ca,
+      };
+}
+
 class _ClubSummaryCard extends StatelessWidget {
   const _ClubSummaryCard({
     required this.clubName,
@@ -222,7 +250,7 @@ class _ClubSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
@@ -231,7 +259,7 @@ class _ClubSummaryCard extends StatelessWidget {
         child: Row(
           children: [
             badge,
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,11 +269,11 @@ class _ClubSummaryCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Text(
                     'Temporada $season',
                     style: const TextStyle(
@@ -253,7 +281,7 @@ class _ClubSummaryCard extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Row(
                     children: [
                       const Icon(
@@ -278,7 +306,7 @@ class _ClubSummaryCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -287,7 +315,7 @@ class _ClubSummaryCard extends StatelessWidget {
                   value: compactMoney(balance),
                   color: AppColors.green,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _MoneyLine(
                   icon: Icons.paid_rounded,
                   value: compactMoney(transferBudget),
@@ -315,8 +343,8 @@ class _MoneyLine extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 7),
+          Icon(icon, size: 17, color: color),
+          const SizedBox(width: 6),
           Text(
             value,
             style: const TextStyle(
@@ -350,51 +378,106 @@ class _SquadTable extends StatelessWidget {
   final ValueChanged<Player> onPlayerTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border.withValues(alpha: .55)),
+  Widget build(BuildContext context) {
+    final groups = [
+      for (final group in _SquadPositionGroup.values)
+        (
+          group: group,
+          players: players
+              .where((player) => group.includes(player.primaryPosition))
+              .toList(),
         ),
-        child: Column(
-          children: [
-            const _SquadTableHeader(),
-            Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
-            if (players.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 28),
-                child: Text(
-                  'Nenhum jogador encontrado.',
-                  style: TextStyle(color: AppColors.muted),
-                ),
-              )
-            else
+    ]..removeWhere((entry) => entry.players.isEmpty);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border.withValues(alpha: .55)),
+      ),
+      child: Column(
+        children: [
+          const _SquadTableHeader(),
+          Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
+          if (players.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 28),
+              child: Text(
+                'Nenhum jogador encontrado.',
+                style: TextStyle(color: AppColors.muted),
+              ),
+            )
+          else
+            for (var groupIndex = 0;
+                groupIndex < groups.length;
+                groupIndex++) ...[
+              _SquadGroupHeader(label: groups[groupIndex].group.label),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 7, 8, 8),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                 child: Column(
                   children: [
-                    for (var index = 0; index < players.length; index++) ...[
+                    for (var index = 0;
+                        index < groups[groupIndex].players.length;
+                        index++) ...[
                       _SquadPlayerRow(
-                        player: players[index],
-                        discipline: disciplines[players[index].id] ??
+                        player: groups[groupIndex].players[index],
+                        discipline: disciplines[
+                                groups[groupIndex].players[index].id] ??
                             const PlayerDiscipline(),
-                        available: availableIds.contains(players[index].id),
+                        available: availableIds.contains(
+                          groups[groupIndex].players[index].id,
+                        ),
                         clubAccent: clubAccent,
-                        onTap: () => onPlayerTap(players[index]),
+                        onTap: () => onPlayerTap(
+                          groups[groupIndex].players[index],
+                        ),
                       ),
-                      if (index != players.length - 1)
+                      if (index != groups[groupIndex].players.length - 1)
                         const SizedBox(height: 5),
                     ],
                   ],
                 ),
               ),
-            Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
-            _SquadTotalsContent(
-              total: total,
-              brazilians: brazilians,
-              foreigners: foreigners,
+              if (groupIndex != groups.length - 1)
+                Divider(
+                  height: 1,
+                  indent: 8,
+                  endIndent: 8,
+                  color: AppColors.border.withValues(alpha: .45),
+                ),
+            ],
+          Divider(height: 1, color: AppColors.border.withValues(alpha: .7)),
+          _SquadTotalsContent(
+            total: total,
+            brazilians: brazilians,
+            foreigners: foreigners,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SquadGroupHeader extends StatelessWidget {
+  const _SquadGroupHeader({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        header: true,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 7),
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.green,
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .25,
             ),
-          ],
+          ),
         ),
       );
 }
@@ -456,10 +539,18 @@ class _SquadPlayerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final morale = _MoraleVisual.fromValue(player.morale);
-    return Material(
-      color: AppColors.surfaceRaised,
-      borderRadius: BorderRadius.circular(10),
+    final status = _PlayerRowStatus.fromPlayer(player, discipline);
+    final row = Material(
+      color: status.emphasized
+          ? status.color.withValues(alpha: .08)
+          : AppColors.surfaceRaised,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: status.emphasized
+            ? BorderSide(color: status.color.withValues(alpha: .62))
+            : BorderSide.none,
+      ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
@@ -504,19 +595,24 @@ class _SquadPlayerRow extends StatelessWidget {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: morale.color,
+                            color: status.color,
                             shape: BoxShape.circle,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            '${_positionName(player.primaryPosition)} • ${morale.label}',
+                            '${player.age} anos • ${status.label}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 10,
-                              color: AppColors.muted,
+                              color: status.emphasized
+                                  ? status.color
+                                  : AppColors.muted,
+                              fontWeight: status.emphasized
+                                  ? FontWeight.w800
+                                  : FontWeight.w500,
                             ),
                           ),
                         ),
@@ -581,21 +677,68 @@ class _SquadPlayerRow extends StatelessWidget {
         ),
       ),
     );
+    final details = status.details;
+    if (details == null) return row;
+    return Tooltip(message: details, child: row);
   }
+}
 
-  static String _positionName(PlayerPosition position) => switch (position) {
-        PlayerPosition.gol => 'Goleiro',
-        PlayerPosition.ld => 'Lateral Direito',
-        PlayerPosition.le => 'Lateral Esquerdo',
-        PlayerPosition.zag => 'Zagueiro',
-        PlayerPosition.vol => 'Volante',
-        PlayerPosition.mc => 'Meia Central',
-        PlayerPosition.mei => 'Meia Ofensivo',
-        PlayerPosition.pe => 'Ponta Esquerda',
-        PlayerPosition.pd => 'Ponta Direita',
-        PlayerPosition.sa => 'Segundo Atacante',
-        PlayerPosition.ca => 'Centroavante',
-      };
+class _PlayerRowStatus {
+  const _PlayerRowStatus({
+    required this.label,
+    required this.color,
+    this.emphasized = false,
+    this.details,
+  });
+
+  final String label;
+  final Color color;
+  final bool emphasized;
+  final String? details;
+
+  factory _PlayerRowStatus.fromPlayer(
+    Player player,
+    PlayerDiscipline discipline,
+  ) {
+    final injury = player.injury;
+    if (injury != null) {
+      return _PlayerRowStatus(
+        label: 'Lesionado',
+        color: AppColors.danger,
+        emphasized: true,
+        details: '${injury.name} • ${injury.roundsRemaining} rodada(s)',
+      );
+    }
+    if (discipline.isSuspended) {
+      return _PlayerRowStatus(
+        label: 'Suspenso',
+        color: AppColors.danger,
+        emphasized: true,
+        details: 'Suspenso por ${discipline.suspendedRounds} jogo(s)',
+      );
+    }
+    if (player.condition < 70) {
+      return _PlayerRowStatus(
+        label: 'Condição baixa',
+        color: AppColors.warning,
+        emphasized: player.condition < 35,
+        details: 'Condição física ${player.condition}%',
+      );
+    }
+    if (player.fatigue > 55) {
+      return _PlayerRowStatus(
+        label: 'Fadiga alta',
+        color: AppColors.warning,
+        details: 'Fadiga ${player.fatigue}%',
+      );
+    }
+    final morale = _MoraleVisual.fromValue(player.morale);
+    return _PlayerRowStatus(
+      label: morale.label,
+      color: morale.color,
+      details: 'Moral ${player.morale}%',
+    );
+  }
 }
 
 class _MoraleVisual {

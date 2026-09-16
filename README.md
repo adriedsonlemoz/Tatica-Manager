@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.143`
-**Android versionCode:** `144`
+**Release atual:** `0.1.1.144`
+**Android versionCode:** `145`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.143`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.144`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+144`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.143` e `versionCode 144`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+145`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.144` e `versionCode 145`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.143`, o pubspec é `0.1.1+144`; a próxima entrega normalmente será `0.1.1.144`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.144`, o pubspec é `0.1.1+145`; a próxima entrega normalmente será `0.1.1.145`.
+
+## Elenco organizado e menu ajustado — 0.1.1.144
+
+- organiza a listagem do Elenco em Goleiros, Defensores, Meio-campistas e Atacantes, mantendo todos os grupos na mesma tela e respeitando busca, filtro e ordenação;
+- substitui a posição repetida sob o nome pela idade persistida do atleta e por sua situação atual, sem retirar as colunas POS, GER e Cartões;
+- dá prioridade visual a lesões e suspensões na própria linha e também sinaliza condição física baixa e fadiga alta a partir dos dados reais existentes;
+- compacta o resumo superior do clube sem remover escudo, nome, temporada, reputação, saldo ou orçamento de transferências;
+- reduz a reserva inferior do menu Mais após o item Configurações, sem criar destinos ou ampliar os cards;
+- não altera perfil do jogador, Match Engine, saves, regras disciplinares, recompensas, finanças ou orçamento dos clubes.
 
 ## Polimento visual orientado por vídeo — 0.1.1.143
 
@@ -510,7 +519,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.144`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.145`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
