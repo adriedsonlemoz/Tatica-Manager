@@ -83,6 +83,8 @@ class AudioManager {
   final Map<MatchAudioCue, DateTime> _lastMatchCueAt = {};
   bool _ambienceLoaded = false;
   int _ambienceDuckToken = 0;
+  String? _homeTeamName;
+  String? _awayTeamName;
 
   GameSettings get settings => _settings;
 
@@ -222,12 +224,15 @@ class AudioManager {
   }) async {
     _inMatch = true;
     _matchFinished = false;
+    _homeTeamName = homeName;
+    _awayTeamName = awayName;
     await _safe(_musicPlayer.pause);
     _emitMenuPlaybackState();
     await _startMatchAmbience();
     await playMatchCue(MatchAudioCue.kickoff);
-    await _narration.speakAnnouncement(
-      'Começa a partida. $homeName contra $awayName.',
+    await _narration.speakCue(
+      MatchVoiceCue.kickoff,
+      fallbackText: 'Começa o jogo!',
       delay: const Duration(milliseconds: 240),
     );
   }
@@ -237,7 +242,6 @@ class AudioManager {
     _matchFinished = true;
     _ambienceDuckToken++;
     await _safe(_ambiencePlayer.stop);
-    await _narration.stop();
   }
 
   Future<void> exitMatch() async {
@@ -284,12 +288,25 @@ class AudioManager {
     );
     final cue = AudioCatalog.cueForEvent(event);
     if (cue != null) unawaited(playMatchCue(cue));
-    await _narration.speakEvent(event, teamName: teamName);
+
+    final isHomeTeam = teamName == _homeTeamName
+        ? true
+        : teamName == _awayTeamName
+            ? false
+            : null;
+    await _narration.speakEvent(
+      event,
+      teamName: teamName,
+      isHomeTeam: isHomeTeam,
+    );
   }
 
   Future<void> announceSecondHalf() async {
     unawaited(playMatchCue(MatchAudioCue.secondHalf));
-    await _narration.speakAnnouncement('Começa o segundo tempo.');
+    await _narration.speakCue(
+      MatchVoiceCue.secondHalf,
+      fallbackText: 'Começa o segundo tempo!',
+    );
   }
 
   Future<void> testNarration() => _narration.testVoice();
@@ -457,12 +474,17 @@ class AudioManager {
       };
 
   static Duration _duckDuration(MatchAudioCue cue) => switch (cue) {
-        MatchAudioCue.goal ||
+        MatchAudioCue.goal => const Duration(milliseconds: 3600),
+        MatchAudioCue.redCard => const Duration(milliseconds: 2800),
+        MatchAudioCue.penaltySaved => const Duration(milliseconds: 1900),
+        MatchAudioCue.yellowCard ||
         MatchAudioCue.halftime ||
         MatchAudioCue.fulltime ||
-        MatchAudioCue.redCard ||
         MatchAudioCue.penalty ||
-        MatchAudioCue.penaltySaved => const Duration(milliseconds: 1450),
+        MatchAudioCue.substitution ||
+        MatchAudioCue.injury => const Duration(milliseconds: 1650),
+        MatchAudioCue.save ||
+        MatchAudioCue.woodwork => const Duration(milliseconds: 1200),
         _ => const Duration(milliseconds: 850),
       };
 

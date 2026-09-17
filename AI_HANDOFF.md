@@ -8,14 +8,26 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.145`
-- **Android versionCode:** `146`
+- **Release deste handoff:** `0.1.1.146`
+- **Android versionCode:** `147`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.146
+
+## Locução oficial da partida
+
+- A camada de narração usa 15 assets WAV em `assets/audio/voice/`, todos derivados dos áudios enviados pelo usuário e normalizados para reprodução consistente.
+- Eventos importantes usam voz pré-gravada em `just_audio`; o TTS do Android fica apenas como fallback quando um asset falha.
+- Gol do mandante e gol do visitante usam falas diferentes de acordo com o lado real do evento; isso é resolvido na camada de áudio e não altera o Match Engine.
+- Finalização comum deixou de depender de fala dinâmica; os sons de campo continuam cobrindo o lance sem misturar uma segunda voz artificial.
+- Ambiente, efeitos `*_field.wav`, personalização de sons, áudio limpo, volumes e playlist do menu permanecem preservados.
+
+Consulte `docs/RELEASE_0.1.1.146.md`.
 
 ## Estado funcional da release 0.1.1.145
 
@@ -1167,11 +1179,11 @@ Para esta release:
 
 ```text
 release/versionName: 0.1.1.144
-versionCode:         146
-pubspec:             0.1.1+146
+versionCode:         147
+pubspec:             0.1.1+147
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.146` e usar um `versionCode` maior que 146.
+A próxima alteração/entrega normalmente deve virar `0.1.1.147` e usar um `versionCode` maior que 147.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

@@ -104,6 +104,11 @@ void main() {
     for (final path in AudioCatalog.matchAssets.values) {
       expect(File(path).existsSync(), isTrue, reason: path);
     }
+    expect(AudioCatalog.voiceAssets, hasLength(15));
+    for (final path in AudioCatalog.voiceAssets.values) {
+      expect(File(path).existsSync(), isTrue, reason: path);
+      expect(path, endsWith('.wav'));
+    }
     expect(
       File(AudioCatalog.matchAmbienceAsset).existsSync(),
       isTrue,
@@ -117,6 +122,18 @@ void main() {
     expect(
       AudioCatalog.matchAssets[MatchAudioCue.penaltySaved],
       endsWith('penalty_saved_field.wav'),
+    );
+    expect(
+      AudioCatalog.voiceAssets[MatchVoiceCue.goalHome],
+      endsWith('goal_home.wav'),
+    );
+    expect(
+      AudioCatalog.voiceAssets[MatchVoiceCue.goalAway],
+      endsWith('goal_away.wav'),
+    );
+    expect(
+      AudioCatalog.voiceAssets[MatchVoiceCue.redCard],
+      endsWith('red_card.wav'),
     );
     expect(
       AudioCatalog.uiAssets[UiAudioCue.navigation],
@@ -193,6 +210,50 @@ void main() {
     expect(pubspec, contains('assets/audio/menu/'));
     expect(pubspec, contains('assets/audio/match/'));
     expect(pubspec, contains('assets/audio/ui/'));
+    expect(pubspec, contains('assets/audio/voice/'));
+  });
+
+  test('locução pré-gravada cobre eventos importantes e diferencia o lado do gol', () {
+    MatchEvent event(MatchEventType type) => MatchEvent(
+          minute: 10,
+          sequence: 1,
+          type: type,
+          teamId: 'club-a',
+          text: type.label,
+        );
+
+    expect(
+      AudioCatalog.voiceCueForEvent(
+        event(MatchEventType.goal),
+        isHomeTeam: true,
+      ),
+      MatchVoiceCue.goalHome,
+    );
+    expect(
+      AudioCatalog.voiceCueForEvent(
+        event(MatchEventType.goal),
+        isHomeTeam: false,
+      ),
+      MatchVoiceCue.goalAway,
+    );
+    expect(
+      AudioCatalog.voiceCueForEvent(event(MatchEventType.yellow)),
+      MatchVoiceCue.yellowCard,
+    );
+    expect(
+      AudioCatalog.voiceCueForEvent(event(MatchEventType.red)),
+      MatchVoiceCue.redCard,
+    );
+    expect(
+      AudioCatalog.voiceCueForEvent(event(MatchEventType.shot)),
+      isNull,
+    );
+
+    final narration =
+        File('lib/app/audio/match_narration_service.dart').readAsStringSync();
+    expect(narration, contains('final AudioPlayer _voicePlayer'));
+    expect(narration, contains('AudioCatalog.voiceAssets'));
+    expect(narration, contains('fallbackText'));
   });
 
   test('narração falada ignora posse/passe e prioriza eventos importantes', () {
@@ -211,8 +272,17 @@ void main() {
       text: 'João toca para Pedro.',
     );
 
+    const shot = MatchEvent(
+      minute: 69,
+      sequence: 6,
+      type: MatchEventType.shot,
+      teamId: 'club-a',
+      text: 'Finalização de João.',
+    );
+
     expect(MatchNarrationFormatter.shouldNarrate(goal), isTrue);
     expect(MatchNarrationFormatter.shouldNarrate(pass), isFalse);
+    expect(MatchNarrationFormatter.shouldNarrate(shot), isFalse);
     expect(
       MatchNarrationFormatter.textFor(goal, teamName: 'Aurora FC'),
       contains('Aos 67 minutos.'),

@@ -24,6 +24,24 @@ enum MatchAudioCue {
   injury,
 }
 
+enum MatchVoiceCue {
+  kickoff,
+  halftime,
+  secondHalf,
+  fulltime,
+  goalHome,
+  goalAway,
+  yellowCard,
+  redCard,
+  foul,
+  substitution,
+  save,
+  woodwork,
+  penalty,
+  penaltySaved,
+  injury,
+}
+
 extension MatchAudioCueX on MatchAudioCue {
   String get label => switch (this) {
         MatchAudioCue.kickoff => 'Início da partida',
@@ -147,6 +165,24 @@ abstract final class AudioCatalog {
     MatchAudioCue.injury: 'assets/audio/match/injury.wav',
   };
 
+  static const voiceAssets = {
+    MatchVoiceCue.kickoff: 'assets/audio/voice/kickoff.wav',
+    MatchVoiceCue.halftime: 'assets/audio/voice/halftime.wav',
+    MatchVoiceCue.secondHalf: 'assets/audio/voice/second_half.wav',
+    MatchVoiceCue.fulltime: 'assets/audio/voice/fulltime.wav',
+    MatchVoiceCue.goalHome: 'assets/audio/voice/goal_home.wav',
+    MatchVoiceCue.goalAway: 'assets/audio/voice/goal_away.wav',
+    MatchVoiceCue.yellowCard: 'assets/audio/voice/yellow_card.wav',
+    MatchVoiceCue.redCard: 'assets/audio/voice/red_card.wav',
+    MatchVoiceCue.foul: 'assets/audio/voice/foul.wav',
+    MatchVoiceCue.substitution: 'assets/audio/voice/substitution.wav',
+    MatchVoiceCue.save: 'assets/audio/voice/save.wav',
+    MatchVoiceCue.woodwork: 'assets/audio/voice/woodwork.wav',
+    MatchVoiceCue.penalty: 'assets/audio/voice/penalty.wav',
+    MatchVoiceCue.penaltySaved: 'assets/audio/voice/penalty_saved.wav',
+    MatchVoiceCue.injury: 'assets/audio/voice/injury.wav',
+  };
+
   static MatchAudioCue? cueForEvent(MatchEvent event) => switch (event.type) {
         MatchEventType.kickoff => MatchAudioCue.kickoff,
         MatchEventType.shot => MatchAudioCue.shot,
@@ -164,5 +200,30 @@ abstract final class AudioCatalog {
         MatchEventType.fulltime => MatchAudioCue.fulltime,
         MatchEventType.pass => MatchAudioCue.pass,
         MatchEventType.possession => null,
+      };
+
+  static MatchVoiceCue? voiceCueForEvent(
+    MatchEvent event, {
+    bool? isHomeTeam,
+  }) =>
+      switch (event.type) {
+        MatchEventType.kickoff => MatchVoiceCue.kickoff,
+        MatchEventType.save => MatchVoiceCue.save,
+        MatchEventType.woodwork => MatchVoiceCue.woodwork,
+        MatchEventType.goal || MatchEventType.ownGoal => switch (isHomeTeam) {
+            true => MatchVoiceCue.goalHome,
+            false => MatchVoiceCue.goalAway,
+            null => null,
+          },
+        MatchEventType.foul => MatchVoiceCue.foul,
+        MatchEventType.yellow => MatchVoiceCue.yellowCard,
+        MatchEventType.red => MatchVoiceCue.redCard,
+        MatchEventType.penalty => MatchVoiceCue.penalty,
+        MatchEventType.penaltySaved => MatchVoiceCue.penaltySaved,
+        MatchEventType.substitution => MatchVoiceCue.substitution,
+        MatchEventType.injury => MatchVoiceCue.injury,
+        MatchEventType.halftime => MatchVoiceCue.halftime,
+        MatchEventType.fulltime => MatchVoiceCue.fulltime,
+        MatchEventType.possession || MatchEventType.pass || MatchEventType.shot => null,
       };
 }

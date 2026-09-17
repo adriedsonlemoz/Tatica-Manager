@@ -3,7 +3,6 @@ import '../../domain/match/match_models.dart';
 abstract final class MatchNarrationFormatter {
   static const Set<MatchEventType> narratedTypes = {
     MatchEventType.kickoff,
-    MatchEventType.shot,
     MatchEventType.save,
     MatchEventType.woodwork,
     MatchEventType.goal,

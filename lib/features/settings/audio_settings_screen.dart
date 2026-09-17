@@ -168,7 +168,7 @@ class _AudioSettingsScreenState extends ConsumerState<AudioSettingsScreen> {
           _AudioCategoryCard(
             icon: Icons.record_voice_over_rounded,
             title: 'NARRAÇÃO',
-            subtitle: 'Voz em português do aparelho para os lances principais.',
+            subtitle: 'Voz oficial em português nos lances principais, com TTS de segurança.',
             enabled: audio.narrationEnabled,
             volume: audio.narrationVolume,
             masterEnabled: _settings.sound,
