@@ -8,8 +8,8 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.147`
-- **Android versionCode:** `148`
+- **Release deste handoff:** `0.1.1.148`
+- **Android versionCode:** `149`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
@@ -17,7 +17,11 @@
 
 
 
-## Estado funcional da release 0.1.1.147
+## Estado funcional da release 0.1.1.148
+
+- **Locução oficial sem fallback:** os 15 eventos de voz usam somente assets WAV oficiais; o fallback para `flutter_tts` foi removido.
+- **Compatibilidade de áudio:** todas as locuções oficiais estão em PCM 16-bit, 48 kHz, estéreo.
+- **Regra de segurança:** falha de asset não chama a voz sintética do aparelho; o evento fica sem locução.
 
 ## Correção do Build 100
 
@@ -1189,12 +1193,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.147
-versionCode:         148
-pubspec:             0.1.1+148
+release/versionName: 0.1.1.148
+versionCode:         149
+pubspec:             0.1.1+149
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.148` e usar um `versionCode` maior que 148.
+A próxima alteração/entrega normalmente deve virar `0.1.1.149` e usar um `versionCode` maior que 149.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

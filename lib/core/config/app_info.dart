@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.147';
+  static const String version = '0.1.1.148';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.148',
+      title: 'Locução oficial sem fallback',
+      changes: [
+        'Remove o fallback para a voz TTS antiga do Android nos eventos da partida.',
+        'Converte as 15 locuções oficiais para WAV PCM 48 kHz estéreo para maior compatibilidade.',
+        'Se uma locução oficial falhar, o evento fica sem voz em vez de usar uma voz diferente.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.147',
       title: 'Correção do Build 100',
@@ -25,18 +34,9 @@ abstract final class AppInfo {
       version: '0.1.1.146',
       title: 'Locução oficial da partida',
       changes: [
-        'Troca o TTS principal por 15 falas gravadas na mesma voz para os eventos importantes.',
+        'Adiciona 15 falas pré-gravadas na mesma identidade vocal para os eventos importantes.',
         'Diferencia a locução de gol do mandante e do visitante sem alterar o Match Engine.',
-        'Mantém TTS apenas como fallback se um asset de voz não puder ser reproduzido.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.145',
-      title: 'Áudio de partida renovado',
-      changes: [
-        'Substitui o ambiente contínuo por uma torcida tratada e preparada para loop.',
-        'Integra novos sons de chute, trave, defesa, gol e pênalti defendido.',
-        'Reduz o ganho do ambiente para manter efeitos e narração claros sem chiado constante.',
+        'Registra a primeira integração das locuções oficiais na camada de áudio.',
       ],
     ),
   ];

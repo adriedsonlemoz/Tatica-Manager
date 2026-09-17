@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.147`
-**Android versionCode:** `148`
+**Release atual:** `0.1.1.148`
+**Android versionCode:** `149`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,23 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.147`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.148`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+148`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.147` e `versionCode 148`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+149`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.148` e `versionCode 149`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.147`, o pubspec é `0.1.1+148`; a próxima entrega normalmente será `0.1.1.148`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.148`, o pubspec é `0.1.1+149`; a próxima entrega normalmente será `0.1.1.149`.
+
+
+## Locução oficial sem fallback — 0.1.1.148
+
+- garante que os eventos da partida usem somente as 15 locuções WAV oficiais;
+- remove o fallback silencioso para a voz TTS do Android, que podia fazer a narração parecer a antiga;
+- converte as locuções para WAV PCM 16-bit, 48 kHz estéreo para melhorar compatibilidade de reprodução;
+- mantém a narração antiga completamente fora dos eventos oficiais: se um arquivo falhar, o evento fica sem fala em vez de trocar de voz;
+- mantém os novos efeitos de estádio e não altera o Match Engine.
 
 ## Correção do Build 100 — 0.1.1.147
 

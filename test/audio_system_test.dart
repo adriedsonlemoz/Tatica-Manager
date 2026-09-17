@@ -205,7 +205,7 @@ void main() {
     final pubspec = File('pubspec.yaml').readAsStringSync();
 
     expect(pubspec, contains('just_audio: ^0.10.6'));
-    expect(pubspec, contains('flutter_tts: ^4.2.5'));
+    expect(pubspec, isNot(contains('flutter_tts:')));
     expect(pubspec, contains('path_provider: ^2.1.6'));
     expect(pubspec, contains('assets/audio/menu/'));
     expect(pubspec, contains('assets/audio/match/'));
@@ -253,7 +253,11 @@ void main() {
         File('lib/app/audio/match_narration_service.dart').readAsStringSync();
     expect(narration, contains('final AudioPlayer _voicePlayer'));
     expect(narration, contains('AudioCatalog.voiceAssets'));
-    expect(narration, contains('fallbackText'));
+    expect(narration, contains('AudioSource.asset(asset)'));
+    expect(narration, isNot(contains('fallbackText')));
+    expect(narration, contains('Intencionalmente não há fallback TTS'));
+    expect(narration, isNot(contains('FlutterTts')));
+    expect(narration, isNot(contains('_tts.speak')));
   });
 
   test('narração falada ignora posse/passe e prioriza eventos importantes', () {
@@ -289,10 +293,10 @@ void main() {
     );
   });
 
-  test('Android declara descoberta do serviço TTS', () {
+  test('Android não depende de serviço TTS para a locução oficial', () {
     final manifest =
         File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
-    expect(manifest, contains('android.intent.action.TTS_SERVICE'));
+    expect(manifest, isNot(contains('android.intent.action.TTS_SERVICE')));
   });
 
   test('Match Engine permanece independente da camada de áudio', () {

@@ -232,7 +232,6 @@ class AudioManager {
     await playMatchCue(MatchAudioCue.kickoff);
     await _narration.speakCue(
       MatchVoiceCue.kickoff,
-      fallbackText: 'Começa o jogo!',
       delay: const Duration(milliseconds: 240),
     );
   }
@@ -296,17 +295,13 @@ class AudioManager {
             : null;
     await _narration.speakEvent(
       event,
-      teamName: teamName,
       isHomeTeam: isHomeTeam,
     );
   }
 
   Future<void> announceSecondHalf() async {
     unawaited(playMatchCue(MatchAudioCue.secondHalf));
-    await _narration.speakCue(
-      MatchVoiceCue.secondHalf,
-      fallbackText: 'Começa o segundo tempo!',
-    );
+    await _narration.speakCue(MatchVoiceCue.secondHalf);
   }
 
   Future<void> testNarration() => _narration.testVoice();
