@@ -7,11 +7,20 @@ class ReleaseNote {
 }
 
 abstract final class AppInfo {
-  static const String version = '0.1.1.146';
+  static const String version = '0.1.1.147';
   static const String contactEmail = 'adriedson@outlook.com';
   static const String pixKey = 'adriedson@outlook.com';
 
   static const List<ReleaseNote> recentReleases = [
+    ReleaseNote(
+      version: '0.1.1.147',
+      title: 'Correção do Build 100',
+      changes: [
+        'Corrige o único teste de metadados que bloqueava o pipeline após a atualização das locuções.',
+        'Mantém em Sobre / Novidades apenas as três releases mais recentes, como definido pelo teste do projeto.',
+        'Preserva integralmente as 15 locuções, os novos efeitos e a mixagem de áudio da partida.',
+      ],
+    ),
     ReleaseNote(
       version: '0.1.1.146',
       title: 'Locução oficial da partida',
@@ -28,24 +37,6 @@ abstract final class AppInfo {
         'Substitui o ambiente contínuo por uma torcida tratada e preparada para loop.',
         'Integra novos sons de chute, trave, defesa, gol e pênalti defendido.',
         'Reduz o ganho do ambiente para manter efeitos e narração claros sem chiado constante.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.144',
-      title: 'Elenco organizado e menu ajustado',
-      changes: [
-        'Organiza o elenco por goleiros, defensores, meio-campistas e atacantes.',
-        'Mostra idade e situação real sem repetir a posição do jogador.',
-        'Destaca lesões e suspensões e elimina a folga excessiva após Configurações.',
-      ],
-    ),
-    ReleaseNote(
-      version: '0.1.1.143',
-      title: 'Polimento visual orientado por vídeo',
-      changes: [
-        'Aproveita melhor a altura da transmissão e organiza o fim de jogo.',
-        'Aumenta a separação visual entre nomes no campo e corrige a disciplina.',
-        'Compacta as prioridades do auxiliar e os atalhos da tela Mais.',
       ],
     ),
   ];

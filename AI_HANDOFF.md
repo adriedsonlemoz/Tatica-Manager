@@ -8,14 +8,25 @@
 - **Produto:** Tática Manager
 - **Repositório oficial:** https://github.com/adriedsonlemoz/Tatica-Manager
 - **Stack:** Flutter + Dart, Riverpod, SQLite (`sqflite`) e Flame para a representação 2D da partida
-- **Release deste handoff:** `0.1.1.146`
-- **Android versionCode:** `147`
+- **Release deste handoff:** `0.1.1.147`
+- **Android versionCode:** `148`
 - **Orientação:** somente retrato
 - **Objetivo:** jogo de gestão de futebol com carreira de várias temporadas; a base atual possui liga nacional de 20 clubes, mas os sistemas devem permanecer preparados para múltiplas ligas, além de mercado, contratos, finanças, táticas, escalação e partida 2D.
 
 
 
 
+
+## Estado funcional da release 0.1.1.147
+
+## Correção do Build 100
+
+- O workflow 100 chegou aos testes com análise estática concluída e registrou 344 testes aprovados e 1 falha.
+- A falha estava em `test/app_info_test.dart`: a tela Sobre / Novidades exige exatamente três releases recentes, mas `AppInfo.recentReleases` continha quatro após a inclusão da locução oficial.
+- `AppInfo.recentReleases` volta a manter exatamente três entradas: 0.1.1.147, 0.1.1.146 e 0.1.1.145.
+- Nenhum asset de voz ou efeito da partida foi removido; a correção é restrita a metadados/histórico recente e versionamento.
+
+Consulte `docs/RELEASE_0.1.1.147.md`.
 
 ## Estado funcional da release 0.1.1.146
 
@@ -1178,12 +1189,12 @@ Arquivos relevantes:
 Para esta release:
 
 ```text
-release/versionName: 0.1.1.144
-versionCode:         147
-pubspec:             0.1.1+147
+release/versionName: 0.1.1.147
+versionCode:         148
+pubspec:             0.1.1+148
 ```
 
-A próxima alteração/entrega normalmente deve virar `0.1.1.147` e usar um `versionCode` maior que 147.
+A próxima alteração/entrega normalmente deve virar `0.1.1.148` e usar um `versionCode` maior que 148.
 
 Nunca altere somente o nome do ZIP para simular uma versão nova.
 

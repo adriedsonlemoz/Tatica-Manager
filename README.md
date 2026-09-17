@@ -4,8 +4,8 @@ Reconstrução do Tática Manager em Flutter + Dart, com foco mobile-first, modo
 
 Repositório oficial: https://github.com/adriedsonlemoz/Tatica-Manager
 
-**Release atual:** `0.1.1.146`
-**Android versionCode:** `147`
+**Release atual:** `0.1.1.147`
+**Android versionCode:** `148`
 
 ## Fonte oficial de versão
 
@@ -13,14 +13,21 @@ A versão visível da release é definida pelo arquivo `VERSION`. O `tool/versio
 
 Arquivos de identificação/versionamento incluídos no projeto:
 
-- `VERSION` — fonte canônica da versão visível (`0.1.1.146`);
+- `VERSION` — fonte canônica da versão visível (`0.1.1.147`);
 - `app.json` — identidade externa do aplicativo;
-- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+147`);
-- Android — plataforma versionada no repositório, com `versionName 0.1.1.146` e `versionCode 147`;
+- `pubspec.yaml` — manifesto Flutter, com versão SemVer compatível (`0.1.1+148`);
+- Android — plataforma versionada no repositório, com `versionName 0.1.1.147` e `versionCode 148`;
 - iOS — catálogo `AppIcon.appiconset` com todos os tamanhos já versionado; a estrutura Xcode completa será sincronizada quando a plataforma iOS for adicionada;
 - GitHub Actions — valida a versão embutida no APK antes de publicar o Artifact.
 
-> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.146`, o pubspec é `0.1.1+147`; a próxima entrega normalmente será `0.1.1.147`.
+> O Flutter/Dart usa SemVer no `pubspec.yaml`. O quarto componente da release visível permanece em `VERSION`, enquanto o número após `+` é usado como build/versionCode Android. Para `0.1.1.147`, o pubspec é `0.1.1+148`; a próxima entrega normalmente será `0.1.1.148`.
+
+## Correção do Build 100 — 0.1.1.147
+
+- corrige o único teste que falhou no workflow 100: `app_info_test.dart`, depois de 344 testes aprovados;
+- mantém `AppInfo.recentReleases` com exatamente três itens, preservando o contrato da tela Sobre / Novidades;
+- adiciona a 0.1.1.147 no topo e conserva 0.1.1.146 e 0.1.1.145 como histórico recente;
+- não altera os 15 arquivos de locução, os efeitos de partida, a mixagem, o Match Engine, saves, placares ou regras do jogo.
 
 ## Locução oficial da partida — 0.1.1.146
 
@@ -536,7 +543,7 @@ Arquivos de identificação/versionamento incluídos no projeto:
 
 ## Política obrigatória de release
 
-Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.147`, salvo quando houver um incremento funcional maior.
+Toda correção, alteração, refatoração ou entrega deve atualizar a versão antes de ser publicada. O padrão visível é `A.B.C.D`; para esta linha, a próxima entrega normalmente será `0.1.1.148`, salvo quando houver um incremento funcional maior.
 
 Antes de publicar:
 
